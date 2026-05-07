@@ -5,14 +5,18 @@ import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
+import { useIntake } from '../../contexts/IntakeContext.jsx';
 import {
-  individualProfile,
-  gifts,
-  givingPlanStatement,
   fundingSpotlight,
   microLearning,
   visibilityInsights,
 } from '../../data/individualProfile.js';
+import { CAUSES } from '../../data/intakeData.js';
+
+import Letter from './Letter.jsx';
+import Privacy from './Privacy.jsx';
+import Questions from './Questions.jsx';
+import GPSReveal from './GPSReveal.jsx';
 
 const NAV_ITEMS = [
   { key: 'home', label: 'Home', path: '/individual' },
@@ -23,14 +27,34 @@ const NAV_ITEMS = [
 ];
 
 export default function IndividualSurface() {
+  return (
+    <Routes>
+      {/* Onboarding flow — chrome-less, full-screen */}
+      <Route path="welcome" element={<Letter />} />
+      <Route path="privacy" element={<Privacy />} />
+      <Route path="questions" element={<Questions />} />
+      <Route path="reveal" element={<GPSReveal />} />
+
+      {/* Dashboard — wrapped in chrome */}
+      <Route path="*" element={<DashboardLayout />} />
+    </Routes>
+  );
+}
+
+function DashboardLayout() {
   const location = useLocation();
   const path = location.pathname;
+  const { answers } = useIntake();
+
   const activeNav =
     path.includes('/plan') ? 'plan' :
     path.includes('/discover') ? 'discover' :
     path.includes('/learn') ? 'learn' :
     path.includes('/history') ? 'history' :
     'home';
+
+  // First name from saved profile or fallback
+  const userName = 'Marcus Thompson';
 
   return (
     <div style={{
@@ -41,8 +65,8 @@ export default function IndividualSurface() {
     }}>
       <Chrome
         surface="individual"
-        userName={individualProfile.name}
-        userRole={`Member · ${individualProfile.worldLabel}`}
+        userName={userName}
+        userRole="Member · Athletics"
         navItems={NAV_ITEMS}
         activeNav={activeNav}
       />
@@ -63,14 +87,21 @@ export default function IndividualSurface() {
 function IndividualHome() {
   const navigate = useNavigate();
   const [showAllGifts, setShowAllGifts] = useState(false);
+  const { answers, gifts, givingStyle, worldLabel, resetIntake } = useIntake();
 
   const total = gifts.reduce((sum, g) => sum + g.amount, 0);
   const orgCount = new Set(gifts.map(g => g.org)).size;
   const hasGifts = gifts.length > 0;
-  const visibility = visibilityInsights[individualProfile.visibility] || visibilityInsights.private;
+  const visibility = visibilityInsights[answers.visibility] || visibilityInsights.private;
   const visibleGifts = showAllGifts ? gifts : gifts.slice(0, 3);
 
-  // Contextual paths forward — what's worth doing next
+  // Translate cause IDs to labels for display
+  const causeLabels = (answers.causes || []).map(id => {
+    const found = CAUSES.find(c => c.id === id);
+    return found ? { id, label: found.label } : { id, label: id };
+  });
+
+  // Contextual paths
   const paths = [];
   if (hasGifts) {
     paths.push({
@@ -97,7 +128,7 @@ function IndividualHome() {
 
   paths.push({
     title: 'Explore organizations',
-    desc: `See what's out there — matched to ${individualProfile.causes[0]?.label.toLowerCase() || 'what you care about'}.`,
+    desc: `See what's out there — matched to ${causeLabels[0]?.label?.toLowerCase() || 'what you care about'}.`,
     action: () => navigate('/individual/discover'),
     tone: 'act',
   });
@@ -110,6 +141,12 @@ function IndividualHome() {
       tone: 'act',
     });
   }
+
+  // Onboarding entry — visible at the bottom for demo viewers
+  const restartOnboarding = () => {
+    resetIntake();
+    navigate('/individual/welcome');
+  };
 
   return (
     <main style={{
@@ -127,7 +164,7 @@ function IndividualHome() {
           fontWeight: 600,
           marginBottom: 'var(--sh-space-2)',
         }}>
-          {individualProfile.worldLabel}
+          {worldLabel}
         </p>
         <div style={{
           display: 'inline-block',
@@ -140,7 +177,7 @@ function IndividualHome() {
           marginBottom: 'var(--sh-space-3)',
           letterSpacing: '0.02em',
         }}>
-          {individualProfile.givingStyle}
+          {givingStyle || 'Intentional Giver'}
         </div>
         <div style={{
           display: 'flex',
@@ -148,16 +185,16 @@ function IndividualHome() {
           gap: '6px',
           marginBottom: 'var(--sh-space-3)',
         }}>
-          {individualProfile.causes.map(c => (
+          {causeLabels.map(c => (
             <Tag key={c.id}>{c.label}</Tag>
           ))}
         </div>
-        {individualProfile.geoDetail && (
+        {answers.geoDetail && (
           <p style={{
             fontSize: 'var(--sh-text-xs)',
             color: 'var(--sh-text-muted)',
           }}>
-            {individualProfile.geoDetail}
+            {answers.geoDetail}
           </p>
         )}
       </Card>
@@ -197,7 +234,7 @@ function IndividualHome() {
         </Card>
       )}
 
-      {/* Giving history preview */}
+      {/* Giving history */}
       {hasGifts && (
         <div style={{ marginBottom: 'var(--sh-space-5)' }}>
           <div style={{
@@ -241,7 +278,7 @@ function IndividualHome() {
         </div>
       </div>
 
-      {/* Worth knowing — micro-learning */}
+      {/* Worth knowing */}
       <Card tint style={{ marginBottom: 'var(--sh-space-3)' }}>
         <p style={{
           fontSize: '10px',
@@ -283,11 +320,10 @@ function IndividualHome() {
         </p>
       </Card>
 
-      {/* Funding equity spotlight */}
+      {/* Funding spotlight */}
       <Card style={{
         marginBottom: 'var(--sh-space-3)',
         borderTop: '2px solid var(--sh-bronze)',
-        borderTopWidth: '2px',
       }}>
         <p style={{
           fontSize: '10px',
@@ -356,8 +392,32 @@ function IndividualHome() {
         color: 'var(--sh-text-muted)',
         fontStyle: 'italic',
         marginTop: 'var(--sh-space-6)',
+        marginBottom: 'var(--sh-space-4)',
       }}>
         No rush. Your giving plan is here whenever you need it.
+      </p>
+
+      {/* Demo viewer entry — walk through onboarding */}
+      <p style={{
+        textAlign: 'center',
+        marginTop: 'var(--sh-space-4)',
+      }}>
+        <button
+          onClick={restartOnboarding}
+          style={{
+            background: 'transparent',
+            border: 'none',
+            color: 'var(--sh-text-muted)',
+            fontSize: 'var(--sh-text-xs)',
+            fontStyle: 'italic',
+            cursor: 'pointer',
+            textDecoration: 'underline',
+            fontFamily: 'inherit',
+            padding: 0,
+          }}
+        >
+          See the new-user onboarding flow →
+        </button>
       </p>
     </main>
   );
@@ -553,7 +613,7 @@ function Placeholder({ title, subtitle }) {
           fontStyle: 'italic',
           padding: 'var(--sh-space-6)',
         }}>
-          Section scaffolded · content migrates from existing prototype next.
+          Section scaffolded · content migrates next.
         </p>
       </Card>
     </main>
