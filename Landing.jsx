@@ -1,0 +1,99 @@
+/* ============================================================
+   StewardHouse — Global styles
+   Resets and base typography. Component styles live with
+   their components via inline styles or scoped sheets.
+   ============================================================ */
+
+@import './tokens.css';
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--sh-bg);
+  color: var(--sh-text-body);
+  font-family: var(--sh-font-sans);
+  font-size: var(--sh-text-base);
+  line-height: var(--sh-line-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--sh-font-serif);
+  color: var(--sh-text-primary);
+  font-weight: 400;
+  line-height: var(--sh-line-tight);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--sh-bronze);
+  text-decoration: none;
+  transition: color var(--sh-transition-fast);
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--sh-bronze);
+  outline-offset: 2px;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  color: inherit;
+}
+
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* Screen-reader only — for accessible labels */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Utility — content container */
+.sh-container {
+  width: 100%;
+  max-width: var(--sh-content-max);
+  margin: 0 auto;
+  padding: 0 var(--sh-space-8);
+}
+
+@media (max-width: 768px) {
+  .sh-container {
+    padding: 0 var(--sh-space-4);
+  }
+}
