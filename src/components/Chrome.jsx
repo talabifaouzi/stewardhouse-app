@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SHLogo } from './SHLogo.jsx';
 
@@ -26,11 +27,10 @@ const SURFACE_CONFIG = {
 
 export default function Chrome({ surface, userName, userRole, navItems = [], activeNav }) {
   const config = SURFACE_CONFIG[surface] || SURFACE_CONFIG.individual;
-  const navigate = useNavigate();
 
   return (
     <>
-      {/* Surface accent strip — subtle context cue */}
+      {/* Surface accent strip */}
       <div style={{
         height: '3px',
         background: config.accent,
@@ -53,18 +53,9 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
           <Link to="/" style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 'var(--sh-space-2)',
-            color: 'var(--sh-text-primary)',
             textDecoration: 'none',
           }}>
-            <SHLogo />
-            <span style={{
-              fontFamily: 'var(--sh-font-serif)',
-              fontSize: 'var(--sh-text-md)',
-              letterSpacing: '0.01em',
-            }}>
-              StewardHouse
-            </span>
+            <SHLogo size="normal" />
           </Link>
           <span style={{
             width: '1px',
@@ -103,28 +94,9 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
             justifyContent: 'center',
             overflow: 'auto',
           }}>
-            {navItems.map((item) => {
-              const isActive = activeNav === item.key;
-              return (
-                <button
-                  key={item.key}
-                  onClick={() => navigate(item.path)}
-                  style={{
-                    background: isActive ? 'var(--sh-bronze-tint)' : 'transparent',
-                    color: isActive ? 'var(--sh-bronze-deep)' : 'var(--sh-text-secondary)',
-                    border: 'none',
-                    padding: 'var(--sh-space-2) var(--sh-space-3)',
-                    fontSize: 'var(--sh-text-sm)',
-                    fontWeight: isActive ? 500 : 400,
-                    borderRadius: 'var(--sh-radius-md)',
-                    transition: 'all var(--sh-transition-fast)',
-                    whiteSpace: 'nowrap',
-                  }}
-                >
-                  {item.label}
-                </button>
-              );
-            })}
+            {navItems.map((item) => (
+              <NavTab key={item.key} item={item} isActive={activeNav === item.key} />
+            ))}
           </nav>
         )}
 
@@ -162,6 +134,41 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
         )}
       </header>
     </>
+  );
+}
+
+function NavTab({ item, isActive }) {
+  const navigate = useNavigate();
+  const [hovered, setHovered] = useState(false);
+
+  const baseStyle = {
+    background: isActive ? 'var(--sh-bronze-tint)' : 'transparent',
+    color: isActive ? 'var(--sh-bronze-deep)' : 'var(--sh-text-secondary)',
+    border: 'none',
+    padding: 'var(--sh-space-2) var(--sh-space-3)',
+    fontSize: 'var(--sh-text-sm)',
+    fontWeight: isActive ? 500 : 400,
+    borderRadius: 'var(--sh-radius-md)',
+    transition: 'all 150ms ease',
+    whiteSpace: 'nowrap',
+    cursor: 'pointer',
+    fontFamily: 'inherit',
+  };
+
+  const hoverStyle = !isActive && hovered ? {
+    background: 'var(--sh-bg-tint)',
+    color: 'var(--sh-text-primary)',
+  } : {};
+
+  return (
+    <button
+      onClick={() => navigate(item.path)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{ ...baseStyle, ...hoverStyle }}
+    >
+      {item.label}
+    </button>
   );
 }
 

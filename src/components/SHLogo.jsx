@@ -1,26 +1,44 @@
-export function SHLogo({ size = 24, color = 'var(--sh-bronze)' }) {
+// Typographic brand mark — letter-spaced "STEWARDHOUSE" in bronze.
+// Matches the brand treatment from the existing prototype.
+
+export function SHLogo({ size = 'normal', color }) {
+  const sizes = {
+    small: { fontSize: '10px', letterSpacing: '0.25em' },
+    normal: { fontSize: '11px', letterSpacing: '0.3em' },
+    large: { fontSize: '13px', letterSpacing: '0.32em' },
+    xl: { fontSize: '16px', letterSpacing: '0.34em' },
+  };
+  const s = sizes[size] || sizes.normal;
+
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 32 32"
-      xmlns="http://www.w3.org/2000/svg"
-      aria-hidden="true"
-      role="img"
-    >
-      {/* Stylized "house" formed by two intersecting lines —
-          a structure rather than a literal house, suggesting stewardship */}
-      <circle cx="16" cy="16" r="14" fill="none" stroke={color} strokeWidth="1" opacity="0.4" />
-      <path
-        d="M 8 22 L 8 14 L 16 8 L 24 14 L 24 22"
-        fill="none"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <line x1="13" y1="22" x2="13" y2="17" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-      <line x1="19" y1="22" x2="19" y2="17" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
+    <span style={{
+      fontFamily: 'var(--sh-font-sans)',
+      fontWeight: 300,
+      color: color || 'var(--sh-bronze)',
+      textTransform: 'uppercase',
+      display: 'inline-block',
+      ...s,
+    }}>
+      STEWARDHOUSE
+    </span>
+  );
+}
+
+// Brand mark + accent line (used on landing/intro screens for editorial feel)
+export function SHLogoStacked({ size = 'large' }) {
+  return (
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '14px',
+    }}>
+      <SHLogo size={size} />
+      <div style={{
+        width: '40px',
+        height: '1px',
+        background: 'var(--sh-bronze)',
+      }} />
+    </div>
   );
 }

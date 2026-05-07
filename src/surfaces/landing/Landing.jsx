@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { SHLogo } from '../../components/SHLogo.jsx';
+import { useState } from 'react';
+import { SHLogoStacked, SHLogo } from '../../components/SHLogo.jsx';
 
 const surfaces = [
   {
@@ -44,21 +45,11 @@ export default function Landing() {
       display: 'flex',
       flexDirection: 'column',
     }}>
-      {/* Header strip */}
+      {/* Brand strip */}
       <div style={{
         padding: 'var(--sh-space-6) var(--sh-space-8)',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 'var(--sh-space-3)',
       }}>
-        <SHLogo size={28} />
-        <span style={{
-          fontFamily: 'var(--sh-font-serif)',
-          fontSize: 'var(--sh-text-lg)',
-          color: 'var(--sh-text-primary)',
-        }}>
-          StewardHouse
-        </span>
+        <SHLogo size="normal" />
       </div>
 
       {/* Hero */}
@@ -93,6 +84,12 @@ export default function Landing() {
         }}>
           A platform for stewardship — for athletes and the institutions that support them.
         </h1>
+        <div style={{
+          width: '40px',
+          height: '1px',
+          background: 'var(--sh-bronze)',
+          margin: 'var(--sh-space-2) 0 var(--sh-space-5)',
+        }} />
         <p style={{
           fontSize: 'var(--sh-text-lg)',
           color: 'var(--sh-text-secondary)',
@@ -136,27 +133,26 @@ export default function Landing() {
 }
 
 function SurfaceCard({ surface }) {
+  const [hovered, setHovered] = useState(false);
+
   return (
     <Link
       to={surface.path}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         textDecoration: 'none',
         background: 'var(--sh-card)',
         border: 'var(--sh-border-thin)',
         borderRadius: 'var(--sh-radius-lg)',
         overflow: 'hidden',
-        transition: 'all var(--sh-transition)',
+        transition: 'all 200ms ease',
         display: 'flex',
         flexDirection: 'column',
         position: 'relative',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)';
-        e.currentTarget.style.boxShadow = '0 6px 18px rgba(60, 50, 30, 0.06)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = 'none';
+        transform: hovered ? 'translateY(-2px)' : 'translateY(0)',
+        boxShadow: hovered ? '0 6px 18px rgba(60, 50, 30, 0.06)' : 'none',
+        borderColor: hovered ? 'var(--sh-bronze-border)' : undefined,
       }}
     >
       <div style={{
@@ -204,6 +200,9 @@ function SurfaceCard({ surface }) {
           color: 'var(--sh-bronze)',
           fontWeight: 500,
           marginTop: 'var(--sh-space-3)',
+          transform: hovered ? 'translateX(2px)' : 'translateX(0)',
+          transition: 'transform 200ms ease',
+          display: 'inline-block',
         }}>
           Enter →
         </span>
