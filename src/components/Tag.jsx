@@ -1,9 +1,11 @@
-export function Tag({ children, color = 'default', accent = false }) {
-  const resolvedColor = accent ? 'bronze' : color;
+export function Tag({ children, color = 'default', tone, accent = false }) {
+  // Support both 'color' and 'tone' props for compatibility
+  const resolvedColor = accent ? 'bronze' : (tone || color);
   const colorSchemes = {
     default: { bg: 'var(--sh-bg-tint)', text: 'var(--sh-text-secondary)', border: 'var(--sh-card-border)' },
     bronze: { bg: 'var(--sh-bronze-tint)', text: 'var(--sh-bronze-deep)', border: 'var(--sh-bronze-border)' },
     accent: { bg: '#F0EBDF', text: '#5A554C', border: '#D9C9B0' },
+    warning: { bg: '#FCEAE0', text: '#A03C18', border: '#E8B6A1' },
   };
   const c = colorSchemes[resolvedColor] || colorSchemes.default;
 

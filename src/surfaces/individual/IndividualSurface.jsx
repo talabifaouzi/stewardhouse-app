@@ -10,20 +10,17 @@ import {
   microLearning,
   visibilityInsights,
 } from '../../data/individualProfile.js';
-import { CAUSES } from '../../data/intakeData.js';
+import { CAUSES, deriveCelebration } from '../../data/intakeData.js';
 
-// Onboarding flow
 import Letter from './Letter.jsx';
 import Privacy from './Privacy.jsx';
 import Questions from './Questions.jsx';
 import GPSReveal from './GPSReveal.jsx';
-
-// Dashboard tabs
-import PlanTab from './PlanTab.jsx';
-import HistoryTab from './HistoryTab.jsx';
-import DiscoverTab from './DiscoverTab.jsx';
-import LearnTab from './LearnTab.jsx';
-import TeamWorkspace from './TeamWorkspace.jsx';
+import Plan from './Plan.jsx';
+import History from './History.jsx';
+import Discover from './Discover.jsx';
+import Learn from './Learn.jsx';
+import Team from './Team.jsx';
 
 const NAV_ITEMS = [
   { key: 'home', label: 'Home', path: '/individual' },
@@ -78,11 +75,11 @@ function DashboardLayout() {
       <div style={{ flex: 1 }}>
         <Routes>
           <Route index element={<IndividualHome />} />
-          <Route path="plan" element={<PlanTab />} />
-          <Route path="discover" element={<DiscoverTab />} />
-          <Route path="learn" element={<LearnTab />} />
-          <Route path="history" element={<HistoryTab />} />
-          <Route path="team" element={<TeamWorkspace />} />
+          <Route path="plan" element={<Plan />} />
+          <Route path="discover" element={<Discover />} />
+          <Route path="learn" element={<Learn />} />
+          <Route path="history" element={<History />} />
+          <Route path="team" element={<Team />} />
           <Route path="*" element={<Navigate to="/individual" replace />} />
         </Routes>
       </div>
@@ -93,7 +90,7 @@ function DashboardLayout() {
 function IndividualHome() {
   const navigate = useNavigate();
   const [showAllGifts, setShowAllGifts] = useState(false);
-  const { answers, gifts, givingStyle, worldLabel, resetIntake } = useIntake();
+  const { answers, gifts, givingStyle, worldLabel, resetIntake, loadDemo, intakeComplete } = useIntake();
 
   const total = gifts.reduce((sum, g) => sum + g.amount, 0);
   const orgCount = new Set(gifts.map(g => g.org)).size;
@@ -106,14 +103,13 @@ function IndividualHome() {
     return found ? { id, label: found.label } : { id, label: id };
   });
 
-  const paths = [];
-  paths.push({
-    title: 'Read your giving plan',
-    desc: 'Your full plan in your own words. Read it, share it, or keep it close.',
-    action: () => navigate('/individual/plan'),
-    tone: 'reflect',
-  });
+  // Show celebration callout for first-step new users (no gifts yet)
+  const isFirstStep = answers.existingOrgs?.includes('first step') ||
+                      answers.existingOrgs?.includes("haven't given");
+  const showWelcome = !hasGifts && isFirstStep;
+  const welcomeMsg = deriveCelebration(answers);
 
+  const paths = [];
   if (hasGifts) {
     paths.push({
       title: 'See your giving picture',
@@ -121,11 +117,18 @@ function IndividualHome() {
       action: () => navigate('/individual/history'),
       tone: 'reflect',
     });
+  } else {
+    paths.push({
+      title: 'Sit with your giving plan',
+      desc: 'You built your compass. Read it, share it, or just let it settle.',
+      action: () => navigate('/individual/plan'),
+      tone: 'reflect',
+    });
   }
 
   paths.push({
     title: 'Learn something new',
-    desc: 'A quick lesson on giving smarter. 2–4 minutes, no homework.',
+    desc: 'A short lesson on giving smarter. 2–3 minutes, no homework.',
     action: () => navigate('/individual/learn'),
     tone: 'learn',
   });
@@ -136,6 +139,15 @@ function IndividualHome() {
     action: () => navigate('/individual/discover'),
     tone: 'act',
   });
+
+  if (hasGifts) {
+    paths.push({
+      title: 'Manage your team',
+      desc: 'Track grants, payments, and acknowledgments — with role-based access.',
+      action: () => navigate('/individual/team'),
+      tone: 'act',
+    });
+  }
 
   const restartOnboarding = () => {
     resetIntake();
@@ -148,6 +160,35 @@ function IndividualHome() {
       margin: '0 auto',
       padding: 'var(--sh-space-8) var(--sh-space-8) var(--sh-space-16)',
     }}>
+      {/* Celebration callout — only for new users at first step */}
+      {showWelcome && (
+        <Card padding="lg" style={{
+          marginBottom: 'var(--sh-space-3)',
+          background: 'var(--sh-bronze-tint)',
+          borderColor: 'var(--sh-bronze-border)',
+          borderLeft: '3px solid var(--sh-bronze)',
+        }}>
+          <p style={{
+            fontSize: '10px',
+            color: 'var(--sh-bronze-deep)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.1em',
+            fontWeight: 600,
+            marginBottom: 'var(--sh-space-2)',
+          }}>
+            Welcome
+          </p>
+          <p style={{
+            fontFamily: 'var(--sh-font-serif)',
+            fontSize: 'var(--sh-text-md)',
+            color: 'var(--sh-text-primary)',
+            lineHeight: 1.55,
+          }}>
+            {welcomeMsg}
+          </p>
+        </Card>
+      )}
+
       {/* Identity anchor */}
       <Card style={{ marginBottom: 'var(--sh-space-3)' }}>
         <p style={{
@@ -228,7 +269,7 @@ function IndividualHome() {
         </Card>
       )}
 
-      {/* Giving history preview */}
+      {/* Giving history */}
       {hasGifts && (
         <div style={{ marginBottom: 'var(--sh-space-5)' }}>
           <div style={{
@@ -237,20 +278,22 @@ function IndividualHome() {
             alignItems: 'center',
             marginBottom: 'var(--sh-space-2)',
           }}>
-            <SectionLabel>Recent gifts</SectionLabel>
-            <button
-              onClick={() => navigate('/individual/history')}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'var(--sh-bronze)',
-                fontSize: 'var(--sh-text-xs)',
-                cursor: 'pointer',
-                padding: 0,
-              }}
-            >
-              View all →
-            </button>
+            <SectionLabel>Giving history</SectionLabel>
+            {gifts.length > 3 && (
+              <button
+                onClick={() => setShowAllGifts(!showAllGifts)}
+                style={{
+                  background: 'transparent',
+                  border: 'none',
+                  color: 'var(--sh-bronze)',
+                  fontSize: 'var(--sh-text-xs)',
+                  cursor: 'pointer',
+                  padding: 0,
+                }}
+              >
+                {showAllGifts ? 'Show less' : `View all ${gifts.length}`}
+              </button>
+            )}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {visibleGifts.map(g => (
@@ -367,10 +410,13 @@ function IndividualHome() {
         No rush. Your giving plan is here whenever you need it.
       </p>
 
-      {/* Demo viewer entry */}
       <p style={{
         textAlign: 'center',
         marginTop: 'var(--sh-space-4)',
+        display: 'flex',
+        justifyContent: 'center',
+        gap: 'var(--sh-space-4)',
+        flexWrap: 'wrap',
       }}>
         <button
           onClick={restartOnboarding}
@@ -388,6 +434,24 @@ function IndividualHome() {
         >
           See the new-user onboarding flow →
         </button>
+        {gifts.length === 0 && (
+          <button
+            onClick={loadDemo}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--sh-bronze)',
+              fontSize: 'var(--sh-text-xs)',
+              fontStyle: 'italic',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              fontFamily: 'inherit',
+              padding: 0,
+            }}
+          >
+            ← Restore Marcus's demo profile
+          </button>
+        )}
       </p>
     </main>
   );

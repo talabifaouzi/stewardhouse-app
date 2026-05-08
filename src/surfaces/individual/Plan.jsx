@@ -4,24 +4,37 @@ import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
-import { CAUSES, VIS, TRUST, DEPTH } from '../../data/intakeData.js';
+import { CAUSES, VIS, TRUST, DEPTH, BUDGETS } from '../../data/intakeData.js';
 
-export default function PlanTab() {
+export default function Plan() {
   const navigate = useNavigate();
   const { answers: a, givingStyle, worldLabel, resetIntake } = useIntake();
   const [copied, setCopied] = useState(false);
 
-  const causeLabels = (a.causes || []).map(id => CAUSES.find(c => c.id === id)?.label).filter(Boolean);
-  const vis = VIS.find(v => v.id === a.visibility);
-  const trust = TRUST.find(t => t.id === a.trust);
-  const depth = DEPTH.find(d => d.id === a.depth);
+  if (!a || !a.causes || a.causes.length === 0) {
+    return <PlanEmpty navigate={navigate} resetIntake={resetIntake} />;
+  }
+
+  const causeLabels = a.causes
+    .map(id => CAUSES.find(c => c.id === id)?.label)
+    .filter(Boolean);
+  const visLabel = VIS.find(v => v.id === a.visibility)?.label || '';
+  const visDesc = VIS.find(v => v.id === a.visibility)?.desc || '';
+  const trustLabel = TRUST.find(t => t.id === a.trust)?.label || '';
+  const trustDesc = TRUST.find(t => t.id === a.trust)?.desc || '';
+  const depthLabel = DEPTH.find(d => d.id === a.depth)?.label || '';
+  const depthDesc = DEPTH.find(d => d.id === a.depth)?.desc || '';
   const isFirst = a.existingOrgs?.includes('first step') || a.existingOrgs?.includes("haven't given");
   const hasGuardian = a.authority === 'guardian';
   const hasTeam = a.authority === 'team';
-  const stageLabel = a.stage ? a.stage.charAt(0).toUpperCase() + a.stage.slice(1) : '';
 
-  const onCopy = () => {
-    const txt = `MY GIVING PLAN STATEMENT
+  const stageLabel = a.stage
+    ? a.stage.charAt(0).toUpperCase() + a.stage.slice(1)
+    : '';
+
+  const copyToClipboard = () => {
+    const text =
+`MY GIVING PLAN
 
 Where I Come From
 "${a.lived}"
@@ -30,15 +43,14 @@ Who Shaped Me
 "${a.influence}"
 
 What Moves Me
-${causeLabels.join(', ')}${a.geoDetail ? ' · ' + a.geoDetail : ''}
+${causeLabels.join(', ')}${a.geoDetail ? `\n${a.geoDetail}` : ''}
 
 How I Want to Give
-${vis?.label || ''} — ${vis?.desc || ''}
-${trust?.label || ''} — ${trust?.desc || ''}
-${depth?.label || ''} — ${depth?.desc || ''}
+${visLabel} — ${visDesc}
+${trustLabel} — ${trustDesc}
+${depthLabel} — ${depthDesc}
 
-${isFirst ? "Where I'm Starting" : "What I'm Building On"}
-${isFirst ? 'This is my first step. I am here to start.' : a.existingOrgs}
+${isFirst ? "Where I'm Starting\nThis is my first step. I'm here to start." : `What I'm Building On\n${a.existingOrgs}`}
 
 My Intention
 ${a.budget}
@@ -47,18 +59,11 @@ Where I'm Headed
 "${a.legacy}"
 
 — StewardHouse`;
-    navigator.clipboard?.writeText(txt).then(() => {
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
-  };
-
-  const onUpdate = () => {
-    if (window.confirm('Walk through the questions again? Your current answers will guide where you start, but you can change anything.')) {
-      // Clear and restart — the demo uses resetIntake. In production this
-      // would preserve answers and let the user revise specific sections.
-      resetIntake();
-      navigate('/individual/welcome');
     }
   };
 
@@ -66,19 +71,19 @@ Where I'm Headed
     <main style={{
       maxWidth: '720px',
       margin: '0 auto',
-      padding: 'var(--sh-space-8) var(--sh-space-6) var(--sh-space-16)',
+      padding: 'var(--sh-space-8) var(--sh-space-8) var(--sh-space-16)',
     }}>
       {/* Header */}
       <div style={{ textAlign: 'center', marginBottom: 'var(--sh-space-6)' }}>
         <p style={{
-          fontSize: 'var(--sh-text-xs)',
+          fontSize: '10px',
           color: 'var(--sh-bronze)',
           textTransform: 'uppercase',
           letterSpacing: '0.12em',
           fontWeight: 600,
           marginBottom: 'var(--sh-space-2)',
         }}>
-          My Giving Plan Statement
+          My Giving Plan
         </p>
         {givingStyle && (
           <div style={{
@@ -86,20 +91,16 @@ Where I'm Headed
             padding: '6px 18px',
             borderRadius: 'var(--sh-radius-full)',
             background: 'var(--sh-bronze-tint)',
-            border: '1px solid var(--sh-bronze)',
+            color: 'var(--sh-bronze-deep)',
+            fontSize: 'var(--sh-text-sm)',
+            fontWeight: 600,
             marginBottom: 'var(--sh-space-2)',
+            letterSpacing: '0.02em',
           }}>
-            <span style={{
-              fontFamily: 'var(--sh-font-serif)',
-              fontSize: 'var(--sh-text-base)',
-              color: 'var(--sh-bronze-deep)',
-              fontWeight: 400,
-            }}>
-              {givingStyle}
-            </span>
+            {givingStyle}
           </div>
         )}
-        {(worldLabel || stageLabel) && (
+        {(worldLabel || a.stage) && (
           <p style={{
             fontSize: 'var(--sh-text-xs)',
             color: 'var(--sh-text-muted)',
@@ -109,10 +110,10 @@ Where I'm Headed
         )}
       </div>
 
-      {/* Main statement card */}
+      {/* Plan body */}
       <Card padding="lg" style={{
         marginBottom: 'var(--sh-space-4)',
-        boxShadow: '0 4px 18px rgba(60, 50, 30, 0.05)',
+        boxShadow: '0 3px 16px rgba(60, 50, 30, 0.04)',
       }}>
         <Section label="Where I come from">
           <Quote text={a.lived} />
@@ -145,52 +146,38 @@ Where I'm Headed
           <div style={{
             fontSize: 'var(--sh-text-sm)',
             color: 'var(--sh-text-body)',
-            lineHeight: 1.7,
+            lineHeight: 1.65,
           }}>
-            {vis && (
-              <p style={{ marginBottom: 'var(--sh-space-2)' }}>
-                <span style={{ fontWeight: 600, color: 'var(--sh-text-primary)' }}>{vis.label}</span>
-                {' — '}{vis.desc}
-              </p>
-            )}
-            {trust && (
-              <p style={{ marginBottom: 'var(--sh-space-2)' }}>
-                <span style={{ fontWeight: 600, color: 'var(--sh-text-primary)' }}>{trust.label}</span>
-                {' — '}{trust.desc}
-              </p>
-            )}
-            {depth && (
-              <p>
-                <span style={{ fontWeight: 600, color: 'var(--sh-text-primary)' }}>{depth.label}</span>
-                {' — '}{depth.desc}
-              </p>
-            )}
+            <p style={{ marginBottom: 'var(--sh-space-2)' }}>
+              <strong style={{ color: 'var(--sh-text-primary)' }}>{visLabel}</strong>
+              {' — '}{visDesc}
+            </p>
+            <p style={{ marginBottom: 'var(--sh-space-2)' }}>
+              <strong style={{ color: 'var(--sh-text-primary)' }}>{trustLabel}</strong>
+              {' — '}{trustDesc}
+            </p>
+            <p>
+              <strong style={{ color: 'var(--sh-text-primary)' }}>{depthLabel}</strong>
+              {' — '}{depthDesc}
+            </p>
           </div>
         </Section>
 
         <Section label={isFirst ? "Where I'm starting" : "What I'm building on"}>
-          {isFirst ? (
-            <p style={{
-              fontSize: 'var(--sh-text-sm)',
-              color: 'var(--sh-text-body)',
-              lineHeight: 1.6,
-            }}>
-              This is my first step. I'm here to start.
-            </p>
-          ) : (
-            <p style={{
-              fontSize: 'var(--sh-text-sm)',
-              color: 'var(--sh-text-body)',
-              lineHeight: 1.6,
-              whiteSpace: 'pre-line',
-            }}>
-              {a.existingOrgs}
-            </p>
-          )}
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-body)',
+            lineHeight: 1.6,
+            whiteSpace: 'pre-line',
+          }}>
+            {isFirst
+              ? "This is my first step. I'm here to start."
+              : a.existingOrgs}
+          </p>
         </Section>
 
         <Section label="My intention">
-          <Tag accent>{a.budget}</Tag>
+          <Tag tone="bronze">{a.budget}</Tag>
         </Section>
 
         {(hasGuardian || hasTeam) && (
@@ -210,11 +197,10 @@ Where I'm Headed
           <Quote text={a.legacy} />
         </Section>
 
-        {/* Footer disclaimer */}
         <div style={{
-          marginTop: 'var(--sh-space-4)',
-          paddingTop: 'var(--sh-space-3)',
           borderTop: 'var(--sh-border-divider)',
+          paddingTop: 'var(--sh-space-3)',
+          marginTop: 'var(--sh-space-2)',
         }}>
           <p style={{
             fontSize: 'var(--sh-text-xs)',
@@ -228,20 +214,31 @@ Where I'm Headed
       </Card>
 
       {/* Actions */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-2)', marginBottom: 'var(--sh-space-4)' }}>
-        <Button variant="secondary" onClick={onCopy} style={{ width: '100%' }}>
-          {copied ? 'Copied ✓' : 'Copy to clipboard'}
-        </Button>
-        <Button variant="ghost" onClick={onUpdate} style={{ width: '100%' }}>
-          Update my giving focus
-        </Button>
-      </div>
+      <Button
+        variant="secondary"
+        onClick={copyToClipboard}
+        style={{ width: '100%', marginBottom: 'var(--sh-space-2)' }}
+      >
+        {copied ? 'Copied ✓' : 'Copy to clipboard'}
+      </Button>
+
+      <Button
+        variant="ghost"
+        onClick={() => {
+          resetIntake();
+          navigate('/individual/welcome');
+        }}
+        style={{ width: '100%' }}
+      >
+        Update my giving focus
+      </Button>
 
       <p style={{
         textAlign: 'center',
         fontSize: 'var(--sh-text-xs)',
         color: 'var(--sh-text-muted)',
         fontStyle: 'italic',
+        marginTop: 'var(--sh-space-4)',
       }}>
         Your giving evolves. Update anytime — your plan adapts with you.
       </p>
@@ -249,13 +246,11 @@ Where I'm Headed
   );
 }
 
-// — internal helpers —
-
 function Section({ label, children, last }) {
   return (
     <div style={{ marginBottom: last ? 0 : 'var(--sh-space-5)' }}>
       <p style={{
-        fontSize: '11px',
+        fontSize: '10px',
         fontWeight: 600,
         color: 'var(--sh-bronze)',
         marginBottom: 'var(--sh-space-2)',
@@ -271,17 +266,54 @@ function Section({ label, children, last }) {
 
 function Quote({ text }) {
   return (
-    <blockquote style={{
+    <p style={{
       fontFamily: 'var(--sh-font-serif)',
-      fontSize: 'var(--sh-text-base)',
-      lineHeight: 1.75,
+      fontSize: 'var(--sh-text-md)',
       color: 'var(--sh-text-primary)',
       fontStyle: 'italic',
-      paddingLeft: 'var(--sh-space-3)',
+      lineHeight: 1.7,
+      paddingLeft: 'var(--sh-space-4)',
       borderLeft: '3px solid var(--sh-bronze-tint)',
-      margin: 0,
     }}>
       "{text}"
-    </blockquote>
+    </p>
+  );
+}
+
+function PlanEmpty({ navigate, resetIntake }) {
+  return (
+    <main style={{
+      maxWidth: '600px',
+      margin: '0 auto',
+      padding: 'var(--sh-space-12) var(--sh-space-8)',
+      textAlign: 'center',
+    }}>
+      <h1 style={{
+        fontFamily: 'var(--sh-font-serif)',
+        fontSize: 'var(--sh-text-2xl)',
+        color: 'var(--sh-text-primary)',
+        marginBottom: 'var(--sh-space-3)',
+      }}>
+        You haven't built your plan yet
+      </h1>
+      <p style={{
+        fontSize: 'var(--sh-text-md)',
+        color: 'var(--sh-text-secondary)',
+        marginBottom: 'var(--sh-space-6)',
+        lineHeight: 1.6,
+      }}>
+        The Giving Studio takes 15 minutes. On the other side, you'll have a personal compass for every giving decision.
+      </p>
+      <Button
+        variant="primary"
+        size="lg"
+        onClick={() => {
+          resetIntake();
+          navigate('/individual/welcome');
+        }}
+      >
+        Start the Giving Studio
+      </Button>
+    </main>
   );
 }

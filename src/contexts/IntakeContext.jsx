@@ -1,17 +1,17 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import {
   individualProfile as defaultProfile,
   gifts as defaultGifts,
 } from '../data/individualProfile.js';
 
-const STORAGE_KEY = 'stewardhouse_intake_v1';
-
-// Default state — Marcus Thompson's pre-filled demo profile
+// Default demo profile — Marcus Thompson.
+// This is the canonical demo state. We always start here on every page load.
+// Onboarding modifies state in-memory during the session; a refresh restores
+// this default. The user can also explicitly restore via the "Restore demo"
+// link on Home.
 const DEFAULT_STATE = {
-  // Has the user completed onboarding?
   intakeComplete: true,
 
-  // Intake answers (fully populated for Marcus by default)
   answers: {
     stage: 'early',
     authority: 'self',
@@ -28,41 +28,18 @@ const DEFAULT_STATE = {
     legacy: 'That I gave back to the place that raised me, and that the kids coming up after me had what I had.',
   },
 
-  // Derived giving style (output of intake)
   givingStyle: defaultProfile.givingStyle,
-
-  // World label — phase 1 always Athletics
   worldLabel: 'Athletics',
-
-  // User's gift history
   gifts: defaultGifts,
-
-  // Lessons completed
   lessonsDone: [],
 };
 
 const IntakeContext = createContext(null);
 
 export function IntakeProvider({ children }) {
-  const [state, setState] = useState(() => {
-    // Try to load from localStorage; fall back to defaults
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) return JSON.parse(saved);
-    } catch (e) {
-      // localStorage unavailable
-    }
-    return DEFAULT_STATE;
-  });
-
-  // Persist on any change
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-    } catch (e) {
-      // localStorage unavailable — fail silently
-    }
-  }, [state]);
+  // Always initialize from DEFAULT_STATE — no localStorage persistence in
+  // the demo. State changes are session-only.
+  const [state, setState] = useState(DEFAULT_STATE);
 
   // Update intake answers (during onboarding)
   const updateAnswer = (key, value) => {
@@ -97,7 +74,7 @@ export function IntakeProvider({ children }) {
     }));
   };
 
-  // Reset state (for "start over" demo flow)
+  // Reset to a blank state — used to start the new-user onboarding preview
   const resetIntake = () => {
     setState({
       intakeComplete: false,
@@ -123,7 +100,7 @@ export function IntakeProvider({ children }) {
     });
   };
 
-  // Restore the demo state (Marcus's filled-in profile)
+  // Restore Marcus's demo profile
   const loadDemo = () => {
     setState(DEFAULT_STATE);
   };
