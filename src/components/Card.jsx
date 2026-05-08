@@ -6,6 +6,7 @@ export function Card({ children, padding = 'normal', tint = false, interactive =
   const padMap = {
     none: 0,
     sm: 'var(--sh-space-4)',
+    md: 'var(--sh-space-5)',
     normal: 'var(--sh-space-6)',
     lg: 'var(--sh-space-8)',
   };

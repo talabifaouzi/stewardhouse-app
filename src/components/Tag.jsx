@@ -1,10 +1,11 @@
-export function Tag({ children, color = 'default' }) {
+export function Tag({ children, color = 'default', accent = false }) {
+  const resolvedColor = accent ? 'bronze' : color;
   const colorSchemes = {
     default: { bg: 'var(--sh-bg-tint)', text: 'var(--sh-text-secondary)', border: 'var(--sh-card-border)' },
     bronze: { bg: 'var(--sh-bronze-tint)', text: 'var(--sh-bronze-deep)', border: 'var(--sh-bronze-border)' },
     accent: { bg: '#F0EBDF', text: '#5A554C', border: '#D9C9B0' },
   };
-  const c = colorSchemes[color] || colorSchemes.default;
+  const c = colorSchemes[resolvedColor] || colorSchemes.default;
 
   return (
     <span style={{

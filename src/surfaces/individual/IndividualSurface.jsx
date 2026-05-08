@@ -1,8 +1,7 @@
-import { Routes, Route, useLocation, Navigate, Link, useNavigate } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import Chrome from '../../components/Chrome.jsx';
 import { Card } from '../../components/Card.jsx';
-import { Button } from '../../components/Button.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
@@ -13,10 +12,18 @@ import {
 } from '../../data/individualProfile.js';
 import { CAUSES } from '../../data/intakeData.js';
 
+// Onboarding flow
 import Letter from './Letter.jsx';
 import Privacy from './Privacy.jsx';
 import Questions from './Questions.jsx';
 import GPSReveal from './GPSReveal.jsx';
+
+// Dashboard tabs
+import PlanTab from './PlanTab.jsx';
+import HistoryTab from './HistoryTab.jsx';
+import DiscoverTab from './DiscoverTab.jsx';
+import LearnTab from './LearnTab.jsx';
+import TeamWorkspace from './TeamWorkspace.jsx';
 
 const NAV_ITEMS = [
   { key: 'home', label: 'Home', path: '/individual' },
@@ -24,6 +31,7 @@ const NAV_ITEMS = [
   { key: 'discover', label: 'Discover', path: '/individual/discover' },
   { key: 'learn', label: 'Learn', path: '/individual/learn' },
   { key: 'history', label: 'History', path: '/individual/history' },
+  { key: 'team', label: 'Team', path: '/individual/team' },
 ];
 
 export default function IndividualSurface() {
@@ -44,17 +52,14 @@ export default function IndividualSurface() {
 function DashboardLayout() {
   const location = useLocation();
   const path = location.pathname;
-  const { answers } = useIntake();
 
   const activeNav =
     path.includes('/plan') ? 'plan' :
     path.includes('/discover') ? 'discover' :
     path.includes('/learn') ? 'learn' :
     path.includes('/history') ? 'history' :
+    path.includes('/team') ? 'team' :
     'home';
-
-  // First name from saved profile or fallback
-  const userName = 'Marcus Thompson';
 
   return (
     <div style={{
@@ -65,7 +70,7 @@ function DashboardLayout() {
     }}>
       <Chrome
         surface="individual"
-        userName={userName}
+        userName="Marcus Thompson"
         userRole="Member · Athletics"
         navItems={NAV_ITEMS}
         activeNav={activeNav}
@@ -73,10 +78,11 @@ function DashboardLayout() {
       <div style={{ flex: 1 }}>
         <Routes>
           <Route index element={<IndividualHome />} />
-          <Route path="plan" element={<Placeholder title="Giving plan" subtitle="Your current giving plan and history of revisions." />} />
-          <Route path="discover" element={<Placeholder title="Discover" subtitle="Organizations to learn about — matched to your causes." />} />
-          <Route path="learn" element={<Placeholder title="Learn" subtitle="Lessons and reflections on giving practice." />} />
-          <Route path="history" element={<Placeholder title="Giving history" subtitle="Your annual summary and year-over-year view." />} />
+          <Route path="plan" element={<PlanTab />} />
+          <Route path="discover" element={<DiscoverTab />} />
+          <Route path="learn" element={<LearnTab />} />
+          <Route path="history" element={<HistoryTab />} />
+          <Route path="team" element={<TeamWorkspace />} />
           <Route path="*" element={<Navigate to="/individual" replace />} />
         </Routes>
       </div>
@@ -95,14 +101,19 @@ function IndividualHome() {
   const visibility = visibilityInsights[answers.visibility] || visibilityInsights.private;
   const visibleGifts = showAllGifts ? gifts : gifts.slice(0, 3);
 
-  // Translate cause IDs to labels for display
   const causeLabels = (answers.causes || []).map(id => {
     const found = CAUSES.find(c => c.id === id);
     return found ? { id, label: found.label } : { id, label: id };
   });
 
-  // Contextual paths
   const paths = [];
+  paths.push({
+    title: 'Read your giving plan',
+    desc: 'Your full plan in your own words. Read it, share it, or keep it close.',
+    action: () => navigate('/individual/plan'),
+    tone: 'reflect',
+  });
+
   if (hasGifts) {
     paths.push({
       title: 'See your giving picture',
@@ -110,18 +121,11 @@ function IndividualHome() {
       action: () => navigate('/individual/history'),
       tone: 'reflect',
     });
-  } else {
-    paths.push({
-      title: 'Sit with your giving plan',
-      desc: 'You built your compass. Read it, share it, or just let it settle.',
-      action: () => navigate('/individual/plan'),
-      tone: 'reflect',
-    });
   }
 
   paths.push({
     title: 'Learn something new',
-    desc: 'A quick lesson on giving smarter. 2–3 minutes, no homework.',
+    desc: 'A quick lesson on giving smarter. 2–4 minutes, no homework.',
     action: () => navigate('/individual/learn'),
     tone: 'learn',
   });
@@ -133,16 +137,6 @@ function IndividualHome() {
     tone: 'act',
   });
 
-  if (hasGifts) {
-    paths.push({
-      title: 'Log another gift',
-      desc: '10 seconds. Keep your giving record growing.',
-      action: () => navigate('/individual/history'),
-      tone: 'act',
-    });
-  }
-
-  // Onboarding entry — visible at the bottom for demo viewers
   const restartOnboarding = () => {
     resetIntake();
     navigate('/individual/welcome');
@@ -234,7 +228,7 @@ function IndividualHome() {
         </Card>
       )}
 
-      {/* Giving history */}
+      {/* Giving history preview */}
       {hasGifts && (
         <div style={{ marginBottom: 'var(--sh-space-5)' }}>
           <div style={{
@@ -243,22 +237,20 @@ function IndividualHome() {
             alignItems: 'center',
             marginBottom: 'var(--sh-space-2)',
           }}>
-            <SectionLabel>Giving history</SectionLabel>
-            {gifts.length > 3 && (
-              <button
-                onClick={() => setShowAllGifts(!showAllGifts)}
-                style={{
-                  background: 'transparent',
-                  border: 'none',
-                  color: 'var(--sh-bronze)',
-                  fontSize: 'var(--sh-text-xs)',
-                  cursor: 'pointer',
-                  padding: 0,
-                }}
-              >
-                {showAllGifts ? 'Show less' : `View all ${gifts.length}`}
-              </button>
-            )}
+            <SectionLabel>Recent gifts</SectionLabel>
+            <button
+              onClick={() => navigate('/individual/history')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'var(--sh-bronze)',
+                fontSize: 'var(--sh-text-xs)',
+                cursor: 'pointer',
+                padding: 0,
+              }}
+            >
+              View all →
+            </button>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
             {visibleGifts.map(g => (
@@ -363,28 +355,6 @@ function IndividualHome() {
         </p>
       </Card>
 
-      {/* Feedback CTA */}
-      <Card
-        interactive
-        onClick={() => alert('Feedback flow coming in next session')}
-        style={{ marginBottom: 'var(--sh-space-5)' }}
-      >
-        <p style={{
-          fontSize: 'var(--sh-text-sm)',
-          color: 'var(--sh-text-primary)',
-          fontWeight: 500,
-          marginBottom: '2px',
-        }}>
-          Share feedback
-        </p>
-        <p style={{
-          fontSize: 'var(--sh-text-xs)',
-          color: 'var(--sh-text-muted)',
-        }}>
-          Help us build StewardHouse right — takes 2 minutes
-        </p>
-      </Card>
-
       {/* Gentle close */}
       <p style={{
         textAlign: 'center',
@@ -397,7 +367,7 @@ function IndividualHome() {
         No rush. Your giving plan is here whenever you need it.
       </p>
 
-      {/* Demo viewer entry — walk through onboarding */}
+      {/* Demo viewer entry */}
       <p style={{
         textAlign: 'center',
         marginTop: 'var(--sh-space-4)',
@@ -580,42 +550,5 @@ function PathCard({ path }) {
         →
       </span>
     </div>
-  );
-}
-
-function Placeholder({ title, subtitle }) {
-  return (
-    <main style={{
-      maxWidth: '720px',
-      margin: '0 auto',
-      padding: 'var(--sh-space-10) var(--sh-space-8) var(--sh-space-16)',
-    }}>
-      <h1 style={{
-        fontFamily: 'var(--sh-font-serif)',
-        fontSize: 'var(--sh-text-2xl)',
-        color: 'var(--sh-text-primary)',
-        marginBottom: 'var(--sh-space-2)',
-      }}>
-        {title}
-      </h1>
-      <p style={{
-        fontSize: 'var(--sh-text-md)',
-        color: 'var(--sh-text-secondary)',
-        marginBottom: 'var(--sh-space-8)',
-      }}>
-        {subtitle}
-      </p>
-      <Card tint>
-        <p style={{
-          fontSize: 'var(--sh-text-sm)',
-          color: 'var(--sh-text-muted)',
-          textAlign: 'center',
-          fontStyle: 'italic',
-          padding: 'var(--sh-space-6)',
-        }}>
-          Section scaffolded · content migrates next.
-        </p>
-      </Card>
-    </main>
   );
 }
