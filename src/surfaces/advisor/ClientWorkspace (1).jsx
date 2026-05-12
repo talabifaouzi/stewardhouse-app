@@ -82,7 +82,6 @@ export default function ClientWorkspace() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 'var(--sh-space-2)', flexShrink: 0 }}>
-          <Button variant="secondary">Schedule session</Button>
           <Button variant="primary">Surface content</Button>
         </div>
       </div>
@@ -209,11 +208,9 @@ export default function ClientWorkspace() {
             <p style={{
               fontSize: 'var(--sh-text-sm)',
               color: 'var(--sh-text-secondary)',
-              marginBottom: 'var(--sh-space-3)',
             }}>
               Working topic: drafting first formal grant inquiry letter
             </p>
-            <Button variant="secondary" size="sm">Reschedule</Button>
           </Card>
         </div>
       </div>
