@@ -1,192 +1,153 @@
-// Lessons data — first-pass migration of educational content.
-// In the full prototype these expand to 5-7 cards each; this version
-// shows headline + body, with future room for card-based depth.
+// Lessons content — ported faithfully from the HTML prototype.
+// Phase 1 scope: athletics-only (3 universal + 3 visibility + 3 sports = 9 lessons).
+// Each lesson has 5-7 cards of deep content.
 
 export const UNIVERSAL_LESSONS = [
   {
-    id: 'restricted-vs-unrestricted',
-    title: 'Restricted vs. unrestricted — what does it mean?',
-    minutes: 3,
-    content: [
-      {
-        heading: 'Two ways your gift can be used',
-        body: "When you give, you can either let the organization decide where the money goes (unrestricted), or earmark it for a specific program or purpose (restricted). Both are valid. They mean different things to the org receiving the gift."
-      },
-      {
-        heading: 'Unrestricted = flexibility',
-        body: 'Unrestricted gifts let the leadership of the org allocate funds where they\'re needed most — often to the parts of the work that are hardest to fund through grants: rent, salaries, technology, the unsexy infrastructure that holds programs together.'
-      },
-      {
-        heading: 'Restricted = direction',
-        body: "Restricted gifts ensure your money goes to a specific program or initiative. You'll usually get a report back showing how it was used. If you care deeply about a particular outcome, restricted giving creates accountability."
-      },
-      {
-        heading: 'What experts say',
-        body: "Trust-based philanthropy emphasizes unrestricted, multi-year giving as the most respectful, effective form of support. Why? Because the people doing the work know best where the money is needed. But restricted giving has its place — especially when starting a new relationship or supporting a specific outcome."
-      },
+    id: 'u1',
+    title: 'Why no-strings giving matters',
+    minutes: 5,
+    cards: [
+      { heading: 'A question first', body: "If someone you trusted asked you for help, would you hand them the money and say 'use it however you need'? Or would you want to know exactly what it's for before you gave it? Most people hesitate on that question. Both instincts are real, and both are right. This lesson is about understanding what happens when you choose one path or the other — and why the answer might change depending on who's asking." },
+      { heading: 'Two approaches', body: "A restricted gift says: 'Use this for a specific purpose.' Maybe you fund a scholarship, buy equipment, or support a particular program. You know exactly where your money goes. An unrestricted gift says: 'I trust you to use this where it's needed most.' The organization decides — maybe it covers payroll, fixes a broken van, or invests in a new idea. Both are real, meaningful ways to give." },
+      { heading: 'Why unrestricted can be powerful', body: "Organizations often know their needs better than anyone on the outside. Unrestricted gifts give them flexibility to respond to what's actually happening — not just what looks good in a proposal. When the Ford Foundation shifted to unrestricted giving, they found that organizations used the money for exactly the things donors wouldn't think to fund: staff retention, infrastructure, emergency reserves. The basics that keep an organization alive. And the data shows givers are moving this direction — 74% of all DAF contributions are distributed to nonprofits within five years, and that rate is increasing." },
+      { heading: 'Why some people hesitate', body: "If you've ever seen money misused, or heard stories about nonprofits that weren't transparent, the idea of giving without restrictions can feel uncomfortable. That's a reasonable response. Trust isn't something you owe anyone — it's something that gets built over time, through relationships, through transparency, and through results. If you're not ready to give unrestricted, that's okay. Give in the way that feels right to you right now." },
+      { heading: 'Trust goes both ways', body: "Something most people miss: the organization is also building trust with you. Good nonprofits earn your confidence by being transparent about how they use funds, sharing real stories from the people they serve, and being honest about what's working and what isn't. If an organization can't explain what they do or won't share how they use money — that's information worth having. Trust is mutual." },
+      { heading: 'A spectrum, not a switch', body: "You don't have to choose between fully restricted and fully unrestricted. Many givers start directed and move toward unrestricted as they build relationships with organizations. You might give your first gift to a specific program. The next year, after you've seen the work, you give unrestricted. That's a natural progression, not a failure. Your giving will evolve as your trust evolves — and that's exactly how it should work." },
+      { heading: 'One question to try', body: "Consider this: the next time you give, ask the organization what they need most. Their answer might surprise you. If what they describe resonates with you, consider letting them use your gift that way — even if it's not the specific program you had in mind. That one question — 'What do you need most?' — is the beginning of trust-based giving. And it starts whenever you're ready." },
     ],
   },
   {
-    id: 'first-gift-strategy',
-    title: 'How to make your first meaningful gift',
-    minutes: 4,
-    content: [
-      {
-        heading: "Start where you've lived",
-        body: "Your hometown. The neighborhood that shaped you. The school that educated you. Your first gift carries weight when it goes somewhere your story already lives."
-      },
-      {
-        heading: 'Pick one organization, not five',
-        body: "Spreading $1,000 across five orgs gives each one $200 — barely enough to feel. The same $1,000 to one org you believe in builds a relationship. Start small. Go deep."
-      },
-      {
-        heading: 'Make it unrestricted if you can',
-        body: "Unless there's a specific program you're passionate about, give unrestricted. The leadership knows where the money is most needed. Trust them."
-      },
-      {
-        heading: "Don't expect a tax receipt to be the goal",
-        body: "Yes, you can deduct it. But tax savings shouldn't be why you give. The reason matters. The receipt is just paperwork."
-      },
+    id: 'u2',
+    title: 'How to vet a nonprofit',
+    minutes: 5,
+    cards: [
+      { heading: 'Before you check the numbers', body: "You're going to hear a lot of advice about how to evaluate nonprofits. Check their 990. Look at their overhead ratio. Google the executive director. Some of that is useful. Most of it misses the point. The organizations that will matter most to you aren't the ones with the cleanest spreadsheets. They're the ones where you walk in the door and feel the work happening. This lesson teaches you what to actually look for — and what to ignore." },
+      { heading: 'The overhead myth', body: "For years, people judged nonprofits by their 'overhead ratio' — what percentage of their budget goes to administration vs. programs. Low overhead = good. High overhead = wasteful. Except that's wrong. Even Charity Navigator — the organization that popularized the overhead metric — has publicly said: stop using it. Here's why: an organization that pays its staff well, invests in technology, and trains its leaders will have higher overhead. It will also be more effective, more sustainable, and better at serving its community. An organization with 5% overhead is probably underpaying everyone and one bad month from closing." },
+      { heading: 'What actually matters', body: "When you look at an organization, ask five questions. One: Does their mission align with what I care about? (Check your GPS.) Two: Is the leadership from or deeply connected to the community they serve? Community-led organizations have trust and context that outsiders can't replicate. Three: Do they have diversified funding — not dependent on one or two major donors? Single-funder dependency is a red flag. Four: Have they been around long enough to demonstrate sustainability, or are they new with a bold vision? Both can be worth supporting. Five: Do they listen to the people they serve? This is the hardest to assess from the outside, but it's the most important." },
+      { heading: 'Red flags to watch', body: "Not every organization deserves your trust. Watch for these: They can't clearly explain what they do or who they serve. Their leadership doesn't reflect the community they claim to help. They pressure you for a decision ('We need your answer by Friday'). They won't share their financials or IRS 990 filing. They have a single charismatic founder with no board oversight. They talk about their awards more than their outcomes. They reached out to you unsolicited with a high-pressure ask. None of these automatically means the org is bad. But multiple red flags together should make you pause." },
+      { heading: 'Trust from the nonprofit side', body: "Most donors don't realize this: the organization is also vetting you. Good nonprofits want funders who trust them, stay committed, and don't micromanage. When you approach an organization, you're starting a relationship — not making a transaction. Ask questions, but ask them with curiosity, not suspicion. 'Tell me about your work' is different from 'Prove to me you're effective.' The best giving relationships are built on mutual trust: you trust them to use your money wisely, they trust you to stay engaged and not disappear after one gift." },
+      { heading: 'The StewardHouse approach', body: "StewardHouse will build trust infrastructure for you. Our Discover tab shows organizations categorized as Established (deep track records), Community-Rooted (led by and for the community), and Emerging (new, bold, worth watching). We'll eventually provide 990 data, board composition, program details, and leadership bios — so you can assess without interrogating. But the most important vetting tool is your GPS. If an organization aligns with your causes, your geography, and your values — that's the first 80% of the vetting done. The last 20% is a conversation." },
+      { heading: 'Your next step', body: "Pick one organization from your Discover tab. Read their mission. Look at their leadership. If something resonates, reach out — not to audit them, but to learn. Ask: 'What's your biggest challenge right now?' Their answer will tell you more than any financial report. And if you decide to give, make it unrestricted. You've already vetted them. Now trust them." },
     ],
   },
   {
-    id: 'daf-explained',
-    title: 'What is a DAF — and do I need one?',
-    minutes: 3,
-    content: [
-      {
-        heading: 'Donor-Advised Fund — the basics',
-        body: "A DAF is a charitable savings account. You contribute money or assets, get an immediate tax deduction, and then recommend grants to nonprofits over time. The money grows tax-free while you decide where it goes."
-      },
-      {
-        heading: "When a DAF makes sense",
-        body: "If your income is uneven (good year vs. bad year), a DAF lets you take the deduction in a high-income year and give over time. It's especially useful for athletes with bonus income, signing payments, or one-time NIL windfalls."
-      },
-      {
-        heading: "When you don't need one",
-        body: "If you give a few thousand a year directly to one or two orgs, a DAF adds complexity without much benefit. Direct giving is simpler and the org gets the money sooner."
-      },
-      {
-        heading: 'Where to open one',
-        body: "Major providers: Fidelity Charitable, Schwab Charitable, Vanguard Charitable. Local: your community foundation. Community foundations cost a little more in fees but offer human guidance and local expertise."
-      },
+    id: 'u3',
+    title: 'Build your giving plan',
+    minutes: 5,
+    cards: [
+      { heading: 'How last year probably went', body: "Someone asked, you gave. A GoFundMe hit your feed, you chipped in. December came, you scrambled to make a few donations before the tax deadline. Sound familiar? That's not a plan. That's reacting. And reactive giving leaves you with receipts but no story — no sense of whether your money went where it mattered. This lesson helps you answer three questions before anyone asks you for anything: How much? To whom? And how?" },
+      { heading: 'How much?', body: "Start with a percentage of your income — not a dollar amount. Percentages scale with you. If you earn $50K this year and $500K next year, your giving grows with you. Even 1% is a real start. At $100K income, that's $1,000 — enough to make a meaningful unrestricted gift to 1-2 organizations. At $1M, that's $10,000 — enough to be a significant funder for a small nonprofit. Common benchmarks: 1% (building the habit), 2-5% (intentional giving), 5-10% (serious philanthropy). Pick the number that feels right today. You can always increase it." },
+      { heading: 'To whom?', body: "Your GPS already tells you what you care about and where. Now turn that into a short list. Rule of thumb: give fewer gifts of larger amounts. Under $5K total giving? Support 1-3 organizations well. $5K-$25K? Support 3-5. $25K+? You can go wider, but depth still matters more than breadth. The data backs this up: 77% of DAF giving goes to organizations the donor has supported before. The most effective givers aren't shopping for new causes every year — they're deepening relationships with the organizations they trust." },
+      { heading: 'How?', body: "Your giving vehicle depends on your income level and pattern. For most people starting out: personal giving is fine. Write a check, use a card, send a Venmo. Keep a record (StewardHouse does this). If your income fluctuates or you're giving $5K+/year, a donor-advised fund (DAF) lets you contribute in high-income years (take the deduction now) and distribute to organizations over time. If you want local expertise, a community foundation offers DAF-like benefits with personal advising." },
+      { heading: 'Preparing for your advisor', body: "If you have a CPA or financial advisor, your giving plan should be part of the conversation — not an afterthought. Before your next meeting, prepare three things: (1) your annual giving intention (the percentage you chose), (2) your current giving vehicle and whether it's optimal, and (3) whether you have appreciated assets (stock, crypto, or other investments) that could be more tax-efficient to donate than cash. Over 69% of DAF contributions are non-cash assets — stocks, bonds, crypto, and other investments — not cash. Contributing appreciated assets directly avoids capital gains tax entirely." },
+      { heading: 'When to bring in a philanthropic advisor', body: "A CPA handles the tax side. A financial advisor handles the wealth side. But neither of them is trained in giving strategy. A philanthropic advisor helps you think about: Which organizations align with your values? How do you build relationships with organizations you support? Should you create a giving policy for your family? When is a foundation worth the cost? How do you measure whether your giving is working? You might need a philanthropic advisor if: you're giving $25K+/year, you're considering a foundation, you want to involve your family in giving decisions, or you simply want someone who thinks about giving full-time to help you build your practice. StewardHouse connects clients with philanthropic advisors who specialize in high-earning professionals across sports, music, entertainment, and creator industries." },
+      { heading: 'Your plan right now', body: "Take 60 seconds. Answer these: My giving budget this year is ___% of my income, which is approximately $___. I want to support ___ organizations. My primary cause areas are ___ (check your GPS). My current giving vehicle is ___. My next action is: ___. That's your plan. It doesn't need to be more complicated than that. Write it down, share it with your CPA, and revisit it in 6 months. The plan will evolve — but it starts with those five answers." },
     ],
   },
 ];
 
+// Visibility-specific lessons — only the one matching user's visibility setting renders.
 export const VISIBILITY_LESSONS = {
-  private: {
-    id: 'private-giving',
-    title: 'The case for giving privately',
-    minutes: 3,
-    content: [
-      {
-        heading: "Quiet giving is its own discipline",
-        body: "When you give privately, the act becomes purely about the cause and the people it serves. There's no audience. No applause. Just you and the work."
-      },
-      {
-        heading: 'Why some athletes prefer it',
-        body: "Public giving invites scrutiny — about amount, frequency, who you helped, who you didn't. Private giving lets you support causes that matter to you without managing perception."
-      },
-      {
-        heading: 'How to keep it private',
-        body: "Give through a DAF or community foundation. They can grant to nonprofits without revealing your name. Many providers have an 'anonymous gift' option built in."
-      },
-      {
-        heading: 'A word of caution',
-        body: "Fully anonymous giving means no recognition — but also no relationship with the org. If you want a real partnership over time, sharing your name privately (not publicly) lets the org know who you are while keeping your giving out of the news."
-      },
+  public: {
+    id: 'v-pub',
+    title: 'Giving publicly — how to do it right',
+    minutes: 5,
+    cards: [
+      { heading: 'Why this matters for you', body: "You chose to be visible in your giving. That's a powerful decision. When someone with a platform gives publicly, it does more than fund an organization — it signals to your audience, your peers, and your community that giving matters. But public giving comes with responsibility. Done right, it amplifies impact. Done carelessly, it looks performative." },
+      { heading: 'What to share', body: "Share the cause, not the check. Tell people why you care — what personal connection drew you to this organization or issue. Share the organization's mission and the people they serve. Tag them. Link to their website. Let your audience see the work, not just your donation. The story of why you give is more powerful than the number." },
+      { heading: 'What it does for the nonprofit', body: "When you publicly support an organization, you're doing something money can't buy: lending your credibility. Other funders notice. Grant reviewers see it. Potential volunteers discover the organization through you. Your public endorsement can open doors to foundation funding, corporate sponsorships, and board recruitment. One social media post can do more for an organization's visibility than a $10,000 gift done anonymously." },
+      { heading: 'What it does for you', body: "Public giving creates opportunities you might not expect. Organizations may invite you to join their board — a chance to learn governance, build professional skills, and shape strategy. Other funders in the space notice your giving and may want to partner. Media covers your philanthropy, shaping your public story beyond your career. These aren't reasons to give — but they're real outcomes of giving visibly and consistently." },
+      { heading: 'Protecting yourself', body: "Public giving attracts attention — including from people who want access to your money. Once you're known as a giver, solicitations increase. Use your GPS as your filter: if an ask doesn't match your cause areas, geography, and values, it's a no. Never give under pressure. Never give in response to guilt. And be cautious of organizations that approach you primarily because of your name rather than your alignment with their mission." },
+      { heading: 'Performative vs. genuine', body: "The difference is simple: performative giving centers you. Genuine giving centers the cause. If your giving post is mostly about you — your generosity, your brand, your moment — that's performance. If it's mostly about the organization, the people they serve, and why the work matters — that's genuine. Your audience can tell the difference. So can the organizations." },
+      { heading: 'Your practice', body: "Next time you give, share one thing about the organization — not about the gift. Their mission, a story from someone they've served, or a recent win they celebrated. Tag them. Let your audience discover something new. That's how public giving creates ripple effects that outlast any single donation." },
     ],
   },
   selective: {
-    id: 'selective-giving',
+    id: 'v-sel',
     title: 'Sharing your giving on your terms',
-    minutes: 3,
-    content: [
-      {
-        heading: 'Selective ≠ secret',
-        body: "Selective visibility means you share when sharing serves the cause. You're not hiding what you give — you're choosing when it amplifies impact and when it doesn't."
-      },
-      {
-        heading: 'When to share',
-        body: "Share when it helps the org recruit other funders. Share when your endorsement opens doors. Share when your story authenticates the cause."
-      },
-      {
-        heading: 'When not to',
-        body: "Don't share when it makes the gift about you. Don't share when the org didn't ask. Don't share when sharing would shift focus from the work to your platform."
-      },
-      {
-        heading: 'A test',
-        body: "Ask the org: 'Would announcing this help you?' If yes, do it. If no, keep it quiet. Let them lead."
-      },
+    minutes: 4,
+    cards: [
+      { heading: 'Your approach', body: "You share when it feels right. That's a thoughtful position — not everyone needs to know about your giving, but sometimes sharing creates value for both you and the cause. This lesson helps you think about when sharing makes sense and how to do it well." },
+      { heading: 'When sharing helps', body: "There are moments when sharing your giving genuinely serves the cause: when an organization is doing a fundraising push and your public support encourages others to give, when you want to normalize giving in your peer group, when you're personally connected to the cause and your story can inspire others, or when the organization asks you to share. In these moments, visibility is a gift in itself." },
+      { heading: 'When to keep it quiet', body: "Not every gift needs an announcement. Routine giving, deeply personal causes, and organizations that haven't asked you to go public — these are all fine to keep private. You're not being secretive. You're being intentional about when your voice adds value and when the gift speaks for itself." },
+      { heading: 'How to share well', body: "When you do share: focus on the cause, not the amount. Tell people why you care. Tag the organization so your audience can find them. If you're comfortable, share how people can get involved — not just financially, but through volunteering or spreading awareness. Your endorsement is worth more than a dollar figure." },
+      { heading: 'Your practice', body: "Before your next gift, ask yourself: would sharing this benefit the organization? If yes, share the cause. If no, let the gift stand on its own. Over time, you'll develop an instinct for when visibility serves the mission — and that instinct is your giving compass at work." },
     ],
   },
-  public: {
-    id: 'public-giving',
-    title: 'Using your platform for impact',
-    minutes: 3,
-    content: [
-      {
-        heading: 'Visibility as a multiplier',
-        body: "When you give publicly, you give others permission to give too. Your audience watches what you do. A thoughtful, public gift can move more money than the gift itself by inspiring others to act."
-      },
-      {
-        heading: 'How to do it well',
-        body: "Lead with the cause, not the amount. Talk about why this org matters, not just that you supported them. Make it about the people doing the work — not about you."
-      },
-      {
-        heading: "Avoid the savior trap",
-        body: "Public giving can slip into 'look at me' fast. Stay grounded by spending more time on what the org does than on what you did. Quote the people on the ground. Center their voices."
-      },
-      {
-        heading: 'Recurring is more powerful than one-time',
-        body: "A single $50K splash gets attention. $4K monthly for a year becomes a story your audience watches unfold — and that consistency proves the commitment isn't a moment, it's a practice."
-      },
+  private: {
+    id: 'v-priv',
+    title: 'Giving privately — what you need to know',
+    minutes: 4,
+    cards: [
+      { heading: 'Your choice is valid', body: "You chose to give privately. That's not less generous than public giving — it's a different practice. Some of the most significant philanthropy in history has been anonymous. MacKenzie Scott gave away $17 billion before most people knew her name. Privacy is a legitimate, respected approach to giving." },
+      { heading: 'How privacy works', body: "For personal gifts, your privacy is straightforward: you give, the organization knows, nobody else does. For gifts over $250, you'll receive an acknowledgment letter for tax purposes — this is between you, the organization, and the IRS. It's not public. For true anonymity, a donor-advised fund (DAF) lets you recommend grants without the organization ever knowing your name. The DAF provider sends the gift on your behalf." },
+      { heading: 'When people find out', body: "If you give consistently, people may notice — especially if you're in a public-facing career. That's okay. Having a GPS gives you language for when it comes up: 'I have a giving practice — it's personal.' You don't owe anyone details. If someone asks how much you give or to whom, a simple 'that's private' is enough." },
+      { heading: 'The quiet impact', body: "Private giving has an advantage that public giving doesn't: the relationship with the organization is purely about the work. There's no brand consideration, no audience calculation, no performative pressure. The organization receives your gift because you believe in their mission — and that's the whole story. Many nonprofit leaders say their most reliable, most trusted funders are the ones nobody knows about." },
+      { heading: 'Your practice', body: "Keep giving quietly. StewardHouse tracks your gifts, generates your tax summaries, and manages your giving relationships — all without public disclosure. Your GPS is yours. Your giving record is yours. Your story is yours to tell, or not, whenever you choose." },
     ],
   },
 };
 
+// Athletics-specific lessons (3 lessons, 7 cards each).
 export const ATHLETICS_LESSONS = [
   {
-    id: 'nil-and-philanthropy',
-    title: 'NIL income and giving — what to know',
-    minutes: 4,
-    content: [
-      {
-        heading: 'NIL is taxable income',
-        body: "Unlike scholarships, NIL income is taxable. It's earned income — meaning federal, state, FICA, and self-employment taxes can apply. This also means charitable giving from NIL income may be tax-deductible if you itemize."
-      },
-      {
-        heading: "School and conference rules",
-        body: "Some schools and conferences have specific guidelines about how athletes can engage with charitable activities — particularly anything that could look like booster activity. Check with your compliance office before structuring large or visible giving."
-      },
-      {
-        heading: 'Why this stage matters',
-        body: "Most pro athletes wait until contract years to think about giving. NIL gives college athletes a chance to start earlier — to build the practice while the income is still small, so by the time it's big the framework is already in place."
-      },
-      {
-        heading: 'Talk to a CPA',
-        body: "If your NIL income is meaningful, working with a CPA who understands athlete income is essential. They can help structure giving for tax efficiency without crossing compliance lines."
-      },
+    id: 'a1',
+    title: 'When people ask you for money',
+    minutes: 5,
+    cards: [
+      { heading: 'It will happen', body: "Teammates, family, old friends, strangers at events, people in your DMs. As your career grows, so do the asks. That's not a bad thing — people see your success and think you can help. But without a plan, you'll give reactively, feel drained, and wonder where the money went. This lesson gives you the plan." },
+      { heading: 'Why it feels hard', body: "Saying no to someone you care about feels personal. Your teammate needs help with rent. Your cousin has a business idea. Your old coach needs equipment for the program. Every ask comes wrapped in a relationship — and that makes it hard to evaluate objectively. But giving out of guilt or obligation isn't generosity. It's pressure. Real generosity comes from intention." },
+      { heading: 'Your GPS is your shield', body: "This is why you built a Giving Policy Statement. When someone asks, you have a framework: Does this match my cause areas? My geography? My values? If yes — learn more, take your time, and decide intentionally. If no — you have your answer, and it's not personal. The GPS turns an emotional decision into a values-based one." },
+      { heading: 'How to say yes well', body: "When you do give to someone who asks: give through the platform, not through cash or Venmo. Log the gift. Choose unrestricted if you trust them, or directed if you want specifics. Set expectations: 'I'm happy to support this. Here's what I can do. I'd love to hear how it goes.' That's a giving relationship, not a handout." },
+      { heading: 'How to say no with respect', body: "'I have a giving policy that guides my decisions. This doesn't fit right now, but I appreciate you sharing it with me.' That's the whole script. You don't owe an explanation. You don't need to justify your causes or your budget. A clear, kind no protects both the relationship and your practice." },
+      { heading: 'The redirect', body: "Sometimes the best response isn't yes or no — it's a redirect. 'I can't fund this, but have you looked into [relevant organization]?' or 'I know someone who supports this kind of work — let me connect you.' You're still helping. You're just not writing a check for something that doesn't align with your compass." },
+      { heading: 'Building the boundary', body: "The first time you say no is the hardest. The second is easier. By the fifth, people around you understand: you give intentionally, not reactively. That reputation protects you. Over time, the asks that reach you will be better aligned — because people know what you care about. Your GPS becomes public knowledge, and that's a good thing." },
     ],
   },
   {
-    id: 'after-the-career',
-    title: 'Giving after your playing days',
-    minutes: 3,
-    content: [
-      {
-        heading: "Most athletes don't plan for it",
-        body: "Income drops sharply after a playing career. So does visibility. Athletes who give intentionally during their career often face hard choices when the income changes — what to keep funding, what to phase out."
-      },
-      {
-        heading: "Building durable practices",
-        body: "If you set up multi-year commitments, recurring gifts, or DAF allocations during your high-earning years, the giving can continue at scale even when active income changes. Planning for this transition is part of building a sustainable giving practice."
-      },
-      {
-        heading: 'Endowment as legacy',
-        body: "Some athletes choose to direct a portion of career earnings into an endowment — a fund where the principal stays invested and the earnings fund grants forever. This creates giving that outlasts the career, the contracts, and even you."
-      },
+    id: 'a2',
+    title: 'Your career is short. Your giving is long.',
+    minutes: 5,
+    cards: [
+      { heading: 'The math nobody talks about', body: "Average NFL career: 3.3 years. Average NBA career: 4.5 years. Average WNBA career: 5 years. Average MLS career: 3.2 years. Your peak earning window is one of the shortest of any profession. But a giving practice built during those years can shape communities for decades. The career ends. The impact doesn't have to." },
+      { heading: 'Phase 1 — Before the money', body: "Collegiate, pre-draft, NIL. This is when you build habits, not portfolios. Give $50 to something you care about. Learn what unrestricted means. Read your GPS. The amount doesn't matter — the practice does. A $50 gift made intentionally at 19 teaches you more about philanthropy than a $50,000 gift made reactively at 25." },
+      { heading: 'Phase 2 — First real money', body: "Signing bonus. Rookie contract. NIL deals adding up. This is when the asks start — and when most athletes make their first giving mistakes. The signing bonus feels massive. Everyone around you has ideas for it. Your GPS keeps you grounded: these are my causes, this is my geography, this is my budget. Stick to the plan. A DAF (charitable savings account) is worth understanding now — contribute in high-income years, give from it over time." },
+      { heading: 'Phase 3 — Peak earning', body: "You're established. The money is real and consistent. This is when your giving can scale — multi-year commitments, larger unrestricted gifts, maybe a community foundation partnership. The organizations you've been supporting for 2-3 years now know you. You know them. The relationship is deep enough for real conversation: what do you actually need? How can I help beyond money?" },
+      { heading: 'Phase 4 — Transition', body: "The career is winding down. Maybe you're moving to broadcasting, coaching, business. Everything changes — your schedule, your income, your identity. But your giving practice doesn't have to. If you funded a DAF during peak earning, those dollars are still working. If you built relationships with organizations, those relationships outlast your roster spot. Your giving practice is the thing that doesn't change when everything else does." },
+      { heading: 'The identity shift', body: "Athletes who transition successfully often say the hardest part isn't the money — it's the identity. You go from being 'the player' to being... what? Giving provides an answer. You're the person who showed up for your community before, during, and after the career. That's an identity nobody can take from you. It doesn't depend on a contract or a roster." },
+      { heading: 'Start now', body: "Wherever you are in your career — collegiate, rookie, prime, transition — the best time to start a giving practice is today. Not when you have more money. Not when you have more time. Not when you 'figure it out.' Now. Open your GPS. Look at your causes. Find one organization. Give something. Log it. That's your foundation. Everything else builds from here." },
     ],
   },
+  {
+    id: 'a3',
+    title: 'What is a foundation, really?',
+    minutes: 5,
+    cards: [
+      { heading: 'Why this comes up', body: "At some point in your career, someone might mention starting a foundation. Maybe it's an advisor, maybe it's a family member, maybe you saw someone in your field do it. The word sounds important — official, legacy-building, serious. But most people don't actually know what a foundation is, what it costs, or whether it makes sense for them. This lesson breaks it down." },
+      { heading: 'What it actually is', body: "A private foundation is a separate legal organization — like a small company — that you create for charitable purposes. It has its own tax ID, its own bank account, and its own legal obligations. You put money in, and the foundation gives it out as grants. You control the decisions. But you also carry the responsibility: annual IRS filings, a board of directors, required financial disclosures, and a legal mandate to give out at least 5% of its assets every year." },
+      { heading: 'What it costs', body: "Setting up a foundation costs $5,000-$25,000 in legal fees. Running one costs significantly more — $50,000-$200,000+ per year in staff, administration, accounting, legal, and compliance, depending on the size of the endowment. And that's before a single grant dollar goes out. On top of operating costs, the IRS requires private foundations to distribute at least 5% of their total assets annually as grants. On a $10 million endowment, that's $500,000 per year in mandatory grantmaking. Foundations make financial sense when you're giving at a scale where the tax benefits and control outweigh these substantial operating costs — usually $250,000+/year in giving." },
+      { heading: "What it's not", body: "A foundation is not a sports camp. It's not a charity event. It's not a brand. Running a basketball camp for kids is great — but you don't need a foundation to do it. You can sponsor events, partner with existing organizations, or give directly through personal giving or a DAF. A foundation is a vehicle for sustained, large-scale grantmaking. If that's not what you need right now, there are simpler paths that get your money to communities faster." },
+      { heading: 'The simpler options', body: "A donor-advised fund (DAF) gives you most of what a foundation offers — tax benefits, strategic timing, a named fund — without the legal complexity. You don't need a board, you don't file with the IRS, and the provider handles the administration. A community foundation is even more hands-on: they know local organizations, facilitate introductions, and can advise you on where your giving will have the most impact. Both are legitimate, respected giving vehicles used by major philanthropists." },
+      { heading: 'When a foundation makes sense', body: "A foundation might be right for you if: you're consistently giving $250,000+ per year, you want to involve your family in giving decisions across generations, you want to hire staff dedicated to your philanthropic work, you want full control over investment strategy and grantmaking, or you want to build an institution that outlasts your career. If none of those apply right now, a DAF or personal giving is probably the better fit — and you can always start a foundation later when the time is right." },
+      { heading: 'The bottom line', body: "There's no rush to figure this out. A foundation is one option among many — and it's usually not the first step. Start by giving directly. Build relationships with organizations. Learn what kind of giver you are. If you eventually reach a point where you want more control, more scale, and more structure — that's when the foundation conversation makes sense. And when it does, bring in an attorney and a philanthropic advisor who can help you build it right." },
+    ],
+  },
+];
+
+// 13-term glossary, ported verbatim from the prototype.
+export const GLOSSARY = [
+  { term: 'DAF (Donor-Advised Fund)', def: "A charitable savings account managed by a provider (like Fidelity Charitable or your local community foundation). You contribute, get an immediate tax deduction, then recommend grants to nonprofits whenever you're ready. The money grows tax-free while you decide." },
+  { term: 'Unrestricted gift', def: "A donation with no conditions on how it's used. The organization decides where it's needed most. This is considered the most flexible and trust-based form of giving." },
+  { term: 'Restricted / Directed gift', def: 'A donation earmarked for a specific purpose, program, or project. The organization must use it as you specify and report back on how it was spent.' },
+  { term: 'IRS Form 990', def: "An annual tax filing that most nonprofits must submit to the IRS. It's publicly available and shows an organization's revenue, expenses, executive compensation, and program activities. It's the most accessible financial document for evaluating a nonprofit." },
+  { term: 'Community foundation', def: 'A local philanthropic organization that manages charitable funds for individuals and families. Like a DAF, but with local expertise — they know the organizations in your area and can advise on where your giving will have the most impact.' },
+  { term: 'Private foundation', def: 'A separate legal entity you create for charitable purposes. You control everything — investments, grants, governance. Requires legal setup ($5K-$25K), annual IRS filings, and a mandatory 5% annual distribution. Best suited for giving at $250K+/year.' },
+  { term: 'Grant agreement', def: 'A letter or document between a funder and an organization that outlines the terms of a gift — the amount, purpose, timeline, and any reporting expectations. Not a legal contract, but a mutual commitment.' },
+  { term: 'Payment acknowledgment', def: 'A written confirmation from a nonprofit that they received your gift. Required by the IRS for any gift over $250. Your CPA needs these for tax filing.' },
+  { term: 'Endowment', def: 'A fund where the principal (the original amount) is invested and preserved, and only the earnings are used for grants or operations. Endowments are designed to provide funding indefinitely — the money works forever.' },
+  { term: 'Giving vehicle', def: 'The method or structure you use to make charitable gifts. Options include personal giving (direct), donor-advised funds (DAFs), community foundations, and private foundations. Each has different tax treatment, flexibility, and complexity.' },
+  { term: 'NIL (Name, Image, Likeness)', def: 'The right of college athletes to earn money from their personal brand — through endorsements, social media, appearances, and more. NIL income can be used for charitable giving, but may have compliance considerations depending on your school and conference.' },
+  { term: 'GPS (Giving Policy Statement)', def: "Your personal giving compass, created through StewardHouse's Giving Studio. It captures your values, causes, geography, and preferences in your own words — then guides every giving decision you make." },
+  { term: 'Trust-based philanthropy', def: "An approach to giving that centers trust between funders and organizations. It includes unrestricted funding, multi-year commitments, simplified reporting, and genuine relationship-building. It's not about blind trust — it's about building mutual accountability." },
 ];

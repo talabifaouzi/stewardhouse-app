@@ -1,36 +1,44 @@
 import { useState } from 'react';
 import { Card } from '../../components/Card.jsx';
+import { Button } from '../../components/Button.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
-import { UNIVERSAL_LESSONS, ATHLETICS_LESSONS, VISIBILITY_LESSONS } from '../../data/lessonsData.js';
+import { UNIVERSAL_LESSONS, ATHLETICS_LESSONS, VISIBILITY_LESSONS, GLOSSARY } from '../../data/lessonsData.js';
 
 export default function Learn() {
   const { lessonsDone, markLessonDone, answers } = useIntake();
-  const [expanded, setExpanded] = useState(null);
+  const [activeLesson, setActiveLesson] = useState(null);
+  const [showGlossary, setShowGlossary] = useState(false);
 
-  // Build lesson list — universal + visibility-specific + athletics
-  const allLessons = [
-    ...UNIVERSAL_LESSONS.map(l => ({ ...l, category: 'Foundations' })),
+  // Build lesson list adaptive to user's visibility setting
+  const visKey = answers?.visibility || 'selective';
+  const visLesson = VISIBILITY_LESSONS[visKey] || VISIBILITY_LESSONS.selective;
+
+  const sections = [
+    { label: 'Foundations', lessons: UNIVERSAL_LESSONS },
+    { label: 'For your style', lessons: [visLesson] },
+    { label: 'Athletics', lessons: ATHLETICS_LESSONS },
   ];
 
-  // Add visibility-specific lesson if user has set visibility
-  const visLesson = answers?.visibility ? VISIBILITY_LESSONS[answers.visibility] : null;
-  if (visLesson) {
-    allLessons.push({ ...visLesson, category: 'For your style' });
+  const allLessons = sections.flatMap(s => s.lessons);
+  const completedCount = allLessons.filter(l => lessonsDone.includes(l.id)).length;
+
+  // Reader view — drill into one lesson's cards
+  if (activeLesson) {
+    return (
+      <LessonReader
+        lesson={activeLesson}
+        onClose={(completed) => {
+          if (completed) markLessonDone(activeLesson.id);
+          setActiveLesson(null);
+        }}
+      />
+    );
   }
 
-  // Athletics lessons
-  ATHLETICS_LESSONS.forEach(l => {
-    allLessons.push({ ...l, category: 'Athletics' });
-  });
-
-  // Group by category
-  const byCategory = {};
-  allLessons.forEach(l => {
-    if (!byCategory[l.category]) byCategory[l.category] = [];
-    byCategory[l.category].push(l);
-  });
-
-  const completedCount = allLessons.filter(l => lessonsDone.includes(l.id)).length;
+  // Glossary view
+  if (showGlossary) {
+    return <GlossaryView onBack={() => setShowGlossary(false)} />;
+  }
 
   return (
     <main style={{
@@ -73,8 +81,34 @@ export default function Learn() {
         {completedCount} of {allLessons.length} read
       </p>
 
-      {Object.entries(byCategory).map(([cat, lessons]) => (
-        <div key={cat} style={{ marginBottom: 'var(--sh-space-6)' }}>
+      {/* Glossary entry */}
+      <Card
+        interactive
+        onClick={() => setShowGlossary(true)}
+        style={{
+          marginBottom: 'var(--sh-space-6)',
+          borderLeft: '3px solid var(--sh-bronze)',
+          cursor: 'pointer',
+        }}
+      >
+        <p style={{
+          fontSize: 'var(--sh-text-sm)',
+          fontWeight: 600,
+          color: 'var(--sh-text-primary)',
+          marginBottom: '4px',
+        }}>
+          Glossary
+        </p>
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+        }}>
+          {GLOSSARY.length} key terms — bookmark for reference
+        </p>
+      </Card>
+
+      {sections.map(section => (
+        <div key={section.label} style={{ marginBottom: 'var(--sh-space-6)' }}>
           <p style={{
             fontSize: '11px',
             fontWeight: 600,
@@ -83,21 +117,14 @@ export default function Learn() {
             letterSpacing: '0.08em',
             marginBottom: 'var(--sh-space-3)',
           }}>
-            {cat}
+            {section.label}
           </p>
-          {lessons.map(lesson => (
-            <LessonCard
+          {section.lessons.map(lesson => (
+            <LessonRow
               key={lesson.id}
               lesson={lesson}
-              expanded={expanded === lesson.id}
               done={lessonsDone.includes(lesson.id)}
-              onToggle={() => {
-                const next = expanded === lesson.id ? null : lesson.id;
-                setExpanded(next);
-                if (next && !lessonsDone.includes(lesson.id)) {
-                  markLessonDone(lesson.id);
-                }
-              }}
+              onOpen={() => setActiveLesson(lesson)}
             />
           ))}
         </div>
@@ -110,107 +137,280 @@ export default function Learn() {
         fontStyle: 'italic',
         marginTop: 'var(--sh-space-6)',
       }}>
-        More lessons publish as the platform grows. Suggest a topic via feedback.
+        More lessons publish as the platform grows.
       </p>
     </main>
   );
 }
 
-function LessonCard({ lesson, expanded, done, onToggle }) {
+function LessonRow({ lesson, done, onOpen }) {
   return (
-    <div style={{
-      background: 'var(--sh-card)',
-      borderRadius: 'var(--sh-radius-lg)',
-      border: `1px solid ${done ? 'var(--sh-bronze-border)' : 'var(--sh-card-border)'}`,
-      marginBottom: 'var(--sh-space-2)',
-      overflow: 'hidden',
-    }}>
-      <div
-        onClick={onToggle}
-        style={{
-          padding: 'var(--sh-space-4) var(--sh-space-4)',
-          cursor: 'pointer',
+    <div
+      onClick={onOpen}
+      style={{
+        background: 'var(--sh-card)',
+        borderRadius: 'var(--sh-radius-lg)',
+        border: `1px solid ${done ? 'var(--sh-bronze-border)' : 'var(--sh-card-border)'}`,
+        padding: 'var(--sh-space-4)',
+        marginBottom: 'var(--sh-space-2)',
+        cursor: 'pointer',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: 'var(--sh-space-3)',
+        transition: 'all 150ms ease',
+      }}
+    >
+      <div style={{ flex: 1 }}>
+        <div style={{
           display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          gap: 'var(--sh-space-3)',
+          alignItems: 'center',
+          gap: 'var(--sh-space-2)',
+          marginBottom: '4px',
+        }}>
+          {done && (
+            <span style={{
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-bronze)',
+              fontWeight: 700,
+            }}>
+              ✓
+            </span>
+          )}
+          <p style={{
+            fontSize: 'var(--sh-text-base)',
+            fontWeight: 600,
+            color: 'var(--sh-text-primary)',
+          }}>
+            {lesson.title}
+          </p>
+        </div>
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+        }}>
+          {lesson.minutes} min · {lesson.cards.length} cards
+        </p>
+      </div>
+      <span style={{
+        fontSize: 'var(--sh-text-md)',
+        color: 'var(--sh-bronze)',
+      }}>
+        →
+      </span>
+    </div>
+  );
+}
+
+function LessonReader({ lesson, onClose }) {
+  const [cardIndex, setCardIndex] = useState(0);
+  const card = lesson.cards[cardIndex];
+  const isLast = cardIndex === lesson.cards.length - 1;
+  const isFirst = cardIndex === 0;
+
+  return (
+    <main style={{
+      maxWidth: '640px',
+      margin: '0 auto',
+      padding: 'var(--sh-space-6) var(--sh-space-8) var(--sh-space-16)',
+    }}>
+      {/* Close */}
+      <button
+        onClick={() => onClose(false)}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          color: 'var(--sh-text-muted)',
+          fontSize: 'var(--sh-text-sm)',
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+          padding: 0,
+          marginBottom: 'var(--sh-space-3)',
         }}
       >
-        <div style={{ flex: 1 }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--sh-space-2)',
-            marginBottom: '4px',
-          }}>
-            {done && (
-              <span style={{
-                fontSize: 'var(--sh-text-xs)',
-                color: 'var(--sh-bronze)',
-                fontWeight: 600,
-              }}>
-                ✓
-              </span>
-            )}
-            <p style={{
-              fontSize: 'var(--sh-text-base)',
-              fontWeight: 600,
-              color: 'var(--sh-text-primary)',
-            }}>
-              {lesson.title}
-            </p>
-          </div>
-          {lesson.minutes && (
-            <p style={{
-              fontSize: 'var(--sh-text-xs)',
-              color: 'var(--sh-text-muted)',
-            }}>
-              {lesson.minutes} min read
-            </p>
-          )}
-        </div>
-        <span style={{
-          fontSize: 'var(--sh-text-md)',
-          color: 'var(--sh-text-muted)',
-          flexShrink: 0,
-        }}>
-          {expanded ? '−' : '+'}
-        </span>
+        ← Back to lessons
+      </button>
+
+      {/* Lesson title + progress dots */}
+      <p style={{
+        fontSize: '10px',
+        color: 'var(--sh-bronze)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.12em',
+        fontWeight: 600,
+        marginBottom: '4px',
+      }}>
+        {lesson.title}
+      </p>
+      <div style={{
+        display: 'flex',
+        gap: '4px',
+        marginBottom: 'var(--sh-space-5)',
+      }}>
+        {lesson.cards.map((_, i) => (
+          <div
+            key={i}
+            style={{
+              width: i === cardIndex ? 20 : 6,
+              height: 5,
+              borderRadius: 3,
+              background: i <= cardIndex ? 'var(--sh-bronze)' : 'var(--sh-card-border)',
+              transition: 'all 300ms ease',
+              opacity: i < cardIndex ? 0.55 : 1,
+            }}
+          />
+        ))}
       </div>
-      {expanded && (
-        <div style={{
-          padding: '0 var(--sh-space-4) var(--sh-space-4)',
-          borderTop: 'var(--sh-border-divider)',
-          paddingTop: 'var(--sh-space-3)',
-          marginTop: 'var(--sh-space-2)',
+
+      {/* Card content */}
+      <Card padding="lg" style={{
+        marginBottom: 'var(--sh-space-5)',
+        minHeight: '280px',
+      }}>
+        <p style={{
+          fontFamily: 'var(--sh-font-serif)',
+          fontSize: 'var(--sh-text-lg)',
+          color: 'var(--sh-text-primary)',
+          fontWeight: 400,
+          marginBottom: 'var(--sh-space-3)',
+          lineHeight: 1.4,
         }}>
-          {lesson.content?.map((card, i) => (
-            <div key={i} style={{
-              marginBottom: i < lesson.content.length - 1 ? 'var(--sh-space-4)' : 0,
-            }}>
-              {card.heading && (
-                <p style={{
-                  fontFamily: 'var(--sh-font-serif)',
-                  fontSize: 'var(--sh-text-md)',
-                  color: 'var(--sh-text-primary)',
-                  fontWeight: 400,
-                  marginBottom: 'var(--sh-space-2)',
-                  lineHeight: 1.4,
-                }}>
-                  {card.heading}
-                </p>
-              )}
-              <p style={{
-                fontSize: 'var(--sh-text-sm)',
-                color: 'var(--sh-text-body)',
-                lineHeight: 1.7,
-              }}>
-                {card.body}
-              </p>
-            </div>
-          ))}
+          {card.heading}
+        </p>
+        <p style={{
+          fontSize: 'var(--sh-text-md)',
+          color: 'var(--sh-text-body)',
+          lineHeight: 1.7,
+        }}>
+          {card.body}
+        </p>
+      </Card>
+
+      {/* Card number */}
+      <p style={{
+        textAlign: 'center',
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        marginBottom: 'var(--sh-space-3)',
+      }}>
+        {cardIndex + 1} of {lesson.cards.length}
+      </p>
+
+      {/* Navigation */}
+      <div style={{
+        display: 'flex',
+        gap: 'var(--sh-space-2)',
+      }}>
+        {!isFirst && (
+          <Button
+            variant="secondary"
+            onClick={() => setCardIndex(cardIndex - 1)}
+            style={{ flex: 1 }}
+          >
+            ← Previous
+          </Button>
+        )}
+        {isLast ? (
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={() => onClose(true)}
+            style={{ flex: 1 }}
+          >
+            Finish lesson
+          </Button>
+        ) : (
+          <Button
+            variant="primary"
+            size="lg"
+            onClick={() => setCardIndex(cardIndex + 1)}
+            style={{ flex: 1 }}
+          >
+            Continue →
+          </Button>
+        )}
+      </div>
+    </main>
+  );
+}
+
+function GlossaryView({ onBack }) {
+  return (
+    <main style={{
+      maxWidth: '720px',
+      margin: '0 auto',
+      padding: 'var(--sh-space-6) var(--sh-space-8) var(--sh-space-16)',
+    }}>
+      <button
+        onClick={onBack}
+        style={{
+          background: 'transparent',
+          border: 'none',
+          color: 'var(--sh-text-muted)',
+          fontSize: 'var(--sh-text-sm)',
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+          padding: 0,
+          marginBottom: 'var(--sh-space-3)',
+        }}
+      >
+        ← Back to lessons
+      </button>
+
+      <p style={{
+        fontSize: '10px',
+        color: 'var(--sh-bronze)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.12em',
+        fontWeight: 600,
+        marginBottom: '4px',
+      }}>
+        Glossary
+      </p>
+      <h1 style={{
+        fontFamily: 'var(--sh-font-serif)',
+        fontSize: 'var(--sh-text-2xl)',
+        color: 'var(--sh-text-primary)',
+        fontWeight: 400,
+        marginBottom: 'var(--sh-space-2)',
+      }}>
+        {GLOSSARY.length} terms worth knowing
+      </h1>
+      <p style={{
+        fontSize: 'var(--sh-text-sm)',
+        color: 'var(--sh-text-secondary)',
+        lineHeight: 1.55,
+        marginBottom: 'var(--sh-space-6)',
+      }}>
+        Plain-language definitions of the language of giving. Skim once, come back when you need it.
+      </p>
+
+      {GLOSSARY.map((g, i) => (
+        <div
+          key={g.term}
+          style={{
+            paddingTop: i === 0 ? 0 : 'var(--sh-space-4)',
+            paddingBottom: 'var(--sh-space-4)',
+            borderTop: i === 0 ? 'none' : 'var(--sh-border-divider)',
+          }}
+        >
+          <p style={{
+            fontSize: 'var(--sh-text-base)',
+            fontWeight: 600,
+            color: 'var(--sh-text-primary)',
+            marginBottom: '6px',
+          }}>
+            {g.term}
+          </p>
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-body)',
+            lineHeight: 1.65,
+          }}>
+            {g.def}
+          </p>
         </div>
-      )}
-    </div>
+      ))}
+    </main>
   );
 }
