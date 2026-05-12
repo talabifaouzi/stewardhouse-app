@@ -21,6 +21,8 @@ import History from './History.jsx';
 import Discover from './Discover.jsx';
 import Learn from './Learn.jsx';
 import Team from './Team.jsx';
+import GiveScreen from './GiveScreen.jsx';
+import Feedback from './Feedback.jsx';
 
 const NAV_ITEMS = [
   { key: 'home', label: 'Home', path: '/individual' },
@@ -80,6 +82,8 @@ function DashboardLayout() {
           <Route path="learn" element={<Learn />} />
           <Route path="history" element={<History />} />
           <Route path="team" element={<Team />} />
+          <Route path="give" element={<GiveScreen />} />
+          <Route path="feedback" element={<Feedback />} />
           <Route path="*" element={<Navigate to="/individual" replace />} />
         </Routes>
       </div>
@@ -142,9 +146,16 @@ function IndividualHome() {
 
   if (hasGifts) {
     paths.push({
-      title: 'Manage your team',
-      desc: 'Track grants, payments, and acknowledgments — with role-based access.',
-      action: () => navigate('/individual/team'),
+      title: 'Log another gift',
+      desc: '10 seconds. Keep your giving record growing.',
+      action: () => navigate('/individual/give'),
+      tone: 'act',
+    });
+  } else {
+    paths.push({
+      title: 'Log a gift',
+      desc: 'Add any giving you\'ve already made — even small ones count.',
+      action: () => navigate('/individual/give'),
       tone: 'act',
     });
   }
@@ -395,6 +406,32 @@ function IndividualHome() {
           >
             {fundingSpotlight.source}
           </a>
+        </p>
+      </Card>
+
+      {/* Share feedback */}
+      <Card
+        interactive
+        onClick={() => navigate('/individual/feedback')}
+        style={{
+          marginTop: 'var(--sh-space-3)',
+          marginBottom: 'var(--sh-space-3)',
+          cursor: 'pointer',
+        }}
+      >
+        <p style={{
+          fontSize: 'var(--sh-text-sm)',
+          fontWeight: 600,
+          color: 'var(--sh-text-primary)',
+          marginBottom: '2px',
+        }}>
+          Share feedback
+        </p>
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+        }}>
+          Help us build StewardHouse right — takes 2 minutes
         </p>
       </Card>
 
