@@ -10,11 +10,13 @@ export const individualProfile = {
   // Geo context (drives "place-based" causes)
   geoDetail: 'Cleveland, Ohio area',
 
-  // Causes selected during onboarding
+  // Causes selected during onboarding — uses canonical intake CAUSES taxonomy
+  // (matches intakeData.js so Discover, Funding Spotlight, and cause-tag
+  // display all resolve correctly).
   causes: [
-    { id: 'youth-sports', label: 'Youth sports access' },
-    { id: 'place-based', label: 'Place-based community' },
-    { id: 'k12-education', label: 'K–12 education' },
+    { id: 'education', label: 'Education' },
+    { id: 'sports', label: 'Sports' },
+    { id: 'economic', label: 'Economic' },
   ],
 
   // Visibility preference: 'public' | 'selective' | 'private'
