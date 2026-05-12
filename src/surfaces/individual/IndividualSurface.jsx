@@ -6,8 +6,8 @@ import { Tag } from '../../components/Tag.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import {
-  fundingSpotlight,
-  microLearning,
+  getFundingSpotlight,
+  getMicroLearning,
   visibilityInsights,
 } from '../../data/individualProfile.js';
 import { CAUSES, deriveCelebration } from '../../data/intakeData.js';
@@ -103,6 +103,10 @@ function IndividualHome() {
   const hasGifts = gifts.length > 0;
   const visibility = visibilityInsights[answers.visibility] || visibilityInsights.private;
   const visibleGifts = showAllGifts ? gifts : gifts.slice(0, 3);
+
+  // Variant-aware Home content
+  const fundingSpotlight = getFundingSpotlight(answers.causes || []);
+  const microLearning = getMicroLearning(hasGifts);
 
   const causeLabels = (answers.causes || []).map(id => {
     const found = CAUSES.find(c => c.id === id);
