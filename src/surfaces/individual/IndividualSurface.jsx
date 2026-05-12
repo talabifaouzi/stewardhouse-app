@@ -16,6 +16,7 @@ import Letter from './Letter.jsx';
 import Privacy from './Privacy.jsx';
 import Questions from './Questions.jsx';
 import GPSReveal from './GPSReveal.jsx';
+import Positioning from './Positioning.jsx';
 import Plan from './Plan.jsx';
 import History from './History.jsx';
 import Discover from './Discover.jsx';
@@ -37,7 +38,8 @@ export default function IndividualSurface() {
   return (
     <Routes>
       {/* Onboarding flow — chrome-less, full-screen */}
-      <Route path="welcome" element={<Letter />} />
+      <Route path="welcome" element={<Positioning />} />
+      <Route path="letter" element={<Letter />} />
       <Route path="privacy" element={<Privacy />} />
       <Route path="questions" element={<Questions />} />
       <Route path="reveal" element={<GPSReveal />} />

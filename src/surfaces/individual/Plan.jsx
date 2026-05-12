@@ -5,6 +5,7 @@ import { Button } from '../../components/Button.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import { CAUSES, VIS, TRUST, DEPTH, BUDGETS } from '../../data/intakeData.js';
+import GivingModeler from './GivingModeler.jsx';
 
 export default function Plan() {
   const navigate = useNavigate();
@@ -212,6 +213,9 @@ Where I'm Headed
           </p>
         </div>
       </Card>
+
+      {/* Interactive modeler */}
+      <GivingModeler budget={a.budget} />
 
       {/* Actions */}
       <Button
