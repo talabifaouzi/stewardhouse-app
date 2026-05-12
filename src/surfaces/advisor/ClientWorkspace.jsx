@@ -1,6 +1,5 @@
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
-import { Button } from '../../components/Button.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { clients } from '../../data/clients.js';
 
@@ -80,9 +79,6 @@ export default function ClientWorkspace() {
           }}>
             {client.summary}
           </p>
-        </div>
-        <div style={{ display: 'flex', gap: 'var(--sh-space-2)', flexShrink: 0 }}>
-          <Button variant="primary">Surface content</Button>
         </div>
       </div>
 
