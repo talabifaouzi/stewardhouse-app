@@ -66,11 +66,13 @@ export const spotlights = [
   },
 ];
 
-// Sample pipeline state for the between-session pipeline (Section 6)
+// Sample pipeline state for the between-session pipeline (Section 6).
+// Aggregates reconcile against the 9-client roster in clients.js —
+// clientsOnDefault + overrides === 9 per type.
 export const pipelineDefaults = {
-  digest: { state: 'Active', cadence: 'Weekly', clientsOnDefault: 19, overrides: 4 },
-  notification: { state: 'Active', cadence: 'Event-driven', clientsOnDefault: 22, overrides: 1 },
-  spotlight: { state: 'Active', cadence: 'Monthly · first Monday', clientsOnDefault: 15, overrides: 8 },
-  reflection: { state: 'Active', cadence: 'Post-session', clientsOnDefault: 23, overrides: 0 },
-  cohort: { state: 'Active', cadence: 'As cohort publishes', clientsOnDefault: 12, overrides: 0 },
+  digest:       { state: 'Active', cadence: 'Weekly',                clientsOnDefault: 8, overrides: 1 },
+  notification: { state: 'Active', cadence: 'Event-driven',          clientsOnDefault: 7, overrides: 2 },
+  spotlight:    { state: 'Active', cadence: 'Monthly · first Monday', clientsOnDefault: 6, overrides: 3 },
+  reflection:   { state: 'Active', cadence: 'Post-session',          clientsOnDefault: 5, overrides: 4 },
+  cohort:       { state: 'Active', cadence: 'As cohort publishes',   clientsOnDefault: 4, overrides: 5 },
 };

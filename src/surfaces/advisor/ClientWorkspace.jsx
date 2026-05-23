@@ -2,6 +2,7 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { clients } from '../../data/clients.js';
+import { contentTypes } from '../../data/content.js';
 
 export default function ClientWorkspace() {
   const { clientId } = useParams();
@@ -134,23 +135,7 @@ export default function ClientWorkspace() {
             </div>
           </Card>
 
-          <Card>
-            <SectionLabel>Active in pipeline</SectionLabel>
-            <p style={{
-              fontSize: 'var(--sh-text-sm)',
-              color: 'var(--sh-text-secondary)',
-              marginBottom: 'var(--sh-space-3)',
-            }}>
-              {client.activeContent} content items currently surfacing to {client.name.split(' ')[0]} between sessions
-            </p>
-            <Link to="/advisor/pipeline" style={{
-              fontSize: 'var(--sh-text-sm)',
-              color: 'var(--sh-bronze)',
-              fontWeight: 500,
-            }}>
-              View per-client current state →
-            </Link>
-          </Card>
+          <ActiveInPipelinePanel client={client} />
         </div>
 
         {/* Right column — advisor-private notes + meta */}
@@ -211,6 +196,120 @@ export default function ClientWorkspace() {
         </div>
       </div>
     </main>
+  );
+}
+
+function ActiveInPipelinePanel({ client }) {
+  const pipeline = client.pipeline || [];
+  const labelByKey = Object.fromEntries(contentTypes.map(ct => [ct.key, ct.label]));
+  const total = pipeline.length;
+  const active = pipeline.filter(p => p.state === 'Active').length;
+  const overrides = pipeline.filter(p => p.source === 'override').length;
+  const firstName = client.name.split(' ')[0];
+
+  return (
+    <Card>
+      <div id="active-in-pipeline" style={{ scrollMarginTop: 'var(--sh-space-6)' }}>
+        <SectionLabel>Active in pipeline</SectionLabel>
+        <p style={{
+          fontSize: 'var(--sh-text-sm)',
+          color: 'var(--sh-text-secondary)',
+          marginBottom: 'var(--sh-space-4)',
+          lineHeight: 1.55,
+        }}>
+          What's currently surfacing to {firstName} between sessions, by content type.
+        </p>
+
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {pipeline.map((entry, i) => (
+            <PipelineRow
+              key={entry.type}
+              label={labelByKey[entry.type] || entry.type}
+              state={entry.state}
+              source={entry.source}
+              first={i === 0}
+            />
+          ))}
+        </div>
+
+        <div style={{
+          marginTop: 'var(--sh-space-4)',
+          paddingTop: 'var(--sh-space-3)',
+          borderTop: 'var(--sh-border-divider)',
+        }}>
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-primary)',
+            marginBottom: 'var(--sh-space-1)',
+          }}>
+            {active} of {total} content types active · {overrides} {overrides === 1 ? 'override' : 'overrides'} from practice default
+          </p>
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            lineHeight: 1.55,
+          }}>
+            Overrides are preserved when practice-wide defaults change.
+          </p>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+function PipelineRow({ label, state, source, first }) {
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 'var(--sh-space-3)',
+      paddingTop: first ? 0 : 'var(--sh-space-3)',
+      paddingBottom: 'var(--sh-space-3)',
+      borderTop: first ? 'none' : 'var(--sh-border-divider)',
+    }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{
+          fontSize: 'var(--sh-text-sm)',
+          color: 'var(--sh-text-primary)',
+        }}>
+          {label}
+        </p>
+      </div>
+      <StateBadge state={state} />
+      <span style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.06em',
+        minWidth: '64px',
+        textAlign: 'right',
+      }}>
+        {source}
+      </span>
+    </div>
+  );
+}
+
+function StateBadge({ state }) {
+  const colors = {
+    Active: { bg: '#E8F0E5', text: '#3E5A3F' },
+    Mute:   { bg: '#F0EBDF', text: '#5A554C' },
+    Pause:  { bg: '#F5EFE3', text: '#5A453A' },
+  };
+  const c = colors[state] || colors.Active;
+  return (
+    <span style={{
+      fontSize: '10px',
+      padding: '3px 9px',
+      borderRadius: 'var(--sh-radius-full)',
+      background: c.bg,
+      color: c.text,
+      textTransform: 'uppercase',
+      letterSpacing: '0.06em',
+      fontWeight: 500,
+    }}>
+      {state}
+    </span>
   );
 }
 

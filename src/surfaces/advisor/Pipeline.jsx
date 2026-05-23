@@ -6,6 +6,8 @@ import { contentTypes, pipelineDefaults } from '../../data/content.js';
 import { advisorPracticeProfile } from '../../data/clients.js';
 
 export default function Pipeline() {
+  const overrideTotal = Object.values(pipelineDefaults).reduce((sum, d) => sum + d.overrides, 0);
+
   return (
     <main style={{
       maxWidth: 'var(--sh-content-max)',
@@ -81,7 +83,7 @@ export default function Pipeline() {
             fontSize: 'var(--sh-text-xs)',
             color: 'var(--sh-text-muted)',
           }}>
-            {advisorPracticeProfile.clientCount} clients receiving content · 13 active per-client overrides across all content types
+            {advisorPracticeProfile.clientCount} clients receiving content · {overrideTotal} active per-client overrides across all content types
           </p>
         </Card>
       </div>
