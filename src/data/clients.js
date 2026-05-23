@@ -10,7 +10,6 @@ export const advisorPracticeProfile = {
   advisorTitle: "Principal Advisor",
   practiceFocus: "Athletes in early career",
   yearsActive: 7,
-  clientCount: 9,
 };
 
 export const clients = [
@@ -842,6 +841,8 @@ export const clients = [
     ],
   },
 ];
+
+advisorPracticeProfile.clientCount = clients.length;
 
 export const stages = ['New', 'Active', 'Mature', 'Sunset'];
 
