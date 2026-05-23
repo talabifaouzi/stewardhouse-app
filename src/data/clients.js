@@ -129,8 +129,8 @@ export const clients = [
         'Personal preference language: tightening the unrestricted clause',
       ],
       curriculumLinks: [
-        { lessonId: 'cur-014', title: 'Writing a first grant inquiry — structure and tone' },
-        { lessonId: 'cur-007', title: 'Multi-year grant agreements: what to ask for' },
+        { lessonId: 'l-22' },
+        { lessonId: 'l-23' },
       ],
     },
     pipeline: [
@@ -185,8 +185,8 @@ export const clients = [
         'Parent involvement in the values conversation',
       ],
       curriculumLinks: [
-        { lessonId: 'cur-001', title: 'Giving Identity: what it is and what it is not' },
-        { lessonId: 'cur-002', title: 'Place in your story: family, geography, formative experiences' },
+        { lessonId: 'l-17' },
+        { lessonId: 'l-18' },
       ],
     },
     pipeline: [
@@ -287,8 +287,8 @@ export const clients = [
         'Pacing language in the revised plan',
       ],
       curriculumLinks: [
-        { lessonId: 'cur-022', title: 'Cross-border giving: structures and constraints' },
-        { lessonId: 'cur-018', title: 'Funder transparency criteria — how to phrase them' },
+        { lessonId: 'l-27' },
+        { lessonId: 'l-25' },
       ],
     },
     pipeline: [
@@ -429,8 +429,8 @@ export const clients = [
         'Endowment-future language in the plan statement',
       ],
       curriculumLinks: [
-        { lessonId: 'cur-031', title: 'Private foundation vs. donor-advised fund: governance trade-offs' },
-        { lessonId: 'cur-029', title: 'Successor planning: what readiness looks like' },
+        { lessonId: 'l-29' },
+        { lessonId: 'l-28' },
       ],
     },
     pipeline: [
@@ -528,8 +528,8 @@ export const clients = [
         'How to make the first inquiry without it reading as a press release',
       ],
       curriculumLinks: [
-        { lessonId: 'cur-014', title: 'Writing a first grant inquiry — structure and tone' },
-        { lessonId: 'cur-011', title: 'Public giving: when and how to talk about it' },
+        { lessonId: 'l-22' },
+        { lessonId: 'l-21' },
       ],
     },
     pipeline: [
@@ -583,8 +583,8 @@ export const clients = [
         'When and how Tariq\'s voice steps forward in his own sessions',
       ],
       curriculumLinks: [
-        { lessonId: 'cur-001', title: 'Giving Identity: what it is and what it is not' },
-        { lessonId: 'cur-005', title: 'Family-anchored giving: when the family is in the room' },
+        { lessonId: 'l-17' },
+        { lessonId: 'l-19' },
       ],
     },
     pipeline: [
@@ -638,8 +638,8 @@ export const clients = [
         'Privacy choice — selective vs. private going forward',
       ],
       curriculumLinks: [
-        { lessonId: 'cur-001', title: 'Giving Identity: what it is and what it is not' },
-        { lessonId: 'cur-008', title: 'Visibility choices: public, selective, private' },
+        { lessonId: 'l-17' },
+        { lessonId: 'l-20' },
       ],
     },
     pipeline: [
@@ -740,8 +740,8 @@ export const clients = [
         'Cadence through the Olympic year',
       ],
       curriculumLinks: [
-        { lessonId: 'cur-019', title: 'Reading nonprofit audit reports — what to look for' },
-        { lessonId: 'cur-016', title: 'Project funding: agreement language and reporting' },
+        { lessonId: 'l-26' },
+        { lessonId: 'l-24' },
       ],
     },
     pipeline: [
@@ -829,8 +829,8 @@ export const clients = [
         'Which curriculum access the foundation team retains after the relationship closes',
       ],
       curriculumLinks: [
-        { lessonId: 'cur-040', title: 'Transitioning to direct foundation governance' },
-        { lessonId: 'cur-041', title: 'Closing an advisory engagement: documentation handoff' },
+        { lessonId: 'l-30' },
+        { lessonId: 'l-31' },
       ],
     },
     pipeline: [

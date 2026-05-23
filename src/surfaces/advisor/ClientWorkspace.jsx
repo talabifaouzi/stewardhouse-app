@@ -3,7 +3,7 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { clients } from '../../data/clients.js';
-import { contentTypes } from '../../data/content.js';
+import { contentTypes, getLessonById } from '../../data/content.js';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -198,24 +198,35 @@ function PreSessionPrep({ nextSession, agenda, activeContent, firstName }) {
           <div style={{ marginTop: 'var(--sh-space-5)' }}>
             <MicroLabel>Curriculum to revisit</MicroLabel>
             <ul style={listResetStyle}>
-              {agenda.curriculumLinks.map((link) => (
-                <li key={link.lessonId} style={{
-                  fontSize: 'var(--sh-text-sm)',
-                  color: 'var(--sh-text-muted)',
-                  fontStyle: 'italic',
-                  lineHeight: 1.55,
-                  paddingLeft: 'var(--sh-space-4)',
-                  position: 'relative',
-                  marginBottom: 'var(--sh-space-1)',
-                }}>
-                  <span style={{
-                    position: 'absolute',
-                    left: 0,
-                    color: 'var(--sh-text-muted)',
-                  }}>—</span>
-                  {link.title}
-                </li>
-              ))}
+              {agenda.curriculumLinks.map((link) => {
+                const lesson = getLessonById(link.lessonId);
+                if (!lesson) return null;
+                return (
+                  <li key={link.lessonId} style={{
+                    fontSize: 'var(--sh-text-sm)',
+                    lineHeight: 1.55,
+                    paddingLeft: 'var(--sh-space-4)',
+                    position: 'relative',
+                    marginBottom: 'var(--sh-space-1)',
+                  }}>
+                    <span style={{
+                      position: 'absolute',
+                      left: 0,
+                      color: 'var(--sh-text-muted)',
+                    }}>—</span>
+                    <Link
+                      to={`/advisor/curriculum/${link.lessonId}`}
+                      style={{
+                        color: 'var(--sh-text-muted)',
+                        fontStyle: 'italic',
+                        textDecoration: 'none',
+                      }}
+                    >
+                      {lesson.title}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </div>
         )}

@@ -6,6 +6,7 @@ import PracticeHome from './PracticeHome.jsx';
 import ClientRoster from './ClientRoster.jsx';
 import ClientWorkspace from './ClientWorkspace.jsx';
 import CurriculumLibrary from './CurriculumLibrary.jsx';
+import LessonDetail from './LessonDetail.jsx';
 import CohortSpace from './CohortSpace.jsx';
 import Pipeline from './Pipeline.jsx';
 import Documentation from './Documentation.jsx';
@@ -54,6 +55,7 @@ export default function AdvisorSurface() {
           <Route path="clients" element={<ClientRoster />} />
           <Route path="clients/:clientId" element={<ClientWorkspace />} />
           <Route path="curriculum" element={<CurriculumLibrary />} />
+          <Route path="curriculum/:lessonId" element={<LessonDetail />} />
           <Route path="cohorts" element={<CohortSpace />} />
           <Route path="pipeline" element={<Pipeline />} />
           <Route path="docs" element={<Documentation />} />
