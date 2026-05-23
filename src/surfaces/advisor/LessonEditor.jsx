@@ -67,16 +67,23 @@ export default function LessonEditor({ mode }) {
   const minutesValid = Number.isFinite(minutesNum) && minutesNum >= 1;
   const canSave = titleValid && minutesValid;
 
-  const handleSave = () => {
+  const handleSaveWith = (targetStatus) => {
     if (!canSave) return;
     const today = todayIso();
+    const afterSave = (publishedId) => {
+      if (targetStatus === 'draft') {
+        navigate('/advisor/curriculum/drafts');
+      } else {
+        navigate(`/advisor/curriculum/${publishedId}`);
+      }
+    };
     if (mode === 'fork') {
       const newId = nextPracticeLessonId(practiceLessons);
       add({
         id: newId,
         kind: 'fork',
         baseId: sourceLesson.id,
-        status: 'published',
+        status: targetStatus,
         title: trimmedTitle,
         minutes: minutesNum,
         scope,
@@ -85,7 +92,7 @@ export default function LessonEditor({ mode }) {
         createdAt: today,
         updatedAt: today,
       });
-      navigate(`/advisor/curriculum/${newId}`);
+      afterSave(newId);
     } else if (mode === 'edit') {
       update(sourceLesson.id, {
         title: trimmedTitle,
@@ -93,15 +100,16 @@ export default function LessonEditor({ mode }) {
         scope,
         category,
         summary: summary.trim(),
+        status: targetStatus,
       });
-      navigate(`/advisor/curriculum/${sourceLesson.id}`);
+      afterSave(sourceLesson.id);
     } else if (mode === 'author') {
       const newId = nextPracticeLessonId(practiceLessons);
       add({
         id: newId,
         kind: 'authored',
         baseId: null,
-        status: 'published',
+        status: targetStatus,
         title: trimmedTitle,
         minutes: minutesNum,
         scope,
@@ -110,7 +118,7 @@ export default function LessonEditor({ mode }) {
         createdAt: today,
         updatedAt: today,
       });
-      navigate(`/advisor/curriculum/${newId}`);
+      afterSave(newId);
     }
   };
 
@@ -134,10 +142,13 @@ export default function LessonEditor({ mode }) {
     mode === 'fork' ? 'Tailor'
     : mode === 'edit' ? 'Edit'
     : 'New';
-  const saveLabel =
+  const editingDraft = mode === 'edit' && sourceLesson?.status === 'draft';
+  const primaryLabel =
     mode === 'fork' ? 'Save tailored version'
-    : mode === 'edit' ? 'Save changes'
-    : 'Save lesson';
+    : mode === 'author' ? 'Save lesson'
+    : editingDraft ? 'Publish'
+    : 'Save changes';
+  const showSaveAsDraft = mode === 'fork' || mode === 'author' || editingDraft;
   const invalidReason = !titleValid ? 'Title is required.' : !minutesValid ? 'Length must be one minute or more.' : '';
 
   return (
@@ -261,7 +272,14 @@ export default function LessonEditor({ mode }) {
             </span>
           )}
           <Button variant="ghost" onClick={handleCancel}>Cancel</Button>
-          <Button variant="primary" onClick={handleSave} disabled={!canSave}>{saveLabel}</Button>
+          {showSaveAsDraft && (
+            <Button variant="secondary" onClick={() => handleSaveWith('draft')} disabled={!canSave}>
+              Save as draft
+            </Button>
+          )}
+          <Button variant="primary" onClick={() => handleSaveWith('published')} disabled={!canSave}>
+            {primaryLabel}
+          </Button>
         </div>
       </Card>
     </main>

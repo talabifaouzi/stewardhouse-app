@@ -9,6 +9,7 @@ import ClientWorkspace from './ClientWorkspace.jsx';
 import CurriculumLibrary from './CurriculumLibrary.jsx';
 import LessonDetail from './LessonDetail.jsx';
 import LessonEditor from './LessonEditor.jsx';
+import DraftsList from './DraftsList.jsx';
 import CohortSpace from './CohortSpace.jsx';
 import Pipeline from './Pipeline.jsx';
 import Documentation from './Documentation.jsx';
@@ -59,6 +60,7 @@ export default function AdvisorSurface() {
             <Route path="clients/:clientId" element={<ClientWorkspace />} />
             <Route path="curriculum" element={<CurriculumLibrary />} />
             <Route path="curriculum/new" element={<LessonEditor mode="author" />} />
+            <Route path="curriculum/drafts" element={<DraftsList />} />
             <Route path="curriculum/:lessonId" element={<LessonDetail />} />
             <Route path="curriculum/:lessonId/fork" element={<LessonEditor mode="fork" />} />
             <Route path="curriculum/:lessonId/edit" element={<LessonEditor mode="edit" />} />
