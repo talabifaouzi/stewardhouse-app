@@ -49,6 +49,14 @@ export function getLessonById(id) {
   return lessonsById.get(id);
 }
 
+// Resolves a lesson id against the base library first, then a caller-supplied
+// list of practice lessons (forks / authored). Use this in any view that may
+// receive either kind of id. Callers pass practiceLessons from
+// usePracticeContent so the lookup tracks live state.
+export function findLesson(id, practiceLessons) {
+  return getLessonById(id) ?? practiceLessons.find((p) => p.id === id);
+}
+
 export const spotlights = [
   {
     id: 's-01',

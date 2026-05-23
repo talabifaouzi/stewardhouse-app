@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
+import { Tag } from '../../components/Tag.jsx';
 import { lessons } from '../../data/content.js';
+import { usePracticeContent } from '../../contexts/PracticeContentContext.jsx';
 
 const SCOPE_FILTERS = [
   { key: 'any',       label: 'All' },
@@ -22,17 +25,50 @@ function capitalize(s) {
 }
 
 export default function CurriculumLibrary() {
+  const navigate = useNavigate();
+  const { lessons: practiceLessons } = usePracticeContent();
   const [scopeKey, setScopeKey] = useState('any');
   const [query, setQuery] = useState('');
 
+  const publishedForks = useMemo(
+    () => practiceLessons.filter((p) => p.kind === 'fork' && p.status === 'published'),
+    [practiceLessons],
+  );
+  const publishedAuthored = useMemo(
+    () => practiceLessons.filter((p) => p.kind === 'authored' && p.status === 'published'),
+    [practiceLessons],
+  );
+  const draftsCount = useMemo(
+    () => practiceLessons.filter((p) => p.status === 'draft').length,
+    [practiceLessons],
+  );
+
+  // Combined list: base lessons in canonical order, with their published forks
+  // immediately following, then authored lessons at the end. Drafts excluded.
+  const combinedLessons = useMemo(() => {
+    const result = [];
+    for (const base of lessons) {
+      result.push(base);
+      const forks = publishedForks
+        .filter((p) => p.baseId === base.id)
+        .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
+      result.push(...forks);
+    }
+    const authored = [...publishedAuthored].sort(
+      (a, b) => a.createdAt.localeCompare(b.createdAt),
+    );
+    result.push(...authored);
+    return result;
+  }, [publishedForks, publishedAuthored]);
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return lessons.filter((lesson) => {
+    return combinedLessons.filter((lesson) => {
       if (!scopeMatches(scopeKey, lesson.scope)) return false;
       if (q && !lesson.title.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [scopeKey, query]);
+  }, [combinedLessons, scopeKey, query]);
 
   const filtersActive = scopeKey !== 'any' || query.trim().length > 0;
 
@@ -43,32 +79,63 @@ export default function CurriculumLibrary() {
       padding: 'var(--sh-space-10) var(--sh-space-8) var(--sh-space-16)',
     }}>
       {/* Header */}
-      <div style={{ marginBottom: 'var(--sh-space-8)' }}>
-        <p style={{
-          fontSize: 'var(--sh-text-xs)',
-          color: 'var(--sh-text-muted)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          marginBottom: 'var(--sh-space-2)',
-        }}>
-          Section 4 · Curriculum
-        </p>
-        <h1 style={{
-          fontFamily: 'var(--sh-font-serif)',
-          fontSize: 'var(--sh-text-2xl)',
-          color: 'var(--sh-text-primary)',
-          marginBottom: 'var(--sh-space-2)',
-        }}>
-          Curriculum library
-        </h1>
-        <p style={{
-          fontSize: 'var(--sh-text-md)',
-          color: 'var(--sh-text-secondary)',
-          maxWidth: '640px',
-          lineHeight: 1.6,
-        }}>
-          Base lessons that support the conversations you have with clients — structure, not script.
-        </p>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        gap: 'var(--sh-space-6)',
+        marginBottom: 'var(--sh-space-8)',
+      }}>
+        <div>
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginBottom: 'var(--sh-space-2)',
+          }}>
+            Section 4 · Curriculum
+          </p>
+          <h1 style={{
+            fontFamily: 'var(--sh-font-serif)',
+            fontSize: 'var(--sh-text-2xl)',
+            color: 'var(--sh-text-primary)',
+            marginBottom: 'var(--sh-space-2)',
+          }}>
+            Curriculum library
+          </h1>
+          <p style={{
+            fontSize: 'var(--sh-text-md)',
+            color: 'var(--sh-text-secondary)',
+            maxWidth: '640px',
+            lineHeight: 1.6,
+          }}>
+            Base lessons, your forks, and your own authored content. Structure for the conversations you have with clients — not scripts.
+          </p>
+        </div>
+        <div style={{ display: 'flex', gap: 'var(--sh-space-2)', flexShrink: 0 }}>
+          <Button variant="primary" onClick={() => navigate('/advisor/curriculum/new')}>
+            Author new
+          </Button>
+          <Button variant="secondary" onClick={() => navigate('/advisor/curriculum/drafts')}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              View drafts
+              {draftsCount > 0 && <Tag color="bronze">{draftsCount}</Tag>}
+            </span>
+          </Button>
+        </div>
+      </div>
+
+      {/* Stat row */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(3, 1fr)',
+        gap: 'var(--sh-space-4)',
+        marginBottom: 'var(--sh-space-8)',
+      }}>
+        <LibraryStat label="Base lessons" value={lessons.length} sub="StewardHouse foundations" />
+        <LibraryStat label="Your tailored lessons" value={publishedForks.length} sub="Tailored from base" />
+        <LibraryStat label="Your authored" value={publishedAuthored.length} sub="Created by your practice" />
       </div>
 
       {/* Filters */}
@@ -140,8 +207,8 @@ export default function CurriculumLibrary() {
             letterSpacing: '0.02em',
           }}>
             {filtersActive
-              ? `${filtered.length} of ${lessons.length} lessons`
-              : `${lessons.length} lessons`}
+              ? `${filtered.length} of ${combinedLessons.length} lessons`
+              : `${combinedLessons.length} lessons`}
           </span>
         </div>
 
@@ -191,6 +258,44 @@ function FilterChip({ label, selected, onClick }) {
   );
 }
 
+function LibraryStat({ label, value, sub }) {
+  return (
+    <div style={{
+      background: 'var(--sh-card)',
+      border: 'var(--sh-border-thin)',
+      borderRadius: 'var(--sh-radius-lg)',
+      padding: 'var(--sh-space-5)',
+    }}>
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        margin: 0,
+        marginBottom: 'var(--sh-space-2)',
+        fontWeight: 500,
+      }}>
+        {label}
+      </p>
+      <p style={{
+        fontFamily: 'var(--sh-font-serif)',
+        fontSize: 'var(--sh-text-2xl)',
+        color: 'var(--sh-text-primary)',
+        margin: 0,
+        marginBottom: 'var(--sh-space-1)',
+      }}>
+        {value}
+      </p>
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+      }}>
+        {sub}
+      </p>
+    </div>
+  );
+}
+
 function LessonRow({ lesson, first }) {
   const scopeLabel = lesson.scope === 'all' ? 'General' : lesson.scope;
   return (
@@ -204,14 +309,23 @@ function LessonRow({ lesson, first }) {
         color: 'inherit',
       }}
     >
-      <p style={{
-        fontFamily: 'var(--sh-font-serif)',
-        fontSize: 'var(--sh-text-base)',
-        color: 'var(--sh-text-primary)',
+      <div style={{
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: 'var(--sh-space-2)',
         marginBottom: '2px',
       }}>
-        {lesson.title}
-      </p>
+        <p style={{
+          fontFamily: 'var(--sh-font-serif)',
+          fontSize: 'var(--sh-text-base)',
+          color: 'var(--sh-text-primary)',
+          margin: 0,
+        }}>
+          {lesson.title}
+        </p>
+        {lesson.kind === 'fork' && <Tag color="bronze">Tailored</Tag>}
+        {lesson.kind === 'authored' && <Tag color="accent">Authored</Tag>}
+      </div>
       <p style={{
         fontSize: 'var(--sh-text-xs)',
         color: 'var(--sh-text-muted)',

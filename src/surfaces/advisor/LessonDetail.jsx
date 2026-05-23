@@ -1,7 +1,9 @@
-import { useParams, Link, Navigate } from 'react-router-dom';
+import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
+import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { getLessonById } from '../../data/content.js';
+import { findLesson, getLessonById } from '../../data/content.js';
+import { usePracticeContent } from '../../contexts/PracticeContentContext.jsx';
 
 function capitalize(s) {
   if (!s || typeof s !== 'string') return '';
@@ -10,13 +12,28 @@ function capitalize(s) {
 
 export default function LessonDetail() {
   const { lessonId } = useParams();
-  const lesson = getLessonById(lessonId);
+  const navigate = useNavigate();
+  const { lessons: practiceLessons, remove } = usePracticeContent();
+  const lesson = findLesson(lessonId, practiceLessons);
 
   if (!lesson) {
     return <Navigate to="/advisor/curriculum" replace />;
   }
 
   const scopeLabel = lesson.scope === 'all' ? 'General' : lesson.scope;
+  const baseLesson = lesson.kind === 'fork' && lesson.baseId
+    ? getLessonById(lesson.baseId)
+    : null;
+
+  const handleDiscard = () => {
+    const message = lesson.kind === 'fork'
+      ? 'Discard this tailored version? Your edits to it will be lost.'
+      : 'Discard this authored lesson? It will be removed from your library.';
+    if (window.confirm(message)) {
+      remove(lesson.id);
+      navigate('/advisor/curriculum');
+    }
+  };
 
   return (
     <main style={{
@@ -68,6 +85,28 @@ export default function LessonDetail() {
         }}>
           {lesson.minutes} min · {scopeLabel} · {capitalize(lesson.category)}
         </p>
+        {lesson.kind === 'fork' && baseLesson && (
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            fontStyle: 'italic',
+            letterSpacing: '0.02em',
+            marginTop: 'var(--sh-space-1)',
+          }}>
+            Tailored from &ldquo;{baseLesson.title}&rdquo;
+          </p>
+        )}
+        {lesson.kind === 'authored' && (
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            fontStyle: 'italic',
+            letterSpacing: '0.02em',
+            marginTop: 'var(--sh-space-1)',
+          }}>
+            Authored by this practice
+          </p>
+        )}
       </div>
 
       {/* Summary + body shell */}
@@ -98,6 +137,44 @@ export default function LessonDetail() {
           </p>
         </div>
       </Card>
+
+      {/* Actions — base: fork; fork: edit + discard fork; authored: edit + discard */}
+      <div style={{ display: 'flex', gap: 'var(--sh-space-2)', marginTop: 'var(--sh-space-5)' }}>
+        {!lesson.kind && (
+          <Button
+            variant="secondary"
+            onClick={() => navigate(`/advisor/curriculum/${lesson.id}/fork`)}
+          >
+            Tailor this lesson
+          </Button>
+        )}
+        {lesson.kind === 'fork' && (
+          <>
+            <Button
+              variant="primary"
+              onClick={() => navigate(`/advisor/curriculum/${lesson.id}/edit`)}
+            >
+              Edit
+            </Button>
+            <Button variant="ghost" onClick={handleDiscard}>
+              Discard tailored version
+            </Button>
+          </>
+        )}
+        {lesson.kind === 'authored' && (
+          <>
+            <Button
+              variant="primary"
+              onClick={() => navigate(`/advisor/curriculum/${lesson.id}/edit`)}
+            >
+              Edit
+            </Button>
+            <Button variant="ghost" onClick={handleDiscard}>
+              Discard
+            </Button>
+          </>
+        )}
+      </div>
 
       {/* Back link */}
       <div style={{ marginTop: 'var(--sh-space-6)' }}>

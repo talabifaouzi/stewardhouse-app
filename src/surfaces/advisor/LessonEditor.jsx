@@ -1,0 +1,335 @@
+import { useMemo, useState } from 'react';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
+import { Button } from '../../components/Button.jsx';
+import { Card } from '../../components/Card.jsx';
+import { findLesson, getLessonById } from '../../data/content.js';
+import { usePracticeContent } from '../../contexts/PracticeContentContext.jsx';
+
+const SCOPE_OPTIONS = [
+  { value: 'all',       label: 'General' },
+  { value: 'Athletics', label: 'Athletics' },
+];
+
+const CATEGORY_OPTIONS = [
+  { value: 'primer',   label: 'Primer' },
+  { value: 'workflow', label: 'Workflow' },
+];
+
+function todayIso() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function nextPracticeLessonId(practiceLessons) {
+  const max = practiceLessons
+    .map((l) => parseInt(l.id.replace(/^pl-/, ''), 10))
+    .filter((n) => !Number.isNaN(n))
+    .reduce((acc, n) => Math.max(acc, n), 0);
+  return `pl-${String(max + 1).padStart(3, '0')}`;
+}
+
+export default function LessonEditor({ mode }) {
+  const { lessonId } = useParams();
+  const navigate = useNavigate();
+  const { lessons: practiceLessons, add, update } = usePracticeContent();
+
+  // Resolve the source lesson by mode.
+  //   fork   — must be a base lesson (cannot fork a fork in this prototype)
+  //   edit   — must be a practice lesson (cannot edit StewardHouse base content)
+  //   author — no source; user composes from a blank form
+  const sourceLesson = useMemo(() => {
+    if (mode === 'fork') {
+      return getLessonById(lessonId) || null;
+    }
+    if (mode === 'edit') {
+      const lesson = findLesson(lessonId, practiceLessons);
+      const isPractice = lesson && (lesson.kind === 'fork' || lesson.kind === 'authored');
+      return isPractice ? lesson : null;
+    }
+    return null;
+  }, [mode, lessonId, practiceLessons]);
+
+  // Hooks run unconditionally — initialize from source or defaults.
+  const [title, setTitle] = useState(sourceLesson?.title ?? '');
+  const [minutes, setMinutes] = useState(String(sourceLesson?.minutes ?? 5));
+  const [scope, setScope] = useState(sourceLesson?.scope ?? 'all');
+  const [category, setCategory] = useState(sourceLesson?.category ?? 'primer');
+  const [summary, setSummary] = useState(sourceLesson?.summary ?? '');
+
+  // Redirect if a source was required but missing.
+  if ((mode === 'fork' || mode === 'edit') && !sourceLesson) {
+    return <Navigate to="/advisor/curriculum" replace />;
+  }
+
+  const trimmedTitle = title.trim();
+  const minutesNum = Number(minutes);
+  const titleValid = trimmedTitle.length > 0;
+  const minutesValid = Number.isFinite(minutesNum) && minutesNum >= 1;
+  const canSave = titleValid && minutesValid;
+
+  const handleSave = () => {
+    if (!canSave) return;
+    const today = todayIso();
+    if (mode === 'fork') {
+      const newId = nextPracticeLessonId(practiceLessons);
+      add({
+        id: newId,
+        kind: 'fork',
+        baseId: sourceLesson.id,
+        status: 'published',
+        title: trimmedTitle,
+        minutes: minutesNum,
+        scope,
+        category,
+        summary: summary.trim(),
+        createdAt: today,
+        updatedAt: today,
+      });
+      navigate(`/advisor/curriculum/${newId}`);
+    } else if (mode === 'edit') {
+      update(sourceLesson.id, {
+        title: trimmedTitle,
+        minutes: minutesNum,
+        scope,
+        category,
+        summary: summary.trim(),
+      });
+      navigate(`/advisor/curriculum/${sourceLesson.id}`);
+    } else if (mode === 'author') {
+      const newId = nextPracticeLessonId(practiceLessons);
+      add({
+        id: newId,
+        kind: 'authored',
+        baseId: null,
+        status: 'published',
+        title: trimmedTitle,
+        minutes: minutesNum,
+        scope,
+        category,
+        summary: summary.trim(),
+        createdAt: today,
+        updatedAt: today,
+      });
+      navigate(`/advisor/curriculum/${newId}`);
+    }
+  };
+
+  const handleCancel = () => {
+    if (sourceLesson) {
+      navigate(`/advisor/curriculum/${sourceLesson.id}`);
+    } else {
+      navigate('/advisor/curriculum');
+    }
+  };
+
+  const eyebrow =
+    mode === 'fork' ? 'Section 4 · Tailor lesson'
+    : mode === 'edit' ? 'Section 4 · Edit lesson'
+    : 'Section 4 · New lesson';
+  const headingText =
+    mode === 'fork' ? `Tailoring: ${sourceLesson.title}`
+    : mode === 'edit' ? `Editing: ${sourceLesson.title}`
+    : 'New lesson';
+  const breadcrumbTail =
+    mode === 'fork' ? 'Tailor'
+    : mode === 'edit' ? 'Edit'
+    : 'New';
+  const saveLabel =
+    mode === 'fork' ? 'Save tailored version'
+    : mode === 'edit' ? 'Save changes'
+    : 'Save lesson';
+  const invalidReason = !titleValid ? 'Title is required.' : !minutesValid ? 'Length must be one minute or more.' : '';
+
+  return (
+    <main style={{
+      maxWidth: 'var(--sh-content-max)',
+      margin: '0 auto',
+      padding: 'var(--sh-space-10) var(--sh-space-8) var(--sh-space-16)',
+    }}>
+      {/* Breadcrumb */}
+      <div style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        marginBottom: 'var(--sh-space-4)',
+        letterSpacing: '0.04em',
+      }}>
+        <Link to="/advisor/curriculum" style={{ color: 'var(--sh-text-muted)', textDecoration: 'none' }}>
+          Curriculum library
+        </Link>
+        {sourceLesson && (
+          <>
+            {' · '}
+            <Link to={`/advisor/curriculum/${sourceLesson.id}`} style={{ color: 'var(--sh-text-muted)', textDecoration: 'none' }}>
+              {sourceLesson.title}
+            </Link>
+          </>
+        )}
+        {' · '}
+        <span>{breadcrumbTail}</span>
+      </div>
+
+      {/* Header */}
+      <div style={{ marginBottom: 'var(--sh-space-8)' }}>
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          marginBottom: 'var(--sh-space-2)',
+        }}>
+          {eyebrow}
+        </p>
+        <h1 style={{
+          fontFamily: 'var(--sh-font-serif)',
+          fontSize: 'var(--sh-text-2xl)',
+          color: 'var(--sh-text-primary)',
+          marginBottom: 'var(--sh-space-2)',
+          lineHeight: 1.3,
+        }}>
+          {headingText}
+        </h1>
+        <p style={{
+          fontSize: 'var(--sh-text-sm)',
+          color: 'var(--sh-text-muted)',
+          fontStyle: 'italic',
+          lineHeight: 1.55,
+          maxWidth: '640px',
+        }}>
+          Forks, authored lessons, and drafts in this prototype are session-only — they will not survive a page refresh.
+        </p>
+      </div>
+
+      {/* Form */}
+      <Card>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-5)' }}>
+          <FormField label="Title" required>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="A short, declarative title"
+              style={inputStyle}
+            />
+          </FormField>
+
+          <FormField label="Length (minutes)">
+            <input
+              type="number"
+              min={1}
+              value={minutes}
+              onChange={(e) => setMinutes(e.target.value)}
+              style={{ ...inputStyle, width: '120px' }}
+            />
+          </FormField>
+
+          <FormField label="Scope">
+            <SegmentedControl options={SCOPE_OPTIONS} value={scope} onChange={setScope} />
+          </FormField>
+
+          <FormField label="Category">
+            <SegmentedControl options={CATEGORY_OPTIONS} value={category} onChange={setCategory} />
+          </FormField>
+
+          <FormField label="Summary">
+            <textarea
+              value={summary}
+              onChange={(e) => setSummary(e.target.value)}
+              placeholder="One or two sentences describing what the lesson covers."
+              rows={4}
+              style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.6 }}
+            />
+          </FormField>
+        </div>
+
+        {/* Actions */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-end',
+          gap: 'var(--sh-space-3)',
+          marginTop: 'var(--sh-space-6)',
+          paddingTop: 'var(--sh-space-5)',
+          borderTop: 'var(--sh-border-divider)',
+        }}>
+          {!canSave && (
+            <span style={{
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-text-muted)',
+              fontStyle: 'italic',
+            }}>
+              {invalidReason}
+            </span>
+          )}
+          <Button variant="ghost" onClick={handleCancel}>Cancel</Button>
+          <Button variant="primary" onClick={handleSave} disabled={!canSave}>{saveLabel}</Button>
+        </div>
+      </Card>
+    </main>
+  );
+}
+
+// Local form helpers — duplication of Pipeline.jsx's inline controls, conscious
+// per the plan. If a third consumer appears, extract then; not before.
+
+function FormField({ label, required, children }) {
+  return (
+    <div>
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        fontWeight: 500,
+        marginBottom: 'var(--sh-space-2)',
+      }}>
+        {label}
+        {required && <span style={{ color: 'var(--sh-bronze)', marginLeft: '4px' }} aria-hidden="true">·</span>}
+      </p>
+      {children}
+    </div>
+  );
+}
+
+function SegmentedControl({ options, value, onChange }) {
+  return (
+    <div style={{ display: 'inline-flex', gap: 'var(--sh-space-1)' }}>
+      {options.map((opt) => {
+        const selected = opt.value === value;
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            onClick={() => onChange(opt.value)}
+            aria-pressed={selected}
+            style={{
+              background: selected ? 'var(--sh-bronze-tint)' : 'transparent',
+              color: selected ? 'var(--sh-bronze-deep)' : 'var(--sh-text-secondary)',
+              border: selected ? '1px solid transparent' : 'var(--sh-border-thin)',
+              padding: '6px 14px',
+              borderRadius: 'var(--sh-radius-full)',
+              fontSize: 'var(--sh-text-xs)',
+              fontFamily: 'inherit',
+              fontWeight: 500,
+              letterSpacing: '0.02em',
+              cursor: 'pointer',
+            }}
+          >
+            {opt.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+const inputStyle = {
+  width: '100%',
+  boxSizing: 'border-box',
+  padding: 'var(--sh-space-3)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: '6px',
+  fontFamily: 'inherit',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  background: 'var(--sh-card)',
+};
