@@ -10,7 +10,7 @@ export const advisorPracticeProfile = {
   advisorTitle: "Principal Advisor",
   practiceFocus: "Athletes in early career",
   yearsActive: 7,
-  clientCount: 23,
+  clientCount: 9,
 };
 
 export const clients = [
@@ -133,6 +133,13 @@ export const clients = [
         { lessonId: 'cur-007', title: 'Multi-year grant agreements: what to ask for' },
       ],
     },
+    pipeline: [
+      { type: 'digest',       state: 'Active', source: 'default'  },
+      { type: 'notification', state: 'Active', source: 'default'  },
+      { type: 'spotlight',    state: 'Mute',   source: 'override' },
+      { type: 'reflection',   state: 'Active', source: 'default'  },
+      { type: 'cohort',       state: 'Mute',   source: 'override' },
+    ],
   },
   {
     id: 'c-002',
@@ -182,6 +189,13 @@ export const clients = [
         { lessonId: 'cur-002', title: 'Place in your story: family, geography, formative experiences' },
       ],
     },
+    pipeline: [
+      { type: 'digest',       state: 'Mute', source: 'default' },
+      { type: 'notification', state: 'Mute', source: 'default' },
+      { type: 'spotlight',    state: 'Mute', source: 'default' },
+      { type: 'reflection',   state: 'Mute', source: 'default' },
+      { type: 'cohort',       state: 'Mute', source: 'default' },
+    ],
   },
   {
     id: 'c-003',
@@ -277,6 +291,13 @@ export const clients = [
         { lessonId: 'cur-018', title: 'Funder transparency criteria — how to phrase them' },
       ],
     },
+    pipeline: [
+      { type: 'digest',       state: 'Active', source: 'default'  },
+      { type: 'notification', state: 'Active', source: 'default'  },
+      { type: 'spotlight',    state: 'Active', source: 'default'  },
+      { type: 'reflection',   state: 'Mute',   source: 'override' },
+      { type: 'cohort',       state: 'Mute',   source: 'override' },
+    ],
   },
   {
     id: 'c-004',
@@ -412,6 +433,13 @@ export const clients = [
         { lessonId: 'cur-029', title: 'Successor planning: what readiness looks like' },
       ],
     },
+    pipeline: [
+      { type: 'digest',       state: 'Mute',   source: 'override' },
+      { type: 'notification', state: 'Mute',   source: 'override' },
+      { type: 'spotlight',    state: 'Mute',   source: 'override' },
+      { type: 'reflection',   state: 'Active', source: 'default'  },
+      { type: 'cohort',       state: 'Mute',   source: 'override' },
+    ],
   },
   {
     id: 'c-005',
@@ -504,6 +532,13 @@ export const clients = [
         { lessonId: 'cur-011', title: 'Public giving: when and how to talk about it' },
       ],
     },
+    pipeline: [
+      { type: 'digest',       state: 'Active', source: 'default'  },
+      { type: 'notification', state: 'Mute',   source: 'override' },
+      { type: 'spotlight',    state: 'Active', source: 'default'  },
+      { type: 'reflection',   state: 'Mute',   source: 'override' },
+      { type: 'cohort',       state: 'Mute',   source: 'override' },
+    ],
   },
   {
     id: 'c-006',
@@ -552,6 +587,13 @@ export const clients = [
         { lessonId: 'cur-005', title: 'Family-anchored giving: when the family is in the room' },
       ],
     },
+    pipeline: [
+      { type: 'digest',       state: 'Mute', source: 'default' },
+      { type: 'notification', state: 'Mute', source: 'default' },
+      { type: 'spotlight',    state: 'Mute', source: 'default' },
+      { type: 'reflection',   state: 'Mute', source: 'default' },
+      { type: 'cohort',       state: 'Mute', source: 'default' },
+    ],
   },
   {
     id: 'c-007',
@@ -600,6 +642,13 @@ export const clients = [
         { lessonId: 'cur-008', title: 'Visibility choices: public, selective, private' },
       ],
     },
+    pipeline: [
+      { type: 'digest',       state: 'Mute',   source: 'default'  },
+      { type: 'notification', state: 'Mute',   source: 'default'  },
+      { type: 'spotlight',    state: 'Mute',   source: 'default'  },
+      { type: 'reflection',   state: 'Active', source: 'override' },
+      { type: 'cohort',       state: 'Mute',   source: 'default'  },
+    ],
   },
   {
     id: 'c-008',
@@ -695,6 +744,13 @@ export const clients = [
         { lessonId: 'cur-016', title: 'Project funding: agreement language and reporting' },
       ],
     },
+    pipeline: [
+      { type: 'digest',       state: 'Active', source: 'default'  },
+      { type: 'notification', state: 'Active', source: 'default'  },
+      { type: 'spotlight',    state: 'Mute',   source: 'override' },
+      { type: 'reflection',   state: 'Mute',   source: 'override' },
+      { type: 'cohort',       state: 'Mute',   source: 'override' },
+    ],
   },
   {
     id: 'c-009',
@@ -777,6 +833,13 @@ export const clients = [
         { lessonId: 'cur-041', title: 'Closing an advisory engagement: documentation handoff' },
       ],
     },
+    pipeline: [
+      { type: 'digest',       state: 'Mute', source: 'default' },
+      { type: 'notification', state: 'Mute', source: 'default' },
+      { type: 'spotlight',    state: 'Mute', source: 'default' },
+      { type: 'reflection',   state: 'Mute', source: 'default' },
+      { type: 'cohort',       state: 'Mute', source: 'default' },
+    ],
   },
 ];
 

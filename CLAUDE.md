@@ -1,75 +1,56 @@
-# StewardHouse — Project Context
+# StewardHouse — Project Manifest
 
-This file is read automatically at the start of every Claude Code session in this repo. It is the persistent project context. Keep it accurate; update it as locked decisions change.
+This file tells Claude Code how to work in this repository. Read it at the
+start of every session. Keep it accurate; update it as locked decisions change.
 
----
+## What StewardHouse is
 
-## What this project is
+A philanthropic planning and education platform for athletes, their advisors,
+and athletic departments. The platform is **structural, never advisory or
+fiduciary** — it organizes what an advisor or funder decides; it does not
+decide for them. Phase 1 scope is **athletes only**.
 
-StewardHouse is a philanthropic planning and education platform for athletes, musicians, entertainers, streamers, influencers, and creators, plus the institutions and advisors that work with them. The core innovation is **bilateral transparency** — a two-sided transparency layer between individual funder and nonprofit, expressed through the **Giving Partnership Profile (GPP)** (two layers: Giving Style + Giving Identity; narrative-based, no scores or grades).
+The core concept is **bilateral transparency** — a two-sided transparency layer
+between individual funder and nonprofit, expressed through the **Giving
+Partnership Profile (GPP)** (two layers: Giving Style + Giving Identity;
+narrative-based, no scores or grades).
 
-The platform serves four user surfaces:
-- **Individual** — athletes/creators using StewardHouse personally
-- **Advisor** — philanthropic professionals managing an advising practice (active build target)
-- **Enterprise** — athletic departments, universities, institutional admins
-- **Operations** — internal StewardHouse staff
-
----
+The current build is a prototype / stress-test tool, not production. Quality
+over speed is the governing value: stress-test before moving forward, build it
+right once, do not optimize for velocity.
 
 ## Stack
 
-- React + Vite
-- Static JSON fixtures in `src/data/`
-- Browser-based Babel during prototype phase — no build step required
-- Cloudflare Pages auto-deploys from `main` branch
-- Repo: `github.com/talabifaouzi/stewardhouse-app`
-- Live demo: `stewardhouse-app.pages.dev`
+- React + Vite, deployed on Cloudflare Pages
+- react-router-dom for routing
+- Static JSON/JS fixtures in `src/data/` (no backend; Candid API integration is future)
+- Styling via CSS custom properties (design tokens) in `src/styles/global.css` —
+  use `var(--sh-*)` tokens, never hardcoded colors or spacing
+- No TypeScript; plain `.jsx`
 
----
+## Architecture
 
-## File structure
+Five surfaces under `src/surfaces/`, routed in `src/App.jsx`:
+- `landing/` — public entry
+- `individual/` — the funder-facing experience (paused at v0.6.1)
+- `enterprise/` — institutions (athletic departments)
+- `advisor/` — the advisor surface (current focus)
+- `operations/` — internal operations
 
-```
-src/
-  surfaces/
-    individual/   — four-tier individual user surface (deployed at parity)
-    advisor/      — 8-section advisor working view (active build target)
-    enterprise/   — institutional admin
-    operations/   — internal StewardHouse staff view
-  data/           — JSON-shape fixtures for prototype (clients.js, etc.)
-  components/     — shared components
-```
+The advisor surface (`src/surfaces/advisor/`) has 8 sections:
+1. PracticeHome.jsx — practice header + journal
+2. ClientRoster.jsx — client roster (stages: New / Active / Mature / Sunset)
+3. ClientWorkspace.jsx — per-client workspace (narrative-led, three movements:
+   pre-session prep, in-session notes, post-session follow-up)
+4. CurriculumLibrary.jsx — base + fork + author
+5. CohortSpace.jsx — cohorts and workshops
+6. Pipeline.jsx — between-session pipeline (Section 6)
+7. Documentation.jsx — documentation hub
+8. PracticeSettings.jsx — practice settings
 
----
-
-## Brand tokens (LOCKED — never change)
-
-- Background: `#FAF7F2` (warm beige)
-- Accent: `#8B7355` (bronze)
-- Headings: Libre Baskerville (serif)
-- Body: Inter
-- Card surfaces: white
-- Icons: SVG only — **ZERO emoji**, no AI-generated picture art
-- Accessibility: WCAG AA contrast minimum
-- Consistent across all four user surfaces
-
----
-
-## Path B boundary (LOCKED — never violate)
-
-The platform is always **structural**, never advisory/fiduciary.
-
-- **Test:** exposure (in) vs. evaluative recommendation (out)
-- The platform never tells the advisor what to recommend
-- The platform organizes what the advisor decides
-- No AI-drafted Giving Partnership Profiles
-- No custody, no payment rails
-- Education-framed lessons (knowledge, not advice)
-- User-declared surfacing, not algorithmic recommendation
-
-If a feature would put the platform in a position to make an evaluative recommendation (e.g., "you should fund X" or "Marcus is ready for a larger gift"), it violates Path B. Surface options; never prescribe.
-
----
+Shared components live in `src/components/` (Card, Button, SectionLabel,
+HelpIcon, Chrome). Data fixtures live in `src/data/` (clients.js, content.js,
+orgsData.js, etc.).
 
 ## Voice & tone (LOCKED)
 
@@ -82,11 +63,94 @@ Quiet, editorial. Closer to Aesop or The Atlantic than a consumer app.
 - Meet people where they are — never imply users are at a destination
 - Spelling: standard English (Merriam-Webster). Correct silently unless the meaning changes.
 
----
+## Build discipline — follow on every task
 
-## Sector terminology (LOCKED)
+1. **Audit before editing.** When asked to change code, first investigate and
+   report priority-ranked findings with explicit scope boundaries. Do not edit
+   until the change is confirmed.
+2. **One file at a time.** Complete files, no truncation, no "... rest unchanged."
+3. **Validate every phase.** After each change, run the build / lint and confirm
+   it passes before moving on. Do not batch unvalidated edits.
+4. **No silent fixes, no out-of-scope refactoring.** Flag anything unusual before
+   touching it. If you notice an unrelated problem, surface it — do not fix it
+   inline.
+5. **Don't fall in love with the work.** Any code is trashable for a better
+   solution. Prefer the right structure over the written one.
+6. **Commit in small, described increments.** One logical change per commit,
+   clear message. Work on a branch for anything non-trivial.
 
-Different terminology by sector. For Phase 1 (athletics):
+## Product invariants — never violate
+
+- **No scores, no grades, no rankings.** Anywhere — nonprofit profiles, advisor
+  discovery, GPS, pipeline. Narrative-based throughout.
+- **Path B boundary.** The platform is structural. No AI-drafted Giving
+  Partnership Profiles, no custody or payment rails, no evaluative
+  recommendations. Test: exposure (in) vs. evaluative recommendation (out). If a
+  feature would let the platform make an evaluative recommendation (e.g., "you
+  should fund X" or "Marcus is ready for a larger gift"), it violates Path B.
+  Surface options; never prescribe.
+- **Brand tokens only.** Warm beige background `#FAF7F2`, bronze accent `#8B7355`,
+  white card surfaces, Libre Baskerville serif headings, Inter/sans body. Zero
+  emoji. No AI-generated picture art. SVG icons only. WCAG AA. All via
+  `var(--sh-*)` tokens.
+- **Section 6 vocabulary (locked):** "between-session pipeline" (the name),
+  "surface" (the unified verb), states are Active / Mute / Pause, "cohort
+  updates" is the fifth content type. Per-client settings are "default" vs.
+  "override"; overrides are preserved when practice-wide defaults change.
+- **Phase 1 is athletes only.** No music / entertainment / creator language in
+  user-facing copy.
+- **Discovery is for understanding; giving is for acting.** No donate button on
+  the discovery view.
+- **Connection parity across tiers.** Share / Connect / Signal Interest behave
+  identically regardless of subscription level.
+- **Individual-pushes consent model.** Funders initiate; nonprofits don't push.
+- **StewardHouse never authors org-level content** — only structural elements.
+
+## Client roster (Phase 1 — athletics only)
+
+9 fictional athletes across 4 stages (`New` / `Active` / `Mature` / `Sunset`,
+renameable per advisor preference):
+
+- Marcus Thompson (canonical demo client — `c-001`)
+- Jasmine Rivera
+- Reuben Asare
+- Ezekiel Banner
+- Isaiah Coleman
+- Tariq Williams
+- Bree Caldwell
+- Naomi Pierce
+- Jordan Estes
+
+Give each client distinct fictional substance — different sports, gift sizes,
+giving identities, and session histories. **Never copy-paste Marcus's content
+under another name.** Marcus is the canonical demo client and should carry the
+deepest data. Per-stage shape:
+
+- **New:** GPS in progress, 0–1 intro sessions, no curriculum delivered yet
+- **Active:** 3–5 sessions, evolving giving plan, ongoing curriculum
+- **Mature:** 8+ sessions, established giving plan, lighter touch
+- **Sunset:** relationship winding down, transition notes
+
+## Data reconciliation invariant (Section 6)
+
+The roster has **9 clients** (c-001 .. c-009). All Section 6 numbers must
+reconcile against those 9:
+- Each client carries a `pipeline` array: one entry per content type, with
+  `state` (Active/Muted/Paused) and `source` (default/override).
+- A client's `activeContent` count === number of entries with state Active.
+- For each content type, across the 9 clients:
+  `clientsOnDefault + overrides === 9`.
+- `pipelineDefaults` in `content.js` stores those per-type aggregates and must
+  match what the client `pipeline` arrays actually produce.
+- `advisorPracticeProfile.clientCount === 9`.
+
+If you change pipeline data, re-derive and verify these equalities before
+committing. Numbers shown to a user must never contradict each other on screen.
+
+## Sector terminology (FUTURE PHASE — reference only)
+
+Phase 1 is athletes only; the table below is locked terminology for later
+phases and must not appear in current user-facing copy.
 
 | Concept | Athletics | Music | Entertainment | Creator |
 |---|---|---|---|---|
@@ -99,83 +163,6 @@ Different terminology by sector. For Phase 1 (athletics):
 
 Non-athletics sectors use "Program Reinvestment," not "endowment."
 
----
-
-## Client roster (Phase 1 — athletics only)
-
-9 fictional athletes across 4 stages (`New` / `Active` / `Mature` / `Sunset`, renameable per advisor preference):
-
-- Marcus Thompson (canonical demo client — `c-001`)
-- Jasmine Rivera
-- Reuben Asare
-- Ezekiel Banner
-- Isaiah Coleman
-- Tariq Williams
-- Bree Caldwell
-- Naomi Pierce
-- Jordan Estes
-
-When building per-client content, give each client distinct fictional substance — different sports, different gift sizes, different giving identities, different session histories. **Never copy-paste Marcus's content under another name.**
-
----
-
-## Advisor working view IA (LOCKED — v1.1)
-
-Eight sections, structural parallel to the nonprofit profile view:
-
-1. **Practice Header** — practice identity, current state, practice journal
-2. **Client Roster** — clients organized by stage
-3. **Client Workspace** — narrative-led depth, the advisor's daily home (active build target)
-4. **Curriculum Library** — base + fork + author + drafts (advisor retains IP, platform holds delivery license)
-5. **Cohort & Workshop Space** — group programming
-6. **Between-Session Pipeline** — 3-tier preference cascade, 5 content types
-7. **Documentation Hub** — practice docs, audit log, exports
-8. **Practice Settings** — instance configuration
-
----
-
-## Core principles (LOCKED)
-
-- **No scores, no rankings, no grades** — applies to nonprofits, advisors, clients, everywhere
-- **Discovery is for understanding; giving is for acting** — no donate button on discovery view
-- **Connection parity across tiers** — Share/Connect/Signal Interest behave identically regardless of subscription level
-- **Individual-pushes consent model** — funders initiate; nonprofits don't push
-- **StewardHouse never authors org-level content** — only structural elements
-- **Quality over speed** — the turtle wins the race
-- **Don't fall in love with the work** — anything trashable for a better solution
-
----
-
-## Active build target (current)
-
-Deepen `src/surfaces/advisor/ClientWorkspace.jsx` through three movements:
-
-1. **Pre-session prep** — agenda, what was left open last session, links into curriculum
-2. **In-session notes / journaling** — writable advisor-private notes with state, timestamps, action items
-3. **Post-session follow-up** — decisions captured, action items, link to what content surfaced afterward via Section 6 pipeline
-
-**Architecture order:** extend the client data model first (add `givingPlan`, `sessions[]`, `privateNotes[]`, `nextSession` agenda fields to each client in `src/data/clients.js`), then deepen the component to render the new fields. Otherwise every deepening just adds more Marcus-shaped placeholders.
-
-Marcus Thompson is the canonical demo client — give him the deepest data. The other 8 clients should each have distinct fictional content appropriate to their stage:
-- **New** clients: GPS in progress, 0–1 intro sessions, no curriculum delivered yet
-- **Active** clients: 3–5 sessions, evolving giving plan, ongoing curriculum
-- **Mature** clients: 8+ sessions, established giving plan, lighter touch
-- **Sunset** clients: relationship winding down, transition notes
-
----
-
-## Working discipline
-
-- Audit before editing — read existing code structure before adding new
-- No silent fixes — flag anything unusual before touching it
-- No scope creep — stay on the active build target
-- Write complete files without truncation
-- One file at a time
-- Babel-validate every phase
-- Use 2-file patch sets when possible (faster, fewer Windows folder issues)
-
----
-
 ## Things this project is NOT
 
 - Not a robo-advisor for charity
@@ -183,8 +170,6 @@ Marcus Thompson is the canonical demo client — give him the deepest data. The 
 - Not a fiduciary or evaluative recommender
 - Not a platform that custodies funds or processes gifts
 - Not advisor-driven matching with scores or rankings
-
----
 
 ## When in doubt
 
