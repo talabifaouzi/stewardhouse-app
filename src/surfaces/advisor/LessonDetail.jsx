@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
@@ -13,7 +14,14 @@ function capitalize(s) {
 export default function LessonDetail() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
-  const { lessons: practiceLessons, remove } = usePracticeContent();
+  const { lessons: practiceLessons, remove, update } = usePracticeContent();
+
+  // Add-material form state — practice lessons only.
+  // Hooks must run unconditionally, so these sit above the early return below.
+  const [openForm, setOpenForm] = useState(null); // 'reading' | 'task' | null
+  const [formTitle, setFormTitle] = useState('');
+  const [formFilename, setFormFilename] = useState('');
+
   const lesson = findLesson(lessonId, practiceLessons);
 
   if (!lesson) {
@@ -24,6 +32,27 @@ export default function LessonDetail() {
   const baseLesson = lesson.kind === 'fork' && lesson.baseId
     ? getLessonById(lesson.baseId)
     : null;
+  const isPractice = lesson.kind === 'fork' || lesson.kind === 'authored';
+
+  const resetForm = () => {
+    setOpenForm(null);
+    setFormTitle('');
+    setFormFilename('');
+  };
+
+  const handleAddMaterial = () => {
+    const trimmedTitle = formTitle.trim();
+    if (!trimmedTitle) return;
+    if (openForm === 'reading' && !formFilename) return;
+    const newMaterial = {
+      id: `mat-${Date.now()}`,
+      type: openForm,
+      title: trimmedTitle,
+      fileName: openForm === 'reading' ? formFilename : null,
+    };
+    update(lesson.id, { materials: [...(lesson.materials || []), newMaterial] });
+    resetForm();
+  };
 
   const handleDiscard = () => {
     const message = lesson.kind === 'fork'
@@ -138,8 +167,9 @@ export default function LessonDetail() {
         </div>
       </Card>
 
-      {/* Materials — read-only display; renders only when the lesson carries any */}
-      {lesson.materials && lesson.materials.length > 0 && (
+      {/* Materials — base lessons render only if they carry any (they don't);
+          practice lessons always render, to allow adding the first material. */}
+      {(isPractice || (lesson.materials && lesson.materials.length > 0)) && (
         <div style={{ marginTop: 'var(--sh-space-5)' }}>
           <Card>
             <h2 style={{
@@ -151,11 +181,84 @@ export default function LessonDetail() {
             }}>
               Materials
             </h2>
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
-              {lesson.materials.map((mat, i) => (
-                <MaterialRow key={mat.id} material={mat} first={i === 0} />
-              ))}
-            </div>
+
+            {lesson.materials && lesson.materials.length > 0 ? (
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                {lesson.materials.map((mat, i) => (
+                  <MaterialRow key={mat.id} material={mat} first={i === 0} />
+                ))}
+              </div>
+            ) : (
+              <p style={{
+                fontSize: 'var(--sh-text-sm)',
+                color: 'var(--sh-text-muted)',
+                fontStyle: 'italic',
+                lineHeight: 1.6,
+                margin: 0,
+              }}>
+                No materials yet.
+              </p>
+            )}
+
+            {isPractice && (
+              <div style={{
+                marginTop: 'var(--sh-space-5)',
+                paddingTop: 'var(--sh-space-4)',
+                borderTop: 'var(--sh-border-divider)',
+              }}>
+                {openForm === null && (
+                  <div style={{ display: 'flex', gap: 'var(--sh-space-2)' }}>
+                    <Button variant="secondary" onClick={() => setOpenForm('reading')}>Add reading</Button>
+                    <Button variant="secondary" onClick={() => setOpenForm('task')}>Add task</Button>
+                  </div>
+                )}
+                {openForm === 'reading' && (
+                  <div>
+                    <FieldLabel>File</FieldLabel>
+                    <input
+                      type="file"
+                      onChange={(e) => setFormFilename(e.target.files?.[0]?.name || '')}
+                      style={{
+                        fontSize: 'var(--sh-text-sm)',
+                        fontFamily: 'inherit',
+                        color: 'var(--sh-text-body)',
+                        marginBottom: 'var(--sh-space-4)',
+                      }}
+                    />
+                    <FieldLabel>Title</FieldLabel>
+                    <input
+                      type="text"
+                      value={formTitle}
+                      onChange={(e) => setFormTitle(e.target.value)}
+                      placeholder="A short, descriptive title"
+                      style={addMaterialInputStyle}
+                    />
+                    <FormActions
+                      onCancel={resetForm}
+                      onAdd={handleAddMaterial}
+                      canAdd={formTitle.trim().length > 0 && formFilename.length > 0}
+                    />
+                  </div>
+                )}
+                {openForm === 'task' && (
+                  <div>
+                    <FieldLabel>Title</FieldLabel>
+                    <input
+                      type="text"
+                      value={formTitle}
+                      onChange={(e) => setFormTitle(e.target.value)}
+                      placeholder="A short, descriptive title"
+                      style={addMaterialInputStyle}
+                    />
+                    <FormActions
+                      onCancel={resetForm}
+                      onAdd={handleAddMaterial}
+                      canAdd={formTitle.trim().length > 0}
+                    />
+                  </div>
+                )}
+              </div>
+            )}
           </Card>
         </div>
       )}
@@ -240,3 +343,45 @@ function MaterialRow({ material, first }) {
     </div>
   );
 }
+
+// Local form helpers — kept in-file to honor the "one-file" constraint.
+function FieldLabel({ children }) {
+  return (
+    <p style={{
+      fontSize: 'var(--sh-text-xs)',
+      color: 'var(--sh-text-muted)',
+      textTransform: 'uppercase',
+      letterSpacing: '0.08em',
+      fontWeight: 500,
+      marginBottom: 'var(--sh-space-2)',
+    }}>
+      {children}
+    </p>
+  );
+}
+
+function FormActions({ onCancel, onAdd, canAdd }) {
+  return (
+    <div style={{
+      display: 'flex',
+      justifyContent: 'flex-end',
+      gap: 'var(--sh-space-2)',
+      marginTop: 'var(--sh-space-4)',
+    }}>
+      <Button variant="ghost" onClick={onCancel}>Cancel</Button>
+      <Button variant="primary" onClick={onAdd} disabled={!canAdd}>Add</Button>
+    </div>
+  );
+}
+
+const addMaterialInputStyle = {
+  width: '100%',
+  boxSizing: 'border-box',
+  padding: 'var(--sh-space-3)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: '6px',
+  fontFamily: 'inherit',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  background: 'var(--sh-card)',
+};
