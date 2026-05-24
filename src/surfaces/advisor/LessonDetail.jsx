@@ -138,6 +138,28 @@ export default function LessonDetail() {
         </div>
       </Card>
 
+      {/* Materials — read-only display; renders only when the lesson carries any */}
+      {lesson.materials && lesson.materials.length > 0 && (
+        <div style={{ marginTop: 'var(--sh-space-5)' }}>
+          <Card>
+            <h2 style={{
+              fontFamily: 'var(--sh-font-serif)',
+              fontSize: 'var(--sh-text-lg)',
+              color: 'var(--sh-text-primary)',
+              margin: 0,
+              marginBottom: 'var(--sh-space-4)',
+            }}>
+              Materials
+            </h2>
+            <div style={{ display: 'flex', flexDirection: 'column' }}>
+              {lesson.materials.map((mat, i) => (
+                <MaterialRow key={mat.id} material={mat} first={i === 0} />
+              ))}
+            </div>
+          </Card>
+        </div>
+      )}
+
       {/* Actions — base: fork; fork: edit + discard fork; authored: edit + discard */}
       <div style={{ display: 'flex', gap: 'var(--sh-space-2)', marginTop: 'var(--sh-space-5)' }}>
         {!lesson.kind && (
@@ -188,5 +210,33 @@ export default function LessonDetail() {
         </Link>
       </div>
     </main>
+  );
+}
+
+function MaterialRow({ material, first }) {
+  const typeLabel = material.type === 'reading' ? 'Reading' : 'Task';
+  const showFile = material.type === 'reading' && material.fileName;
+  return (
+    <div style={{
+      padding: 'var(--sh-space-3) 0',
+      borderTop: first ? 'none' : 'var(--sh-border-divider)',
+    }}>
+      <p style={{
+        fontFamily: 'var(--sh-font-serif)',
+        fontSize: 'var(--sh-text-base)',
+        color: 'var(--sh-text-primary)',
+        margin: 0,
+        marginBottom: '2px',
+      }}>
+        {material.title}
+      </p>
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        margin: 0,
+      }}>
+        {typeLabel}{showFile ? ` · ${material.fileName}` : ''}
+      </p>
+    </div>
   );
 }

@@ -26,6 +26,10 @@ export const practiceContentSeed = [
     summary: 'A tailored version of the base lesson, tuned for athlete clients writing their first formal inquiry. Adds three sample paragraphs drawn from past Walker Advisory engagements (names removed) and a short list of phrasings the practice has learned to avoid.',
     createdAt: '2026-03-08',
     updatedAt: '2026-04-19',
+    materials: [
+      { id: 'mat-001', type: 'reading', title: 'Sample first-inquiry paragraphs (athlete clients)', fileName: 'first-inquiry-samples-athletes.pdf' },
+      { id: 'mat-002', type: 'task', title: 'Draft a one-paragraph inquiry to a candidate organization', fileName: null },
+    ],
   },
   {
     id: 'pl-002',
@@ -65,6 +69,9 @@ export const practiceContentSeed = [
     summary: 'A practice-authored primer on how Walker Advisory paces the first six months of a new client engagement — when to ask which question, what to leave for later, and how to read the early signals.',
     createdAt: '2026-01-15',
     updatedAt: '2026-04-02',
+    materials: [
+      { id: 'mat-003', type: 'reading', title: 'Six-month cadence map for new athlete clients', fileName: 'six-month-cadence-map.pdf' },
+    ],
   },
   {
     id: 'pl-005',
