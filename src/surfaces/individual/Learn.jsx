@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
-import { UNIVERSAL_LESSONS, ATHLETICS_LESSONS, VISIBILITY_LESSONS, GLOSSARY } from '../../data/lessonsData.js';
+import { UNIVERSAL_LESSONS, ATHLETICS_LESSONS, VISIBILITY_LESSONS, GLOSSARY, ADVISOR_ASSIGNMENTS } from '../../data/lessonsData.js';
 
 export default function Learn() {
-  const { lessonsDone, markLessonDone, answers } = useIntake();
+  const { lessonsDone, markLessonDone, assignmentsDone, toggleAssignment, answers } = useIntake();
   const [activeLesson, setActiveLesson] = useState(null);
   const [showGlossary, setShowGlossary] = useState(false);
 
@@ -21,6 +21,7 @@ export default function Learn() {
 
   const allLessons = sections.flatMap(s => s.lessons);
   const completedCount = allLessons.filter(l => lessonsDone.includes(l.id)).length;
+  const assignmentsDoneCount = ADVISOR_ASSIGNMENTS.filter(a => assignmentsDone.includes(a.id)).length;
 
   // Reader view — drill into one lesson's cards
   if (activeLesson) {
@@ -71,7 +72,7 @@ export default function Learn() {
         marginBottom: 'var(--sh-space-2)',
         lineHeight: 1.55,
       }}>
-        Short lessons. Read one when you have a few minutes. No homework.
+        Short lessons or review materials. Read one when you have a few minutes.
       </p>
       <p style={{
         fontSize: 'var(--sh-text-xs)',
@@ -106,6 +107,35 @@ export default function Learn() {
           {GLOSSARY.length} key terms — bookmark for reference
         </p>
       </Card>
+
+      {/* From your advisor — standalone client-side assignments mock */}
+      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
+        <p style={{
+          fontSize: '11px',
+          fontWeight: 600,
+          color: 'var(--sh-bronze)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          marginBottom: '4px',
+        }}>
+          From your advisor
+        </p>
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+          marginBottom: 'var(--sh-space-3)',
+        }}>
+          {assignmentsDoneCount} of {ADVISOR_ASSIGNMENTS.length} complete
+        </p>
+        {ADVISOR_ASSIGNMENTS.map(assignment => (
+          <AssignmentRow
+            key={assignment.id}
+            assignment={assignment}
+            done={assignmentsDone.includes(assignment.id)}
+            onToggle={() => toggleAssignment(assignment.id)}
+          />
+        ))}
+      </div>
 
       {sections.map(section => (
         <div key={section.label} style={{ marginBottom: 'var(--sh-space-6)' }}>
@@ -198,6 +228,77 @@ function LessonRow({ lesson, done, onOpen }) {
       }}>
         →
       </span>
+    </div>
+  );
+}
+
+function AssignmentRow({ assignment, done, onToggle }) {
+  const typeLabel = assignment.type === 'reading' ? 'Reading' : 'Task';
+  const meta = assignment.type === 'reading' && assignment.fileName
+    ? `${typeLabel} · ${assignment.fileName}`
+    : typeLabel;
+  const handleKey = (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onToggle();
+    }
+  };
+  return (
+    <div
+      onClick={onToggle}
+      onKeyDown={handleKey}
+      role="checkbox"
+      aria-checked={done}
+      tabIndex={0}
+      style={{
+        background: 'var(--sh-card)',
+        borderRadius: 'var(--sh-radius-lg)',
+        border: `1px solid ${done ? 'var(--sh-bronze-border)' : 'var(--sh-card-border)'}`,
+        borderLeft: '3px solid var(--sh-bronze)',
+        padding: 'var(--sh-space-4)',
+        marginBottom: 'var(--sh-space-2)',
+        cursor: 'pointer',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--sh-space-3)',
+        transition: 'all 150ms ease',
+      }}
+    >
+      <span
+        aria-hidden="true"
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          width: 20,
+          height: 20,
+          borderRadius: 4,
+          border: `1px solid ${done ? 'var(--sh-bronze)' : 'var(--sh-card-border)'}`,
+          background: done ? 'var(--sh-bronze)' : 'transparent',
+          color: 'white',
+          fontSize: 'var(--sh-text-xs)',
+          fontWeight: 700,
+          flexShrink: 0,
+        }}
+      >
+        {done ? '✓' : ''}
+      </span>
+      <div style={{ flex: 1 }}>
+        <p style={{
+          fontSize: 'var(--sh-text-base)',
+          fontWeight: 600,
+          color: 'var(--sh-text-primary)',
+          marginBottom: '4px',
+        }}>
+          {assignment.title}
+        </p>
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+        }}>
+          {meta}
+        </p>
+      </div>
     </div>
   );
 }

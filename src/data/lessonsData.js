@@ -151,3 +151,13 @@ export const GLOSSARY = [
   { term: 'GPS (Giving Policy Statement)', def: "Your personal giving compass, created through StewardHouse's Giving Studio. It captures your values, causes, geography, and preferences in your own words — then guides every giving decision you make." },
   { term: 'Trust-based philanthropy', def: "An approach to giving that centers trust between funders and organizations. It includes unrestricted funding, multi-year commitments, simplified reporting, and genuine relationship-building. It's not about blind trust — it's about building mutual accountability." },
 ];
+
+// Standalone client-side assignments fixture for the individual surface.
+// Titles mirror the advisor's seeded materials so the demo reads as connected,
+// but this is NOT linked to the advisor surface — it's a separate, hardcoded
+// list used to mock what an athlete might see "from their advisor".
+export const ADVISOR_ASSIGNMENTS = [
+  { id: 'asg-001', type: 'reading', title: 'Sample first-inquiry paragraphs (athlete clients)', fileName: 'first-inquiry-samples-athletes.pdf' },
+  { id: 'asg-002', type: 'task',    title: 'Draft a one-paragraph inquiry to a candidate organization', fileName: null },
+  { id: 'asg-003', type: 'reading', title: 'Six-month cadence map for new athlete clients', fileName: 'six-month-cadence-map.pdf' },
+];

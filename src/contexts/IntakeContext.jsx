@@ -32,6 +32,7 @@ const DEFAULT_STATE = {
   worldLabel: 'Athletics',
   gifts: defaultGifts,
   lessonsDone: [],
+  assignmentsDone: [],
 };
 
 const IntakeContext = createContext(null);
@@ -97,6 +98,7 @@ export function IntakeProvider({ children }) {
       worldLabel: 'Athletics',
       gifts: [],
       lessonsDone: [],
+      assignmentsDone: [],
     });
   };
 
@@ -123,6 +125,16 @@ export function IntakeProvider({ children }) {
     }));
   };
 
+  // Toggle an assignment's done state (two-way — client can uncheck)
+  const toggleAssignment = (id) => {
+    setState(prev => ({
+      ...prev,
+      assignmentsDone: prev.assignmentsDone.includes(id)
+        ? prev.assignmentsDone.filter(x => x !== id)
+        : [...prev.assignmentsDone, id],
+    }));
+  };
+
   return (
     <IntakeContext.Provider value={{
       ...state,
@@ -133,6 +145,7 @@ export function IntakeProvider({ children }) {
       loadDemo,
       addGift,
       markLessonDone,
+      toggleAssignment,
     }}>
       {children}
     </IntakeContext.Provider>
