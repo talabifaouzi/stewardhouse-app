@@ -46,14 +46,6 @@ export default function PracticeHome() {
         }}>
           {advisorPracticeProfile.practiceName}
         </h1>
-        <p style={{
-          fontSize: 'var(--sh-text-md)',
-          color: 'var(--sh-text-secondary)',
-          maxWidth: '620px',
-          lineHeight: 1.6,
-        }}>
-          {advisorPracticeProfile.practiceFocus}. {advisorPracticeProfile.yearsActive} years active · {advisorPracticeProfile.clientCount} clients across stages.
-        </p>
       </div>
 
       {/* Stat row */}
