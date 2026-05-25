@@ -11,6 +11,7 @@ import LessonDetail from './LessonDetail.jsx';
 import LessonEditor from './LessonEditor.jsx';
 import DraftsList from './DraftsList.jsx';
 import CohortSpace from './CohortSpace.jsx';
+import CohortDetail from './CohortDetail.jsx';
 import Pipeline from './Pipeline.jsx';
 import Documentation from './Documentation.jsx';
 import PracticeSettings from './PracticeSettings.jsx';
@@ -65,6 +66,7 @@ export default function AdvisorSurface() {
             <Route path="curriculum/:lessonId/fork" element={<LessonEditor mode="fork" />} />
             <Route path="curriculum/:lessonId/edit" element={<LessonEditor mode="edit" />} />
             <Route path="cohorts" element={<CohortSpace />} />
+            <Route path="cohorts/:cohortId" element={<CohortDetail />} />
             <Route path="pipeline" element={<Pipeline />} />
             <Route path="docs" element={<Documentation />} />
             <Route path="settings" element={<PracticeSettings />} />

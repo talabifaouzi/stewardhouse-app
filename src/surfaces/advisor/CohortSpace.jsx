@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
@@ -53,7 +54,13 @@ export default function CohortSpace() {
         gap: 'var(--sh-space-5)',
       }}>
         {cohorts.map(cohort => (
-          <CohortCard key={cohort.id} cohort={cohort} />
+          <Link
+            key={cohort.id}
+            to={`/advisor/cohorts/${cohort.id}`}
+            style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
+          >
+            <CohortCard cohort={cohort} />
+          </Link>
         ))}
       </div>
     </main>
@@ -62,7 +69,7 @@ export default function CohortSpace() {
 
 function CohortCard({ cohort }) {
   return (
-    <Card>
+    <Card style={{ cursor: 'pointer' }}>
       <SectionLabel>{cohort.focus}</SectionLabel>
       <h3 style={{
         fontFamily: 'var(--sh-font-serif)',
