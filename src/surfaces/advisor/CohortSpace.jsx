@@ -1,27 +1,7 @@
 import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-
-const cohorts = [
-  {
-    id: 'co-01',
-    name: 'Cooper State Tigers — basketball',
-    members: 8,
-    focus: 'D1 men\'s basketball',
-    started: 'February 2026',
-    nextSession: 'May 18, 2026',
-    summary: 'Eight players from the Cooper State University men\'s basketball team working through the curriculum as a team unit. Cohort meets twice monthly; individual sessions in between.',
-  },
-  {
-    id: 'co-02',
-    name: 'Northwood University — track and field',
-    members: 5,
-    focus: 'Track and field',
-    started: 'October 2025',
-    nextSession: 'May 27, 2026',
-    summary: 'Five athletes from Northwood University\'s track and field program — mix of distance, sprints, and field events. Building an athletics-rooted giving practice together as a team.',
-  },
-];
+import { cohorts } from '../../data/cohorts.js';
 
 export default function CohortSpace() {
   return (
@@ -106,7 +86,7 @@ function CohortCard({ cohort }) {
         paddingTop: 'var(--sh-space-3)',
         borderTop: 'var(--sh-border-divider)',
       }}>
-        <Meta label="Members" value={cohort.members} />
+        <Meta label="Members" value={cohort.memberIds.length + (cohort.externalMembers || 0)} />
         <Meta label="Started" value={cohort.started} />
         <Meta label="Next" value={cohort.nextSession} />
       </div>

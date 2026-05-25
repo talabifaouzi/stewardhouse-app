@@ -1,0 +1,28 @@
+export const cohorts = [
+  {
+    id: 'coh-001',
+    name: 'State University — basketball',
+    focus: 'D1 men\'s basketball',
+    started: 'February 2026',
+    nextSession: 'May 18, 2026',
+    summary: 'Eight players from the State University men\'s basketball team working through the curriculum as a team unit. Cohort meets twice monthly; individual sessions in between.',
+    memberIds: ['c-001', 'c-007'],
+    externalMembers: 6,
+    assignedLessons: [],
+    updates: [],
+    sessions: [],
+  },
+  {
+    id: 'coh-002',
+    name: 'State College — track and field',
+    focus: 'Track and field',
+    started: 'October 2025',
+    nextSession: 'May 27, 2026',
+    summary: 'Five athletes from State College\'s track and field program — a mix of distance, sprints, and field events. Building an athletics-rooted giving practice together as a team.',
+    memberIds: ['c-003', 'c-008'],
+    externalMembers: 3,
+    assignedLessons: [],
+    updates: [],
+    sessions: [],
+  },
+];
