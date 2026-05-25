@@ -1,12 +1,38 @@
+import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { cohorts } from '../../data/cohorts.js';
 import { clients } from '../../data/clients.js';
 
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+function formatDate(iso) {
+  if (!iso || typeof iso !== 'string') return '';
+  const parts = iso.split('-');
+  if (parts.length !== 3) return iso;
+  const [y, m, d] = parts.map(Number);
+  if (!y || !m || !d) return iso;
+  return `${MONTH_NAMES[m - 1]} ${d}, ${y}`;
+}
+
+function todayIso() {
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}`;
+}
+
 export default function CohortDetail() {
   const { cohortId } = useParams();
   const cohort = cohorts.find(c => c.id === cohortId);
+  const [updates, setUpdates] = useState(cohort?.updates || []);
+  const [titleDraft, setTitleDraft] = useState('');
+  const [bodyDraft, setBodyDraft] = useState('');
 
   if (!cohort) {
     return (
@@ -32,6 +58,21 @@ export default function CohortDetail() {
   const memberCount = cohort.memberIds.length + externalCount;
   const assignedLessons = cohort.assignedLessons || [];
   const sessions = cohort.sessions || [];
+
+  const canPublish = titleDraft.trim().length > 0 && bodyDraft.trim().length > 0;
+
+  const publish = () => {
+    if (!canPublish) return;
+    const newUpdate = {
+      id: `u-local-${Date.now()}`,
+      date: todayIso(),
+      title: titleDraft.trim(),
+      body: bodyDraft.trim(),
+    };
+    setUpdates(prev => [newUpdate, ...prev]);
+    setTitleDraft('');
+    setBodyDraft('');
+  };
 
   return (
     <main style={mainStyle}>
@@ -146,6 +187,100 @@ export default function CohortDetail() {
         </Card>
       </div>
 
+      {/* Updates — composer + published list */}
+      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
+        <Card>
+          <SectionLabel>Updates</SectionLabel>
+
+          <input
+            type="text"
+            value={titleDraft}
+            onChange={(e) => setTitleDraft(e.target.value)}
+            placeholder="Title"
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: 'var(--sh-space-3)',
+              border: 'var(--sh-border-thin)',
+              borderRadius: '6px',
+              fontFamily: 'inherit',
+              fontSize: 'var(--sh-text-sm)',
+              color: 'var(--sh-text-body)',
+              background: 'var(--sh-card)',
+              marginBottom: 'var(--sh-space-2)',
+            }}
+          />
+          <textarea
+            value={bodyDraft}
+            onChange={(e) => setBodyDraft(e.target.value)}
+            placeholder="What is the update? You author it; the platform routes it to members."
+            rows={4}
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: 'var(--sh-space-3)',
+              border: 'var(--sh-border-thin)',
+              borderRadius: '6px',
+              fontFamily: 'inherit',
+              fontSize: 'var(--sh-text-sm)',
+              color: 'var(--sh-text-body)',
+              background: 'var(--sh-card)',
+              resize: 'vertical',
+              lineHeight: 1.55,
+            }}
+          />
+          <div style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            gap: 'var(--sh-space-3)',
+            marginTop: 'var(--sh-space-2)',
+          }}>
+            <p style={{
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-text-muted)',
+              fontStyle: 'italic',
+              lineHeight: 1.4,
+              flex: 1,
+            }}>
+              Updates published in this session are not yet persisted.
+            </p>
+            <button
+              onClick={publish}
+              disabled={!canPublish}
+              style={{
+                background: 'var(--sh-bronze)',
+                color: 'white',
+                border: 'none',
+                padding: 'var(--sh-space-2) var(--sh-space-4)',
+                borderRadius: '4px',
+                fontSize: 'var(--sh-text-sm)',
+                fontWeight: 500,
+                cursor: canPublish ? 'pointer' : 'not-allowed',
+                opacity: canPublish ? 1 : 0.4,
+                flexShrink: 0,
+              }}
+            >
+              Publish update
+            </button>
+          </div>
+
+          <div style={{
+            marginTop: 'var(--sh-space-5)',
+            paddingTop: 'var(--sh-space-4)',
+            borderTop: 'var(--sh-border-divider)',
+          }}>
+            {updates.length === 0 ? (
+              <p style={emptyTextStyle}>No updates published yet.</p>
+            ) : (
+              updates.map((u, idx) => (
+                <UpdateItem key={u.id} update={u} first={idx === 0} />
+              ))
+            )}
+          </div>
+        </Card>
+      </div>
+
       {/* Curriculum track */}
       <div style={{ marginBottom: 'var(--sh-space-6)' }}>
         <Card>
@@ -170,6 +305,41 @@ export default function CohortDetail() {
         </Card>
       </div>
     </main>
+  );
+}
+
+function UpdateItem({ update, first }) {
+  return (
+    <div style={{
+      paddingTop: first ? 0 : 'var(--sh-space-4)',
+      paddingBottom: 'var(--sh-space-4)',
+      borderTop: first ? 'none' : 'var(--sh-border-divider)',
+    }}>
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        marginBottom: 'var(--sh-space-1)',
+        letterSpacing: '0.02em',
+      }}>
+        {formatDate(update.date)}
+      </p>
+      <p style={{
+        fontFamily: 'var(--sh-font-serif)',
+        fontSize: 'var(--sh-text-base)',
+        color: 'var(--sh-text-primary)',
+        marginBottom: 'var(--sh-space-2)',
+      }}>
+        {update.title}
+      </p>
+      <p style={{
+        fontSize: 'var(--sh-text-sm)',
+        color: 'var(--sh-text-secondary)',
+        lineHeight: 1.6,
+        fontStyle: 'italic',
+      }}>
+        {update.body}
+      </p>
+    </div>
   );
 }
 
