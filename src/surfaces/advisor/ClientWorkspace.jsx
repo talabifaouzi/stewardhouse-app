@@ -3,6 +3,7 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { clients } from '../../data/clients.js';
+import { cohorts } from '../../data/cohorts.js';
 import { contentTypes, getLessonById } from '../../data/content.js';
 
 const MONTH_NAMES = [
@@ -42,6 +43,7 @@ export default function ClientWorkspace() {
   const sessions = client.sessions || [];
   const givingPlan = client.givingPlan || null;
   const isSunset = client.stage === 'Sunset';
+  const cohortMatches = cohorts.filter(c => c.memberIds.includes(client.id));
 
   return (
     <main style={{
@@ -114,6 +116,32 @@ export default function ClientWorkspace() {
               letterSpacing: '0.02em',
             }}>
               (Sunset — relationship closing)
+            </p>
+          )}
+          {cohortMatches.length > 0 && (
+            <p style={{
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-text-muted)',
+              marginBottom: 'var(--sh-space-3)',
+              letterSpacing: '0.02em',
+            }}>
+              {cohortMatches.length === 1 ? 'Cohort' : 'Cohorts'}
+              {' · '}
+              {cohortMatches.map((c, idx) => (
+                <span key={c.id}>
+                  {idx > 0 && ' · '}
+                  <Link
+                    to={`/advisor/cohorts/${c.id}`}
+                    style={{
+                      color: 'var(--sh-text-muted)',
+                      fontStyle: 'italic',
+                      textDecoration: 'none',
+                    }}
+                  >
+                    {c.name}
+                  </Link>
+                </span>
+              ))}
             </p>
           )}
           <p style={{
