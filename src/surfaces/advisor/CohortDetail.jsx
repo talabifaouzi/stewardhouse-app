@@ -4,6 +4,7 @@ import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { cohorts } from '../../data/cohorts.js';
 import { clients } from '../../data/clients.js';
+import { THEMES } from '../../data/themes.js';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -25,6 +26,13 @@ function todayIso() {
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}`;
+}
+
+function formatNames(names) {
+  if (names.length === 0) return '';
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
 }
 
 export default function CohortDetail() {
@@ -58,6 +66,24 @@ export default function CohortDetail() {
   const memberCount = cohort.memberIds.length + externalCount;
   const assignedLessons = cohort.assignedLessons || [];
   const sessions = cohort.sessions || [];
+
+  const themeMembership = {};
+  rosterMembers.forEach(m => {
+    const themes = m.givingPlan?.themes || [];
+    themes.forEach(themeId => {
+      if (!themeMembership[themeId]) themeMembership[themeId] = [];
+      themeMembership[themeId].push(m.name);
+    });
+  });
+  const themeLabelById = Object.fromEntries(THEMES.map(t => [t.id, t.label]));
+  const sharedInterests = Object.entries(themeMembership)
+    .filter(([, names]) => names.length >= 2)
+    .map(([id, names]) => ({
+      id,
+      label: themeLabelById[id] || id,
+      names,
+    }))
+    .sort((a, b) => b.names.length - a.names.length);
 
   const canPublish = titleDraft.trim().length > 0 && bodyDraft.trim().length > 0;
 
@@ -183,6 +209,42 @@ export default function CohortDetail() {
             }}>
               Plus {externalCount} {externalCount === 1 ? 'teammate' : 'teammates'} outside your client roster.
             </p>
+          )}
+        </Card>
+      </div>
+
+      {/* Shared interests — themes shared by 2+ roster members */}
+      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
+        <Card>
+          <SectionLabel>Shared interests</SectionLabel>
+          {sharedInterests.length === 0 ? (
+            <p style={emptyTextStyle}>No shared interests surfaced yet.</p>
+          ) : (
+            <ul style={listResetStyle}>
+              {sharedInterests.map((s, idx) => (
+                <li key={s.id} style={{
+                  paddingTop: idx === 0 ? 0 : 'var(--sh-space-3)',
+                  paddingBottom: 'var(--sh-space-3)',
+                  borderTop: idx === 0 ? 'none' : 'var(--sh-border-divider)',
+                }}>
+                  <p style={{
+                    fontFamily: 'var(--sh-font-serif)',
+                    fontSize: 'var(--sh-text-md)',
+                    color: 'var(--sh-text-primary)',
+                    marginBottom: 'var(--sh-space-1)',
+                  }}>
+                    {s.label}
+                  </p>
+                  <p style={{
+                    fontSize: 'var(--sh-text-sm)',
+                    color: 'var(--sh-text-secondary)',
+                    lineHeight: 1.55,
+                  }}>
+                    {formatNames(s.names)}
+                  </p>
+                </li>
+              ))}
+            </ul>
           )}
         </Card>
       </div>
