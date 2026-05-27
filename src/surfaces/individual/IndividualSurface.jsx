@@ -24,6 +24,7 @@ import Learn from './Learn.jsx';
 import Team from './Team.jsx';
 import GiveScreen from './GiveScreen.jsx';
 import Feedback from './Feedback.jsx';
+import CohortView from './CohortView.jsx';
 
 const NAV_ITEMS = [
   { key: 'home', label: 'Home', path: '/individual' },
@@ -86,6 +87,7 @@ function DashboardLayout() {
           <Route path="team" element={<Team />} />
           <Route path="give" element={<GiveScreen />} />
           <Route path="feedback" element={<Feedback />} />
+          <Route path="cohort" element={<CohortView />} />
           <Route path="*" element={<Navigate to="/individual" replace />} />
         </Routes>
       </div>
@@ -249,6 +251,31 @@ function IndividualHome() {
             {answers.geoDetail}
           </p>
         )}
+      </Card>
+
+      {/* Cohort callout — quiet entry into the member-side cohort view */}
+      <Card
+        interactive
+        onClick={() => navigate('/individual/cohort')}
+        style={{
+          marginBottom: 'var(--sh-space-3)',
+          cursor: 'pointer',
+        }}
+      >
+        <p style={{
+          fontSize: 'var(--sh-text-sm)',
+          fontWeight: 600,
+          color: 'var(--sh-text-primary)',
+          marginBottom: '2px',
+        }}>
+          You're part of a cohort →
+        </p>
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+        }}>
+          Athletes working on a giving practice together.
+        </p>
       </Card>
 
       {/* Living pulse stats */}

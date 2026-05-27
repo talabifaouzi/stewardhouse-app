@@ -2,6 +2,7 @@
 // All organizations, amounts, and dates are fictional.
 
 export const individualProfile = {
+  id: 'c-001',
   name: 'Marcus Thompson',
   initials: 'MT',
   sport: 'Basketball',
