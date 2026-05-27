@@ -41,6 +41,7 @@ export default function CohortDetail() {
   const [updates, setUpdates] = useState(cohort?.updates || []);
   const [titleDraft, setTitleDraft] = useState('');
   const [bodyDraft, setBodyDraft] = useState('');
+  const [flags, setFlags] = useState({});
 
   if (!cohort) {
     return (
@@ -84,6 +85,24 @@ export default function CohortDetail() {
       names,
     }))
     .sort((a, b) => b.names.length - a.names.length);
+
+  const toggleFlag = (themeId) => {
+    setFlags(prev => {
+      if (prev[themeId]) {
+        const next = { ...prev };
+        delete next[themeId];
+        return next;
+      }
+      return { ...prev, [themeId]: { note: '' } };
+    });
+  };
+
+  const updateFlagNote = (themeId, note) => {
+    setFlags(prev => ({
+      ...prev,
+      [themeId]: { ...prev[themeId], note },
+    }));
+  };
 
   const canPublish = titleDraft.trim().length > 0 && bodyDraft.trim().length > 0;
 
@@ -220,31 +239,95 @@ export default function CohortDetail() {
           {sharedInterests.length === 0 ? (
             <p style={emptyTextStyle}>No shared interests surfaced yet.</p>
           ) : (
-            <ul style={listResetStyle}>
-              {sharedInterests.map((s, idx) => (
-                <li key={s.id} style={{
-                  paddingTop: idx === 0 ? 0 : 'var(--sh-space-3)',
-                  paddingBottom: 'var(--sh-space-3)',
-                  borderTop: idx === 0 ? 'none' : 'var(--sh-border-divider)',
-                }}>
-                  <p style={{
-                    fontFamily: 'var(--sh-font-serif)',
-                    fontSize: 'var(--sh-text-md)',
-                    color: 'var(--sh-text-primary)',
-                    marginBottom: 'var(--sh-space-1)',
-                  }}>
-                    {s.label}
-                  </p>
-                  <p style={{
-                    fontSize: 'var(--sh-text-sm)',
-                    color: 'var(--sh-text-secondary)',
-                    lineHeight: 1.55,
-                  }}>
-                    {formatNames(s.names)}
-                  </p>
-                </li>
-              ))}
-            </ul>
+            <>
+              <p style={{
+                fontSize: 'var(--sh-text-xs)',
+                color: 'var(--sh-text-muted)',
+                fontStyle: 'italic',
+                lineHeight: 1.55,
+                marginBottom: 'var(--sh-space-4)',
+              }}>
+                Flags and notes are private to you. Notes added in this session are not yet persisted.
+              </p>
+              <ul style={listResetStyle}>
+                {sharedInterests.map((s, idx) => {
+                  const isFlagged = !!flags[s.id];
+                  return (
+                    <li key={s.id} style={{
+                      paddingTop: idx === 0 ? 0 : 'var(--sh-space-3)',
+                      paddingBottom: 'var(--sh-space-3)',
+                      borderTop: idx === 0 ? 'none' : 'var(--sh-border-divider)',
+                    }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        gap: 'var(--sh-space-3)',
+                      }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <p style={{
+                            fontFamily: 'var(--sh-font-serif)',
+                            fontSize: 'var(--sh-text-md)',
+                            color: 'var(--sh-text-primary)',
+                            marginBottom: 'var(--sh-space-1)',
+                          }}>
+                            {s.label}
+                          </p>
+                          <p style={{
+                            fontSize: 'var(--sh-text-sm)',
+                            color: 'var(--sh-text-secondary)',
+                            lineHeight: 1.55,
+                          }}>
+                            {formatNames(s.names)}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => toggleFlag(s.id)}
+                          style={{
+                            background: isFlagged ? 'var(--sh-bronze-tint)' : 'none',
+                            color: isFlagged ? 'var(--sh-bronze-deep)' : 'var(--sh-text-muted)',
+                            border: 'none',
+                            padding: isFlagged ? '2px 8px' : 0,
+                            borderRadius: isFlagged ? '4px' : 0,
+                            fontSize: 'var(--sh-text-xs)',
+                            fontWeight: isFlagged ? 500 : 400,
+                            letterSpacing: '0.02em',
+                            cursor: 'pointer',
+                            fontFamily: 'inherit',
+                            flexShrink: 0,
+                            whiteSpace: 'nowrap',
+                          }}
+                        >
+                          {isFlagged ? 'Flagged' : 'Flag for follow-up'}
+                        </button>
+                      </div>
+                      {isFlagged && (
+                        <textarea
+                          value={flags[s.id].note}
+                          onChange={(e) => updateFlagNote(s.id, e.target.value)}
+                          placeholder="Private note for your own follow-up (optional)."
+                          rows={2}
+                          style={{
+                            width: '100%',
+                            boxSizing: 'border-box',
+                            padding: 'var(--sh-space-3)',
+                            border: 'var(--sh-border-thin)',
+                            borderRadius: '6px',
+                            fontFamily: 'inherit',
+                            fontSize: 'var(--sh-text-sm)',
+                            color: 'var(--sh-text-body)',
+                            background: 'var(--sh-card)',
+                            resize: 'vertical',
+                            lineHeight: 1.55,
+                            marginTop: 'var(--sh-space-3)',
+                          }}
+                        />
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
           )}
         </Card>
       </div>
