@@ -14,6 +14,7 @@ import CohortSpace from './CohortSpace.jsx';
 import CohortDetail from './CohortDetail.jsx';
 import Pipeline from './Pipeline.jsx';
 import Documentation from './Documentation.jsx';
+import DocDetail from './DocDetail.jsx';
 import PracticeSettings from './PracticeSettings.jsx';
 
 const NAV_ITEMS = [
@@ -69,6 +70,7 @@ export default function AdvisorSurface() {
             <Route path="cohorts/:cohortId" element={<CohortDetail />} />
             <Route path="pipeline" element={<Pipeline />} />
             <Route path="docs" element={<Documentation />} />
+            <Route path="docs/:docId" element={<DocDetail />} />
             <Route path="settings" element={<PracticeSettings />} />
             <Route path="*" element={<Navigate to="/advisor" replace />} />
           </Routes>

@@ -1,29 +1,7 @@
+import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-
-const docCategories = [
-  {
-    label: 'Onboarding',
-    docs: [
-      { title: 'Onboarding script template', updated: 'April 12, 2026', notes: 'Six-question values intake' },
-      { title: 'First-session checklist', updated: 'February 28, 2026', notes: 'Logistics + working agreement' },
-    ],
-  },
-  {
-    label: 'Working notes',
-    docs: [
-      { title: 'Reference: 990 reading guide', updated: 'March 9, 2026', notes: 'Marked up with my own notes' },
-      { title: 'Sector landscape: youth athletics', updated: 'February 14, 2026', notes: 'Personal reading log' },
-    ],
-  },
-  {
-    label: 'Practice-wide',
-    docs: [
-      { title: 'Practice voice and tone', updated: 'January 22, 2026', notes: 'Used in all client correspondence' },
-      { title: 'When to refer out', updated: 'November 3, 2025', notes: 'Compliance, legal, tax, deep finance' },
-    ],
-  },
-];
+import { docCategories } from '../../data/documentation.js';
 
 export default function Documentation() {
   return (
@@ -66,14 +44,18 @@ export default function Documentation() {
             <SectionLabel>{cat.label}</SectionLabel>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {cat.docs.map((doc, i) => (
-                <div
-                  key={doc.title}
+                <Link
+                  key={doc.id}
+                  to={`/advisor/docs/${doc.id}`}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: 'var(--sh-space-4)',
                     padding: 'var(--sh-space-3) 0',
                     borderTop: i === 0 ? 'none' : 'var(--sh-border-divider)',
+                    textDecoration: 'none',
+                    color: 'inherit',
+                    cursor: 'pointer',
                   }}
                 >
                   <div style={{ flex: 1 }}>
@@ -98,7 +80,7 @@ export default function Documentation() {
                   }}>
                     Updated {doc.updated}
                   </p>
-                </div>
+                </Link>
               ))}
             </div>
           </Card>
