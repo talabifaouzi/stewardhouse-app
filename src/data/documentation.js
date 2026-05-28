@@ -6,6 +6,7 @@
 export const docCategories = [
   {
     label: 'Onboarding',
+    hint: 'Scripts, checklists, and templates you reach for when bringing on a new client.',
     docs: [
       {
         id: 'onboarding-script',
@@ -39,6 +40,7 @@ export const docCategories = [
   },
   {
     label: 'Working notes',
+    hint: 'Your own reference material — reading guides, sector notes, marked-up documents. Personal to how you work.',
     docs: [
       {
         id: '990-reading-guide',
@@ -66,39 +68,6 @@ export const docCategories = [
           'Coaching quality is the variable nobody can quantify and everybody talks about. The literature on coach training in youth sports is thinner than I expected.',
           'Reinvestment patterns: organizations that survive a decade tend to be the ones that put excess revenue back into facilities and coaching rather than expansion. Worth asking about explicitly when an organization pitches growth.',
           'Open questions I am still chasing: how Title IX intersects with private youth programs; what success means when the program\'s outputs are measured in years, not seasons; how to think about regional concentration of programs versus their funder base.',
-        ],
-      },
-    ],
-  },
-  {
-    label: 'Practice-wide',
-    docs: [
-      {
-        id: 'practice-voice-tone',
-        title: 'Practice voice and tone',
-        updated: 'January 22, 2026',
-        notes: 'Used in all client correspondence',
-        body: [
-          'How this practice writes — to clients, to organizations, to the people I work with. Locked, not because the rules are precious, but because consistency is part of how trust accumulates.',
-          'Editorial register: closer to The Atlantic than to a consumer app. Sentences carry weight; clauses do work. No exclamation points except in quoted dialogue.',
-          'No celebratory language for routine task completion. "Done" is enough. Congratulations are reserved for things actually worth congratulating.',
-          'Standard English spelling. I correct silently unless the change alters meaning. I do not point out a client\'s typos; they are not what we are here to discuss.',
-          'When I am uncertain, I say so plainly. "I do not know" is a complete sentence. So is "let me think on it." Both build more trust than a confident half-answer.',
-          'Voice in writing matches voice in person. If a sentence would sound strange said aloud across a table, I rewrite it.',
-        ],
-      },
-      {
-        id: 'when-to-refer-out',
-        title: 'When to refer out',
-        updated: 'November 3, 2025',
-        notes: 'Compliance, legal, tax, deep finance',
-        body: [
-          'What this practice does not do, and where I send people when the question is outside my lane. Written down so I do not improvise the boundary mid-conversation.',
-          'Compliance: any question about 501(c)(3) status, lobbying limits, foreign giving restrictions, or DAF rules goes to a compliance specialist. I do not interpret the rules; I make sure the client knows the rules exist.',
-          'Legal: estate planning, charitable trusts, family foundation governance, NIL contract questions. I send to counsel — usually the client\'s own attorney, or one I trust if they do not have one. I do not draft documents.',
-          'Tax: deductibility, AGI limits, carryforwards, vehicle choice from a tax perspective. The client\'s CPA or tax attorney makes those calls. I can describe options structurally; I do not optimize for tax outcomes.',
-          'Deep financial: portfolio construction, liquidity planning, alternative assets, how much to give in a given year as a percentage of wealth. That is a wealth advisor\'s job. I work with the giving plan; I do not size it against a balance sheet.',
-          'The line that holds all of these together: this practice is structural. I organize what the client decides. I do not decide for them, and I do not recommend specific organizations or specific amounts. When a question asks me to cross that line, the answer is a referral.',
         ],
       },
     ],
