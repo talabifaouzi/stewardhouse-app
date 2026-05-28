@@ -1,9 +1,10 @@
 import { useParams, Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
-import { findDocById } from '../../data/documentation.js';
+import { useDocumentation } from '../../contexts/DocumentationContext.jsx';
 
 export default function DocDetail() {
   const { docId } = useParams();
+  const { findDocById } = useDocumentation();
   const result = findDocById(docId);
 
   if (!result) {

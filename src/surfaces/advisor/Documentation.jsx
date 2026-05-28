@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { docCategories } from '../../data/documentation.js';
+import { useDocumentation } from '../../contexts/DocumentationContext.jsx';
 
 export default function Documentation() {
+  const { categories: docCategories } = useDocumentation();
   const [openHint, setOpenHint] = useState(null);
   const toggleHint = (label) =>
     setOpenHint((prev) => (prev === label ? null : label));
@@ -25,14 +26,32 @@ export default function Documentation() {
         }}>
           Section 7 · Documentation
         </p>
-        <h1 style={{
-          fontFamily: 'var(--sh-font-serif)',
-          fontSize: 'var(--sh-text-2xl)',
-          color: 'var(--sh-text-primary)',
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'baseline',
+          gap: 'var(--sh-space-4)',
           marginBottom: 'var(--sh-space-2)',
         }}>
-          Documentation hub
-        </h1>
+          <h1 style={{
+            fontFamily: 'var(--sh-font-serif)',
+            fontSize: 'var(--sh-text-2xl)',
+            color: 'var(--sh-text-primary)',
+          }}>
+            Documentation hub
+          </h1>
+          <Link
+            to="/advisor/docs/new"
+            style={{
+              color: 'var(--sh-bronze)',
+              fontSize: 'var(--sh-text-sm)',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            + New document
+          </Link>
+        </div>
         <p style={{
           fontSize: 'var(--sh-text-md)',
           color: 'var(--sh-text-secondary)',
@@ -40,6 +59,16 @@ export default function Documentation() {
           lineHeight: 1.6,
         }}>
           Your practice's own materials — the scripts, templates, and notes you decide to keep here. Private to your practice.
+        </p>
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+          fontStyle: 'italic',
+          lineHeight: 1.55,
+          marginTop: 'var(--sh-space-2)',
+          maxWidth: '640px',
+        }}>
+          Anything you add here is session-only — it won't be saved across refreshes.
         </p>
       </div>
 

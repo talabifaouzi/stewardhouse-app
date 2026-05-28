@@ -1,0 +1,98 @@
+import { createContext, useCallback, useContext, useState } from 'react';
+import { docCategories as seedCategories } from '../data/documentation.js';
+
+// Session-only state for the documentation hub. Seeded from a DEEP COPY of
+// the fixture so we never mutate the imported module. State resets on refresh
+// — no persistence, no localStorage.
+
+const DocumentationContext = createContext(null);
+
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December',
+];
+
+function formatToday() {
+  const d = new Date();
+  return `${MONTH_NAMES[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
+function slugify(title) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function allIds(categories) {
+  const ids = new Set();
+  for (const cat of categories) {
+    for (const doc of cat.docs) ids.add(doc.id);
+  }
+  return ids;
+}
+
+function uniqueId(base, existing) {
+  if (!existing.has(base)) return base;
+  let n = 2;
+  while (existing.has(`${base}-${n}`)) n += 1;
+  return `${base}-${n}`;
+}
+
+export function DocumentationProvider({ children }) {
+  const [categories, setCategories] = useState(() =>
+    structuredClone(seedCategories),
+  );
+
+  const addDoc = useCallback(
+    (categoryLabel, { title, notes, body }) => {
+      const baseSlug = slugify(title) || 'document';
+      const newId = uniqueId(baseSlug, allIds(categories));
+      const newDoc = {
+        id: newId,
+        title: title.trim(),
+        updated: formatToday(),
+        notes: (notes || '').trim(),
+        body: Array.isArray(body) ? body : [],
+      };
+      setCategories((prev) =>
+        prev.map((cat) =>
+          cat.label === categoryLabel
+            ? { ...cat, docs: [...cat.docs, newDoc] }
+            : cat,
+        ),
+      );
+      return newId;
+    },
+    [categories],
+  );
+
+  const findDocById = useCallback(
+    (id) => {
+      for (const cat of categories) {
+        for (const doc of cat.docs) {
+          if (doc.id === id) return { doc, categoryLabel: cat.label };
+        }
+      }
+      return null;
+    },
+    [categories],
+  );
+
+  return (
+    <DocumentationContext.Provider value={{ categories, addDoc, findDocById }}>
+      {children}
+    </DocumentationContext.Provider>
+  );
+}
+
+export function useDocumentation() {
+  const ctx = useContext(DocumentationContext);
+  if (!ctx) {
+    throw new Error('useDocumentation must be used inside DocumentationProvider');
+  }
+  return ctx;
+}
