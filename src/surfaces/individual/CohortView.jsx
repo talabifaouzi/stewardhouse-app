@@ -5,7 +5,17 @@ import { cohorts } from '../../data/cohorts.js';
 import { clients } from '../../data/clients.js';
 import { individualProfile } from '../../data/individualProfile.js';
 import { THEMES } from '../../data/themes.js';
+import { simulatedMemberSignals } from '../../data/cohortSignals.js';
 import { useCohortMember } from '../../contexts/CohortMemberContext.jsx';
+
+// Plural-safe English list joiner: ["A"] → "A", ["A","B"] → "A and B",
+// ["A","B","C"] → "A, B, and C".
+function joinNames(names) {
+  if (names.length === 0) return '';
+  if (names.length === 1) return names[0];
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`;
+}
 
 export default function CohortView() {
   const { optedIn, optIn, optOut, signaledThemeIds, toggleSignal } = useCohortMember();
@@ -99,6 +109,16 @@ export default function CohortView() {
                 <ul style={listResetStyle}>
                   {sharedInterests.map((s, idx) => {
                     const isSignaled = signaledThemeIds.includes(s.themeId);
+                    // Names resolve ONLY when the current member has signaled
+                    // this theme AND a cohort-mate has signaled the same.
+                    // Until that mutual condition holds, identity stays hidden.
+                    const matchedMembers = isSignaled
+                      ? otherMembers.filter((om) =>
+                          (simulatedMemberSignals[om.id] || []).includes(s.themeId),
+                        )
+                      : [];
+                    const isMatched = isSignaled && matchedMembers.length > 0;
+                    const isPending = isSignaled && matchedMembers.length === 0;
                     return (
                       <li key={s.themeId} style={{
                         paddingTop: idx === 0 ? 0 : 'var(--sh-space-3)',
@@ -127,6 +147,27 @@ export default function CohortView() {
                             }}>
                               {s.otherCount} {s.otherCount === 1 ? 'other' : 'others'} in your cohort share this.
                             </p>
+                            {isPending && (
+                              <p style={{
+                                fontSize: 'var(--sh-text-xs)',
+                                color: 'var(--sh-text-muted)',
+                                fontStyle: 'italic',
+                                lineHeight: 1.55,
+                                marginTop: 'var(--sh-space-2)',
+                              }}>
+                                Signaled — when a cohort-mate signals the same, you'll be able to make a connection.
+                              </p>
+                            )}
+                            {isMatched && (
+                              <p style={{
+                                fontSize: 'var(--sh-text-sm)',
+                                color: 'var(--sh-bronze-deep)',
+                                lineHeight: 1.6,
+                                marginTop: 'var(--sh-space-2)',
+                              }}>
+                                {joinNames(matchedMembers.map((m) => m.name))} also signaled this. You're both open to talking about {s.label} — make a connection.
+                              </p>
+                            )}
                           </div>
                           <button
                             onClick={() => toggleSignal(s.themeId)}
