@@ -82,8 +82,34 @@ export function DocumentationProvider({ children }) {
     [categories],
   );
 
+  // Append a new category. Decision (duplicate check) happens INSIDE the
+  // functional updater against `prev` to avoid stale-closure risk if called
+  // in rapid succession. Returns true on success, false on empty / duplicate.
+  const addSection = useCallback((label, hint) => {
+    const trimmedLabel = (label || '').trim();
+    if (trimmedLabel.length === 0) return false;
+    const trimmedHint = (hint || '').trim();
+
+    let added = false;
+    setCategories((prev) => {
+      if (prev.some((cat) => cat.label === trimmedLabel)) {
+        return prev;
+      }
+      added = true;
+      return [
+        ...prev,
+        {
+          label: trimmedLabel,
+          hint: trimmedHint || undefined,
+          docs: [],
+        },
+      ];
+    });
+    return added;
+  }, []);
+
   return (
-    <DocumentationContext.Provider value={{ categories, addDoc, findDocById }}>
+    <DocumentationContext.Provider value={{ categories, addDoc, addSection, findDocById }}>
       {children}
     </DocumentationContext.Provider>
   );

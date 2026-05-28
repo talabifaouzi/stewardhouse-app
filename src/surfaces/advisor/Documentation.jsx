@@ -1,14 +1,36 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useDocumentation } from '../../contexts/DocumentationContext.jsx';
 
 export default function Documentation() {
-  const { categories: docCategories } = useDocumentation();
+  const { categories: docCategories, addSection } = useDocumentation();
   const [openHint, setOpenHint] = useState(null);
   const toggleHint = (label) =>
     setOpenHint((prev) => (prev === label ? null : label));
+
+  const [isAddingSection, setIsAddingSection] = useState(false);
+  const [newSectionLabel, setNewSectionLabel] = useState('');
+  const [newSectionHint, setNewSectionHint] = useState('');
+  const [sectionError, setSectionError] = useState('');
+
+  const resetSectionForm = () => {
+    setNewSectionLabel('');
+    setNewSectionHint('');
+    setSectionError('');
+    setIsAddingSection(false);
+  };
+
+  const handleSaveSection = () => {
+    const ok = addSection(newSectionLabel, newSectionHint);
+    if (!ok) {
+      setSectionError('A section with that name already exists, or the name is empty.');
+      return;
+    }
+    resetSectionForm();
+  };
 
   return (
     <main style={{
@@ -40,17 +62,42 @@ export default function Documentation() {
           }}>
             Documentation hub
           </h1>
-          <Link
-            to="/advisor/docs/new"
-            style={{
-              color: 'var(--sh-bronze)',
-              fontSize: 'var(--sh-text-sm)',
-              textDecoration: 'none',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            + New document
-          </Link>
+          <div style={{
+            display: 'flex',
+            alignItems: 'baseline',
+            gap: 'var(--sh-space-4)',
+          }}>
+            <Link
+              to="/advisor/docs/new"
+              style={{
+                color: 'var(--sh-bronze)',
+                fontSize: 'var(--sh-text-sm)',
+                textDecoration: 'none',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              + New document
+            </Link>
+            <button
+              type="button"
+              onClick={() => {
+                setSectionError('');
+                setIsAddingSection(true);
+              }}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+                color: 'var(--sh-bronze)',
+                fontSize: 'var(--sh-text-sm)',
+                fontFamily: 'inherit',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              + New section
+            </button>
+          </div>
         </div>
         <p style={{
           fontSize: 'var(--sh-text-md)',
@@ -82,31 +129,33 @@ export default function Documentation() {
               gap: 'var(--sh-space-3)',
             }}>
               <SectionLabel>{cat.label}</SectionLabel>
-              <button
-                type="button"
-                onClick={() => toggleHint(cat.label)}
-                aria-label={`What goes in ${cat.label}?`}
-                aria-expanded={openHint === cat.label}
-                style={{
-                  width: '14px',
-                  height: '14px',
-                  borderRadius: '50%',
-                  border: '0.5px solid #B8AE9E',
-                  background: 'transparent',
-                  color: 'var(--sh-text-muted)',
-                  fontSize: '9px',
-                  lineHeight: 1,
-                  cursor: 'help',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontFamily: 'inherit',
-                  padding: 0,
-                  flexShrink: 0,
-                }}
-              >
-                ?
-              </button>
+              {cat.hint && (
+                <button
+                  type="button"
+                  onClick={() => toggleHint(cat.label)}
+                  aria-label={`What goes in ${cat.label}?`}
+                  aria-expanded={openHint === cat.label}
+                  style={{
+                    width: '14px',
+                    height: '14px',
+                    borderRadius: '50%',
+                    border: '0.5px solid #B8AE9E',
+                    background: 'transparent',
+                    color: 'var(--sh-text-muted)',
+                    fontSize: '9px',
+                    lineHeight: 1,
+                    cursor: 'help',
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontFamily: 'inherit',
+                    padding: 0,
+                    flexShrink: 0,
+                  }}
+                >
+                  ?
+                </button>
+              )}
             </div>
             {openHint === cat.label && (
               <div style={{
@@ -122,6 +171,17 @@ export default function Documentation() {
                 {cat.hint}
               </div>
             )}
+            {cat.docs.length === 0 ? (
+              <p style={{
+                fontSize: 'var(--sh-text-sm)',
+                color: 'var(--sh-text-muted)',
+                fontStyle: 'italic',
+                lineHeight: 1.6,
+                marginTop: 'var(--sh-space-3)',
+              }}>
+                No documents yet — use + New document to add one.
+              </p>
+            ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {cat.docs.map((doc, i) => (
                 <Link
@@ -163,9 +223,66 @@ export default function Documentation() {
                 </Link>
               ))}
             </div>
+            )}
           </Card>
         ))}
+        {isAddingSection && (
+          <Card>
+            <SectionLabel>New section</SectionLabel>
+            <div style={{
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 'var(--sh-space-4)',
+              marginTop: 'var(--sh-space-3)',
+            }}>
+              <input
+                type="text"
+                value={newSectionLabel}
+                onChange={(e) => setNewSectionLabel(e.target.value)}
+                placeholder="New section name"
+                style={inputStyle}
+              />
+              <input
+                type="text"
+                value={newSectionHint}
+                onChange={(e) => setNewSectionHint(e.target.value)}
+                placeholder="What goes here (optional)"
+                style={inputStyle}
+              />
+              {sectionError && (
+                <p style={{
+                  fontSize: 'var(--sh-text-xs)',
+                  color: 'var(--sh-text-muted)',
+                  fontStyle: 'italic',
+                  lineHeight: 1.55,
+                }}>
+                  {sectionError}
+                </p>
+              )}
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: 'var(--sh-space-3)',
+              }}>
+                <Button variant="ghost" onClick={resetSectionForm}>Cancel</Button>
+                <Button variant="primary" onClick={handleSaveSection}>Save</Button>
+              </div>
+            </div>
+          </Card>
+        )}
       </div>
     </main>
   );
 }
+
+const inputStyle = {
+  width: '100%',
+  boxSizing: 'border-box',
+  padding: 'var(--sh-space-3)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: '6px',
+  fontFamily: 'inherit',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  background: 'var(--sh-card)',
+};
