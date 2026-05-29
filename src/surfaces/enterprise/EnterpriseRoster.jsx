@@ -59,7 +59,6 @@ export default function EnterpriseRoster() {
                 <th style={thStyle}>Name</th>
                 <th style={thStyle}>Sport</th>
                 <th style={thStyle}>Year</th>
-                <th style={thStyle}>Position</th>
                 <th style={thStyle}>Status</th>
                 <th style={thStyle}>GPS</th>
                 <th style={thStyle}>Lessons</th>
@@ -76,7 +75,6 @@ export default function EnterpriseRoster() {
                     <td style={tdStyle(isLast)}>{a.name}</td>
                     <td style={tdStyle(isLast)}>{a.sport}</td>
                     <td style={tdStyle(isLast)}>{a.year}</td>
-                    <td style={tdStyle(isLast)}>{a.position}</td>
                     <td style={tdStyle(isLast)}>{statusFor(a)}</td>
                     <td style={tdStyle(isLast)}>{a.gpsCompleted ? a.gpsDate : '—'}</td>
                     <td style={tdStyle(isLast)}>{a.lessons}</td>
@@ -181,7 +179,7 @@ const thStyle = {
   letterSpacing: '0.08em',
   fontWeight: 500,
   padding: 'var(--sh-space-3) var(--sh-space-3)',
-  borderBottom: `1px solid var(--sh-card-border)`,
+  borderBottom: 'var(--sh-border-thin)',
   whiteSpace: 'nowrap',
 };
 
@@ -190,7 +188,7 @@ function tdStyle(isLast) {
     fontSize: 'var(--sh-text-sm)',
     color: 'var(--sh-text-body)',
     padding: 'var(--sh-space-3) var(--sh-space-3)',
-    borderBottom: isLast ? 'none' : `1px solid var(--sh-card-border)`,
+    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
     lineHeight: 1.5,
     verticalAlign: 'top',
     whiteSpace: 'nowrap',

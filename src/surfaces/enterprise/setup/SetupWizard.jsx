@@ -131,6 +131,12 @@ export default function SetupWizard() {
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Setup</h1>
 
+      <Card tint style={{ marginBottom: 'var(--sh-space-5)' }}>
+        <p style={bannerNoteStyle}>
+          Illustrative full setup flow. In production, Steps 1–2 are completed by StewardHouse during partnership onboarding; Steps 3–4 by the athletic department; Steps 5–6 by the assigned philanthropic advisor or department admin; Step 7 requires sign-off from all parties.
+        </p>
+      </Card>
+
       <Stepper
         steps={STEPS}
         currentStep={currentStep}
@@ -894,4 +900,11 @@ const confirmationTextStyle = {
   fontSize: 'var(--sh-text-md)',
   color: 'var(--sh-text-body)',
   lineHeight: 1.65,
+};
+
+const bannerNoteStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.65,
+  margin: 0,
 };

@@ -85,4 +85,8 @@
   --sh-transition-fast: 120ms ease;
   --sh-transition: 200ms ease;
   --sh-transition-slow: 320ms ease;
+
+  /* Effects */
+  --sh-overlay-bg: rgba(0, 0, 0, 0.5);
+  --sh-shadow-modal: 0 4px 24px rgba(0, 0, 0, 0.12);
 }

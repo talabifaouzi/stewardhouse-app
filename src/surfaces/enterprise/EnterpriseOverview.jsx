@@ -49,7 +49,7 @@ export default function EnterpriseOverview() {
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Program overview</h1>
       <p style={subtitleStyle}>
-        Department-wide view of the StewardHouse program. Athletes participate as individuals; the department supports structurally — not advisorially.
+        Athletes participate as individuals; the department supports structurally — not advisorially.
       </p>
 
       {/* Primary stat grid — each tile drills into a filtered athlete list */}

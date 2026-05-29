@@ -109,7 +109,7 @@ export function Modal({ isOpen, onClose, title, children }) {
 const backdropStyle = {
   position: 'fixed',
   inset: 0,
-  background: 'rgba(0, 0, 0, 0.5)',
+  background: 'var(--sh-overlay-bg)',
   zIndex: 1000,
   display: 'flex',
   alignItems: 'center',
@@ -125,7 +125,7 @@ const panelStyle = {
   width: '100%',
   maxHeight: '80vh',
   overflow: 'auto',
-  boxShadow: '0 4px 24px rgba(0, 0, 0, 0.12)',
+  boxShadow: 'var(--sh-shadow-modal)',
 };
 
 const headerStyle = {
