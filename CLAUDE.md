@@ -48,9 +48,22 @@ The advisor surface (`src/surfaces/advisor/`) has 8 sections:
 7. Documentation.jsx — documentation hub
 8. PracticeSettings.jsx — practice settings
 
+The enterprise surface (`src/surfaces/enterprise/`) has 6 sections (Athletics-only
+in Phase 1):
+1. EnterpriseOverview.jsx — program-wide stat grid + 12-week engagement sparkline
+2. EnterpriseRoster.jsx — athletes participating in the program
+3. EnterpriseReports.jsx — program reports (summary, cohort comparison,
+   philanthropic readiness, ROI, endowment)
+4. EnterpriseCompliance.jsx — NIL documentation, disclosures, and exclusions
+5. EnterpriseProgram.jsx — workshops, modules, engagement
+6. EnterpriseSetup.jsx — 7-step program configuration wizard
+
+Enterprise build status: shell + fixtures + Overview real (slices 1–2). Sections
+2–6 currently render scaffolded placeholders pending later slices.
+
 Shared components live in `src/components/` (Card, Button, SectionLabel,
 HelpIcon, Chrome). Data fixtures live in `src/data/` (clients.js, content.js,
-orgsData.js, etc.).
+orgsData.js, enterpriseFixtures.js, etc.).
 
 ## Voice & tone (LOCKED)
 
