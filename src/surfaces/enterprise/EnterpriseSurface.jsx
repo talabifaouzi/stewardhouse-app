@@ -46,7 +46,7 @@ export default function EnterpriseSurface() {
         <Routes>
           <Route index element={<EnterpriseOverview />} />
           <Route path="roster" element={<EnterpriseRoster />} />
-          <Route path="reports" element={<EnterpriseReports />} />
+          <Route path="reports/*" element={<EnterpriseReports />} />
           <Route path="compliance" element={<EnterpriseCompliance />} />
           <Route path="program" element={<EnterpriseProgram />} />
           <Route path="setup" element={<EnterpriseSetup />} />
