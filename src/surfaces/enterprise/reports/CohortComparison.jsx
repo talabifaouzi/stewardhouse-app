@@ -239,7 +239,7 @@ function yoyPriorStyle(isLast) {
 function yoyCurrentStyle(isLast) {
   return {
     fontFamily: 'var(--sh-font-serif)',
-    fontSize: 'var(--sh-text-lg)',
+    fontSize: 'var(--sh-text-base)',
     color: 'var(--sh-text-primary)',
     padding: 'var(--sh-space-3) var(--sh-space-3)',
     borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
@@ -345,7 +345,7 @@ const yoyMobilePriorStyle = {
 
 const yoyMobileCurrentStyle = {
   fontFamily: 'var(--sh-font-serif)',
-  fontSize: 'var(--sh-text-md)',
+  fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-primary)',
   textAlign: 'right',
 };

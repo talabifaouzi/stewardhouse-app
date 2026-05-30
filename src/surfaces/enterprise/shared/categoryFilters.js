@@ -9,6 +9,7 @@ export const CATEGORY_CONFIG = {
   'actively-progressing': { label: 'Actively progressing', filter: (a) => statusFor(a) === 'Actively progressing' },
   'certified':            { label: 'Certified',            filter: (a) => a.certified },
   'not-yet-active':       { label: 'Not yet active',       filter: (a) => statusFor(a) === 'Not yet active' },
+  'outreach-paused':      { label: 'Outreach paused',      filter: (a) => statusFor(a) === 'Outreach paused' },
   'invited':              { label: 'Invited',              filter: (a) => statusFor(a) === 'Invited' },
 };
 

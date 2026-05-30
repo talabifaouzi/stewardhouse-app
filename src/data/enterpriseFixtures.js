@@ -299,7 +299,7 @@ export const athletes = [
     status: "active", joinDate: "Aug 20", badge: "The Amplifier", certified: true, certDate: "Oct 10, 2026",
     email: "jordan.lewis@cooperstate.edu",
     phone: "(555) 248-3061",
-    notes: "Team captain. Used his platform to recruit teammates into the program — three Football roster additions came from his early conversations. Focused on football-specific youth pipelines.",
+    notes: "Team captain. Completed capstone with a structured giving plan focused on football-specific youth pipelines. Active in workshop discussions on team-level vehicles.",
     activity: [
       { date: "2026-10-10", type: "certified",         label: "Certification awarded" },
       { date: "2026-10-05", type: "lesson_completed",  label: "Lesson 9: Capstone Reflection" },
@@ -317,7 +317,7 @@ export const athletes = [
     status: "active", joinDate: "Sep 1", badge: "The Connector", certified: false, certDate: null,
     email: "mia.chang@cooperstate.edu",
     phone: "(555) 437-9026",
-    notes: "Bay Area family. Connector by nature — pulled three teammates into the program after her first session. Still settling on her own giving focus; recently mentioned mental health access for student-athletes.",
+    notes: "Bay Area family. Engaged early. Bay Area tennis access and student-athlete mental health are both surfacing as focus areas.",
     activity: [
       { date: "2026-11-04", type: "lesson_completed",  label: "Lesson 5: Giving Vehicles" },
       { date: "2026-10-25", type: "gift_made",         label: "$200 to Student-Athlete Mental Health Initiative" },

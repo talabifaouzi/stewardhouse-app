@@ -53,7 +53,7 @@ const DEFAULT_STATE = {
   },
   roles: {
     programAdmin: { name: 'Diane Okonkwo', email: 'diane.okonkwo@cooperstate.edu' },
-    complianceOfficer: { name: 'Marcus Chen', email: 'marcus.chen@cooperstate.edu' },
+    complianceOfficer: { name: 'Sarah Mitchell', email: 'sarah.mitchell@cooperstate.edu' },
     devDirector: { name: 'Sarah Johnson', email: 'sarah.johnson@cooperstate.edu' },
   },
   modules: {
