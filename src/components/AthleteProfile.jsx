@@ -4,6 +4,7 @@ import { Modal } from './Modal.jsx';
 import { Button } from './Button.jsx';
 import { statusFor } from '../surfaces/enterprise/shared/athleteStatus.js';
 import { useComms } from '../contexts/CommsContext.jsx';
+import { athleteReflections } from '../data/enterpriseFixtures.js';
 
 function formatDate(iso) {
   const d = new Date(iso);
@@ -31,6 +32,7 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
 
   const giftEvents = athlete.activity.filter((e) => e.type === 'gift_made');
   const messages = getThread(athlete.email);
+  const reflections = athleteReflections[athlete.id] ?? [];
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={athlete.name}>
@@ -88,6 +90,24 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
             </div>
           )}
         </Card>
+
+        {/* Reflections — athlete's own first-person voice (Path B) */}
+        {reflections.length > 0 && (
+          <Card>
+            <SectionLabel>Reflections</SectionLabel>
+            <p style={reflectionsContextStyle}>
+              Athlete's own words on their philanthropic practice. First-person reflections shared during program activities.
+            </p>
+            <ul style={listResetStyle}>
+              {[...reflections].reverse().map((r, i, arr) => (
+                <li key={i} style={reflectionItemStyle(i === arr.length - 1)}>
+                  <p style={reflectionDateStyle}>{r.date}</p>
+                  <p style={reflectionTextStyle}>{r.text}</p>
+                </li>
+              ))}
+            </ul>
+          </Card>
+        )}
 
         {/* Activity */}
         <Card>
@@ -344,4 +364,38 @@ const messageBodyPreviewStyle = {
   color: 'var(--sh-text-body)',
   fontStyle: 'italic',
   lineHeight: 1.5,
+};
+
+// Reflections styles
+const reflectionsContextStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  letterSpacing: '0.02em',
+  lineHeight: 1.55,
+  marginTop: 'var(--sh-space-2)',
+  marginBottom: 'var(--sh-space-4)',
+};
+
+function reflectionItemStyle(isLast) {
+  return {
+    marginBottom: isLast ? 0 : 'var(--sh-space-4)',
+  };
+}
+
+const reflectionDateStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  letterSpacing: '0.02em',
+  marginBottom: 'var(--sh-space-1)',
+};
+
+const reflectionTextStyle = {
+  fontFamily: 'var(--sh-font-serif)',
+  fontSize: 'var(--sh-text-base)',
+  color: 'var(--sh-text-primary)',
+  fontStyle: 'italic',
+  lineHeight: 1.6,
+  borderLeft: '3px solid var(--sh-bronze)',
+  paddingLeft: 'var(--sh-space-3)',
+  margin: 0,
 };

@@ -674,6 +674,56 @@ export const complianceAuditLog = [
   },
 ];
 
+/** @type {Record<number, Array<{date: string, text: string}>>} */
+export const athleteReflections = {
+  1: [
+    { date: 'Oct 5, 2026', text: "The GPS exercise was harder than I expected. I had to actually sit with why community basketball mattered to me, not just say it did." },
+    { date: 'Nov 8, 2026', text: "Vehicles lesson opened my eyes — I've been giving without thinking about which way is most efficient. Going to look at DAFs more seriously when I have the volume." },
+  ],
+  2: [
+    { date: 'Sep 20, 2026', text: "Talking with the cohort about cause selection felt different than just reading about it. People asked questions I hadn't thought through." },
+    { date: 'Oct 30, 2026', text: "Finishing the program, I feel like I have a real practice now, not just intentions. The Atlanta Track gift was the first one I made with full intention behind it." },
+  ],
+  3: [
+    { date: 'Oct 12, 2026', text: "Made my first gift to youth football in Houston. Smaller than I thought I'd give but it felt right for getting started." },
+  ],
+  4: [
+    { date: 'Sep 28, 2026', text: "Connecting my soccer story to giving back to underrepresented soccer programs made the whole thing click for me." },
+  ],
+  5: [
+    { date: 'Sep 5, 2026', text: "Honestly not sure what philanthropy means for someone at my career stage. Going to keep showing up and see what comes from it." },
+  ],
+  6: [
+    { date: 'Oct 10, 2026', text: "The capstone reflection was the most useful part of the program for me. Wrote about what I want my giving to look like in five years and now I have it written down." },
+  ],
+  7: [
+    { date: 'Oct 1, 2026', text: "Got my framework defined but haven't made a gift yet. Want to wait until I have a clearer picture financially before committing to a recurring amount." },
+  ],
+  // 8: Sofia Reyes (invited) — no reflections
+  9: [
+    { date: 'Sep 18, 2026', text: "Baseball gave me a path out of where I grew up. I want my giving to do the same thing for somebody else's kid." },
+  ],
+  // 10: Maya Johnson (invited) — no reflections
+  11: [
+    { date: 'Oct 22, 2026', text: "First gift went to a youth diversion program. Couldn't have imagined doing that intentionally six months ago." },
+  ],
+  12: [
+    { date: 'Oct 8, 2026', text: "Softball is small. The community of girls who play and the women coaching matters to me. That's where my giving is going to stay focused for now." },
+  ],
+  13: [
+    { date: 'Oct 14, 2026', text: "Capstone done. The framework gave me language for something I was already doing informally. Now it's structured and intentional." },
+  ],
+  14: [
+    { date: 'Oct 26, 2026', text: "Tennis access is the cause that won't leave me alone. Started small with the Bay Area foundation and want to grow it from here." },
+  ],
+  15: [
+    { date: 'Oct 18, 2026', text: "First gift made. Equipment funds for high school football — that's where I came from. Felt right for the first one." },
+  ],
+  16: [
+    { date: 'Oct 28, 2026', text: "Slow start for me. Gymnastics is individual and so is figuring this out. Will get there." },
+  ],
+};
+
 // Single source of truth for the "logged-in user" in the enterprise prototype.
 // Production swaps this to an auth-derived current user.
 /** @type {Contact} */
