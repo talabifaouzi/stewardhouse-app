@@ -28,7 +28,16 @@ export default function EnterpriseProgram() {
             <InfoRow label="Package tier" value={`${profile.tier} — ${profile.annual}`} />
             <InfoRow label="Term" value={`${termPart} · ${dateRangePart}`} />
             <InfoRow label="Facilitator" value={profile.facilitator} />
-            <InfoRow label="Endowment" value={profile.endowment} last />
+            <InfoRow
+              label="Endowment"
+              value={(
+                <>
+                  {profile.endowment}
+                  <span style={pendingPillStyle}>Pending review</span>
+                </>
+              )}
+              last
+            />
           </div>
         </Card>
 
@@ -143,4 +152,16 @@ const moduleNoteStyle = {
   lineHeight: 1.65,
   marginTop: 'var(--sh-space-3)',
   maxWidth: '640px',
+};
+
+const pendingPillStyle = {
+  display: 'inline-block',
+  padding: '2px 8px',
+  background: 'var(--sh-bronze-tint)',
+  color: 'var(--sh-bronze-deep)',
+  borderRadius: 'var(--sh-radius-full)',
+  fontSize: 'var(--sh-text-xs)',
+  fontWeight: 500,
+  letterSpacing: '0.06em',
+  marginLeft: 'var(--sh-space-2)',
 };
