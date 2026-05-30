@@ -627,6 +627,53 @@ export const dailyBriefItems = {
   ],
 };
 
+/** @type {Array<{id: string, timestamp: string, user: string, userRole: string, action: string, target?: string, reason?: string, notes?: string}>} */
+export const complianceAuditLog = [
+  {
+    id: 'audit-001',
+    timestamp: 'Nov 1, 2026 · 14:30',
+    user: 'Sarah Mitchell',
+    userRole: 'Athletic Compliance Officer',
+    action: 'Quarterly compliance review completed',
+    notes: 'All exclusions reviewed and re-affirmed.',
+  },
+  {
+    id: 'audit-002',
+    timestamp: 'Oct 28, 2026 · 10:15',
+    user: 'Diane Greer',
+    userRole: 'Senior Director, Athletic Development',
+    action: 'Added organization to exclusion list',
+    target: 'Quick Cash Sports Loans LLC',
+    reason: 'Predatory lending practices flagged by athletic department',
+  },
+  {
+    id: 'audit-003',
+    timestamp: 'Sep 15, 2026 · 09:42',
+    user: 'Sarah Mitchell',
+    userRole: 'Athletic Compliance Officer',
+    action: 'Added organization to exclusion list',
+    target: 'TigerBet Online Sportsbook',
+    reason: 'Gambling/sports betting per NIL framework section 4.2',
+  },
+  {
+    id: 'audit-004',
+    timestamp: 'Aug 30, 2026 · 16:20',
+    user: 'Diane Greer',
+    userRole: 'Senior Director, Athletic Development',
+    action: 'Added organization to exclusion list',
+    target: 'Premier Athletic Apparel Co',
+    reason: 'Pending NIL compliance review — temporary block',
+  },
+  {
+    id: 'audit-005',
+    timestamp: 'Aug 12, 2026 · 11:00',
+    user: 'Sarah Mitchell',
+    userRole: 'Athletic Compliance Officer',
+    action: 'Program launch — NIL framework approved',
+    notes: 'Initial NIL framework approved and active. Cohort onboarding begins.',
+  },
+];
+
 // Single source of truth for the "logged-in user" in the enterprise prototype.
 // Production swaps this to an auth-derived current user.
 /** @type {Contact} */

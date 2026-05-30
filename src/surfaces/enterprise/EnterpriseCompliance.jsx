@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { exclusions } from '../../data/enterpriseFixtures.js';
+import { exclusions, complianceAuditLog, CURRENT_USER } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import ExclusionDetail from '../../components/ExclusionDetail.jsx';
@@ -8,12 +8,28 @@ export default function EnterpriseCompliance() {
   const [activeExclusion, setActiveExclusion] = useState(null);
   const [exclusionOverrides, setExclusionOverrides] = useState({});
   const [hoveredId, setHoveredId] = useState(null);
+  const [sessionAuditEntries, setSessionAuditEntries] = useState([]);
 
   const displayedExclusions = exclusions.map((e) => ({ ...e, ...exclusionOverrides[e.id] }));
 
   const handleSave = (updated) => {
     setExclusionOverrides((prev) => ({ ...prev, [updated.id]: updated }));
+    setSessionAuditEntries((prev) => [
+      {
+        id: `session-${Date.now()}`,
+        timestamp: 'Just now',
+        user: CURRENT_USER.name,
+        userRole: CURRENT_USER.title,
+        action: 'Edited organization in exclusion list',
+        target: updated.name,
+        reason: 'Session edit',
+        isSession: true,
+      },
+      ...prev,
+    ]);
   };
+
+  const auditEntries = [...sessionAuditEntries, ...complianceAuditLog];
 
   const hasOverride = activeExclusion
     ? Boolean(exclusionOverrides[activeExclusion.id])
@@ -69,6 +85,27 @@ export default function EnterpriseCompliance() {
         </Card>
       </div>
 
+        {/* Audit trail */}
+        <Card style={{ marginTop: 'var(--sh-space-6)' }}>
+          <SectionLabel>Audit trail</SectionLabel>
+          <p style={auditContextStyle}>
+            Compliance actions logged with timestamp and reviewer. Production maintains tamper-resistant audit log; prototype shows pre-seeded entries and any in-session edits.
+          </p>
+          <ul style={auditListStyle}>
+            {auditEntries.map((entry, i) => {
+              const isLast = i === auditEntries.length - 1;
+              return (
+                <li key={entry.id}>
+                  <AuditEntry entry={entry} isLast={isLast} />
+                </li>
+              );
+            })}
+          </ul>
+          <p style={auditFootnoteStyle}>
+            Production deployment captures every exclusion edit, review, and policy change. This audit log is read-only and tamper-resistant in production.
+          </p>
+        </Card>
+
       <ExclusionDetail
         isOpen={activeExclusion !== null}
         onClose={() => setActiveExclusion(null)}
@@ -77,6 +114,36 @@ export default function EnterpriseCompliance() {
         hasOverride={hasOverride}
       />
     </main>
+  );
+}
+
+function AuditEntry({ entry, isLast }) {
+  return (
+    <div style={auditEntryStyle(isLast)}>
+      <div style={auditTopRowStyle}>
+        <div style={auditTimestampGroupStyle}>
+          <span style={auditTimestampStyle}>{entry.timestamp}</span>
+          {entry.isSession && <span style={sessionPillStyle}>SESSION</span>}
+        </div>
+        <span style={auditUserStyle}>
+          {entry.user} <span style={auditRoleStyle}>({entry.userRole})</span>
+        </span>
+      </div>
+      <p style={auditActionStyle}>{entry.action}</p>
+      {entry.target && (
+        <p style={auditDetailStyle}>
+          <span style={auditDetailLabelStyle}>Organization:</span> {entry.target}
+        </p>
+      )}
+      {entry.reason && (
+        <p style={auditReasonStyle}>
+          <span style={auditDetailLabelStyle}>Reason:</span> {entry.reason}
+        </p>
+      )}
+      {entry.notes && (
+        <p style={auditNotesStyle}>{entry.notes}</p>
+      )}
+    </div>
   );
 }
 
@@ -170,4 +237,117 @@ const reasonStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-body)',
   lineHeight: 1.55,
+};
+
+// Audit trail styles
+const auditContextStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  letterSpacing: '0.02em',
+  lineHeight: 1.55,
+  marginTop: 'var(--sh-space-2)',
+  marginBottom: 'var(--sh-space-4)',
+  maxWidth: '720px',
+};
+
+const auditListStyle = {
+  listStyle: 'none',
+  margin: 0,
+  padding: 0,
+};
+
+const auditFootnoteStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  fontStyle: 'italic',
+  lineHeight: 1.55,
+  marginTop: 'var(--sh-space-4)',
+  paddingTop: 'var(--sh-space-3)',
+  borderTop: 'var(--sh-border-thin)',
+  maxWidth: '720px',
+};
+
+function auditEntryStyle(isLast) {
+  return {
+    paddingTop: 'var(--sh-space-4)',
+    paddingBottom: 'var(--sh-space-4)',
+    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
+  };
+}
+
+const auditTopRowStyle = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'space-between',
+  alignItems: 'baseline',
+  gap: 'var(--sh-space-3)',
+  marginBottom: 'var(--sh-space-2)',
+};
+
+const auditTimestampGroupStyle = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: 'var(--sh-space-2)',
+};
+
+const auditTimestampStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  letterSpacing: '0.02em',
+};
+
+const sessionPillStyle = {
+  display: 'inline-block',
+  padding: '2px 8px',
+  background: 'var(--sh-bronze-tint)',
+  color: 'var(--sh-bronze-deep)',
+  borderRadius: 'var(--sh-radius-full)',
+  fontSize: 'var(--sh-text-xs)',
+  fontWeight: 500,
+  letterSpacing: '0.08em',
+  whiteSpace: 'nowrap',
+};
+
+const auditUserStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+};
+
+const auditRoleStyle = {
+  color: 'var(--sh-text-muted)',
+};
+
+const auditActionStyle = {
+  fontFamily: 'var(--sh-font-serif)',
+  fontSize: 'var(--sh-text-base)',
+  color: 'var(--sh-text-primary)',
+  marginBottom: 'var(--sh-space-2)',
+  lineHeight: 1.5,
+};
+
+const auditDetailStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  lineHeight: 1.55,
+  marginBottom: 'var(--sh-space-1)',
+};
+
+const auditDetailLabelStyle = {
+  color: 'var(--sh-text-muted)',
+  fontWeight: 500,
+};
+
+const auditReasonStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  fontStyle: 'italic',
+  lineHeight: 1.55,
+  marginBottom: 'var(--sh-space-1)',
+};
+
+const auditNotesStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.55,
+  marginTop: 'var(--sh-space-2)',
 };
