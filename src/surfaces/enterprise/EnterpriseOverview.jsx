@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { athletes, engagementTimeline } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { Modal } from '../../components/Modal.jsx';
 import StatTile from '../../components/StatTile.jsx';
 import Sparkline from '../../components/Sparkline.jsx';
+import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
+import AthleteProfile from '../../components/AthleteProfile.jsx';
 import {
   tot,
   gpsD,
@@ -29,6 +30,7 @@ const CATEGORY_CONFIG = {
 
 export default function EnterpriseOverview() {
   const [activeCategory, setActiveCategory] = useState(null);
+  const [activeAthlete, setActiveAthlete] = useState(null);
   const latestEngagement = engagementTimeline[engagementTimeline.length - 1];
 
   const config = activeCategory ? CATEGORY_CONFIG[activeCategory] : null;
@@ -73,25 +75,20 @@ export default function EnterpriseOverview() {
         </p>
       </Card>
 
-      {/* Drill-down modal */}
-      <Modal
+      {/* Drill-down: filtered list → individual profile (stacks behind profile) */}
+      <FilteredAthletesModal
         isOpen={activeCategory !== null}
         onClose={() => setActiveCategory(null)}
         title={modalTitle}
-      >
-        <ul style={modalListStyle}>
-          {filteredAthletes.map((a, i) => {
-            const isLast = i === filteredAthletes.length - 1;
-            return (
-              <li key={a.id} style={athleteRowStyle(isLast)}>
-                <p style={athleteNameStyle}>{a.name}</p>
-                <p style={athleteSportStyle}>{a.sport}</p>
-                <p style={athleteMetaStyle}>{a.year} · {statusFor(a)}</p>
-              </li>
-            );
-          })}
-        </ul>
-      </Modal>
+        athletes={filteredAthletes}
+        onAthleteClick={setActiveAthlete}
+      />
+
+      <AthleteProfile
+        isOpen={activeAthlete !== null}
+        onClose={() => setActiveAthlete(null)}
+        athlete={activeAthlete}
+      />
     </main>
   );
 }
@@ -159,37 +156,4 @@ const engagementCaptionStyle = {
   color: 'var(--sh-text-secondary)',
   lineHeight: 1.55,
   marginTop: 'var(--sh-space-3)',
-};
-
-const modalListStyle = {
-  listStyle: 'none',
-  margin: 0,
-  padding: 0,
-};
-
-function athleteRowStyle(isLast) {
-  return {
-    paddingTop: 'var(--sh-space-3)',
-    paddingBottom: 'var(--sh-space-3)',
-    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
-  };
-}
-
-const athleteNameStyle = {
-  fontFamily: 'var(--sh-font-serif)',
-  fontSize: 'var(--sh-text-base)',
-  color: 'var(--sh-text-primary)',
-  marginBottom: 'var(--sh-space-1)',
-};
-
-const athleteSportStyle = {
-  fontSize: 'var(--sh-text-sm)',
-  color: 'var(--sh-text-body)',
-  marginBottom: 'var(--sh-space-1)',
-};
-
-const athleteMetaStyle = {
-  fontSize: 'var(--sh-text-xs)',
-  color: 'var(--sh-text-muted)',
-  letterSpacing: '0.02em',
 };

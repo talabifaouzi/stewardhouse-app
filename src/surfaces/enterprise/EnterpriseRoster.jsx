@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { athletes } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import StatTile from '../../components/StatTile.jsx';
+import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
+import AthleteProfile from '../../components/AthleteProfile.jsx';
 import {
   tot,
   certD,
@@ -11,6 +14,15 @@ import {
 } from './shared/enterpriseStats.js';
 import { statusFor, STATUS_PRIORITY } from './shared/athleteStatus.js';
 
+// Duplicated from Overview — extract in 9.5 polish along with modalTitle builder.
+const CATEGORY_CONFIG = {
+  'all':                  { label: 'All athletes',         filter: () => true },
+  'actively-progressing': { label: 'Actively progressing', filter: (a) => statusFor(a) === 'Actively progressing' },
+  'certified':            { label: 'Certified',            filter: (a) => a.certified },
+  'not-yet-active':       { label: 'Not yet active',       filter: (a) => statusFor(a) === 'Not yet active' },
+  'invited':              { label: 'Invited',              filter: (a) => statusFor(a) === 'Invited' },
+};
+
 const sortedAthletes = [...athletes].sort((a, b) => {
   const p = STATUS_PRIORITY[statusFor(a)] - STATUS_PRIORITY[statusFor(b)];
   if (p !== 0) return p;
@@ -18,21 +30,33 @@ const sortedAthletes = [...athletes].sort((a, b) => {
 });
 
 export default function EnterpriseRoster() {
+  const [activeCategory, setActiveCategory] = useState(null);
+  const [activeAthlete, setActiveAthlete] = useState(null);
+  const [hoveredRowId, setHoveredRowId] = useState(null);
+
+  const config = activeCategory ? CATEGORY_CONFIG[activeCategory] : null;
+  const filteredAthletes = config ? athletes.filter(config.filter) : [];
+  const modalTitle = config
+    ? (activeCategory === 'all'
+        ? `${config.label} — ${filteredAthletes.length}`
+        : `${config.label} — ${filteredAthletes.length} athletes`)
+    : '';
+
   return (
     <main style={mainStyle}>
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Roster</h1>
 
-      {/* Stat grid (mirrors Overview) */}
+      {/* Stat grid — each tile drills into a filtered athlete list */}
       <div style={statGridStyle}>
-        <StatTile label="Athletes" value={tot} />
-        <StatTile label="Actively progressing" value={onTrack} sublabel={`${activelyProgressingPct}% of program`} />
-        <StatTile label="Certified" value={certD} />
-        <StatTile label="Not yet active" value={stalled} />
-        <StatTile label="Invited" value={notStarted} />
+        <StatTile label="Athletes" value={tot} onClick={() => setActiveCategory('all')} />
+        <StatTile label="Actively progressing" value={onTrack} sublabel={`${activelyProgressingPct}% of program`} onClick={() => setActiveCategory('actively-progressing')} />
+        <StatTile label="Certified" value={certD} onClick={() => setActiveCategory('certified')} />
+        <StatTile label="Not yet active" value={stalled} onClick={() => setActiveCategory('not-yet-active')} />
+        <StatTile label="Invited" value={notStarted} onClick={() => setActiveCategory('invited')} />
       </div>
 
-      {/* Roster table */}
+      {/* Roster table — rows clickable, opens profile directly */}
       <Card>
         <div style={tableWrapperStyle}>
           <table style={tableStyle}>
@@ -52,8 +76,19 @@ export default function EnterpriseRoster() {
             <tbody>
               {sortedAthletes.map((a, i) => {
                 const isLast = i === sortedAthletes.length - 1;
+                const isHovered = hoveredRowId === a.id;
                 return (
-                  <tr key={a.id}>
+                  <tr
+                    key={a.id}
+                    onClick={() => setActiveAthlete(a)}
+                    onMouseEnter={() => setHoveredRowId(a.id)}
+                    onMouseLeave={() => setHoveredRowId(null)}
+                    style={{
+                      cursor: 'pointer',
+                      background: isHovered ? 'var(--sh-bg-tint)' : 'transparent',
+                      transition: 'background 150ms ease',
+                    }}
+                  >
                     <td style={tdStyle(isLast)}>{a.name}</td>
                     <td style={tdStyle(isLast)}>{a.sport}</td>
                     <td style={tdStyle(isLast)}>{a.year}</td>
@@ -70,6 +105,22 @@ export default function EnterpriseRoster() {
           </table>
         </div>
       </Card>
+
+      {/* Drill-down: stat tile → filtered list → profile (stacks) */}
+      <FilteredAthletesModal
+        isOpen={activeCategory !== null}
+        onClose={() => setActiveCategory(null)}
+        title={modalTitle}
+        athletes={filteredAthletes}
+        onAthleteClick={setActiveAthlete}
+      />
+
+      {/* Profile: opened from filtered modal OR directly from table row */}
+      <AthleteProfile
+        isOpen={activeAthlete !== null}
+        onClose={() => setActiveAthlete(null)}
+        athlete={activeAthlete}
+      />
     </main>
   );
 }
