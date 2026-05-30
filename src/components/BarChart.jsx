@@ -15,7 +15,7 @@ import { useState } from 'react';
 
 const Y_TICKS = [0, 25, 50, 75, 100];
 
-export default function BarChart({ data, labels, ariaLabel, tooltipFormatter }) {
+export default function BarChart({ data, labels, ariaLabel, tooltipFormatter, onBarClick }) {
   const [activeIndex, setActiveIndex] = useState(null);
 
   const fmt = tooltipFormatter || ((v, i) => {
@@ -60,6 +60,7 @@ export default function BarChart({ data, labels, ariaLabel, tooltipFormatter }) 
                   onLeave={() => setActiveIndex(null)}
                   onFocus={() => setActiveIndex(i)}
                   onBlur={() => setActiveIndex(null)}
+                  onClick={onBarClick ? () => onBarClick(value, i) : undefined}
                 />
               ))}
             </div>
@@ -79,7 +80,7 @@ export default function BarChart({ data, labels, ariaLabel, tooltipFormatter }) 
   );
 }
 
-function BarSlot({ value, isActive, tooltip, onEnter, onLeave, onFocus, onBlur }) {
+function BarSlot({ value, isActive, tooltip, onEnter, onLeave, onFocus, onBlur, onClick }) {
   return (
     <button
       type="button"
@@ -87,6 +88,7 @@ function BarSlot({ value, isActive, tooltip, onEnter, onLeave, onFocus, onBlur }
       onMouseLeave={onLeave}
       onFocus={onFocus}
       onBlur={onBlur}
+      onClick={onClick}
       aria-label={tooltip}
       style={barSlotStyle}
     >

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { athletes, engagementTimeline } from '../../data/enterpriseFixtures.js';
+import { athletes, engagementTimeline, engagementWeekDates, engagedAthletesByWeek } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import StatTile from '../../components/StatTile.jsx';
@@ -24,13 +24,39 @@ import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 
 export default function EnterpriseOverview() {
   const [activeCategory, setActiveCategory] = useState(null);
+  const [activeWeek, setActiveWeek] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
   const [composingTo, setComposingTo] = useState(null);
   const latestEngagement = engagementTimeline[engagementTimeline.length - 1];
 
+  // Unified filter state — bar click and tile click are mutually exclusive
   const config = activeCategory ? CATEGORY_CONFIG[activeCategory] : null;
-  const filteredAthletes = config ? athletes.filter(config.filter) : [];
-  const modalTitle = buildModalTitle(config, filteredAthletes, activeCategory);
+  let filteredAthletes = [];
+  let modalTitle = '';
+  let filterModalOpen = false;
+  if (activeWeek !== null) {
+    const weekIds = engagedAthletesByWeek[activeWeek] || [];
+    filteredAthletes = athletes.filter((a) => weekIds.includes(a.id));
+    modalTitle = `Engaged athletes — week ending ${engagementWeekDates[activeWeek]} — ${filteredAthletes.length} athletes`;
+    filterModalOpen = true;
+  } else if (config) {
+    filteredAthletes = athletes.filter(config.filter);
+    modalTitle = buildModalTitle(config, filteredAthletes, activeCategory);
+    filterModalOpen = true;
+  }
+
+  const closeFilterModal = () => {
+    setActiveCategory(null);
+    setActiveWeek(null);
+  };
+  const openCategory = (key) => {
+    setActiveCategory(key);
+    setActiveWeek(null);
+  };
+  const openWeek = (i) => {
+    setActiveWeek(i);
+    setActiveCategory(null);
+  };
 
   return (
     <main style={mainStyle}>
@@ -42,11 +68,11 @@ export default function EnterpriseOverview() {
 
       {/* Primary stat grid — each tile drills into a filtered athlete list */}
       <div style={statGridStyle}>
-        <StatTile label="Athletes" value={tot} onClick={() => setActiveCategory('all')} />
-        <StatTile label="Actively progressing" value={onTrack} sublabel={`${activelyProgressingPct}% of program`} onClick={() => setActiveCategory('actively-progressing')} />
-        <StatTile label="Certified" value={certD} onClick={() => setActiveCategory('certified')} />
-        <StatTile label="Not yet active" value={stalled} onClick={() => setActiveCategory('not-yet-active')} />
-        <StatTile label="Invited" value={notStarted} onClick={() => setActiveCategory('invited')} />
+        <StatTile label="Athletes" value={tot} onClick={() => openCategory('all')} />
+        <StatTile label="Actively progressing" value={onTrack} sublabel={`${activelyProgressingPct}% of program`} onClick={() => openCategory('actively-progressing')} />
+        <StatTile label="Certified" value={certD} onClick={() => openCategory('certified')} />
+        <StatTile label="Not yet active" value={stalled} onClick={() => openCategory('not-yet-active')} />
+        <StatTile label="Invited" value={notStarted} onClick={() => openCategory('invited')} />
       </div>
 
       {/* Supplementary line */}
@@ -62,18 +88,19 @@ export default function EnterpriseOverview() {
         </div>
         <BarChart
           data={engagementTimeline}
-          labels={engagementTimeline.map((_, i) => `W${i + 1}`)}
-          ariaLabel={`Weekly engagement rate over 12 weeks, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%.`}
+          labels={engagementWeekDates}
+          onBarClick={(_, i) => openWeek(i)}
+          ariaLabel={`Weekly engagement rate over 12 weeks ending ${engagementWeekDates[engagementWeekDates.length - 1]}, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
         />
         <p style={engagementCaptionStyle}>
           Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.
         </p>
       </Card>
 
-      {/* Drill-down: filtered list → individual profile (stacks behind profile) */}
+      {/* Drill-down: filtered list (from tile or bar) → individual profile */}
       <FilteredAthletesModal
-        isOpen={activeCategory !== null}
-        onClose={() => setActiveCategory(null)}
+        isOpen={filterModalOpen}
+        onClose={closeFilterModal}
         title={modalTitle}
         athletes={filteredAthletes}
         onAthleteClick={setActiveAthlete}

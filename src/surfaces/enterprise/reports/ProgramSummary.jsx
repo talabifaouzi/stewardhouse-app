@@ -1,11 +1,19 @@
 import { useState } from 'react';
-import { athletes, engagementTimeline, workshops } from '../../../data/enterpriseFixtures.js';
+import {
+  athletes,
+  engagementTimeline,
+  engagementWeekDates,
+  engagedAthletesByWeek,
+  workshops,
+} from '../../../data/enterpriseFixtures.js';
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BarChart from '../../../components/BarChart.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
 import WorkshopDetail from '../../../components/WorkshopDetail.jsx';
+import FilteredAthletesModal from '../../../components/FilteredAthletesModal.jsx';
+import AthleteProfile from '../../../components/AthleteProfile.jsx';
 import {
   tot,
   gpsRate,
@@ -25,7 +33,16 @@ function capitalize(s) {
 
 export default function ProgramSummary() {
   const [activeWorkshop, setActiveWorkshop] = useState(null);
+  const [activeWeek, setActiveWeek] = useState(null);
+  const [activeAthlete, setActiveAthlete] = useState(null);
   const latestEngagement = engagementTimeline[engagementTimeline.length - 1];
+
+  const weekAthletes = activeWeek !== null
+    ? athletes.filter((a) => (engagedAthletesByWeek[activeWeek] || []).includes(a.id))
+    : [];
+  const weekTitle = activeWeek !== null
+    ? `Engaged athletes — week ending ${engagementWeekDates[activeWeek]} — ${weekAthletes.length} athletes`
+    : '';
 
   return (
     <main style={mainStyle}>
@@ -61,8 +78,9 @@ export default function ProgramSummary() {
           </div>
           <BarChart
             data={engagementTimeline}
-            labels={engagementTimeline.map((_, i) => `W${i + 1}`)}
-            ariaLabel={`Weekly engagement rate over 12 weeks, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%.`}
+            labels={engagementWeekDates}
+            onBarClick={(_, i) => setActiveWeek(i)}
+            ariaLabel={`Weekly engagement rate over 12 weeks ending ${engagementWeekDates[engagementWeekDates.length - 1]}, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
           />
           <p style={engagementCaptionStyle}>
             Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.
@@ -91,6 +109,21 @@ export default function ProgramSummary() {
         onClose={() => setActiveWorkshop(null)}
         workshop={activeWorkshop}
         athletesById={athletesById}
+      />
+
+      {/* Engaged-athletes modal (bar click) → AthleteProfile */}
+      <FilteredAthletesModal
+        isOpen={activeWeek !== null}
+        onClose={() => setActiveWeek(null)}
+        title={weekTitle}
+        athletes={weekAthletes}
+        onAthleteClick={setActiveAthlete}
+      />
+
+      <AthleteProfile
+        isOpen={activeAthlete !== null}
+        onClose={() => setActiveAthlete(null)}
+        athlete={activeAthlete}
       />
     </main>
   );

@@ -23,7 +23,7 @@ function dateKey(year, month, day) {
 }
 
 export default function WorkshopCalendar({ workshops, onWorkshopClick }) {
-  const [currentDate, setCurrentDate] = useState(new Date(2026, 8, 1));
+  const [currentDate, setCurrentDate] = useState(new Date());
 
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
@@ -36,6 +36,24 @@ export default function WorkshopCalendar({ workshops, onWorkshopClick }) {
     if (!workshopsByDate[key]) workshopsByDate[key] = [];
     workshopsByDate[key].push(w);
   });
+
+  // Derived: does the current view month contain any workshops?
+  const hasWorkshopsInCurrentMonth = workshops.some((w) => {
+    const d = new Date(w.date);
+    return d.getFullYear() === year && d.getMonth() === month;
+  });
+
+  // First workshop after today (for the "Next workshop" pointer banner)
+  const now = new Date();
+  const nextWorkshop = [...workshops]
+    .sort((a, b) => new Date(a.date) - new Date(b.date))
+    .find((w) => new Date(w.date) > now);
+
+  const jumpToNextWorkshop = () => {
+    if (!nextWorkshop) return;
+    const target = new Date(nextWorkshop.date);
+    setCurrentDate(new Date(target.getFullYear(), target.getMonth(), 1));
+  };
 
   const startDayOfWeek = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
@@ -89,6 +107,11 @@ export default function WorkshopCalendar({ workshops, onWorkshopClick }) {
         </button>
       </div>
 
+      {/* "Next workshop" pointer — when current view has no workshops */}
+      {!hasWorkshopsInCurrentMonth && nextWorkshop && (
+        <NextWorkshopBanner workshop={nextWorkshop} onClick={jumpToNextWorkshop} />
+      )}
+
       {/* Day-of-week header + day grid */}
       <div style={gridStyle}>
         {DAY_LABELS.map((d) => (
@@ -117,6 +140,24 @@ export default function WorkshopCalendar({ workshops, onWorkshopClick }) {
         })}
       </div>
     </div>
+  );
+}
+
+function NextWorkshopBanner({ workshop, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        ...nextWorkshopBannerStyle,
+        background: hovered ? 'var(--sh-bronze-tint)' : 'var(--sh-bg-tint)',
+      }}
+    >
+      Next workshop: {workshop.date} — {workshop.title}
+    </button>
   );
 }
 
@@ -159,6 +200,22 @@ const monthLabelStyle = {
   margin: 0,
   textAlign: 'center',
   flex: 1,
+};
+
+const nextWorkshopBannerStyle = {
+  display: 'block',
+  width: '100%',
+  textAlign: 'left',
+  padding: 'var(--sh-space-3) var(--sh-space-4)',
+  marginBottom: 'var(--sh-space-4)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: 'var(--sh-radius-md)',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  fontFamily: 'inherit',
+  cursor: 'pointer',
+  transition: 'background 150ms ease',
+  lineHeight: 1.5,
 };
 
 const navButtonStyle = {
