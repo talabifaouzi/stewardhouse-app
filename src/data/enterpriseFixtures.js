@@ -560,6 +560,16 @@ export const contacts = [
   },
 ];
 
+/** @type {{currentValue: number, contributionsToDate: number, growthToDate: number, asOfDate: string, annualContribution: number, programTerm: string}} */
+export const endowmentSnapshot = {
+  currentValue: 8628,           // $8,500 contributed + ~6% annualized × 3 months
+  contributionsToDate: 8500,
+  growthToDate: 128,
+  asOfDate: 'Nov 17, 2026',
+  annualContribution: 8500,
+  programTerm: 'Season Residency · Aug 2026 to May 2027',
+};
+
 // Single source of truth for the "logged-in user" in the enterprise prototype.
 // Production swaps this to an auth-derived current user.
 /** @type {Contact} */
