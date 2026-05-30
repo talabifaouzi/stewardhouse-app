@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useModalStack } from '../contexts/ModalStackContext.jsx';
 
 const FOCUSABLE_SELECTOR =
   'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -8,10 +9,23 @@ export function Modal({ isOpen, onClose, title, children }) {
   const closeButtonRef = useRef(null);
   const panelRef = useRef(null);
   const titleIdRef = useRef(`modal-title-${Math.random().toString(36).slice(2, 9)}`);
+  const idRef = useRef(null);
+  if (idRef.current === null) {
+    idRef.current = `modal-${Math.random().toString(36).slice(2, 9)}`;
+  }
   const [closeHovered, setCloseHovered] = useState(false);
   const [closeFocused, setCloseFocused] = useState(false);
+  const { push, pop, isTop, indexOf } = useModalStack();
 
-  // Capture the element that triggered open; restore focus to it on close.
+  // Register on stack when open; pop when closed/unmounted.
+  useEffect(() => {
+    if (!isOpen) return;
+    const id = idRef.current;
+    push(id);
+    return () => pop(id);
+  }, [isOpen, push, pop]);
+
+  // Capture the element that triggered open; restore focus on close.
   useEffect(() => {
     if (!isOpen) return;
     triggerRef.current = document.activeElement;
@@ -25,31 +39,21 @@ export function Modal({ isOpen, onClose, title, children }) {
     };
   }, [isOpen]);
 
-  // ESC closes.
+  // ESC closes — only when this modal is on top of the stack.
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape' && isTop(idRef.current)) onClose();
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [isOpen, onClose]);
+  }, [isOpen, isTop, onClose]);
 
-  // Body scroll lock while open.
-  useEffect(() => {
-    if (!isOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [isOpen]);
-
-  // Tab focus trap — cycle within the panel.
+  // Tab focus trap — only when this modal is on top.
   useEffect(() => {
     if (!isOpen) return;
     const handler = (e) => {
-      if (e.key !== 'Tab') return;
+      if (e.key !== 'Tab' || !isTop(idRef.current)) return;
       if (!panelRef.current) return;
       const focusables = panelRef.current.querySelectorAll(FOCUSABLE_SELECTOR);
       if (focusables.length === 0) return;
@@ -65,19 +69,26 @@ export function Modal({ isOpen, onClose, title, children }) {
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
-  }, [isOpen]);
+  }, [isOpen, isTop]);
 
   if (!isOpen) return null;
 
+  const myDepth = indexOf(idRef.current);
+  const z = 1000 + Math.max(0, myDepth) * 10;
+
+  const handleBackdropClick = (e) => {
+    if (e.target === e.currentTarget && isTop(idRef.current)) onClose();
+  };
+
   return (
-    <div role="presentation" onClick={onClose} style={backdropStyle}>
+    <div role="presentation" onClick={handleBackdropClick} style={{ ...backdropStyle, zIndex: z }}>
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleIdRef.current}
         ref={panelRef}
         onClick={(e) => e.stopPropagation()}
-        style={panelStyle}
+        style={{ ...panelStyle, zIndex: z + 1 }}
       >
         <div style={headerStyle}>
           <h2 id={titleIdRef.current} style={titleStyle}>{title}</h2>
@@ -110,7 +121,6 @@ const backdropStyle = {
   position: 'fixed',
   inset: 0,
   background: 'var(--sh-overlay-bg)',
-  zIndex: 1000,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
