@@ -570,6 +570,36 @@ export const endowmentSnapshot = {
   programTerm: 'Season Residency · Aug 2026 to May 2027',
 };
 
+/** @type {{cohortLabel: string, athletes: number, gpsCompleted: number, gpsRate: number, certified: number, certRate: number, totalGifts: number, totalDollarsMoved: number, workshopAttendanceRate: number, avgWeeklyEngagement: number, asOfNote: string}} */
+export const priorCohortSnapshot = {
+  cohortLabel: '2025-2026',
+  athletes: 14,
+  gpsCompleted: 11,
+  gpsRate: 79,
+  certified: 5,
+  certRate: 36,
+  totalGifts: 28,
+  totalDollarsMoved: 6700,
+  workshopAttendanceRate: 82,
+  avgWeeklyEngagement: 68,
+  asOfNote: 'Full program year complete',
+};
+
+/** @type {{cohortLabel: string, athletes: number, gpsCompleted: number, gpsRate: number, certified: number, certRate: number, totalGifts: number, totalDollarsMoved: number, workshopAttendanceRate: number, avgWeeklyEngagement: number, asOfNote: string}} */
+export const currentCohortSnapshot = {
+  cohortLabel: '2026-2027',
+  athletes: 16,
+  gpsCompleted: 12,
+  gpsRate: 75,
+  certified: 4,
+  certRate: 25,
+  totalGifts: 33,
+  totalDollarsMoved: 4900,        // sum of $-amounts in athletes' activity gift_made events (tracked-only — undercounts vs gifts count)
+  workshopAttendanceRate: 75,     // W1 12/16 + W2 12/16 averaged
+  avgWeeklyEngagement: 58,        // average of engagementTimeline values
+  asOfNote: 'Through Nov 17, 2026 (mid-program)',
+};
+
 // Single source of truth for the "logged-in user" in the enterprise prototype.
 // Production swaps this to an auth-derived current user.
 /** @type {Contact} */
