@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { athletes, engagementTimeline, engagementWeekDates, engagedAthletesByWeek } from '../../data/enterpriseFixtures.js';
+import { athletes, engagementTimeline, engagementWeekDates, engagedAthletesByWeek, dailyBriefItems } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import StatTile from '../../components/StatTile.jsx';
 import BarChart from '../../components/BarChart.jsx';
 import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
+import DailyBrief from '../../components/DailyBrief.jsx';
 import { useComms } from '../../contexts/CommsContext.jsx';
 import {
   tot,
@@ -65,6 +66,11 @@ export default function EnterpriseOverview() {
       <p style={subtitleStyle}>
         Athletes participate as individuals; the department supports structurally — not advisorially.
       </p>
+
+      {/* Daily brief — morning-triage entry point */}
+      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
+        <DailyBrief {...dailyBriefItems} />
+      </div>
 
       {/* Primary stat grid — each tile drills into a filtered athlete list */}
       <div style={statGridStyle}>

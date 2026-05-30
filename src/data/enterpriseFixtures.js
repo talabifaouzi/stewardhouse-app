@@ -600,6 +600,33 @@ export const currentCohortSnapshot = {
   asOfNote: 'Through Nov 17, 2026 (mid-program)',
 };
 
+/** @type {{notionalDate: string, attention: Array<object>, priorities: Array<object>, recentActivity: Array<object>, upcoming: Array<object>}} */
+export const dailyBriefItems = {
+  notionalDate: 'Nov 12, 2026',
+  attention: [
+    { id: 'stalled-tyler', text: 'Tyler Brooks uncontacted 11 days', meta: 'Last note: Nov 1, 2026 — check-in scheduled', link: '/enterprise/roster' },
+    { id: 'stalled-andre', text: 'Andre Mitchell uncontacted 18 days', meta: 'Outreach paused pending end-of-semester check-in', link: '/enterprise/roster' },
+    { id: 'stalled-ava', text: 'Ava Petrova GPS follow-up no reply', meta: 'Last note: Nov 2, 2026', link: '/enterprise/roster' },
+  ],
+  priorities: [
+    { id: 'workshop-w3-prep', text: 'Workshop W3 (Vetting Organizations) — Nov 17, 2026', meta: '5 days out · 2 follow-ups pending', link: '/enterprise/program' },
+    { id: 'pre-reading-w3', text: 'Send W3 pre-reading materials', meta: 'Due Nov 14, 2026' },
+    { id: 'compliance-review', text: 'Quarterly compliance review of excluded organizations', meta: 'Last reviewed Nov 1, 2026', link: '/enterprise/compliance' },
+  ],
+  recentActivity: [
+    { id: 'marcus-lesson-5', text: 'Marcus Thompson completed Lesson 5: Giving Vehicles', meta: 'Nov 8, 2026' },
+    { id: 'aaliyah-cert', text: 'Aaliyah Williams certified', meta: 'Nov 2, 2026' },
+    { id: 'mia-lesson-5', text: 'Mia Chang completed Lesson 5: Giving Vehicles', meta: 'Nov 4, 2026' },
+    { id: 'elijah-lesson-4', text: 'Elijah Brown completed Lesson 4: Vetting Organizations', meta: 'Nov 3, 2026' },
+    { id: 'aaliyah-gift', text: 'Aaliyah Williams logged gift: $500 to Atlanta Track Foundation', meta: 'Oct 25, 2026' },
+  ],
+  upcoming: [
+    { id: 'workshop-w3', text: 'Workshop W3: Vetting Organizations', meta: 'Nov 17, 2026 — 5 days out', link: '/enterprise/program' },
+    { id: 'fall-review-deadline', text: 'End-of-fall-semester check-ins', meta: 'Due Dec 15, 2026' },
+    { id: 'spring-planning', text: 'Spring outreach planning meeting', meta: 'Week of Dec 1, 2026' },
+  ],
+};
+
 // Single source of truth for the "logged-in user" in the enterprise prototype.
 // Production swaps this to an auth-derived current user.
 /** @type {Contact} */
