@@ -1,24 +1,19 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { athletes, engagementTimeline, workshops } from '../../../data/enterpriseFixtures.js';
+import { engagementTimeline, workshops } from '../../../data/enterpriseFixtures.js';
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
-
-// Duplicated from EnterpriseOverview / EnterpriseRoster — no shared-helper
-// refactor this slice (tracked as polish-pass item: "extract enterprise
-// stats to shared helper").
-const tot = athletes.length;
-const gpsD = athletes.filter((a) => a.gpsCompleted).length;
-const certD = athletes.filter((a) => a.certified).length;
-const inProg = athletes.filter((a) => a.lessons > 0 && !a.certified).length;
-const stalled = athletes.filter((a) => a.lessons > 0 && !a.gpsCompleted).length;
-const onTrack = inProg - stalled;
-const notStarted = athletes.filter((a) => a.lessons === 0).length;
-const tGi = athletes.reduce((s, a) => s + a.gifts, 0);
-const athletesWithGifts = athletes.filter((a) => a.gifts > 0).length;
-const gpsRate = Math.round((gpsD / tot) * 100);
-const activelyProgressingPct = Math.round(((certD + onTrack) / tot) * 100);
-const certRate = Math.round((certD / tot) * 100);
+import Sparkline from '../../../components/Sparkline.jsx';
+import BackLink from '../../../components/BackLink.jsx';
+import StatTile from '../../../components/StatTile.jsx';
+import {
+  tot,
+  gpsRate,
+  certRate,
+  tGi,
+  onTrack,
+  certD,
+  stalled,
+  notStarted,
+} from '../shared/enterpriseStats.js';
 
 function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
@@ -29,7 +24,7 @@ export default function ProgramSummary() {
 
   return (
     <main style={mainStyle}>
-      <BackLink />
+      <BackLink to="/enterprise/reports" label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Program Summary</h1>
 
@@ -38,10 +33,10 @@ export default function ProgramSummary() {
         <Card>
           <SectionLabel>Cohort snapshot</SectionLabel>
           <div style={statGridStyle}>
-            <Stat label="Athletes" value={tot} />
-            <Stat label="GPS completed" value={`${gpsRate}%`} />
-            <Stat label="Certified" value={`${certRate}%`} />
-            <Stat label="Total gifts" value={tGi} />
+            <StatTile variant="inline" label="Athletes" value={tot} />
+            <StatTile variant="inline" label="GPS completed" value={`${gpsRate}%`} />
+            <StatTile variant="inline" label="Certified" value={`${certRate}%`} />
+            <StatTile variant="inline" label="Total gifts" value={tGi} />
           </div>
         </Card>
 
@@ -88,70 +83,6 @@ export default function ProgramSummary() {
   );
 }
 
-function Stat({ label, value }) {
-  return (
-    <div style={statTileStyle}>
-      <p style={statLabelStyle}>{label}</p>
-      <p style={statValueStyle}>{value}</p>
-    </div>
-  );
-}
-
-function Sparkline({ data }) {
-  const width = 600;
-  const height = 80;
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min || 1;
-  const points = data
-    .map((v, i) => {
-      const x = (i / (data.length - 1)) * width;
-      const y = height - ((v - min) / range) * height;
-      return `${x},${y}`;
-    })
-    .join(' ');
-
-  return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      preserveAspectRatio="none"
-      style={{ width: '100%', height: '64px', display: 'block' }}
-      aria-hidden="true"
-    >
-      <polyline
-        points={points}
-        fill="none"
-        stroke="var(--sh-bronze)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function BackLink() {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <Link
-      to="/enterprise/reports"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'inline-block',
-        color: hovered ? 'var(--sh-text-primary)' : 'var(--sh-text-muted)',
-        textDecoration: 'none',
-        fontSize: 'var(--sh-text-xs)',
-        marginBottom: 'var(--sh-space-3)',
-        letterSpacing: '0.04em',
-        transition: 'color 150ms ease',
-      }}
-    >
-      ← Reports
-    </Link>
-  );
-}
-
 const mainStyle = {
   maxWidth: 'var(--sh-content-max)',
   margin: '0 auto',
@@ -178,26 +109,6 @@ const statGridStyle = {
   gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
   gap: 'var(--sh-space-4)',
   marginTop: 'var(--sh-space-3)',
-};
-
-const statTileStyle = {
-  padding: 'var(--sh-space-3) 0',
-};
-
-const statLabelStyle = {
-  fontSize: 'var(--sh-text-xs)',
-  color: 'var(--sh-text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-  marginBottom: 'var(--sh-space-2)',
-  fontWeight: 500,
-};
-
-const statValueStyle = {
-  fontFamily: 'var(--sh-font-serif)',
-  fontSize: 'var(--sh-text-2xl)',
-  color: 'var(--sh-text-primary)',
-  lineHeight: 1.1,
 };
 
 const narrativeStyle = {
@@ -241,7 +152,7 @@ function workshopRowStyle(isLast) {
     alignItems: 'baseline',
     gap: 'var(--sh-space-4)',
     padding: 'var(--sh-space-3) 0',
-    borderBottom: isLast ? 'none' : `1px solid var(--sh-card-border)`,
+    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
   };
 }
 

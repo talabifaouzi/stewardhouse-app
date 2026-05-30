@@ -1,11 +1,10 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { Card } from '../../../components/Card.jsx';
+import BackLink from '../../../components/BackLink.jsx';
 
 export default function CohortComparison() {
   return (
     <main style={mainStyle}>
-      <BackLink />
+      <BackLink to="/enterprise/reports" label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Cohort Comparison</h1>
       <Card tint>
@@ -14,28 +13,6 @@ export default function CohortComparison() {
         </p>
       </Card>
     </main>
-  );
-}
-
-function BackLink() {
-  const [hovered, setHovered] = useState(false);
-  return (
-    <Link
-      to="/enterprise/reports"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        display: 'inline-block',
-        color: hovered ? 'var(--sh-text-primary)' : 'var(--sh-text-muted)',
-        textDecoration: 'none',
-        fontSize: 'var(--sh-text-xs)',
-        marginBottom: 'var(--sh-space-3)',
-        letterSpacing: '0.04em',
-        transition: 'color 150ms ease',
-      }}
-    >
-      ← Reports
-    </Link>
   );
 }
 
