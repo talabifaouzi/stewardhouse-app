@@ -246,7 +246,13 @@ function Stepper({ steps, currentStep, visitedSteps, onStepClick }) {
                 aria-label={`Step ${idx + 1}: ${label}`}
                 style={indicatorStyle(isCurrent, isCompleted, canClick)}
               >
-                {isCompleted ? '✓' : idx + 1}
+                {isCompleted ? (
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <polyline points="2 6 5 9 10 3" />
+                  </svg>
+                ) : (
+                  idx + 1
+                )}
               </button>
               <p style={stepLabelStyle(isCurrent)}>{label}</p>
             </div>

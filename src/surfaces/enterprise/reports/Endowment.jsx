@@ -185,7 +185,7 @@ export default function Endowment() {
           <span style={reviewPillStyle}>REVIEW PENDING</span>
         </div>
         <p style={noticeBodyStyle}>
-          Illustrative projections only. Not investment advice. Actual returns may vary based on market conditions and economic factors. Endowment structure — including tax treatment, distribution mechanism, and governance — is subject to legal review prior to partnership finalization. Consult your financial advisor and legal counsel before relying on these projections for planning purposes.
+          Illustrative projections only. Not investment advice. Actual outcomes may vary based on market conditions and economic factors. Endowment structure — including tax treatment, distribution mechanism, and governance — is subject to legal review prior to partnership finalization. Consult your financial advisor and legal counsel before relying on these projections for planning purposes.
         </p>
       </Card>
     </main>

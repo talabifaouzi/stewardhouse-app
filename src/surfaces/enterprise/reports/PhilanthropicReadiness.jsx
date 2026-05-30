@@ -114,7 +114,7 @@ export default function PhilanthropicReadiness() {
             value={(
               <>
                 {exclusions.length} flagged. Reviewed quarterly per advisor independence policy.{' '}
-                <Link to="/enterprise/compliance" style={postureLinkStyle}>View list →</Link>
+                <Link to="/enterprise/compliance" style={postureLinkStyle}>View list</Link>
               </>
             )}
           />

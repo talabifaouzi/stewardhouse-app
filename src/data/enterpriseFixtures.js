@@ -115,7 +115,7 @@ export const athletes = [
   },
   {
     id: 2, name: "Aaliyah Williams", sport: "Track & Field", year: "Senior", position: "400m",
-    gpsCompleted: true, gpsDate: "Sep 15", lessons: 7, gifts: 5, lastActive: "1d ago",
+    gpsCompleted: true, gpsDate: "Sep 15", lessons: 9, gifts: 5, lastActive: "1d ago",
     status: "active", joinDate: "Aug 25", badge: "The Amplifier", certified: true, certDate: "Nov 2, 2026",
     email: "aaliyah.williams@cooperstate.edu",
     phone: "(555) 248-9102",
@@ -181,7 +181,7 @@ export const athletes = [
   },
   {
     id: 6, name: "Keisha Davis", sport: "Volleyball", year: "Senior", position: "Setter",
-    gpsCompleted: true, gpsDate: "Sep 12", lessons: 7, gifts: 4, lastActive: "1d ago",
+    gpsCompleted: true, gpsDate: "Sep 12", lessons: 9, gifts: 4, lastActive: "1d ago",
     status: "active", joinDate: "Aug 22", badge: "The Steward", certified: true, certDate: "Oct 28, 2026",
     email: "keisha.davis@cooperstate.edu",
     phone: "(555) 619-8334",
@@ -277,11 +277,11 @@ export const athletes = [
   },
   {
     id: 12, name: "Destiny Clark", sport: "Softball", year: "Senior", position: "P",
-    gpsCompleted: true, gpsDate: "Sep 10", lessons: 7, gifts: 6, lastActive: "Today",
+    gpsCompleted: true, gpsDate: "Sep 10", lessons: 9, gifts: 6, lastActive: "Today",
     status: "active", joinDate: "Aug 20", badge: "The Steward", certified: true, certDate: "Oct 15, 2026",
     email: "destiny.clark@cooperstate.edu",
     phone: "(555) 514-8273",
-    notes: "One of the highest-engagement athletes in the cohort. Established giving around women's sports access — drew on her own pitching coach's youth program as a model.",
+    notes: "Engaged consistently across sessions and gifts. Established giving around women's sports access — drew on her own pitching coach's youth program as a model.",
     activity: [
       { date: "2026-10-15", type: "certified",         label: "Certification awarded" },
       { date: "2026-10-12", type: "lesson_completed",  label: "Lesson 9: Capstone Reflection" },
@@ -295,7 +295,7 @@ export const athletes = [
   },
   {
     id: 13, name: "Jordan Lewis", sport: "Football", year: "Senior", position: "QB",
-    gpsCompleted: true, gpsDate: "Sep 8", lessons: 7, gifts: 4, lastActive: "Today",
+    gpsCompleted: true, gpsDate: "Sep 8", lessons: 9, gifts: 4, lastActive: "Today",
     status: "active", joinDate: "Aug 20", badge: "The Amplifier", certified: true, certDate: "Oct 10, 2026",
     email: "jordan.lewis@cooperstate.edu",
     phone: "(555) 248-3061",
@@ -531,7 +531,7 @@ export const contacts = [
     email: 'morgan@walkerphilanthropic.com',
     phone: '(555) 612-4400',
     role: 'facilitator',
-    bio: 'Founding partner at Walker Philanthropic Advisory. Specializes in athlete and entertainer philanthropy with a focus on multi-year giving strategies and cause discovery for first-time donors.',
+    bio: 'Founding partner at Walker Philanthropic Advisory. Specializes in athlete philanthropy with a focus on multi-year giving strategies and cause discovery for first-time donors.',
   },
   {
     id: 'npark',

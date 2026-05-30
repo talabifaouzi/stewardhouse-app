@@ -99,11 +99,17 @@ export default function WorkshopCalendar({ workshops, onWorkshopClick }) {
       {/* Month/year header with prev/next */}
       <div style={headerStyle}>
         <button type="button" onClick={goPrev} style={navButtonStyle} aria-label="Previous month">
-          ← {prevMonthShort}
+          <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginRight: '6px', verticalAlign: 'middle' }}>
+            <polyline points="6 1 1 6 6 11" />
+          </svg>
+          {prevMonthShort}
         </button>
         <h3 style={monthLabelStyle}>{MONTH_NAMES[month]} {year}</h3>
         <button type="button" onClick={goNext} style={navButtonStyle} aria-label="Next month">
-          {nextMonthShort} →
+          {nextMonthShort}
+          <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ marginLeft: '6px', verticalAlign: 'middle' }}>
+            <polyline points="2 1 7 6 2 11" />
+          </svg>
         </button>
       </div>
 

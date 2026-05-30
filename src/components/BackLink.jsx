@@ -12,7 +12,9 @@ export default function BackLink({ to, label }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       style={{
-        display: 'inline-block',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 'var(--sh-space-1)',
         color: hovered ? 'var(--sh-text-primary)' : 'var(--sh-text-muted)',
         textDecoration: 'none',
         fontSize: 'var(--sh-text-xs)',
@@ -21,7 +23,10 @@ export default function BackLink({ to, label }) {
         transition: 'color 150ms ease',
       }}
     >
-      ← {label}
+      <svg width="8" height="12" viewBox="0 0 8 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+        <polyline points="6 1 1 6 6 11" />
+      </svg>
+      {label}
     </Link>
   );
 }
