@@ -389,9 +389,10 @@ export const workshops = [
       { athleteId: 16, attended: true,  note: null },
     ],
     followUps: [
-      { id: 1, description: "Send the recording link to absent athletes", owner: "Morgan Walker", dueDate: "2026-09-18", status: "completed" },
-      { id: 2, description: "Schedule 1:1s with athletes who asked about DAFs", owner: "Morgan Walker", dueDate: "2026-09-25", status: "completed" },
-      { id: 3, description: "Share supplementary GPS template resources", owner: "Morgan Walker", dueDate: "2026-09-30", status: "completed" },
+      { id: 'w1-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: '1:1 GPS coaching sessions for athletes who did not complete cause statement during workshop', target: '4 athletes', status: 'completed', completedDate: 'Oct 5, 2026' },
+      { id: 'w1-fu-2', owner: 'Diane Greer', ownerRole: 'Senior Director, Athletic Development', action: 'Confirm RSVPs for W2 with cohort', target: 'Cohort-wide', status: 'completed', completedDate: 'Oct 10, 2026' },
+      { id: 'w1-fu-3', owner: 'Cohort', ownerRole: 'Athletes (self-directed)', action: 'Complete GPS framework draft before next workshop (12 of 16 completed by deadline)', target: '16 athletes', status: 'completed', completedDate: 'Oct 18, 2026' },
+      { id: 'w1-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Review submitted GPS frameworks against NIL conflict checklist', target: '12 GPS completers', status: 'completed', completedDate: 'Oct 19, 2026' },
     ],
   },
   {
@@ -420,8 +421,10 @@ export const workshops = [
       { athleteId: 16, attended: false, note: "Family pressure — academics-first this semester" },
     ],
     followUps: [
-      { id: 1, description: "Send tax strategy reading list to all attendees", owner: "Morgan Walker", dueDate: "2026-10-25", status: "completed" },
-      { id: 2, description: "Schedule deep-dive sessions for athletes considering DAFs", owner: "Morgan Walker", dueDate: "2026-11-05", status: "pending" },
+      { id: 'w2-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: 'Curate vehicles deep-dive resource pack for athletes asking about DAFs', target: '5 athletes', status: 'completed', completedDate: 'Oct 28, 2026' },
+      { id: 'w2-fu-2', owner: 'Diane Greer', ownerRole: 'Senior Director, Athletic Development', action: 'Send tax-advisor referral list to athletes who requested', target: 'Marcus Thompson, Keisha Davis, Jordan Lewis', status: 'completed', completedDate: 'Oct 25, 2026' },
+      { id: 'w2-fu-3', owner: 'Cohort', ownerRole: 'Athletes (self-directed)', action: 'Reflect on Lesson 5 content and journal entry', target: '16 athletes', status: 'in_progress', dueDate: 'Nov 14, 2026' },
+      { id: 'w2-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Verify recipient organizations referenced in workshop have current 501(c)(3) status', target: '7 organizations', status: 'completed', completedDate: 'Oct 24, 2026' },
     ],
   },
   {
@@ -432,8 +435,10 @@ export const workshops = [
     summary: "How to evaluate nonprofit organizations: 990 reading, mission alignment, operational health. Pre-reading materials to be distributed.",
     attendance: [],
     followUps: [
-      { id: 1, description: "Finalize agenda and case studies", owner: "Morgan Walker", dueDate: "2026-11-12", status: "pending" },
-      { id: 2, description: "Send pre-reading materials", owner: "Morgan Walker", dueDate: "2026-11-14", status: "pending" },
+      { id: 'w3-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: 'Prepare W3 workshop materials and case studies', target: 'Workshop deliverables', status: 'in_progress', dueDate: 'Nov 14, 2026' },
+      { id: 'w3-fu-2', owner: 'Diane Greer', ownerRole: 'Senior Director, Athletic Development', action: 'Confirm room booking and virtual link for W3', target: 'Logistics', status: 'completed', completedDate: 'Nov 5, 2026' },
+      { id: 'w3-fu-3', owner: 'Diane Greer', ownerRole: 'Senior Director, Athletic Development', action: 'Pre-workshop check-in with stalled athletes', target: 'Tyler Brooks, Andre Mitchell, Ava Petrova', status: 'in_progress', dueDate: 'Nov 15, 2026' },
+      { id: 'w3-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Compile current exclusion list for workshop reference', target: 'Workshop reference materials', status: 'in_progress', dueDate: 'Nov 16, 2026' },
     ],
   },
   {
@@ -444,7 +449,7 @@ export const workshops = [
     summary: "Mid-year reflection: review of giving year-to-date, planning for January–April. Athletes will share progress with cohort.",
     attendance: [],
     followUps: [
-      { id: 1, description: "Coordinate with athletic department on scheduling", owner: "Morgan Walker", dueDate: "2027-01-15", status: "pending" },
+      { id: 'w4-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: 'Workshop planning not yet started', status: 'pending' },
     ],
   },
   {
@@ -455,7 +460,7 @@ export const workshops = [
     summary: "Capstone session. Athletes present completed giving plans, reflect on the program, and identify next steps for ongoing practice.",
     attendance: [],
     followUps: [
-      { id: 1, description: "Plan capstone certification ceremony", owner: "Morgan Walker", dueDate: "2027-03-15", status: "pending" },
+      { id: 'w5-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: 'Workshop planning not yet started', status: 'pending' },
     ],
   },
 ];

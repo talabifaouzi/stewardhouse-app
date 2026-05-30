@@ -4,15 +4,10 @@ import { Modal } from './Modal.jsx';
 
 // Single-workshop detail modal. Five sections: header meta (date + facilitator
 // + module), summary, attendance (count + per-athlete list), follow-ups
-// (description + owner + due date + status badge), module reference.
+// (action + owner attribution + status marker + trailing date), module reference.
 //
 // For upcoming/scheduled workshops the attendance section renders a
 // "pending" placeholder instead of an empty list.
-
-const STATUS_LABEL = {
-  pending: 'Pending',
-  completed: 'Completed',
-};
 
 export default function WorkshopDetail({ isOpen, onClose, workshop, athletesById }) {
   if (!workshop) return null;
@@ -80,24 +75,18 @@ export default function WorkshopDetail({ isOpen, onClose, workshop, athletesById
 
         {/* Follow-ups */}
         <Card>
-          <SectionLabel>Follow-ups</SectionLabel>
-          <ul style={listResetStyle}>
-            {workshop.followUps.map((f, i) => (
-              <li key={f.id} style={followUpRowStyle(i === workshop.followUps.length - 1)}>
-                <div style={followUpHeaderStyle}>
-                  <p style={f.status === 'completed' ? followUpDescCompletedStyle : followUpDescStyle}>
-                    {f.description}
-                  </p>
-                  <span style={statusBadgeStyle(f.status)}>
-                    {STATUS_LABEL[f.status]}
-                  </span>
-                </div>
-                <p style={followUpMetaStyle}>
-                  {f.owner} · Due {f.dueDate}
-                </p>
-              </li>
-            ))}
-          </ul>
+          <SectionLabel>Follow-ups · {workshop.followUps.length}</SectionLabel>
+          {workshop.followUps.length === 0 ? (
+            <p style={emptyFollowUpsStyle}>No follow-ups recorded for this workshop.</p>
+          ) : (
+            <ul style={listResetStyle}>
+              {workshop.followUps.map((f, i) => (
+                <li key={f.id} style={followUpRowStyle(i === workshop.followUps.length - 1)}>
+                  <FollowUpRow followUp={f} />
+                </li>
+              ))}
+            </ul>
+          )}
         </Card>
 
         {/* Module reference */}
@@ -204,49 +193,65 @@ function followUpRowStyle(isLast) {
   };
 }
 
-const followUpHeaderStyle = {
+const followUpContentStyle = {
   display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'baseline',
+  alignItems: 'flex-start',
   gap: 'var(--sh-space-3)',
+};
+
+function statusMarkerStyle(status) {
+  const base = {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    boxSizing: 'border-box',
+    flexShrink: 0,
+    marginTop: '7px',
+    display: 'inline-block',
+  };
+  if (status === 'completed') return { ...base, background: 'var(--sh-bronze-deep)' };
+  if (status === 'in_progress') return { ...base, border: '1.5px solid var(--sh-bronze)' };
+  return { ...base, border: '1.5px solid var(--sh-text-muted)' };
+}
+
+const followUpBodyStyle = {
+  flex: 1,
+  minWidth: 0,
+};
+
+const followUpActionStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-primary)',
+  lineHeight: 1.5,
   marginBottom: 'var(--sh-space-1)',
 };
 
-const followUpDescStyle = {
-  fontSize: 'var(--sh-text-sm)',
-  color: 'var(--sh-text-body)',
-  lineHeight: 1.5,
-  flex: 1,
-};
-
-const followUpDescCompletedStyle = {
-  fontSize: 'var(--sh-text-sm)',
-  color: 'var(--sh-text-muted)',
-  lineHeight: 1.5,
-  flex: 1,
-};
-
-function statusBadgeStyle(status) {
-  const isPending = status === 'pending';
-  return {
-    display: 'inline-block',
-    padding: '2px 8px',
-    borderRadius: 'var(--sh-radius-full)',
-    fontSize: 'var(--sh-text-xs)',
-    fontWeight: 500,
-    letterSpacing: '0.04em',
-    whiteSpace: 'nowrap',
-    flexShrink: 0,
-    background: isPending ? 'var(--sh-bronze-tint)' : 'transparent',
-    color: isPending ? 'var(--sh-bronze-deep)' : 'var(--sh-text-muted)',
-    border: isPending ? 'none' : 'var(--sh-border-thin)',
-  };
-}
-
-const followUpMetaStyle = {
+const followUpAttributionStyle = {
   fontSize: 'var(--sh-text-xs)',
   color: 'var(--sh-text-muted)',
   letterSpacing: '0.02em',
+  lineHeight: 1.55,
+  marginBottom: 'var(--sh-space-1)',
+};
+
+const followUpTrailStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  letterSpacing: '0.02em',
+};
+
+const followUpTrailPendingStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  letterSpacing: '0.02em',
+  fontStyle: 'italic',
+};
+
+const emptyFollowUpsStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-muted)',
+  fontStyle: 'italic',
+  marginTop: 'var(--sh-space-3)',
 };
 
 const moduleRefStyle = {
@@ -264,3 +269,28 @@ const moduleNameStyle = {
   fontStyle: 'normal',
   fontWeight: 500,
 };
+
+function FollowUpRow({ followUp }) {
+  const { action, owner, ownerRole, target, status, dueDate, completedDate } = followUp;
+  const trail =
+    status === 'completed' && completedDate ? `Completed ${completedDate}` :
+    status === 'in_progress' && dueDate ? `Due ${dueDate}` :
+    status === 'pending' ? 'Not yet started' : null;
+  return (
+    <div style={followUpContentStyle}>
+      <span style={statusMarkerStyle(status)} aria-hidden="true" />
+      <div style={followUpBodyStyle}>
+        <p style={followUpActionStyle}>{action}</p>
+        <p style={followUpAttributionStyle}>
+          Owner: {owner} · {ownerRole}
+          {target && <> · For: {target}</>}
+        </p>
+        {trail && (
+          <p style={status === 'pending' ? followUpTrailPendingStyle : followUpTrailStyle}>
+            {trail}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
