@@ -3,8 +3,8 @@ import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Chrome from '../../components/Chrome.jsx';
 import UserProfile from '../../components/UserProfile.jsx';
 import ContactsDirectory from '../../components/ContactsDirectory.jsx';
-import ComposeMessage from '../../components/ComposeMessage.jsx';
-import { contacts, INST_PROFILES } from '../../data/enterpriseFixtures.js';
+import { CommsProvider, useComms } from '../../contexts/CommsContext.jsx';
+import { contacts, INST_PROFILES, CURRENT_USER, athletes } from '../../data/enterpriseFixtures.js';
 
 import EnterpriseOverview from './EnterpriseOverview.jsx';
 import EnterpriseRoster from './EnterpriseRoster.jsx';
@@ -31,7 +31,21 @@ const _years = _dateRange.match(/\d{4}/g);
 const _yearRange = _years && _years.length >= 2 ? `${_years[0]}–${_years[1]}` : '';
 const cohortLabel = `${_instProfile.name} · ${_yearRange}`;
 
+// Recipients list for ComposeMessage autocomplete — 21 entries (16 athletes + 5 contacts).
+const recipientsList = [
+  ...athletes.map((a) => ({ name: a.name, email: a.email })),
+  ...contacts.map((c) => ({ name: c.name, email: c.email })),
+];
+
 export default function EnterpriseSurface() {
+  return (
+    <CommsProvider currentUser={CURRENT_USER} recipients={recipientsList}>
+      <EnterpriseSurfaceInner />
+    </CommsProvider>
+  );
+}
+
+function EnterpriseSurfaceInner() {
   const location = useLocation();
   const path = location.pathname;
   const activeNav =
@@ -42,9 +56,9 @@ export default function EnterpriseSurface() {
     path.includes('/setup') ? 'setup' :
     'home';
 
+  const { openCompose } = useComms();
   const [activeContact, setActiveContact] = useState(null);
   const [showContactsDirectory, setShowContactsDirectory] = useState(false);
-  const [composingTo, setComposingTo] = useState(null);
 
   return (
     <div style={{
@@ -75,14 +89,14 @@ export default function EnterpriseSurface() {
         </Routes>
       </div>
 
-      {/* Chrome-level modals */}
+      {/* Chrome-level modals — ComposeMessage rendered by CommsProvider */}
       <UserProfile
         isOpen={activeContact !== null}
         onClose={() => setActiveContact(null)}
         contact={activeContact}
         onSendMessage={(c) => {
           setActiveContact(null);
-          setComposingTo({ name: c.name, email: c.email });
+          openCompose(c);
         }}
       />
 
@@ -94,12 +108,6 @@ export default function EnterpriseSurface() {
           setShowContactsDirectory(false);
           setActiveContact(c);
         }}
-      />
-
-      <ComposeMessage
-        isOpen={composingTo !== null}
-        onClose={() => setComposingTo(null)}
-        recipient={composingTo}
       />
     </div>
   );

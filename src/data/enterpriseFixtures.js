@@ -560,6 +560,11 @@ export const contacts = [
   },
 ];
 
+// Single source of truth for the "logged-in user" in the enterprise prototype.
+// Production swaps this to an auth-derived current user.
+/** @type {Contact} */
+export const CURRENT_USER = contacts.find((c) => c.id === 'diane');
+
 // Sector-aware terminology (Athletics-only for v1; function shape preserved so M&E can plug in later)
 export function T() {
   return {

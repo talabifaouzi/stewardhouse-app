@@ -6,7 +6,7 @@ import StatTile from '../../components/StatTile.jsx';
 import BarChart from '../../components/BarChart.jsx';
 import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
-import ComposeMessage from '../../components/ComposeMessage.jsx';
+import { useComms } from '../../contexts/CommsContext.jsx';
 import {
   tot,
   gpsD,
@@ -23,10 +23,10 @@ import { statusFor } from './shared/athleteStatus.js';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 
 export default function EnterpriseOverview() {
+  const { openCompose } = useComms();
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeWeek, setActiveWeek] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
-  const [composingTo, setComposingTo] = useState(null);
   const latestEngagement = engagementTimeline[engagementTimeline.length - 1];
 
   // Unified filter state — bar click and tile click are mutually exclusive
@@ -110,14 +110,7 @@ export default function EnterpriseOverview() {
         isOpen={activeAthlete !== null}
         onClose={() => setActiveAthlete(null)}
         athlete={activeAthlete}
-        onSendReminder={(a) => setComposingTo({ name: a.name, email: a.email })}
-      />
-
-      <ComposeMessage
-        isOpen={composingTo !== null}
-        onClose={() => setComposingTo(null)}
-        recipient={composingTo}
-        context="Reminder"
+        onSendReminder={(a) => openCompose({ name: a.name, email: a.email }, 'Reminder')}
       />
     </main>
   );

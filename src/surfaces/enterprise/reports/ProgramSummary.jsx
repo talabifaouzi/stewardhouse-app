@@ -14,6 +14,7 @@ import StatTile from '../../../components/StatTile.jsx';
 import WorkshopDetail from '../../../components/WorkshopDetail.jsx';
 import FilteredAthletesModal from '../../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../../components/AthleteProfile.jsx';
+import { useComms } from '../../../contexts/CommsContext.jsx';
 import {
   tot,
   gpsRate,
@@ -32,6 +33,7 @@ function capitalize(s) {
 }
 
 export default function ProgramSummary() {
+  const { openCompose } = useComms();
   const [activeWorkshop, setActiveWorkshop] = useState(null);
   const [activeWeek, setActiveWeek] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
@@ -124,6 +126,7 @@ export default function ProgramSummary() {
         isOpen={activeAthlete !== null}
         onClose={() => setActiveAthlete(null)}
         athlete={activeAthlete}
+        onSendReminder={(a) => openCompose({ name: a.name, email: a.email }, 'Reminder')}
       />
     </main>
   );
