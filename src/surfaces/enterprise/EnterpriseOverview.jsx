@@ -3,26 +3,21 @@ import { athletes, engagementTimeline } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { Modal } from '../../components/Modal.jsx';
-
-const tot = athletes.length;
-const gpsD = athletes.filter((a) => a.gpsCompleted).length;
-const certD = athletes.filter((a) => a.certified).length;
-const inProg = athletes.filter((a) => a.lessons > 0 && !a.certified).length;
-const stalled = athletes.filter((a) => a.lessons > 0 && !a.gpsCompleted).length;
-const onTrack = inProg - stalled;
-const notStarted = athletes.filter((a) => a.lessons === 0).length;
-const tGi = athletes.reduce((s, a) => s + a.gifts, 0);
-const athletesWithGifts = athletes.filter((a) => a.gifts > 0).length;
-const gpsRate = Math.round((gpsD / tot) * 100);
-const activelyProgressingPct = Math.round(((certD + onTrack) / tot) * 100);
-
-// Duplicated from EnterpriseRoster — polish-pass item #9 (shared extraction).
-function statusFor(a) {
-  if (a.certified) return 'Certified';
-  if (a.lessons > 0 && !a.gpsCompleted) return 'Not yet active';
-  if (a.status === 'invited' || a.lessons === 0) return 'Invited';
-  return 'Actively progressing';
-}
+import StatTile from '../../components/StatTile.jsx';
+import Sparkline from '../../components/Sparkline.jsx';
+import {
+  tot,
+  gpsD,
+  certD,
+  stalled,
+  onTrack,
+  notStarted,
+  tGi,
+  athletesWithGifts,
+  gpsRate,
+  activelyProgressingPct,
+} from './shared/enterpriseStats.js';
+import { statusFor } from './shared/athleteStatus.js';
 
 const CATEGORY_CONFIG = {
   'all':                  { label: 'All athletes',         filter: () => true },
@@ -54,11 +49,11 @@ export default function EnterpriseOverview() {
 
       {/* Primary stat grid — each tile drills into a filtered athlete list */}
       <div style={statGridStyle}>
-        <Stat label="Athletes" value={tot} onClick={() => setActiveCategory('all')} />
-        <Stat label="Actively progressing" value={onTrack} sublabel={`${activelyProgressingPct}% of program`} onClick={() => setActiveCategory('actively-progressing')} />
-        <Stat label="Certified" value={certD} onClick={() => setActiveCategory('certified')} />
-        <Stat label="Not yet active" value={stalled} onClick={() => setActiveCategory('not-yet-active')} />
-        <Stat label="Invited" value={notStarted} onClick={() => setActiveCategory('invited')} />
+        <StatTile label="Athletes" value={tot} onClick={() => setActiveCategory('all')} />
+        <StatTile label="Actively progressing" value={onTrack} sublabel={`${activelyProgressingPct}% of program`} onClick={() => setActiveCategory('actively-progressing')} />
+        <StatTile label="Certified" value={certD} onClick={() => setActiveCategory('certified')} />
+        <StatTile label="Not yet active" value={stalled} onClick={() => setActiveCategory('not-yet-active')} />
+        <StatTile label="Invited" value={notStarted} onClick={() => setActiveCategory('invited')} />
       </div>
 
       {/* Supplementary line */}
@@ -101,64 +96,6 @@ export default function EnterpriseOverview() {
   );
 }
 
-function Stat({ label, value, sublabel, onClick }) {
-  const [hovered, setHovered] = useState(false);
-  const [focused, setFocused] = useState(false);
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onFocus={() => setFocused(true)}
-      onBlur={() => setFocused(false)}
-      style={{
-        ...statTileStyle,
-        borderColor: hovered ? 'var(--sh-bronze)' : 'var(--sh-card-border)',
-        outline: focused ? '2px solid var(--sh-bronze)' : 'none',
-        outlineOffset: '2px',
-      }}
-    >
-      <p style={statLabelStyle}>{label}</p>
-      <p style={statValueStyle}>{value}</p>
-      {sublabel && <p style={statSublabelStyle}>{sublabel}</p>}
-    </button>
-  );
-}
-
-function Sparkline({ data }) {
-  const width = 600;
-  const height = 80;
-  const max = Math.max(...data);
-  const min = Math.min(...data);
-  const range = max - min || 1;
-  const points = data
-    .map((v, i) => {
-      const x = (i / (data.length - 1)) * width;
-      const y = height - ((v - min) / range) * height;
-      return `${x},${y}`;
-    })
-    .join(' ');
-
-  return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      preserveAspectRatio="none"
-      style={{ width: '100%', height: '64px', display: 'block' }}
-      aria-hidden="true"
-    >
-      <polyline
-        points={points}
-        fill="none"
-        stroke="var(--sh-bronze)"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
 const mainStyle = {
   maxWidth: 'var(--sh-content-max)',
   margin: '0 auto',
@@ -193,41 +130,6 @@ const statGridStyle = {
   gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
   gap: 'var(--sh-space-4)',
   marginBottom: 'var(--sh-space-4)',
-};
-
-const statTileStyle = {
-  background: 'var(--sh-card)',
-  border: '1px solid var(--sh-card-border)',
-  borderRadius: 'var(--sh-radius-lg)',
-  padding: 'var(--sh-space-5)',
-  cursor: 'pointer',
-  textAlign: 'left',
-  fontFamily: 'inherit',
-  width: '100%',
-  transition: 'border-color 150ms ease',
-};
-
-const statLabelStyle = {
-  fontSize: 'var(--sh-text-xs)',
-  color: 'var(--sh-text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-  marginBottom: 'var(--sh-space-2)',
-  fontWeight: 500,
-};
-
-const statValueStyle = {
-  fontFamily: 'var(--sh-font-serif)',
-  fontSize: 'var(--sh-text-2xl)',
-  color: 'var(--sh-text-primary)',
-  lineHeight: 1.1,
-};
-
-const statSublabelStyle = {
-  fontSize: 'var(--sh-text-xs)',
-  color: 'var(--sh-text-muted)',
-  marginTop: 'var(--sh-space-2)',
-  lineHeight: 1.5,
 };
 
 const supplementaryStyle = {
@@ -269,7 +171,7 @@ function athleteRowStyle(isLast) {
   return {
     paddingTop: 'var(--sh-space-3)',
     paddingBottom: 'var(--sh-space-3)',
-    borderBottom: isLast ? 'none' : `1px solid var(--sh-card-border)`,
+    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
   };
 }
 
