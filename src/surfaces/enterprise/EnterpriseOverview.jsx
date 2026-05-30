@@ -20,14 +20,7 @@ import {
   activelyProgressingPct,
 } from './shared/enterpriseStats.js';
 import { statusFor } from './shared/athleteStatus.js';
-
-const CATEGORY_CONFIG = {
-  'all':                  { label: 'All athletes',         filter: () => true },
-  'actively-progressing': { label: 'Actively progressing', filter: (a) => statusFor(a) === 'Actively progressing' },
-  'certified':            { label: 'Certified',            filter: (a) => a.certified },
-  'not-yet-active':       { label: 'Not yet active',       filter: (a) => statusFor(a) === 'Not yet active' },
-  'invited':              { label: 'Invited',              filter: (a) => statusFor(a) === 'Invited' },
-};
+import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 
 export default function EnterpriseOverview() {
   const [activeCategory, setActiveCategory] = useState(null);
@@ -37,11 +30,7 @@ export default function EnterpriseOverview() {
 
   const config = activeCategory ? CATEGORY_CONFIG[activeCategory] : null;
   const filteredAthletes = config ? athletes.filter(config.filter) : [];
-  const modalTitle = config
-    ? (activeCategory === 'all'
-        ? `${config.label} — ${filteredAthletes.length}`
-        : `${config.label} — ${filteredAthletes.length} athletes`)
-    : '';
+  const modalTitle = buildModalTitle(config, filteredAthletes, activeCategory);
 
   return (
     <main style={mainStyle}>

@@ -4,14 +4,14 @@ import { Card } from '../../components/Card.jsx';
 import ProgramSummary from './reports/ProgramSummary.jsx';
 import CohortComparison from './reports/CohortComparison.jsx';
 import PhilanthropicReadiness from './reports/PhilanthropicReadiness.jsx';
-import ROI from './reports/ROI.jsx';
+import ProgramOutputs from './reports/ProgramOutputs.jsx';
 import Endowment from './reports/Endowment.jsx';
 
 const REPORT_CARDS = [
   { slug: 'summary',   title: 'Program Summary',         desc: 'Cohort snapshot, status breakdown, engagement, workshops to date.' },
   { slug: 'cohort',    title: 'Cohort Comparison',       desc: 'Year-over-year and sport-level comparisons.' },
   { slug: 'readiness', title: 'Philanthropic Readiness', desc: 'Per-athlete structural progress against program gates.' },
-  { slug: 'roi',       title: 'ROI',                     desc: 'Return on partnership investment.' },
+  { slug: 'program-outputs', title: 'Program Outputs',   desc: 'Activity summary: dollars moved, certifications, gifts. Outputs reporting, not return calculation.' },
   { slug: 'endowment', title: 'Endowment',               desc: '$8.5K/yr endowment performance and projections.' },
 ];
 
@@ -22,7 +22,7 @@ export default function EnterpriseReports() {
       <Route path="summary" element={<ProgramSummary />} />
       <Route path="cohort" element={<CohortComparison />} />
       <Route path="readiness" element={<PhilanthropicReadiness />} />
-      <Route path="roi" element={<ROI />} />
+      <Route path="program-outputs" element={<ProgramOutputs />} />
       <Route path="endowment" element={<Endowment />} />
     </Routes>
   );

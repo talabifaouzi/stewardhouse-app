@@ -18,20 +18,6 @@ const STEPS = [
   'Sign-off',
 ];
 
-const TIER_OPTIONS = [
-  { value: 'pilot', label: 'Pilot ($15–25K)' },
-  { value: 'revenue-sports', label: 'Revenue Sports ($75–125K)' },
-  { value: 'department-wide', label: 'Department-Wide ($150–250K)' },
-  { value: 'multi-year', label: 'Multi-Year Partnership' },
-];
-
-const SECTOR_OPTIONS = [
-  { value: 'Athletics', label: 'Athletics', disabled: false },
-  { value: 'Music', label: 'Music (Phase 2)', disabled: true },
-  { value: 'Entertainment', label: 'Entertainment (Phase 2)', disabled: true },
-  { value: 'Creator', label: 'Creator (Phase 2)', disabled: true },
-];
-
 const DEFAULT_LESSONS = [
   'Lesson 1: Building Your GPS',
   'Lesson 2: Cause Discovery',
@@ -114,10 +100,6 @@ export default function SetupWizard() {
     if (currentStep > 0) setCurrentStep(currentStep - 1);
   };
 
-  const updateInstitution = (patch) =>
-    setFormState((s) => ({ ...s, institution: { ...s.institution, ...patch } }));
-  const updatePartnership = (patch) =>
-    setFormState((s) => ({ ...s, partnership: { ...s.partnership, ...patch } }));
   const updateRoles = (patch) =>
     setFormState((s) => ({ ...s, roles: { ...s.roles, ...patch } }));
   const updateWorkshops = (workshops) =>
@@ -278,42 +260,6 @@ function Stepper({ steps, currentStep, visitedSteps, onStepClick }) {
 // -----------------------------------------------------------------------------
 // Step components
 // -----------------------------------------------------------------------------
-
-function Step1Institution({ data, onChange }) {
-  return (
-    <>
-      <SectionLabel>Institution details</SectionLabel>
-      <div style={fieldGridStyle}>
-        <TextField label="Institution name" value={data.name} onChange={(v) => onChange({ name: v })} />
-        <SelectField label="Sector" value={data.sector} onChange={(v) => onChange({ sector: v })} options={SECTOR_OPTIONS} />
-        <TextField label="Department" value={data.dept} onChange={(v) => onChange({ dept: v })} />
-        <TextField label="Primary contact name" value={data.contactName} onChange={(v) => onChange({ contactName: v })} />
-        <TextField label="Primary contact email" type="email" value={data.contactEmail} onChange={(v) => onChange({ contactEmail: v })} />
-        <TextField label="Primary contact title" value={data.contactTitle} onChange={(v) => onChange({ contactTitle: v })} />
-      </div>
-    </>
-  );
-}
-
-function Step2Partnership({ data, onChange }) {
-  return (
-    <>
-      <SectionLabel>Partnership details</SectionLabel>
-      <div style={fieldStackStyle}>
-        <RadioGroup label="Tier" name="tier" value={data.tier} onChange={(v) => onChange({ tier: v })} options={TIER_OPTIONS} />
-        <TextField label="Term" value={data.term} onChange={(v) => onChange({ term: v })} />
-        <div style={fieldGridStyle}>
-          <DateField label="Start date" value={data.startDate} onChange={(v) => onChange({ startDate: v })} />
-          <DateField label="End date" value={data.endDate} onChange={(v) => onChange({ endDate: v })} />
-        </div>
-        <div style={fieldGridStyle}>
-          <TextField label="Annual package price" value={data.annualPrice} onChange={(v) => onChange({ annualPrice: v })} />
-          <TextField label="Annual endowment contribution" value={data.endowment} onChange={(v) => onChange({ endowment: v })} />
-        </div>
-      </div>
-    </>
-  );
-}
 
 function Step3Roster({ data }) {
   return (

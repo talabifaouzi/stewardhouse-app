@@ -1,15 +1,15 @@
 import { Card } from '../../../components/Card.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 
-export default function ROI() {
+export default function ProgramOutputs() {
   return (
     <main style={mainStyle}>
       <BackLink to="/enterprise/reports" label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
-      <h1 style={titleStyle}>ROI</h1>
+      <h1 style={titleStyle}>Program Outputs</h1>
       <Card tint>
         <p style={scaffoldedNoteStyle}>
-          Section scaffolded · content arrives in a later sub-slice.
+          Outputs reporting: dollars moved, certifications awarded, gifts made, workshops held. Activity summary, not return calculation.
         </p>
       </Card>
     </main>

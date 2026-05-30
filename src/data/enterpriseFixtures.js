@@ -1,3 +1,85 @@
+// -----------------------------------------------------------------------------
+// JSDoc typedefs — fixture entity shapes for IDE hover + autocomplete.
+// -----------------------------------------------------------------------------
+
+/**
+ * @typedef {Object} ActivityEvent
+ * @property {string} date
+ * @property {string} type
+ * @property {string} label
+ */
+
+/**
+ * @typedef {Object} Athlete
+ * @property {number} id
+ * @property {string} name
+ * @property {string} sport
+ * @property {string} year
+ * @property {string} position
+ * @property {boolean} gpsCompleted
+ * @property {string|null} gpsDate
+ * @property {number} lessons
+ * @property {number} gifts
+ * @property {string} lastActive
+ * @property {string} status
+ * @property {string|null} joinDate
+ * @property {string|null} badge
+ * @property {boolean} certified
+ * @property {string|null} certDate
+ * @property {string} email
+ * @property {string} phone
+ * @property {string} notes
+ * @property {Array<ActivityEvent>} activity
+ */
+
+/**
+ * @typedef {Object} FollowUp
+ * @property {number} id
+ * @property {string} description
+ * @property {string} owner
+ * @property {string} dueDate
+ * @property {string} status
+ */
+
+/**
+ * @typedef {Object} Workshop
+ * @property {number} id
+ * @property {string} date
+ * @property {string} title
+ * @property {string} status
+ * @property {number|null} attendees
+ * @property {string} notes
+ * @property {string} facilitator
+ * @property {string} module
+ * @property {string} summary
+ * @property {Array<{athleteId: number, attended: boolean, note: string|null}>} attendance
+ * @property {Array<FollowUp>} followUps
+ */
+
+/**
+ * @typedef {Object} Exclusion
+ * @property {number} id
+ * @property {string} name
+ * @property {string} ein
+ * @property {string} reason
+ * @property {string} flagged
+ * @property {string} connection
+ * @property {string} connectionDetail
+ */
+
+/**
+ * @typedef {Object} Contact
+ * @property {string} id
+ * @property {string} name
+ * @property {string} title
+ * @property {string} organization
+ * @property {string} email
+ * @property {string} phone
+ * @property {string} role
+ * @property {string} bio
+ */
+
+/** @type {Array<{id: string, sector: string, name: string, dept: string, contract: string, facilitator: string, tier: string, annual: string, endowment: string}>} */
 export const INST_PROFILES = [
   {
     id: "athletics",
@@ -12,6 +94,7 @@ export const INST_PROFILES = [
   },
 ];
 
+/** @type {Array<Athlete>} */
 export const athletes = [
   {
     id: 1, name: "Marcus Thompson", sport: "Basketball", year: "Junior", position: "Guard",
@@ -278,6 +361,7 @@ export const athletes = [
   },
 ];
 
+/** @type {Array<Workshop>} */
 export const workshops = [
   {
     id: 1, date: "Sep 15, 2026", title: "Kickoff: Building Your GPS",
@@ -378,6 +462,7 @@ export const workshops = [
 
 export const engagementTimeline = [35, 42, 50, 48, 58, 62, 55, 67, 72, 64, 70, 75]; // 12 weeks of weekly active %
 
+/** @type {Array<Exclusion>} */
 export const exclusions = [
   {
     id: 1, name: "Booster Club Foundation", ein: "04-9912345",
@@ -399,6 +484,7 @@ export const exclusions = [
   },
 ];
 
+/** @type {Array<Contact>} */
 export const contacts = [
   {
     id: 'diane',

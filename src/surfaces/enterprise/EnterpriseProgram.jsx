@@ -2,6 +2,25 @@ import { useState } from 'react';
 import { INST_PROFILES, workshops, athletes } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
+
+const DEFAULT_CURRICULUM = [
+  'Building Your GPS',
+  'Cause Discovery',
+  'Giving Identity',
+  'Vetting Organizations',
+  'Giving Vehicles',
+  'Tax Strategy',
+  'Multi-Year Commitments',
+  'Year-End Review',
+  'Capstone Reflection',
+  'Privacy & Identity in Giving',
+  'Crisis Posture',
+  'Public Voice and Visibility',
+  'Family + Community Context',
+  'Sustaining Practice',
+  'Engagement Depth',
+  'Lifetime Stewardship',
+];
 import WorkshopCalendar from '../../components/WorkshopCalendar.jsx';
 import WorkshopDetail from '../../components/WorkshopDetail.jsx';
 
@@ -48,12 +67,23 @@ export default function EnterpriseProgram() {
           <WorkshopCalendar workshops={workshops} onWorkshopClick={setActiveWorkshop} />
         </Card>
 
-        {/* Card 3 — Module curriculum reference (placeholder) */}
-        <Card tint>
+        {/* Card 3 — Module curriculum reference */}
+        <Card>
           <SectionLabel>Module curriculum reference</SectionLabel>
-          <p style={moduleNoteStyle}>
-            Athletes complete the StewardHouse 9-lesson curriculum on the Individual surface. Module-by-module progress and certification gates are tracked there.
+          <p style={curriculumIntroStyle}>
+            16-lesson v1 curriculum. Sequence is flexible — facilitator may adjust pacing per cohort.
           </p>
+          <ol style={curriculumListStyle}>
+            {DEFAULT_CURRICULUM.map((title, i) => {
+              const isLast = i === DEFAULT_CURRICULUM.length - 1;
+              return (
+                <li key={i} style={curriculumRowStyle(isLast)}>
+                  <span style={curriculumNumberStyle}>{String(i + 1).padStart(2, '0')}</span>
+                  <span style={curriculumTitleStyle}>{title}</span>
+                </li>
+              );
+            })}
+          </ol>
         </Card>
       </div>
 
@@ -146,12 +176,44 @@ const framingStyle = {
   marginBottom: 'var(--sh-space-4)',
 };
 
-const moduleNoteStyle = {
+const curriculumIntroStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-secondary)',
   lineHeight: 1.65,
   marginTop: 'var(--sh-space-3)',
+  marginBottom: 'var(--sh-space-4)',
   maxWidth: '640px',
+};
+
+const curriculumListStyle = {
+  listStyle: 'none',
+  margin: 0,
+  padding: 0,
+};
+
+function curriculumRowStyle(isLast) {
+  return {
+    display: 'flex',
+    alignItems: 'baseline',
+    gap: 'var(--sh-space-4)',
+    padding: 'var(--sh-space-3) 0',
+    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
+  };
+}
+
+const curriculumNumberStyle = {
+  fontFamily: 'var(--sh-font-serif)',
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  letterSpacing: '0.06em',
+  minWidth: '32px',
+  flexShrink: 0,
+};
+
+const curriculumTitleStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  lineHeight: 1.5,
 };
 
 const pendingPillStyle = {

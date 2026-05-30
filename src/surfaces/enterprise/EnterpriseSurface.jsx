@@ -4,7 +4,7 @@ import Chrome from '../../components/Chrome.jsx';
 import UserProfile from '../../components/UserProfile.jsx';
 import ContactsDirectory from '../../components/ContactsDirectory.jsx';
 import ComposeMessage from '../../components/ComposeMessage.jsx';
-import { contacts } from '../../data/enterpriseFixtures.js';
+import { contacts, INST_PROFILES } from '../../data/enterpriseFixtures.js';
 
 import EnterpriseOverview from './EnterpriseOverview.jsx';
 import EnterpriseRoster from './EnterpriseRoster.jsx';
@@ -23,6 +23,13 @@ const NAV_ITEMS = [
 ];
 
 const diane = contacts.find((c) => c.id === 'diane');
+
+// Cohort context surfaced in Chrome subtitle: "Cooper State University · 2026–2027"
+const _instProfile = INST_PROFILES[0];
+const _dateRange = (_instProfile.contract.split(' — ')[1] || '');
+const _years = _dateRange.match(/\d{4}/g);
+const _yearRange = _years && _years.length >= 2 ? `${_years[0]}–${_years[1]}` : '';
+const cohortLabel = `${_instProfile.name} · ${_yearRange}`;
 
 export default function EnterpriseSurface() {
   const location = useLocation();
@@ -54,6 +61,7 @@ export default function EnterpriseSurface() {
         activeNav={activeNav}
         onUserClick={() => setActiveContact(diane)}
         onContactsClick={() => setShowContactsDirectory(true)}
+        surfaceContext={cohortLabel}
       />
       <div style={{ flex: 1 }}>
         <Routes>

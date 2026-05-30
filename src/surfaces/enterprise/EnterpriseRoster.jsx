@@ -14,15 +14,7 @@ import {
   activelyProgressingPct,
 } from './shared/enterpriseStats.js';
 import { statusFor, STATUS_PRIORITY } from './shared/athleteStatus.js';
-
-// Duplicated from Overview — extract in 9.5 polish along with modalTitle builder.
-const CATEGORY_CONFIG = {
-  'all':                  { label: 'All athletes',         filter: () => true },
-  'actively-progressing': { label: 'Actively progressing', filter: (a) => statusFor(a) === 'Actively progressing' },
-  'certified':            { label: 'Certified',            filter: (a) => a.certified },
-  'not-yet-active':       { label: 'Not yet active',       filter: (a) => statusFor(a) === 'Not yet active' },
-  'invited':              { label: 'Invited',              filter: (a) => statusFor(a) === 'Invited' },
-};
+import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 
 const sortedAthletes = [...athletes].sort((a, b) => {
   const p = STATUS_PRIORITY[statusFor(a)] - STATUS_PRIORITY[statusFor(b)];
@@ -38,11 +30,7 @@ export default function EnterpriseRoster() {
 
   const config = activeCategory ? CATEGORY_CONFIG[activeCategory] : null;
   const filteredAthletes = config ? athletes.filter(config.filter) : [];
-  const modalTitle = config
-    ? (activeCategory === 'all'
-        ? `${config.label} — ${filteredAthletes.length}`
-        : `${config.label} — ${filteredAthletes.length} athletes`)
-    : '';
+  const modalTitle = buildModalTitle(config, filteredAthletes, activeCategory);
 
   return (
     <main style={mainStyle}>

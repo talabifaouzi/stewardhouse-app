@@ -25,7 +25,7 @@ const SURFACE_CONFIG = {
   },
 };
 
-export default function Chrome({ surface, userName, userRole, navItems = [], activeNav, onUserClick, onContactsClick }) {
+export default function Chrome({ surface, userName, userRole, navItems = [], activeNav, onUserClick, onContactsClick, surfaceContext }) {
   const config = SURFACE_CONFIG[surface] || SURFACE_CONFIG.individual;
 
   return (
@@ -82,6 +82,16 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
             }}>
               {config.role}
             </span>
+            {surfaceContext && (
+              <span style={{
+                fontSize: 'var(--sh-text-xs)',
+                color: 'var(--sh-text-muted)',
+                letterSpacing: '0.04em',
+                marginTop: '2px',
+              }}>
+                {surfaceContext}
+              </span>
+            )}
           </div>
         </div>
 
