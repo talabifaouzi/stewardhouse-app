@@ -390,7 +390,7 @@ export const workshops = [
     ],
     followUps: [
       { id: 'w1-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: '1:1 GPS coaching sessions for athletes who did not complete cause statement during workshop', target: '4 athletes', status: 'completed', completedDate: 'Oct 5, 2026' },
-      { id: 'w1-fu-2', owner: 'Diane Greer', ownerRole: 'Senior Director, Athletic Development', action: 'Confirm RSVPs for W2 with cohort', target: 'Cohort-wide', status: 'completed', completedDate: 'Oct 10, 2026' },
+      { id: 'w1-fu-2', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Confirm RSVPs for W2 with cohort', target: 'Cohort-wide', status: 'completed', completedDate: 'Oct 10, 2026' },
       { id: 'w1-fu-3', owner: 'Cohort', ownerRole: 'Athletes (self-directed)', action: 'Complete GPS framework draft before next workshop (12 of 16 completed by deadline)', target: '16 athletes', status: 'completed', completedDate: 'Oct 18, 2026' },
       { id: 'w1-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Review submitted GPS frameworks against NIL conflict checklist', target: '12 GPS completers', status: 'completed', completedDate: 'Oct 19, 2026' },
     ],
@@ -422,7 +422,7 @@ export const workshops = [
     ],
     followUps: [
       { id: 'w2-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: 'Curate vehicles deep-dive resource pack for athletes asking about DAFs', target: '5 athletes', status: 'completed', completedDate: 'Oct 28, 2026' },
-      { id: 'w2-fu-2', owner: 'Diane Greer', ownerRole: 'Senior Director, Athletic Development', action: 'Send tax-advisor referral list to athletes who requested', target: 'Marcus Thompson, Keisha Davis, Jordan Lewis', status: 'completed', completedDate: 'Oct 25, 2026' },
+      { id: 'w2-fu-2', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Send tax-advisor referral list to athletes who requested', target: 'Marcus Thompson, Keisha Davis, Jordan Lewis', status: 'completed', completedDate: 'Oct 25, 2026' },
       { id: 'w2-fu-3', owner: 'Cohort', ownerRole: 'Athletes (self-directed)', action: 'Reflect on Lesson 5 content and journal entry', target: '16 athletes', status: 'in_progress', dueDate: 'Nov 14, 2026' },
       { id: 'w2-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Verify recipient organizations referenced in workshop have current 501(c)(3) status', target: '7 organizations', status: 'completed', completedDate: 'Oct 24, 2026' },
     ],
@@ -436,8 +436,8 @@ export const workshops = [
     attendance: [],
     followUps: [
       { id: 'w3-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: 'Prepare W3 workshop materials and case studies', target: 'Workshop deliverables', status: 'in_progress', dueDate: 'Nov 14, 2026' },
-      { id: 'w3-fu-2', owner: 'Diane Greer', ownerRole: 'Senior Director, Athletic Development', action: 'Confirm room booking and virtual link for W3', target: 'Logistics', status: 'completed', completedDate: 'Nov 5, 2026' },
-      { id: 'w3-fu-3', owner: 'Diane Greer', ownerRole: 'Senior Director, Athletic Development', action: 'Pre-workshop check-in with stalled athletes', target: 'Tyler Brooks, Andre Mitchell, Ava Petrova', status: 'in_progress', dueDate: 'Nov 15, 2026' },
+      { id: 'w3-fu-2', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Confirm room booking and virtual link for W3', target: 'Logistics', status: 'completed', completedDate: 'Nov 5, 2026' },
+      { id: 'w3-fu-3', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Pre-workshop check-in with stalled athletes', target: 'Tyler Brooks, Andre Mitchell, Ava Petrova', status: 'in_progress', dueDate: 'Nov 15, 2026' },
       { id: 'w3-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Compile current exclusion list for workshop reference', target: 'Workshop reference materials', status: 'in_progress', dueDate: 'Nov 16, 2026' },
     ],
   },
@@ -516,7 +516,7 @@ export const contacts = [
   {
     id: 'diane',
     name: 'Diane Okonkwo',
-    title: 'Director of Athletic Department',
+    title: 'Senior Director, Athletic Development',
     organization: 'Cooper State University',
     email: 'diane.okonkwo@cooperstate.edu',
     phone: '(555) 234-0091',
@@ -645,7 +645,7 @@ export const complianceAuditLog = [
   {
     id: 'audit-002',
     timestamp: 'Oct 28, 2026 · 10:15',
-    user: 'Diane Greer',
+    user: 'Diane Okonkwo',
     userRole: 'Senior Director, Athletic Development',
     action: 'Added organization to exclusion list',
     target: 'Quick Cash Sports Loans LLC',
@@ -663,7 +663,7 @@ export const complianceAuditLog = [
   {
     id: 'audit-004',
     timestamp: 'Aug 30, 2026 · 16:20',
-    user: 'Diane Greer',
+    user: 'Diane Okonkwo',
     userRole: 'Senior Director, Athletic Development',
     action: 'Added organization to exclusion list',
     target: 'Premier Athletic Apparel Co',
