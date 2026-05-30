@@ -95,6 +95,8 @@ export default function SetupWizard() {
   const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
   const [formState, setFormState] = useState(DEFAULT_STATE);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  // Demo control: facilitator (default) gates Steps 5-6 as pending; in-house keeps them editable.
+  const [partnershipType, setPartnershipType] = useState('facilitator');
 
   const goToStep = (idx) => {
     if (visitedSteps.has(idx)) setCurrentStep(idx);
@@ -135,6 +137,25 @@ export default function SetupWizard() {
         <p style={bannerNoteStyle}>
           Illustrative full setup flow. In production, Steps 1–2 are completed by StewardHouse during partnership onboarding; Steps 3–4 by the athletic department; Steps 5–6 by the assigned philanthropic advisor or department admin; Step 7 requires sign-off from all parties.
         </p>
+        <div style={toggleRowStyle}>
+          <span style={toggleLabelStyle}>Demo: toggle partnership type —</span>
+          <div style={segmentedControlStyle}>
+            <button
+              type="button"
+              onClick={() => setPartnershipType('facilitator')}
+              style={segmentButtonStyle(partnershipType === 'facilitator', 'left')}
+            >
+              Facilitator
+            </button>
+            <button
+              type="button"
+              onClick={() => setPartnershipType('in-house')}
+              style={segmentButtonStyle(partnershipType === 'in-house', 'right')}
+            >
+              In-house
+            </button>
+          </div>
+        </div>
       </Card>
 
       <Stepper
@@ -146,13 +167,41 @@ export default function SetupWizard() {
 
       <Card>
         <div style={stepContentStyle}>
-          {currentStep === 0 && <Step1Institution data={formState.institution} onChange={updateInstitution} />}
-          {currentStep === 1 && <Step2Partnership data={formState.partnership} onChange={updatePartnership} />}
+          {currentStep === 0 && (
+            <PendingStepPlaceholder
+              title="Step 1: Institution"
+              message="This step is completed by your StewardHouse contact during partnership onboarding. Institution details — name, sector, contract terms — are gathered and entered before the wizard becomes available to the athletic department."
+            />
+          )}
+          {currentStep === 1 && (
+            <PendingStepPlaceholder
+              title="Step 2: Partnership"
+              message="This step is completed by your StewardHouse contact during partnership onboarding. Partnership terms — tier, annual contribution, term length — are negotiated and recorded before the wizard becomes available to the athletic department."
+            />
+          )}
           {currentStep === 2 && <Step3Roster data={formState.roster} />}
           {currentStep === 3 && <Step4Roles data={formState.roles} onChange={updateRoles} />}
-          {currentStep === 4 && <Step5Modules data={formState.modules} />}
-          {currentStep === 5 && <Step6Workshops data={formState.workshops} onChange={updateWorkshops} />}
-          {currentStep === 6 && <Step7Signoff data={formState} onSignoffChange={updateSignoff} />}
+          {currentStep === 4 && (
+            partnershipType === 'facilitator' ? (
+              <PendingStepPlaceholder
+                title="Step 5: Modules"
+                message="This step is completed by your assigned philanthropic advisor. Module curriculum is selected based on the cohort's giving experience level and program duration."
+              />
+            ) : (
+              <Step5Modules data={formState.modules} />
+            )
+          )}
+          {currentStep === 5 && (
+            partnershipType === 'facilitator' ? (
+              <PendingStepPlaceholder
+                title="Step 6: Workshops"
+                message="This step is completed by your assigned philanthropic advisor. Workshop calendar is scheduled around your athletic season and program term."
+              />
+            ) : (
+              <Step6Workshops data={formState.workshops} onChange={updateWorkshops} />
+            )
+          )}
+          {currentStep === 6 && <Step7Signoff data={formState} onSignoffChange={updateSignoff} partnershipType={partnershipType} />}
         </div>
       </Card>
 
@@ -185,6 +234,16 @@ export default function SetupWizard() {
 // -----------------------------------------------------------------------------
 // Stepper
 // -----------------------------------------------------------------------------
+
+function PendingStepPlaceholder({ title, message }) {
+  return (
+    <div style={placeholderStyle}>
+      <SectionLabel>{title}</SectionLabel>
+      <span style={pendingPillStyle}>PENDING</span>
+      <p style={placeholderMessageStyle}>{message}</p>
+    </div>
+  );
+}
 
 function Stepper({ steps, currentStep, visitedSteps, onStepClick }) {
   return (
@@ -361,9 +420,8 @@ function Step6Workshops({ data, onChange }) {
   );
 }
 
-function Step7Signoff({ data, onSignoffChange }) {
-  const tierLabel =
-    TIER_OPTIONS.find((o) => o.value === data.partnership.tier)?.label || data.partnership.tier;
+function Step7Signoff({ data, onSignoffChange, partnershipType }) {
+  const facilitatorMode = partnershipType === 'facilitator';
 
   return (
     <>
@@ -371,21 +429,12 @@ function Step7Signoff({ data, onSignoffChange }) {
 
       <div style={reviewSectionStyle}>
         <p style={reviewSectionTitleStyle}>Institution</p>
-        <ReviewRow label="Name" value={data.institution.name} />
-        <ReviewRow label="Sector" value={data.institution.sector} />
-        <ReviewRow label="Department" value={data.institution.dept} />
-        <ReviewRow label="Primary contact" value={`${data.institution.contactName} · ${data.institution.contactEmail}`} />
-        <ReviewRow label="Title" value={data.institution.contactTitle} />
+        <ReviewRow label="Status" value="Pending external completion" />
       </div>
 
       <div style={reviewSectionStyle}>
         <p style={reviewSectionTitleStyle}>Partnership</p>
-        <ReviewRow label="Tier" value={tierLabel} />
-        <ReviewRow label="Term" value={data.partnership.term} />
-        <ReviewRow label="Start date" value={data.partnership.startDate} />
-        <ReviewRow label="End date" value={data.partnership.endDate} />
-        <ReviewRow label="Annual price" value={data.partnership.annualPrice} />
-        <ReviewRow label="Endowment" value={data.partnership.endowment} />
+        <ReviewRow label="Status" value="Pending external completion" />
       </div>
 
       <div style={reviewSectionStyle}>
@@ -402,14 +451,22 @@ function Step7Signoff({ data, onSignoffChange }) {
 
       <div style={reviewSectionStyle}>
         <p style={reviewSectionTitleStyle}>Modules</p>
-        <ReviewRow label="Curriculum" value={`${data.modules.defaultCurriculum.length} default lessons`} />
+        {facilitatorMode ? (
+          <ReviewRow label="Status" value="Pending external completion" />
+        ) : (
+          <ReviewRow label="Curriculum" value={`${data.modules.defaultCurriculum.length} default lessons`} />
+        )}
       </div>
 
       <div style={reviewSectionStyle}>
         <p style={reviewSectionTitleStyle}>Workshops</p>
-        {data.workshops.map((w) => (
-          <ReviewRow key={w.id} label={`Workshop ${w.id}`} value={`${w.date} · ${w.title}`} />
-        ))}
+        {facilitatorMode ? (
+          <ReviewRow label="Status" value="Pending external completion" />
+        ) : (
+          data.workshops.map((w) => (
+            <ReviewRow key={w.id} label={`Workshop ${w.id}`} value={`${w.date} · ${w.title}`} />
+          ))
+        )}
       </div>
 
       <div style={signoffSectionStyle}>
@@ -906,5 +963,77 @@ const bannerNoteStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-secondary)',
   lineHeight: 1.65,
+  margin: 0,
+};
+
+const toggleRowStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 'var(--sh-space-3)',
+  marginTop: 'var(--sh-space-3)',
+  flexWrap: 'wrap',
+};
+
+const toggleLabelStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  letterSpacing: '0.02em',
+};
+
+const segmentedControlStyle = {
+  display: 'inline-flex',
+  borderRadius: 'var(--sh-radius-md)',
+  overflow: 'hidden',
+};
+
+function segmentButtonStyle(isActive, side) {
+  const radius = 'var(--sh-radius-md)';
+  return {
+    background: isActive ? 'var(--sh-bronze)' : 'transparent',
+    color: isActive ? 'var(--sh-bg)' : 'var(--sh-bronze)',
+    border: '1px solid var(--sh-bronze)',
+    padding: '4px 12px',
+    fontSize: 'var(--sh-text-xs)',
+    fontFamily: 'inherit',
+    fontWeight: 500,
+    letterSpacing: '0.04em',
+    cursor: 'pointer',
+    borderTopLeftRadius: side === 'left' ? radius : 0,
+    borderBottomLeftRadius: side === 'left' ? radius : 0,
+    borderTopRightRadius: side === 'right' ? radius : 0,
+    borderBottomRightRadius: side === 'right' ? radius : 0,
+    borderRight: side === 'left' ? 'none' : '1px solid var(--sh-bronze)',
+    transition: 'background 150ms ease, color 150ms ease',
+  };
+}
+
+const placeholderStyle = {
+  background: 'var(--sh-card)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: 'var(--sh-radius-md)',
+  padding: 'var(--sh-space-8) var(--sh-space-6)',
+  textAlign: 'center',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: 'var(--sh-space-3)',
+};
+
+const pendingPillStyle = {
+  display: 'inline-block',
+  padding: '4px 12px',
+  background: 'var(--sh-bronze-tint)',
+  color: 'var(--sh-bronze-deep)',
+  borderRadius: 'var(--sh-radius-full)',
+  fontSize: 'var(--sh-text-xs)',
+  fontWeight: 500,
+  letterSpacing: '0.08em',
+};
+
+const placeholderMessageStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.65,
+  maxWidth: '560px',
   margin: 0,
 };
