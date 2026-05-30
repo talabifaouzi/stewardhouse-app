@@ -131,7 +131,7 @@ const panelStyle = {
   background: 'var(--sh-card)',
   border: 'var(--sh-border-thin)',
   borderRadius: 'var(--sh-radius-lg)',
-  maxWidth: '600px',
+  maxWidth: 'min(600px, calc(100vw - 32px))',
   width: '100%',
   maxHeight: '80vh',
   overflow: 'auto',
@@ -143,7 +143,7 @@ const headerStyle = {
   justifyContent: 'space-between',
   alignItems: 'flex-start',
   gap: 'var(--sh-space-3)',
-  padding: 'var(--sh-space-5) var(--sh-space-6)',
+  padding: 'var(--sh-space-5) clamp(var(--sh-space-3), 4vw, var(--sh-space-6))',
   borderBottom: `1px solid var(--sh-card-border)`,
 };
 
@@ -170,5 +170,5 @@ const closeButtonStyle = {
 };
 
 const bodyStyle = {
-  padding: 'var(--sh-space-5) var(--sh-space-6)',
+  padding: 'var(--sh-space-5) clamp(var(--sh-space-3), 4vw, var(--sh-space-6))',
 };

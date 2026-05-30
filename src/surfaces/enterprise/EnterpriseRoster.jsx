@@ -119,7 +119,7 @@ export default function EnterpriseRoster() {
 const mainStyle = {
   maxWidth: 'var(--sh-content-max)',
   margin: '0 auto',
-  padding: 'var(--sh-space-10) var(--sh-space-8) var(--sh-space-16)',
+  padding: 'var(--sh-space-10) clamp(var(--sh-space-3), 4vw, var(--sh-space-8)) var(--sh-space-16)',
 };
 
 const eyebrowStyle = {

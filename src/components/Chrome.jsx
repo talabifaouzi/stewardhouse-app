@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SHLogo } from './SHLogo.jsx';
+import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery.js';
 
 const SURFACE_CONFIG = {
   individual: {
@@ -27,6 +28,7 @@ const SURFACE_CONFIG = {
 
 export default function Chrome({ surface, userName, userRole, navItems = [], activeNav, onUserClick, onContactsClick, surfaceContext }) {
   const config = SURFACE_CONFIG[surface] || SURFACE_CONFIG.individual;
+  const isMobile = useMediaQuery(MOBILE_QUERY);
 
   return (
     <>
@@ -41,15 +43,15 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
       <header style={{
         background: 'var(--sh-card)',
         borderBottom: 'var(--sh-border-thin)',
-        padding: '0 var(--sh-space-8)',
+        padding: '0 clamp(var(--sh-space-3), 3vw, var(--sh-space-8))',
         height: 'var(--sh-chrome-height)',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'space-between',
-        gap: 'var(--sh-space-6)',
+        gap: 'clamp(var(--sh-space-3), 2vw, var(--sh-space-6))',
       }}>
         {/* Left: brand + surface label */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sh-space-4)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'clamp(var(--sh-space-2), 2vw, var(--sh-space-4))' }}>
           <Link to="/" style={{
             display: 'flex',
             alignItems: 'center',
@@ -82,7 +84,7 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
             }}>
               {config.role}
             </span>
-            {surfaceContext && (
+            {surfaceContext && !isMobile && (
               <span style={{
                 fontSize: 'var(--sh-text-xs)',
                 color: 'var(--sh-text-muted)',
@@ -114,7 +116,7 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
         <div style={{
           display: 'flex',
           alignItems: 'center',
-          gap: 'var(--sh-space-4)',
+          gap: 'clamp(var(--sh-space-2), 2vw, var(--sh-space-4))',
         }}>
           {onContactsClick && (
             <ContactsButton onClick={onContactsClick} />
@@ -125,6 +127,7 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
               userRole={userRole}
               accent={config.accent}
               onClick={onUserClick}
+              hideRole={isMobile}
             />
           )}
         </div>
@@ -194,7 +197,7 @@ function ContactsButton({ onClick }) {
   );
 }
 
-function UserIdentity({ userName, userRole, accent, onClick }) {
+function UserIdentity({ userName, userRole, accent, onClick, hideRole }) {
   const [hovered, setHovered] = useState(false);
   const inner = (
     <>
@@ -211,7 +214,7 @@ function UserIdentity({ userName, userRole, accent, onClick }) {
         }}>
           {userName}
         </span>
-        {userRole && (
+        {userRole && !hideRole && (
           <span style={{
             fontSize: 'var(--sh-text-xs)',
             color: 'var(--sh-text-muted)',

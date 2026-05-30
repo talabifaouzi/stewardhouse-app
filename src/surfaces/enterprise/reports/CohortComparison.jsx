@@ -1,6 +1,7 @@
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
+import useMediaQuery, { MOBILE_QUERY } from '../../../hooks/useMediaQuery.js';
 import { athletes, priorCohortSnapshot, currentCohortSnapshot } from '../../../data/enterpriseFixtures.js';
 
 const fmtUSD = (n) => `$${n.toLocaleString('en-US')}`;
@@ -46,6 +47,7 @@ const yoyRows = [
 ];
 
 export default function CohortComparison() {
+  const isMobile = useMediaQuery(MOBILE_QUERY);
   return (
     <main style={mainStyle}>
       <BackLink to="/enterprise/reports" label="Reports" />
@@ -61,17 +63,38 @@ export default function CohortComparison() {
         <p style={contextLineStyle}>
           {priorCohortSnapshot.cohortLabel}: {priorCohortSnapshot.asOfNote} · {currentCohortSnapshot.cohortLabel}: {currentCohortSnapshot.asOfNote}
         </p>
-        <div style={yoyGridStyle}>
-          <div style={yoyHeaderStyle}></div>
-          <div style={yoyHeaderStyle}>{priorCohortSnapshot.cohortLabel}</div>
-          <div style={yoyHeaderStyle}>{currentCohortSnapshot.cohortLabel}</div>
-          {yoyRows.map((row, i) => {
-            const isLast = i === yoyRows.length - 1;
-            return (
-              <YoyRow key={row.metric} row={row} isLast={isLast} />
-            );
-          })}
-        </div>
+        {isMobile ? (
+          <div>
+            {yoyRows.map((row, i) => {
+              const isLast = i === yoyRows.length - 1;
+              return (
+                <div key={row.metric} style={yoyMobileBlockStyle(isLast)}>
+                  <p style={yoyMobileMetricStyle}>{row.metric}</p>
+                  <div style={yoyMobileValueRowStyle}>
+                    <span style={yoyMobileColLabelStyle}>{priorCohortSnapshot.cohortLabel}</span>
+                    <span style={yoyMobilePriorStyle}>{row.prior}</span>
+                  </div>
+                  <div style={yoyMobileValueRowStyle}>
+                    <span style={yoyMobileColLabelStyle}>{currentCohortSnapshot.cohortLabel}</span>
+                    <span style={yoyMobileCurrentStyle}>{row.current}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div style={yoyGridStyle}>
+            <div style={yoyHeaderStyle}></div>
+            <div style={yoyHeaderStyle}>{priorCohortSnapshot.cohortLabel}</div>
+            <div style={yoyHeaderStyle}>{currentCohortSnapshot.cohortLabel}</div>
+            {yoyRows.map((row, i) => {
+              const isLast = i === yoyRows.length - 1;
+              return (
+                <YoyRow key={row.metric} row={row} isLast={isLast} />
+              );
+            })}
+          </div>
+        )}
       </Card>
 
       {/* Section 2 — By sport */}
@@ -278,4 +301,51 @@ const aboutBodyStyle = {
   lineHeight: 1.65,
   marginTop: 'var(--sh-space-3)',
   maxWidth: '720px',
+};
+
+// Mobile yoy styles — per-metric block stack instead of 3-col grid
+function yoyMobileBlockStyle(isLast) {
+  return {
+    paddingTop: 'var(--sh-space-3)',
+    paddingBottom: 'var(--sh-space-3)',
+    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
+  };
+}
+
+const yoyMobileMetricStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  fontWeight: 500,
+  marginBottom: 'var(--sh-space-2)',
+};
+
+const yoyMobileValueRowStyle = {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'baseline',
+  gap: 'var(--sh-space-3)',
+  paddingTop: 'var(--sh-space-1)',
+  paddingBottom: 'var(--sh-space-1)',
+};
+
+const yoyMobileColLabelStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  letterSpacing: '0.02em',
+  flexShrink: 0,
+};
+
+const yoyMobilePriorStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  textAlign: 'right',
+};
+
+const yoyMobileCurrentStyle = {
+  fontFamily: 'var(--sh-font-serif)',
+  fontSize: 'var(--sh-text-md)',
+  color: 'var(--sh-text-primary)',
+  textAlign: 'right',
 };
