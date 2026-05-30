@@ -1,9 +1,11 @@
-import { engagementTimeline, workshops } from '../../../data/enterpriseFixtures.js';
+import { useState } from 'react';
+import { athletes, engagementTimeline, workshops } from '../../../data/enterpriseFixtures.js';
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import Sparkline from '../../../components/Sparkline.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
+import WorkshopDetail from '../../../components/WorkshopDetail.jsx';
 import {
   tot,
   gpsRate,
@@ -15,11 +17,14 @@ import {
   notStarted,
 } from '../shared/enterpriseStats.js';
 
+const athletesById = Object.fromEntries(athletes.map((a) => [a.id, a]));
+
 function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
 }
 
 export default function ProgramSummary() {
+  const [activeWorkshop, setActiveWorkshop] = useState(null);
   const latestEngagement = engagementTimeline[engagementTimeline.length - 1];
 
   return (
@@ -67,19 +72,50 @@ export default function ProgramSummary() {
             {workshops.map((w, i) => {
               const isLast = i === workshops.length - 1;
               return (
-                <li key={w.id} style={workshopRowStyle(isLast)}>
-                  <div style={workshopDateStyle}>{w.date}</div>
-                  <div style={workshopTitleStyle}>{w.title}</div>
-                  <div style={workshopMetaStyle}>
-                    {w.attendees != null ? `${w.attendees} attended` : capitalize(w.status)}
-                  </div>
+                <li key={w.id}>
+                  <WorkshopRow workshop={w} isLast={isLast} onClick={() => setActiveWorkshop(w)} />
                 </li>
               );
             })}
           </ul>
         </Card>
       </div>
+
+      {/* Workshop detail modal */}
+      <WorkshopDetail
+        isOpen={activeWorkshop !== null}
+        onClose={() => setActiveWorkshop(null)}
+        workshop={activeWorkshop}
+        athletesById={athletesById}
+      />
     </main>
+  );
+}
+
+function WorkshopRow({ workshop, isLast, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  const [focused, setFocused] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onFocus={() => setFocused(true)}
+      onBlur={() => setFocused(false)}
+      style={{
+        ...workshopRowStyle(isLast),
+        background: hovered ? 'var(--sh-bg-tint)' : 'transparent',
+        outline: focused ? '2px solid var(--sh-bronze)' : 'none',
+        outlineOffset: '-2px',
+      }}
+    >
+      <div style={workshopDateStyle}>{workshop.date}</div>
+      <div style={workshopTitleStyle}>{workshop.title}</div>
+      <div style={workshopMetaStyle}>
+        {workshop.attendees != null ? `${workshop.attendees} attended` : capitalize(workshop.status)}
+      </div>
+    </button>
   );
 }
 
@@ -151,8 +187,14 @@ function workshopRowStyle(isLast) {
     display: 'flex',
     alignItems: 'baseline',
     gap: 'var(--sh-space-4)',
-    padding: 'var(--sh-space-3) 0',
+    padding: 'var(--sh-space-3) var(--sh-space-2)',
     borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
+    border: 'none',
+    width: '100%',
+    cursor: 'pointer',
+    textAlign: 'left',
+    fontFamily: 'inherit',
+    transition: 'background 150ms ease',
   };
 }
 
