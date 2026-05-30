@@ -25,7 +25,7 @@ const SURFACE_CONFIG = {
   },
 };
 
-export default function Chrome({ surface, userName, userRole, navItems = [], activeNav }) {
+export default function Chrome({ surface, userName, userRole, navItems = [], activeNav, onUserClick, onContactsClick }) {
   const config = SURFACE_CONFIG[surface] || SURFACE_CONFIG.individual;
 
   return (
@@ -100,38 +100,24 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
           </nav>
         )}
 
-        {/* Right: user identity */}
-        {userName && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 'var(--sh-space-3)',
-          }}>
-            <div style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-end',
-              lineHeight: 1.2,
-            }}>
-              <span style={{
-                fontSize: 'var(--sh-text-sm)',
-                color: 'var(--sh-text-primary)',
-                fontWeight: 500,
-              }}>
-                {userName}
-              </span>
-              {userRole && (
-                <span style={{
-                  fontSize: 'var(--sh-text-xs)',
-                  color: 'var(--sh-text-muted)',
-                }}>
-                  {userRole}
-                </span>
-              )}
-            </div>
-            <Avatar name={userName} accent={config.accent} />
-          </div>
-        )}
+        {/* Right: optional Contacts button + user identity */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--sh-space-4)',
+        }}>
+          {onContactsClick && (
+            <ContactsButton onClick={onContactsClick} />
+          )}
+          {userName && (
+            <UserIdentity
+              userName={userName}
+              userRole={userRole}
+              accent={config.accent}
+              onClick={onUserClick}
+            />
+          )}
+        </div>
       </header>
     </>
   );
@@ -169,6 +155,96 @@ function NavTab({ item, isActive }) {
     >
       {item.label}
     </button>
+  );
+}
+
+function ContactsButton({ onClick }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered ? 'var(--sh-bg-tint)' : 'transparent',
+        color: hovered ? 'var(--sh-text-primary)' : 'var(--sh-text-secondary)',
+        border: 'none',
+        padding: 'var(--sh-space-2) var(--sh-space-3)',
+        fontSize: 'var(--sh-text-sm)',
+        fontFamily: 'inherit',
+        borderRadius: 'var(--sh-radius-md)',
+        cursor: 'pointer',
+        transition: 'all 150ms ease',
+        whiteSpace: 'nowrap',
+      }}
+    >
+      Contacts
+    </button>
+  );
+}
+
+function UserIdentity({ userName, userRole, accent, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  const inner = (
+    <>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        lineHeight: 1.2,
+      }}>
+        <span style={{
+          fontSize: 'var(--sh-text-sm)',
+          color: 'var(--sh-text-primary)',
+          fontWeight: 500,
+        }}>
+          {userName}
+        </span>
+        {userRole && (
+          <span style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+          }}>
+            {userRole}
+          </span>
+        )}
+      </div>
+      <Avatar name={userName} accent={accent} />
+    </>
+  );
+  if (onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          background: hovered ? 'var(--sh-bg-tint)' : 'transparent',
+          border: 'none',
+          padding: 'var(--sh-space-1) var(--sh-space-2)',
+          borderRadius: 'var(--sh-radius-md)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--sh-space-3)',
+          cursor: 'pointer',
+          fontFamily: 'inherit',
+          transition: 'background 150ms ease',
+        }}
+      >
+        {inner}
+      </button>
+    );
+  }
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
+      gap: 'var(--sh-space-3)',
+    }}>
+      {inner}
+    </div>
   );
 }
 

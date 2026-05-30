@@ -4,6 +4,7 @@ import { Card } from '../../components/Card.jsx';
 import StatTile from '../../components/StatTile.jsx';
 import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
+import ComposeMessage from '../../components/ComposeMessage.jsx';
 import {
   tot,
   certD,
@@ -32,6 +33,7 @@ const sortedAthletes = [...athletes].sort((a, b) => {
 export default function EnterpriseRoster() {
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
+  const [composingTo, setComposingTo] = useState(null);
   const [hoveredRowId, setHoveredRowId] = useState(null);
 
   const config = activeCategory ? CATEGORY_CONFIG[activeCategory] : null;
@@ -120,6 +122,14 @@ export default function EnterpriseRoster() {
         isOpen={activeAthlete !== null}
         onClose={() => setActiveAthlete(null)}
         athlete={activeAthlete}
+        onSendReminder={(a) => setComposingTo({ name: a.name, email: a.email })}
+      />
+
+      <ComposeMessage
+        isOpen={composingTo !== null}
+        onClose={() => setComposingTo(null)}
+        recipient={composingTo}
+        context="Reminder"
       />
     </main>
   );

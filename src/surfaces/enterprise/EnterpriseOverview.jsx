@@ -6,6 +6,7 @@ import StatTile from '../../components/StatTile.jsx';
 import BarChart from '../../components/BarChart.jsx';
 import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
+import ComposeMessage from '../../components/ComposeMessage.jsx';
 import {
   tot,
   gpsD,
@@ -31,6 +32,7 @@ const CATEGORY_CONFIG = {
 export default function EnterpriseOverview() {
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
+  const [composingTo, setComposingTo] = useState(null);
   const latestEngagement = engagementTimeline[engagementTimeline.length - 1];
 
   const config = activeCategory ? CATEGORY_CONFIG[activeCategory] : null;
@@ -92,6 +94,14 @@ export default function EnterpriseOverview() {
         isOpen={activeAthlete !== null}
         onClose={() => setActiveAthlete(null)}
         athlete={activeAthlete}
+        onSendReminder={(a) => setComposingTo({ name: a.name, email: a.email })}
+      />
+
+      <ComposeMessage
+        isOpen={composingTo !== null}
+        onClose={() => setComposingTo(null)}
+        recipient={composingTo}
+        context="Reminder"
       />
     </main>
   );

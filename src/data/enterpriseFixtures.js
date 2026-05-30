@@ -399,6 +399,59 @@ export const exclusions = [
   },
 ];
 
+export const contacts = [
+  {
+    id: 'diane',
+    name: 'Diane Okonkwo',
+    title: 'Director of Athletic Department',
+    organization: 'Cooper State University',
+    email: 'diane.okonkwo@cooperstate.edu',
+    phone: '(555) 234-0091',
+    role: 'athletic_dept_admin',
+    bio: 'Director of Cooper State Athletics with 12 years in collegiate athletics administration. Oversees compliance, NIL programs, and athlete development initiatives.',
+  },
+  {
+    id: 'morgan',
+    name: 'Morgan Walker',
+    title: 'Founding Partner',
+    organization: 'Walker Philanthropic Advisory',
+    email: 'morgan@walkerphilanthropic.com',
+    phone: '(555) 612-4400',
+    role: 'facilitator',
+    bio: 'Founding partner at Walker Philanthropic Advisory. Specializes in athlete and entertainer philanthropy with a focus on multi-year giving strategies and cause discovery for first-time donors.',
+  },
+  {
+    id: 'npark',
+    name: 'N. Park',
+    title: 'Senior Advisor',
+    organization: 'Walker Philanthropic Advisory',
+    email: 'n.park@walkerphilanthropic.com',
+    phone: '(555) 612-4401',
+    role: 'co_advisor',
+    bio: 'Senior advisor at Walker Philanthropic Advisory. Background in family foundation operations and impact measurement.',
+  },
+  {
+    id: 'treeves',
+    name: 'T. Reeves',
+    title: 'Senior Advisor',
+    organization: 'Walker Philanthropic Advisory',
+    email: 't.reeves@walkerphilanthropic.com',
+    phone: '(555) 612-4402',
+    role: 'co_advisor',
+    bio: 'Senior advisor at Walker Philanthropic Advisory. Focus on tax strategy and giving vehicle selection.',
+  },
+  {
+    id: 'stewardhouse_rep',
+    name: 'Jordan Avery',
+    title: 'Partnership Lead',
+    organization: 'StewardHouse',
+    email: 'jordan@stewardhouse.com',
+    phone: '(555) 887-3201',
+    role: 'stewardhouse_rep',
+    bio: 'Partnership lead at StewardHouse. Primary point of contact for institutional onboarding, contract questions, and platform support.',
+  },
+];
+
 // Sector-aware terminology (Athletics-only for v1; function shape preserved so M&E can plug in later)
 export function T() {
   return {

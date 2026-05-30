@@ -1,5 +1,10 @@
+import { useState } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Chrome from '../../components/Chrome.jsx';
+import UserProfile from '../../components/UserProfile.jsx';
+import ContactsDirectory from '../../components/ContactsDirectory.jsx';
+import ComposeMessage from '../../components/ComposeMessage.jsx';
+import { contacts } from '../../data/enterpriseFixtures.js';
 
 import EnterpriseOverview from './EnterpriseOverview.jsx';
 import EnterpriseRoster from './EnterpriseRoster.jsx';
@@ -17,6 +22,8 @@ const NAV_ITEMS = [
   { key: 'setup', label: 'Setup', path: '/enterprise/setup' },
 ];
 
+const diane = contacts.find((c) => c.id === 'diane');
+
 export default function EnterpriseSurface() {
   const location = useLocation();
   const path = location.pathname;
@@ -27,6 +34,10 @@ export default function EnterpriseSurface() {
     path.includes('/program') ? 'program' :
     path.includes('/setup') ? 'setup' :
     'home';
+
+  const [activeContact, setActiveContact] = useState(null);
+  const [showContactsDirectory, setShowContactsDirectory] = useState(false);
+  const [composingTo, setComposingTo] = useState(null);
 
   return (
     <div style={{
@@ -41,6 +52,8 @@ export default function EnterpriseSurface() {
         userRole="Athletic Department"
         navItems={NAV_ITEMS}
         activeNav={activeNav}
+        onUserClick={() => setActiveContact(diane)}
+        onContactsClick={() => setShowContactsDirectory(true)}
       />
       <div style={{ flex: 1 }}>
         <Routes>
@@ -53,6 +66,33 @@ export default function EnterpriseSurface() {
           <Route path="*" element={<Navigate to="/enterprise" replace />} />
         </Routes>
       </div>
+
+      {/* Chrome-level modals */}
+      <UserProfile
+        isOpen={activeContact !== null}
+        onClose={() => setActiveContact(null)}
+        contact={activeContact}
+        onSendMessage={(c) => {
+          setActiveContact(null);
+          setComposingTo({ name: c.name, email: c.email });
+        }}
+      />
+
+      <ContactsDirectory
+        isOpen={showContactsDirectory}
+        onClose={() => setShowContactsDirectory(false)}
+        contacts={contacts}
+        onContactClick={(c) => {
+          setShowContactsDirectory(false);
+          setActiveContact(c);
+        }}
+      />
+
+      <ComposeMessage
+        isOpen={composingTo !== null}
+        onClose={() => setComposingTo(null)}
+        recipient={composingTo}
+      />
     </div>
   );
 }

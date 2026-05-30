@@ -1,6 +1,7 @@
 import { Card } from './Card.jsx';
 import { SectionLabel } from './SectionLabel.jsx';
 import { Modal } from './Modal.jsx';
+import { Button } from './Button.jsx';
 import { statusFor } from '../surfaces/enterprise/shared/athleteStatus.js';
 
 // Single-athlete profile modal. Six sections: header (with status badge),
@@ -16,7 +17,7 @@ const TYPE_LABEL = {
   'certified':        'Certification',
 };
 
-export default function AthleteProfile({ isOpen, onClose, athlete }) {
+export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminder }) {
   if (!athlete) return null;
 
   const giftEvents = athlete.activity.filter((e) => e.type === 'gift_made');
@@ -101,6 +102,15 @@ export default function AthleteProfile({ isOpen, onClose, athlete }) {
           <p style={notesStyle}>{athlete.notes}</p>
         </Card>
       </div>
+
+      {/* Footer CTA — only renders when caller wires onSendReminder */}
+      {onSendReminder && (
+        <div style={footerStyle}>
+          <Button variant="primary" size="sm" onClick={() => onSendReminder(athlete)}>
+            Send reminder
+          </Button>
+        </div>
+      )}
     </Modal>
   );
 }
@@ -252,4 +262,12 @@ const notesStyle = {
   color: 'var(--sh-text-body)',
   lineHeight: 1.65,
   marginTop: 'var(--sh-space-3)',
+};
+
+const footerStyle = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  marginTop: 'var(--sh-space-5)',
+  paddingTop: 'var(--sh-space-4)',
+  borderTop: 'var(--sh-border-thin)',
 };
