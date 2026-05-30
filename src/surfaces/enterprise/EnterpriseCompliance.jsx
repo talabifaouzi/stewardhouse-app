@@ -1,8 +1,24 @@
+import { useState } from 'react';
 import { exclusions } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
+import ExclusionDetail from '../../components/ExclusionDetail.jsx';
 
 export default function EnterpriseCompliance() {
+  const [activeExclusion, setActiveExclusion] = useState(null);
+  const [exclusionOverrides, setExclusionOverrides] = useState({});
+  const [hoveredId, setHoveredId] = useState(null);
+
+  const displayedExclusions = exclusions.map((e) => ({ ...e, ...exclusionOverrides[e.id] }));
+
+  const handleSave = (updated) => {
+    setExclusionOverrides((prev) => ({ ...prev, [updated.id]: updated }));
+  };
+
+  const hasOverride = activeExclusion
+    ? Boolean(exclusionOverrides[activeExclusion.id])
+    : false;
+
   return (
     <main style={mainStyle}>
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
@@ -20,26 +36,46 @@ export default function EnterpriseCompliance() {
           </p>
         </Card>
 
-        {/* Excluded organizations — real list */}
+        {/* Excluded organizations — clickable list */}
         <Card>
           <SectionLabel>Excluded organizations</SectionLabel>
           <p style={explainerStyle}>
             Organizations flagged by the department. Athletes still see these in the Give Screen with a contextual note explaining the flag — disclosure model, not blocking.
           </p>
           <ul style={listResetStyle}>
-            {exclusions.map((org, i) => {
-              const isLast = i === exclusions.length - 1;
+            {displayedExclusions.map((org, i) => {
+              const isLast = i === displayedExclusions.length - 1;
+              const isHovered = hoveredId === org.id;
               return (
-                <li key={org.id} style={rowStyle(isLast)}>
-                  <p style={orgNameStyle}>{org.name}</p>
-                  <p style={metaStyle}>EIN: {org.ein}</p>
-                  <p style={reasonStyle}>Reason: {org.reason}</p>
+                <li key={org.id}>
+                  <button
+                    type="button"
+                    onClick={() => setActiveExclusion(org)}
+                    onMouseEnter={() => setHoveredId(org.id)}
+                    onMouseLeave={() => setHoveredId(null)}
+                    style={{
+                      ...rowButtonStyle(isLast),
+                      background: isHovered ? 'var(--sh-bg-tint)' : 'transparent',
+                    }}
+                  >
+                    <p style={orgNameStyle}>{org.name}</p>
+                    <p style={metaStyle}>EIN: {org.ein}</p>
+                    <p style={reasonStyle}>Reason: {org.reason}</p>
+                  </button>
                 </li>
               );
             })}
           </ul>
         </Card>
       </div>
+
+      <ExclusionDetail
+        isOpen={activeExclusion !== null}
+        onClose={() => setActiveExclusion(null)}
+        exclusion={activeExclusion}
+        onSave={handleSave}
+        hasOverride={hasOverride}
+      />
     </main>
   );
 }
@@ -102,11 +138,17 @@ const listResetStyle = {
   padding: 0,
 };
 
-function rowStyle(isLast) {
+function rowButtonStyle(isLast) {
   return {
-    paddingTop: 'var(--sh-space-4)',
-    paddingBottom: 'var(--sh-space-4)',
-    borderBottom: isLast ? 'none' : `1px solid var(--sh-card-border)`,
+    display: 'block',
+    width: '100%',
+    border: 'none',
+    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
+    padding: 'var(--sh-space-4) var(--sh-space-3)',
+    cursor: 'pointer',
+    textAlign: 'left',
+    fontFamily: 'inherit',
+    transition: 'background 150ms ease',
   };
 }
 

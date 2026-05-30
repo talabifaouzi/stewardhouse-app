@@ -379,9 +379,24 @@ export const workshops = [
 export const engagementTimeline = [35, 42, 50, 48, 58, 62, 55, 67, 72, 64, 70, 75]; // 12 weeks of weekly active %
 
 export const exclusions = [
-  {id:1, name:"Booster Club Foundation", ein:"04-9912345", reason:"Booster connection", flagged:"Sep 15, 2026"},
-  {id:2, name:"Meridian Community Fund", ein:"04-7781234", reason:"Conflict of interest", flagged:"Sep 20, 2026"},
-  {id:3, name:"Victory Sports Fund", ein:"04-5534567", reason:"Booster connection", flagged:"Oct 1, 2026"},
+  {
+    id: 1, name: "Booster Club Foundation", ein: "04-9912345",
+    reason: "Booster connection", flagged: "Sep 15, 2026",
+    connection: "Cooper State Athletics Booster Association",
+    connectionDetail: "This organization is operated by Cooper State Athletics Booster Association — the primary booster organization for Cooper State athletics. Donations could be construed as benefiting the athletic program directly, raising NIL compliance concerns. Exclusion preserves the structural separation between athlete giving and program benefit.",
+  },
+  {
+    id: 2, name: "Meridian Community Fund", ein: "04-7781234",
+    reason: "Conflict of interest", flagged: "Sep 20, 2026",
+    connection: "Coach J. Reeves immediate family",
+    connectionDetail: "Coach Reeves's spouse serves on the board of this organization. Recommending gifts to this org would create real or perceived conflict of interest — staff influence over athlete giving recommendations directed toward family-affiliated entities. Exclusion preserves advisor independence.",
+  },
+  {
+    id: 3, name: "Victory Sports Fund", ein: "04-5534567",
+    reason: "Booster connection", flagged: "Oct 1, 2026",
+    connection: "Cooper State Athletics Booster Association",
+    connectionDetail: "Affiliated with Cooper State Athletics Booster Association via shared board members and overlapping fundraising operations. Same NIL compliance rationale as Booster Club Foundation — donations could be construed as benefiting the athletic program. Exclusion preserves structural separation.",
+  },
 ];
 
 // Sector-aware terminology (Athletics-only for v1; function shape preserved so M&E can plug in later)
