@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { athletes, engagementTimeline, workshops } from '../../../data/enterpriseFixtures.js';
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
-import Sparkline from '../../../components/Sparkline.jsx';
+import BarChart from '../../../components/BarChart.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
 import WorkshopDetail from '../../../components/WorkshopDetail.jsx';
@@ -59,7 +59,11 @@ export default function ProgramSummary() {
             <SectionLabel>Weekly active engagement</SectionLabel>
             <p style={engagementRangeStyle}>Last 12 weeks</p>
           </div>
-          <Sparkline data={engagementTimeline} />
+          <BarChart
+            data={engagementTimeline}
+            labels={engagementTimeline.map((_, i) => `W${i + 1}`)}
+            ariaLabel={`Weekly engagement rate over 12 weeks, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%.`}
+          />
           <p style={engagementCaptionStyle}>
             Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.
           </p>

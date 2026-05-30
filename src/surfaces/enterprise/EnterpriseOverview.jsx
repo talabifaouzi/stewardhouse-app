@@ -3,7 +3,7 @@ import { athletes, engagementTimeline } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import StatTile from '../../components/StatTile.jsx';
-import Sparkline from '../../components/Sparkline.jsx';
+import BarChart from '../../components/BarChart.jsx';
 import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
 import {
@@ -69,7 +69,11 @@ export default function EnterpriseOverview() {
           <SectionLabel>Weekly active engagement</SectionLabel>
           <p style={engagementRangeStyle}>Last 12 weeks</p>
         </div>
-        <Sparkline data={engagementTimeline} />
+        <BarChart
+          data={engagementTimeline}
+          labels={engagementTimeline.map((_, i) => `W${i + 1}`)}
+          ariaLabel={`Weekly engagement rate over 12 weeks, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%.`}
+        />
         <p style={engagementCaptionStyle}>
           Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.
         </p>
