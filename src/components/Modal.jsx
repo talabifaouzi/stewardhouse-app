@@ -144,7 +144,7 @@ const headerStyle = {
   alignItems: 'flex-start',
   gap: 'var(--sh-space-3)',
   padding: 'var(--sh-space-5) clamp(var(--sh-space-3), 4vw, var(--sh-space-6))',
-  borderBottom: `1px solid var(--sh-card-border)`,
+  borderBottom: 'var(--sh-border-default)',
 };
 
 const titleStyle = {

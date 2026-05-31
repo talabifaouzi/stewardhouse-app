@@ -818,7 +818,7 @@ const rosterNoteStyle = {
 const roleBlockStyle = {
   paddingTop: 'var(--sh-space-3)',
   paddingBottom: 'var(--sh-space-3)',
-  borderBottom: `1px solid var(--sh-card-border)`,
+  borderBottom: 'var(--sh-border-default)',
 };
 
 const roleLabelStyle = {
@@ -839,7 +839,7 @@ const moduleItemStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-body)',
   padding: 'var(--sh-space-3) 0',
-  borderBottom: `1px solid var(--sh-card-border)`,
+  borderBottom: 'var(--sh-border-default)',
 };
 
 const addOnSectionStyle = {
@@ -857,7 +857,7 @@ const addOnNoteStyle = {
 const workshopRowStyle = {
   paddingTop: 'var(--sh-space-3)',
   paddingBottom: 'var(--sh-space-3)',
-  borderBottom: `1px solid var(--sh-card-border)`,
+  borderBottom: 'var(--sh-border-default)',
 };
 
 const workshopNumberStyle = {
@@ -870,7 +870,7 @@ const workshopNumberStyle = {
 const reviewSectionStyle = {
   marginTop: 'var(--sh-space-5)',
   paddingBottom: 'var(--sh-space-4)',
-  borderBottom: `1px solid var(--sh-card-border)`,
+  borderBottom: 'var(--sh-border-default)',
 };
 
 const reviewSectionTitleStyle = {

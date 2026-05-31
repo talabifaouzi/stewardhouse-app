@@ -70,7 +70,7 @@ export default function UserProfile({ isOpen, onClose, contact, onSendMessage })
             </p>
             <ul style={messageListStyle}>
               {messages.slice().reverse().map((m, i) => (
-                <li key={i} style={messageRowStyle(i === 0)}>
+                <li key={m.timestamp} style={messageRowStyle(i === 0)}>
                   <p style={messageMetaStyle}>{formatDate(m.timestamp)} · From {m.fromName}</p>
                   <p style={messageSubjectStyle}>{m.subject}</p>
                   <p style={messageBodyPreviewStyle}>

@@ -80,8 +80,8 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
             <div style={recentGiftsStyle}>
               <p style={subLabelStyle}>Recent</p>
               <ul style={listResetStyle}>
-                {giftEvents.slice(0, 3).map((g, i) => (
-                  <li key={i} style={giftRowStyle}>
+                {giftEvents.slice(0, 3).map((g) => (
+                  <li key={`${g.date}-${g.label}`} style={giftRowStyle}>
                     <span style={giftDateStyle}>{g.date}</span>
                     <span style={giftLabelStyle}>{g.label}</span>
                   </li>
@@ -100,7 +100,7 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
             </p>
             <ul style={listResetStyle}>
               {[...reflections].reverse().map((r, i, arr) => (
-                <li key={i} style={reflectionItemStyle(i === arr.length - 1)}>
+                <li key={r.date} style={reflectionItemStyle(i === arr.length - 1)}>
                   <p style={reflectionDateStyle}>{r.date}</p>
                   <p style={reflectionTextStyle}>{r.text}</p>
                 </li>
@@ -116,7 +116,7 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
             {athlete.activity.map((e, i) => {
               const isLast = i === athlete.activity.length - 1;
               return (
-                <li key={i} style={activityRowStyle(isLast)}>
+                <li key={`${e.date}-${e.type}-${e.label}`} style={activityRowStyle(isLast)}>
                   <span style={activityDateStyle}>{e.date}</span>
                   <span style={activityTypeStyle}>{TYPE_LABEL[e.type] || e.type}</span>
                   <span style={activityLabelStyle}>{e.label}</span>
@@ -141,7 +141,7 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
             </p>
             <ul style={messageListStyle}>
               {messages.slice().reverse().map((m, i) => (
-                <li key={i} style={messageRowStyle(i === 0)}>
+                <li key={m.timestamp} style={messageRowStyle(i === 0)}>
                   <p style={messageMetaStyle}>{formatDate(m.timestamp)} · From {m.fromName}</p>
                   <p style={messageSubjectStyle}>{m.subject}</p>
                   <p style={messageBodyPreviewStyle}>
