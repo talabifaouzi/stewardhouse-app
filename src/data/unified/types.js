@@ -41,17 +41,23 @@
  * @property {'individual' | 'staff' | 'advisor' | 'ops'} type
  * @property {{email: string|null, phone: string|null}} contact
  * @property {SourceSurface} sourceSurface
- * @property {Object} extensions       Per-source opaque bag — surface-specific
- *                                     IDENTIFYING fields only, preserved
- *                                     without normalization (e.g.
- *                                     extensions.advisor.{sport, level},
- *                                     extensions.enterprise.{year, position,
- *                                     badge, notes}). Deep relationship
- *                                     records — sessions, givingPlan,
- *                                     pipeline, activity log, lesson/cert
- *                                     state — describe the participation, not
- *                                     the person, and live on
- *                                     ProgramParticipation.extensions to
+ * @property {Object} extensions       Per-source opaque bag. Holds
+ *                                     surface-specific identifying fields
+ *                                     (e.g. extensions.advisor.{sport,
+ *                                     level}, extensions.enterprise.{year,
+ *                                     position, badge, notes}). For sources
+ *                                     where the person has no
+ *                                     ProgramParticipation context —
+ *                                     currently the individual surface —
+ *                                     extensions ALSO carries self-reported
+ *                                     giving-identity
+ *                                     (extensions.individual.{causes,
+ *                                     visibility, budget, givingStyle,
+ *                                     givingPlanStatement}). Relationship /
+ *                                     advisor work-product data (sessions,
+ *                                     privateNotes, givingPlan, pipeline,
+ *                                     activity log, lesson/cert state) lives
+ *                                     on ProgramParticipation.extensions to
  *                                     match the entity boundary.
  */
 
