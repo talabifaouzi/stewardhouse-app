@@ -170,13 +170,13 @@ export const athletes = [
     status: "inactive", joinDate: "Sep 5", badge: null, certified: false, certDate: null,
     email: "tyler.brooks@cooperstate.edu",
     phone: "(555) 528-1947",
-    notes: "Started the program enthusiastically but went quiet after the first lesson. Mid-semester pressures appear to have pulled focus. Check-in scheduled.",
+    notes: "Completed Lesson 1, then went quiet. Mid-semester pressures appear to have pulled focus. Check-in scheduled.",
     activity: [
       { date: "2026-11-01", type: "note_added",        label: "Check-in scheduled — no response to last two messages" },
       { date: "2026-10-15", type: "note_added",        label: "Follow-up email sent regarding GPS completion" },
       { date: "2026-10-02", type: "lesson_completed",  label: "Lesson 1: Building Your GPS" },
       { date: "2026-09-15", type: "workshop_attended", label: "Kickoff: Building Your GPS" },
-      { date: "2026-09-05", type: "note_added",        label: "Initial outreach — strong initial interest" },
+      { date: "2026-09-05", type: "note_added",        label: "Initial outreach" },
     ],
   },
   {
@@ -203,7 +203,7 @@ export const athletes = [
     status: "inactive", joinDate: "Aug 28", badge: "The Learner", certified: false, certDate: null,
     email: "andre.mitchell@cooperstate.edu",
     phone: "(555) 731-4502",
-    notes: "Engaged in early sessions but fell off after midterms hit. Carries family financial pressure that's complicating his timeline. Conversation pending.",
+    notes: "Completed two lessons, then no activity since midterms. Family financial pressure is complicating his timeline. Conversation pending.",
     activity: [
       { date: "2026-10-25", type: "note_added",        label: "Outreach paused pending end-of-semester check-in" },
       { date: "2026-10-12", type: "lesson_completed",  label: "Lesson 2: Cause Discovery" },
@@ -241,7 +241,7 @@ export const athletes = [
       { date: "2026-10-10", type: "lesson_completed",  label: "Lesson 3: Giving Identity" },
       { date: "2026-09-28", type: "gift_made",         label: "$200 to Small Town Sports Coalition" },
       { date: "2026-09-18", type: "gps_completed",     label: "GPS completed" },
-      { date: "2026-08-26", type: "note_added",        label: "Initial outreach — strong interest in rural funding gap" },
+      { date: "2026-08-26", type: "note_added",        label: "Initial outreach — named rural funding gap as an area of interest" },
     ],
   },
   {
@@ -366,7 +366,7 @@ export const workshops = [
   {
     id: 1, date: "Sep 15, 2026", title: "Kickoff: Building Your GPS",
     status: "completed", attendees: 12,
-    notes: "Strong engagement. 3 participants asked about DAFs.",
+    notes: "12 of 16 attended. Three participants asked about DAFs.",
     facilitator: "Morgan Walker",
     module: "Module 1: Building Your GPS",
     summary: "Introductory session covering the GPS framework. Athletes drafted initial cause statements and identified personal connections to causes.",
