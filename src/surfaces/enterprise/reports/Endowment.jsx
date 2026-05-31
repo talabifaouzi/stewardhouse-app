@@ -4,6 +4,7 @@ import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
 import { endowmentSnapshot } from '../../../data/enterpriseFixtures.js';
+import { formatDate } from '../../../utils/formatDate.js';
 
 const fmtUSD = (n) => `$${Math.round(n).toLocaleString('en-US')}`;
 const fmtPct = (n) => `${n.toFixed(1)}%`;
@@ -38,7 +39,7 @@ export default function Endowment() {
       {/* Phase 1 — Current state */}
       <Card>
         <SectionLabel>Current state</SectionLabel>
-        <p style={asOfStyle}>As of {endowmentSnapshot.asOfDate}</p>
+        <p style={asOfStyle}>As of {formatDate(endowmentSnapshot.asOfDate)}</p>
         <div style={statRowStyle}>
           <StatTile
             variant="inline"

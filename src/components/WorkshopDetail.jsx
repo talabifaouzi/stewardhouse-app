@@ -1,6 +1,7 @@
 import { Card } from './Card.jsx';
 import { SectionLabel } from './SectionLabel.jsx';
 import { Modal } from './Modal.jsx';
+import { formatDate } from '../utils/formatDate.js';
 
 // Single-workshop detail modal. Five sections: header meta (date + facilitator
 // + module), summary, attendance (count + per-athlete list), follow-ups
@@ -28,7 +29,7 @@ export default function WorkshopDetail({ isOpen, onClose, workshop, athletesById
     <Modal isOpen={isOpen} onClose={onClose} title={workshop.title}>
       {/* Header meta */}
       <div style={headerMetaStyle}>
-        <span style={metaItemStyle}>{workshop.date}</span>
+        <span style={metaItemStyle}>{formatDate(workshop.date)}</span>
         <span style={metaSepStyle}>·</span>
         <span style={metaItemStyle}>{workshop.facilitator}</span>
         <span style={metaSepStyle}>·</span>
@@ -273,8 +274,8 @@ const moduleNameStyle = {
 function FollowUpRow({ followUp }) {
   const { action, owner, ownerRole, target, status, dueDate, completedDate } = followUp;
   const trail =
-    status === 'completed' && completedDate ? `Completed ${completedDate}` :
-    status === 'in_progress' && dueDate ? `Due ${dueDate}` :
+    status === 'completed' && completedDate ? `Completed ${formatDate(completedDate)}` :
+    status === 'in_progress' && dueDate ? `Due ${formatDate(dueDate)}` :
     status === 'pending' ? 'Not yet started' : null;
   return (
     <div style={followUpContentStyle}>

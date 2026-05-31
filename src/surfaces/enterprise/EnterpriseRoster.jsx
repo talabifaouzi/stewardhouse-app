@@ -5,6 +5,7 @@ import StatTile from '../../components/StatTile.jsx';
 import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
 import { useComms } from '../../contexts/CommsContext.jsx';
+import { formatDate } from '../../utils/formatDate.js';
 import {
   tot,
   certD,
@@ -83,11 +84,11 @@ export default function EnterpriseRoster() {
                     <td style={tdStyle(isLast)}>{a.sport}</td>
                     <td style={tdStyle(isLast)}>{a.year}</td>
                     <td style={tdStyle(isLast)}>{statusFor(a)}</td>
-                    <td style={tdStyle(isLast)}>{a.gpsCompleted ? a.gpsDate : '—'}</td>
+                    <td style={tdStyle(isLast)}>{a.gpsCompleted ? formatDate(a.gpsDate) : '—'}</td>
                     <td style={tdStyle(isLast)}>{a.lessons}</td>
                     <td style={tdStyle(isLast)}>{a.gifts}</td>
                     <td style={tdStyle(isLast)}>{a.lastActive}</td>
-                    <td style={tdStyle(isLast)}>{a.certified ? a.certDate : '—'}</td>
+                    <td style={tdStyle(isLast)}>{a.certified ? formatDate(a.certDate) : '—'}</td>
                   </tr>
                 );
               })}

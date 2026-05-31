@@ -63,6 +63,9 @@ export default function CohortComparison() {
         <p style={contextLineStyle}>
           {priorCohortSnapshot.cohortLabel}: {priorCohortSnapshot.asOfNote} · {currentCohortSnapshot.cohortLabel}: {currentCohortSnapshot.asOfNote}
         </p>
+        <p style={contextLineStyle}>
+          Cohorts are at different stages of their program term — figures are not directly comparable.
+        </p>
         {isMobile ? (
           <div>
             {yoyRows.map((row, i) => {
@@ -71,11 +74,11 @@ export default function CohortComparison() {
                 <div key={row.metric} style={yoyMobileBlockStyle(isLast)}>
                   <p style={yoyMobileMetricStyle}>{row.metric}</p>
                   <div style={yoyMobileValueRowStyle}>
-                    <span style={yoyMobileColLabelStyle}>{priorCohortSnapshot.cohortLabel}</span>
+                    <span style={yoyMobileColLabelStyle}>{priorCohortSnapshot.cohortLabel} full year</span>
                     <span style={yoyMobilePriorStyle}>{row.prior}</span>
                   </div>
                   <div style={yoyMobileValueRowStyle}>
-                    <span style={yoyMobileColLabelStyle}>{currentCohortSnapshot.cohortLabel}</span>
+                    <span style={yoyMobileColLabelStyle}>{currentCohortSnapshot.cohortLabel} to date</span>
                     <span style={yoyMobileCurrentStyle}>{row.current}</span>
                   </div>
                 </div>
@@ -85,8 +88,8 @@ export default function CohortComparison() {
         ) : (
           <div style={yoyGridStyle}>
             <div style={yoyHeaderStyle}></div>
-            <div style={yoyHeaderStyle}>{priorCohortSnapshot.cohortLabel}</div>
-            <div style={yoyHeaderStyle}>{currentCohortSnapshot.cohortLabel}</div>
+            <div style={yoyHeaderStyle}>{priorCohortSnapshot.cohortLabel} full year</div>
+            <div style={yoyHeaderStyle}>{currentCohortSnapshot.cohortLabel} to date</div>
             {yoyRows.map((row, i) => {
               const isLast = i === yoyRows.length - 1;
               return (

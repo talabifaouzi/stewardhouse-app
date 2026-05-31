@@ -98,8 +98,8 @@ export const INST_PROFILES = [
 export const athletes = [
   {
     id: 1, name: "Marcus Thompson", sport: "Basketball", year: "Junior", position: "Guard",
-    gpsCompleted: true, gpsDate: "Sep 20", lessons: 5, gifts: 3, lastActive: "2d ago",
-    status: "active", joinDate: "Aug 28", badge: "The Quiet Builder", certified: false, certDate: null,
+    gpsCompleted: true, gpsDate: "2026-09-20", lessons: 5, gifts: 3, lastActive: "2d ago",
+    status: "active", joinDate: "2026-08-28", badge: "The Quiet Builder", certified: false, certDate: null,
     email: "marcus.thompson@cooperstate.edu",
     phone: "(555) 312-4781",
     notes: "Communications major from Detroit. Building a giving practice around youth basketball access in his hometown. Quietly committed to multi-year gifts rather than one-time donations.",
@@ -115,8 +115,8 @@ export const athletes = [
   },
   {
     id: 2, name: "Aaliyah Williams", sport: "Track & Field", year: "Senior", position: "400m",
-    gpsCompleted: true, gpsDate: "Sep 15", lessons: 9, gifts: 5, lastActive: "1d ago",
-    status: "active", joinDate: "Aug 25", badge: "The Amplifier", certified: true, certDate: "Nov 2, 2026",
+    gpsCompleted: true, gpsDate: "2026-09-15", lessons: 9, gifts: 5, lastActive: "1d ago",
+    status: "active", joinDate: "2026-08-25", badge: "The Amplifier", certified: true, certDate: "2026-11-02",
     email: "aaliyah.williams@cooperstate.edu",
     phone: "(555) 248-9102",
     notes: "Pre-med, planning to specialize in pediatrics. Funding interest centers on youth sports programs in underserved communities where access to formal training is limited.",
@@ -133,8 +133,8 @@ export const athletes = [
   },
   {
     id: 3, name: "Devon Carter", sport: "Football", year: "Sophomore", position: "WR",
-    gpsCompleted: true, gpsDate: "Oct 1", lessons: 3, gifts: 1, lastActive: "5d ago",
-    status: "active", joinDate: "Aug 28", badge: "The Builder", certified: false, certDate: null,
+    gpsCompleted: true, gpsDate: "2026-10-01", lessons: 3, gifts: 1, lastActive: "5d ago",
+    status: "active", joinDate: "2026-08-28", badge: "The Builder", certified: false, certDate: null,
     email: "devon.carter@cooperstate.edu",
     phone: "(555) 405-3287",
     notes: "Sociology major from Houston, focused on community-based athletic mentorship. Early in his thinking but engaged — asks careful questions about organizational vetting.",
@@ -149,8 +149,8 @@ export const athletes = [
   },
   {
     id: 4, name: "Jasmine Okafor", sport: "Soccer", year: "Junior", position: "MF",
-    gpsCompleted: true, gpsDate: "Sep 22", lessons: 4, gifts: 2, lastActive: "3d ago",
-    status: "active", joinDate: "Aug 30", badge: "The Connector", certified: false, certDate: null,
+    gpsCompleted: true, gpsDate: "2026-09-22", lessons: 4, gifts: 2, lastActive: "3d ago",
+    status: "active", joinDate: "2026-08-30", badge: "The Connector", certified: false, certDate: null,
     email: "jasmine.okafor@cooperstate.edu",
     phone: "(555) 173-6248",
     notes: "Daughter of Nigerian immigrants. Drawn to diaspora-connected giving — looking at organizations that support athletic development in West Africa as well as her local Chicago youth soccer leagues.",
@@ -167,7 +167,7 @@ export const athletes = [
   {
     id: 5, name: "Tyler Brooks", sport: "Basketball", year: "Freshman", position: "F",
     gpsCompleted: false, gpsDate: null, lessons: 1, gifts: 0, lastActive: "14d ago",
-    status: "inactive", joinDate: "Sep 5", badge: null, certified: false, certDate: null,
+    status: "inactive", joinDate: "2026-09-05", badge: null, certified: false, certDate: null,
     email: "tyler.brooks@cooperstate.edu",
     phone: "(555) 528-1947",
     notes: "Completed Lesson 1, then went quiet. Mid-semester pressures appear to have pulled focus. Check-in scheduled.",
@@ -181,8 +181,8 @@ export const athletes = [
   },
   {
     id: 6, name: "Keisha Davis", sport: "Volleyball", year: "Senior", position: "Setter",
-    gpsCompleted: true, gpsDate: "Sep 12", lessons: 9, gifts: 4, lastActive: "1d ago",
-    status: "active", joinDate: "Aug 22", badge: "The Steward", certified: true, certDate: "Oct 28, 2026",
+    gpsCompleted: true, gpsDate: "2026-09-12", lessons: 9, gifts: 4, lastActive: "1d ago",
+    status: "active", joinDate: "2026-08-22", badge: "The Steward", certified: true, certDate: "2026-10-28",
     email: "keisha.davis@cooperstate.edu",
     phone: "(555) 619-8334",
     notes: "Education major, planning to teach high school after graduation. Already running a small mentorship loop for younger players on her team. Treats her giving as part of that same practice.",
@@ -199,8 +199,8 @@ export const athletes = [
   },
   {
     id: 7, name: "Andre Mitchell", sport: "Football", year: "Junior", position: "LB",
-    gpsCompleted: true, gpsDate: "Oct 5", lessons: 2, gifts: 0, lastActive: "21d ago",
-    status: "inactive", joinDate: "Aug 28", badge: "The Learner", certified: false, certDate: null,
+    gpsCompleted: true, gpsDate: "2026-10-05", lessons: 2, gifts: 0, lastActive: "21d ago",
+    status: "inactive", joinDate: "2026-08-28", badge: "The Learner", certified: false, certDate: null,
     email: "andre.mitchell@cooperstate.edu",
     phone: "(555) 731-4502",
     notes: "Completed two lessons, then no activity since midterms. Family financial pressure is complicating his timeline. Conversation pending.",
@@ -229,8 +229,8 @@ export const athletes = [
   },
   {
     id: 9, name: "Chris Walker", sport: "Baseball", year: "Senior", position: "SS",
-    gpsCompleted: true, gpsDate: "Sep 18", lessons: 6, gifts: 3, lastActive: "4d ago",
-    status: "active", joinDate: "Aug 26", badge: "The Quiet Builder", certified: false, certDate: null,
+    gpsCompleted: true, gpsDate: "2026-09-18", lessons: 6, gifts: 3, lastActive: "4d ago",
+    status: "active", joinDate: "2026-08-26", badge: "The Quiet Builder", certified: false, certDate: null,
     email: "chris.walker@cooperstate.edu",
     phone: "(555) 459-2710",
     notes: "Lifelong baseball player from rural Iowa. Building a giving practice around rural sports access — argues the funding gap for kids outside metro areas gets less attention than it should.",
@@ -261,8 +261,8 @@ export const athletes = [
   },
   {
     id: 11, name: "Elijah Brown", sport: "Football", year: "Junior", position: "CB",
-    gpsCompleted: true, gpsDate: "Sep 28", lessons: 4, gifts: 2, lastActive: "7d ago",
-    status: "active", joinDate: "Aug 28", badge: "The Builder", certified: false, certDate: null,
+    gpsCompleted: true, gpsDate: "2026-09-28", lessons: 4, gifts: 2, lastActive: "7d ago",
+    status: "active", joinDate: "2026-08-28", badge: "The Builder", certified: false, certDate: null,
     email: "elijah.brown@cooperstate.edu",
     phone: "(555) 372-6418",
     notes: "Pursuing pre-law. Drawn to civic and criminal justice causes — particularly programs that work with youth diverted from the juvenile system into structured activity.",
@@ -277,8 +277,8 @@ export const athletes = [
   },
   {
     id: 12, name: "Destiny Clark", sport: "Softball", year: "Senior", position: "P",
-    gpsCompleted: true, gpsDate: "Sep 10", lessons: 9, gifts: 6, lastActive: "Today",
-    status: "active", joinDate: "Aug 20", badge: "The Steward", certified: true, certDate: "Oct 15, 2026",
+    gpsCompleted: true, gpsDate: "2026-09-10", lessons: 9, gifts: 6, lastActive: "Today",
+    status: "active", joinDate: "2026-08-20", badge: "The Steward", certified: true, certDate: "2026-10-15",
     email: "destiny.clark@cooperstate.edu",
     phone: "(555) 514-8273",
     notes: "Engaged consistently across sessions and gifts. Established giving around women's sports access — drew on her own pitching coach's youth program as a model.",
@@ -295,8 +295,8 @@ export const athletes = [
   },
   {
     id: 13, name: "Jordan Lewis", sport: "Football", year: "Senior", position: "QB",
-    gpsCompleted: true, gpsDate: "Sep 8", lessons: 9, gifts: 4, lastActive: "Today",
-    status: "active", joinDate: "Aug 20", badge: "The Amplifier", certified: true, certDate: "Oct 10, 2026",
+    gpsCompleted: true, gpsDate: "2026-09-08", lessons: 9, gifts: 4, lastActive: "Today",
+    status: "active", joinDate: "2026-08-20", badge: "The Amplifier", certified: true, certDate: "2026-10-10",
     email: "jordan.lewis@cooperstate.edu",
     phone: "(555) 248-3061",
     notes: "Team captain. Completed capstone with a structured giving plan focused on football-specific youth pipelines. Active in workshop discussions on team-level vehicles.",
@@ -313,8 +313,8 @@ export const athletes = [
   },
   {
     id: 14, name: "Mia Chang", sport: "Tennis", year: "Junior", position: "Singles",
-    gpsCompleted: true, gpsDate: "Oct 2", lessons: 5, gifts: 2, lastActive: "6d ago",
-    status: "active", joinDate: "Sep 1", badge: "The Connector", certified: false, certDate: null,
+    gpsCompleted: true, gpsDate: "2026-10-02", lessons: 5, gifts: 2, lastActive: "6d ago",
+    status: "active", joinDate: "2026-09-01", badge: "The Connector", certified: false, certDate: null,
     email: "mia.chang@cooperstate.edu",
     phone: "(555) 437-9026",
     notes: "Bay Area family. Engaged early. Bay Area tennis access and student-athlete mental health are both surfacing as focus areas.",
@@ -330,8 +330,8 @@ export const athletes = [
   },
   {
     id: 15, name: "DeSean Harris", sport: "Football", year: "Sophomore", position: "RB",
-    gpsCompleted: true, gpsDate: "Oct 8", lessons: 3, gifts: 1, lastActive: "3d ago",
-    status: "active", joinDate: "Sep 2", badge: "The Learner", certified: false, certDate: null,
+    gpsCompleted: true, gpsDate: "2026-10-08", lessons: 3, gifts: 1, lastActive: "3d ago",
+    status: "active", joinDate: "2026-09-02", badge: "The Learner", certified: false, certDate: null,
     email: "desean.harris@cooperstate.edu",
     phone: "(555) 615-4892",
     notes: "Studious and methodical — works through readings before sessions. Still early in identifying his focus but consistently shows up.",
@@ -347,7 +347,7 @@ export const athletes = [
   {
     id: 16, name: "Ava Petrova", sport: "Gymnastics", year: "Freshman", position: "AA",
     gpsCompleted: false, gpsDate: null, lessons: 1, gifts: 0, lastActive: "10d ago",
-    status: "inactive", joinDate: "Sep 10", badge: null, certified: false, certDate: null,
+    status: "inactive", joinDate: "2026-09-10", badge: null, certified: false, certDate: null,
     email: "ava.petrova@cooperstate.edu",
     phone: "(555) 793-2148",
     notes: "Started slowly. Mentioned family pressure to focus on academics in first semester. Engagement has been intermittent — most recent activity around mid-October.",
@@ -364,7 +364,7 @@ export const athletes = [
 /** @type {Array<Workshop>} */
 export const workshops = [
   {
-    id: 1, date: "Sep 15, 2026", title: "Kickoff: Building Your GPS",
+    id: 1, date: "2026-09-15", title: "Kickoff: Building Your GPS",
     status: "completed", attendees: 12,
     notes: "12 of 16 attended. Three participants asked about DAFs.",
     facilitator: "Morgan Walker",
@@ -389,14 +389,14 @@ export const workshops = [
       { athleteId: 16, attended: true,  note: null },
     ],
     followUps: [
-      { id: 'w1-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: '1:1 GPS coaching sessions for athletes who did not complete cause statement during workshop', target: '4 athletes', status: 'completed', completedDate: 'Oct 5, 2026' },
-      { id: 'w1-fu-2', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Confirm RSVPs for W2 with cohort', target: 'Cohort-wide', status: 'completed', completedDate: 'Oct 10, 2026' },
-      { id: 'w1-fu-3', owner: 'Cohort', ownerRole: 'Athletes (self-directed)', action: 'Complete GPS framework draft before next workshop (12 of 16 completed by deadline)', target: '16 athletes', status: 'completed', completedDate: 'Oct 18, 2026' },
-      { id: 'w1-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Review submitted GPS frameworks against NIL conflict checklist', target: '12 GPS completers', status: 'completed', completedDate: 'Oct 19, 2026' },
+      { id: 'w1-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: '1:1 GPS coaching sessions for athletes who did not complete cause statement during workshop', target: '4 athletes', status: 'completed', completedDate: '2026-10-05' },
+      { id: 'w1-fu-2', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Confirm RSVPs for W2 with cohort', target: 'Cohort-wide', status: 'completed', completedDate: '2026-10-10' },
+      { id: 'w1-fu-3', owner: 'Cohort', ownerRole: 'Athletes (self-directed)', action: 'Complete GPS framework draft before next workshop (12 of 16 completed by deadline)', target: '16 athletes', status: 'completed', completedDate: '2026-10-18' },
+      { id: 'w1-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Review submitted GPS frameworks against NIL conflict checklist', target: '12 GPS completers', status: 'completed', completedDate: '2026-10-19' },
     ],
   },
   {
-    id: 2, date: "Oct 20, 2026", title: "Giving Vehicles & Tax Strategy",
+    id: 2, date: "2026-10-20", title: "Giving Vehicles & Tax Strategy",
     status: "completed", attendees: 12,
     notes: "2 absent (scheduling conflict). Recording shared.",
     facilitator: "Morgan Walker",
@@ -421,28 +421,28 @@ export const workshops = [
       { athleteId: 16, attended: false, note: "Family pressure — academics-first this semester" },
     ],
     followUps: [
-      { id: 'w2-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: 'Curate vehicles deep-dive resource pack for athletes asking about DAFs', target: '5 athletes', status: 'completed', completedDate: 'Oct 28, 2026' },
-      { id: 'w2-fu-2', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Send tax-advisor referral list to athletes who requested', target: 'Marcus Thompson, Keisha Davis, Jordan Lewis', status: 'completed', completedDate: 'Oct 25, 2026' },
-      { id: 'w2-fu-3', owner: 'Cohort', ownerRole: 'Athletes (self-directed)', action: 'Reflect on Lesson 5 content and journal entry', target: '16 athletes', status: 'in_progress', dueDate: 'Nov 14, 2026' },
-      { id: 'w2-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Verify recipient organizations referenced in workshop have current 501(c)(3) status', target: '7 organizations', status: 'completed', completedDate: 'Oct 24, 2026' },
+      { id: 'w2-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: 'Curate vehicles deep-dive resource pack for athletes asking about DAFs', target: '5 athletes', status: 'completed', completedDate: '2026-10-28' },
+      { id: 'w2-fu-2', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Send tax-advisor referral list to athletes who requested', target: 'Marcus Thompson, Keisha Davis, Jordan Lewis', status: 'completed', completedDate: '2026-10-25' },
+      { id: 'w2-fu-3', owner: 'Cohort', ownerRole: 'Athletes (self-directed)', action: 'Reflect on Lesson 5 content and journal entry', target: '16 athletes', status: 'in_progress', dueDate: '2026-11-14' },
+      { id: 'w2-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Verify recipient organizations referenced in workshop have current 501(c)(3) status', target: '7 organizations', status: 'completed', completedDate: '2026-10-24' },
     ],
   },
   {
-    id: 3, date: "Nov 17, 2026", title: "Vetting Organizations",
+    id: 3, date: "2026-11-17", title: "Vetting Organizations",
     status: "upcoming", attendees: null, notes: "",
     facilitator: "Morgan Walker",
     module: "Module 4: Vetting Organizations",
     summary: "How to evaluate nonprofit organizations: 990 reading, mission alignment, operational health. Pre-reading materials to be distributed.",
     attendance: [],
     followUps: [
-      { id: 'w3-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: 'Prepare W3 workshop materials and case studies', target: 'Workshop deliverables', status: 'in_progress', dueDate: 'Nov 14, 2026' },
-      { id: 'w3-fu-2', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Confirm room booking and virtual link for W3', target: 'Logistics', status: 'completed', completedDate: 'Nov 5, 2026' },
-      { id: 'w3-fu-3', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Pre-workshop check-in with stalled athletes', target: 'Tyler Brooks, Andre Mitchell, Ava Petrova', status: 'in_progress', dueDate: 'Nov 15, 2026' },
-      { id: 'w3-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Compile current exclusion list for workshop reference', target: 'Workshop reference materials', status: 'in_progress', dueDate: 'Nov 16, 2026' },
+      { id: 'w3-fu-1', owner: 'Morgan Walker', ownerRole: 'Facilitator', action: 'Prepare W3 workshop materials and case studies', target: 'Workshop deliverables', status: 'in_progress', dueDate: '2026-11-14' },
+      { id: 'w3-fu-2', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Confirm room booking and virtual link for W3', target: 'Logistics', status: 'completed', completedDate: '2026-11-05' },
+      { id: 'w3-fu-3', owner: 'Diane Okonkwo', ownerRole: 'Senior Director, Athletic Development', action: 'Pre-workshop check-in with stalled athletes', target: 'Tyler Brooks, Andre Mitchell, Ava Petrova', status: 'in_progress', dueDate: '2026-11-15' },
+      { id: 'w3-fu-4', owner: 'Sarah Mitchell', ownerRole: 'Athletic Compliance Officer', action: 'Compile current exclusion list for workshop reference', target: 'Workshop reference materials', status: 'in_progress', dueDate: '2026-11-16' },
     ],
   },
   {
-    id: 4, date: "Feb 16, 2027", title: "Year-End Review & Planning",
+    id: 4, date: "2027-02-16", title: "Year-End Review & Planning",
     status: "scheduled", attendees: null, notes: "",
     facilitator: "Morgan Walker",
     module: "Module 8: Year-End Review",
@@ -453,7 +453,7 @@ export const workshops = [
     ],
   },
   {
-    id: 5, date: "Apr 14, 2027", title: "Capstone: Reflection & Next Steps",
+    id: 5, date: "2027-04-14", title: "Capstone: Reflection & Next Steps",
     status: "scheduled", attendees: null, notes: "",
     facilitator: "Morgan Walker",
     module: "Module 9: Capstone Reflection",
@@ -469,8 +469,8 @@ export const engagementTimeline = [35, 42, 50, 48, 58, 62, 55, 67, 72, 64, 70, 7
 
 /** @type {Array<string>} */
 export const engagementWeekDates = [
-  'Aug 31', 'Sep 7', 'Sep 14', 'Sep 21', 'Sep 28', 'Oct 5',
-  'Oct 12', 'Oct 19', 'Oct 26', 'Nov 2', 'Nov 9', 'Nov 16',
+  '2026-08-31', '2026-09-07', '2026-09-14', '2026-09-21', '2026-09-28', '2026-10-05',
+  '2026-10-12', '2026-10-19', '2026-10-26', '2026-11-02', '2026-11-09', '2026-11-16',
 ];
 
 /** @type {Array<Array<number>>} */
@@ -570,7 +570,7 @@ export const endowmentSnapshot = {
   currentValue: 8628,           // $8,500 contributed + ~6% annualized × 3 months
   contributionsToDate: 8500,
   growthToDate: 128,
-  asOfDate: 'Nov 17, 2026',
+  asOfDate: '2026-11-17',
   annualContribution: 8500,
   programTerm: 'Season Residency · Aug 2026 to May 2027',
 };
@@ -607,7 +607,7 @@ export const currentCohortSnapshot = {
 
 /** @type {{notionalDate: string, attention: Array<object>, priorities: Array<object>, recentActivity: Array<object>, upcoming: Array<object>}} */
 export const dailyBriefItems = {
-  notionalDate: 'Nov 12, 2026',
+  notionalDate: '2026-11-12',
   attention: [
     { id: 'stalled-tyler', text: 'Tyler Brooks uncontacted 11 days', meta: 'Last note: Nov 1, 2026 — check-in scheduled', link: '/enterprise/roster' },
     { id: 'stalled-andre', text: 'Andre Mitchell uncontacted 18 days', meta: 'Outreach paused pending end-of-semester check-in', link: '/enterprise/roster' },
@@ -636,7 +636,7 @@ export const dailyBriefItems = {
 export const complianceAuditLog = [
   {
     id: 'audit-001',
-    timestamp: 'Nov 1, 2026 · 14:30',
+    timestamp: '2026-11-01T14:30:00',
     user: 'Sarah Mitchell',
     userRole: 'Athletic Compliance Officer',
     action: 'Quarterly compliance review completed',
@@ -644,7 +644,7 @@ export const complianceAuditLog = [
   },
   {
     id: 'audit-002',
-    timestamp: 'Oct 28, 2026 · 10:15',
+    timestamp: '2026-10-28T10:15:00',
     user: 'Diane Okonkwo',
     userRole: 'Senior Director, Athletic Development',
     action: 'Added organization to exclusion list',
@@ -653,7 +653,7 @@ export const complianceAuditLog = [
   },
   {
     id: 'audit-003',
-    timestamp: 'Sep 15, 2026 · 09:42',
+    timestamp: '2026-09-15T09:42:00',
     user: 'Sarah Mitchell',
     userRole: 'Athletic Compliance Officer',
     action: 'Added organization to exclusion list',
@@ -662,7 +662,7 @@ export const complianceAuditLog = [
   },
   {
     id: 'audit-004',
-    timestamp: 'Aug 30, 2026 · 16:20',
+    timestamp: '2026-08-30T16:20:00',
     user: 'Diane Okonkwo',
     userRole: 'Senior Director, Athletic Development',
     action: 'Added organization to exclusion list',
@@ -671,7 +671,7 @@ export const complianceAuditLog = [
   },
   {
     id: 'audit-005',
-    timestamp: 'Aug 12, 2026 · 11:00',
+    timestamp: '2026-08-12T11:00:00',
     user: 'Sarah Mitchell',
     userRole: 'Athletic Compliance Officer',
     action: 'Program launch — NIL framework approved',
@@ -682,50 +682,50 @@ export const complianceAuditLog = [
 /** @type {Record<number, Array<{date: string, text: string}>>} */
 export const athleteReflections = {
   1: [
-    { date: 'Oct 5, 2026', text: "The GPS exercise was harder than I expected. I had to actually sit with why community basketball mattered to me, not just say it did." },
-    { date: 'Nov 8, 2026', text: "Vehicles lesson opened my eyes — I've been giving without thinking about which way is most efficient. Going to look at DAFs more seriously when I have the volume." },
+    { date: '2026-10-05', text: "The GPS exercise was harder than I expected. I had to actually sit with why community basketball mattered to me, not just say it did." },
+    { date: '2026-11-08', text: "Vehicles lesson opened my eyes — I've been giving without thinking about which way is most efficient. Going to look at DAFs more seriously when I have the volume." },
   ],
   2: [
-    { date: 'Sep 20, 2026', text: "Talking with the cohort about cause selection felt different than just reading about it. People asked questions I hadn't thought through." },
-    { date: 'Oct 30, 2026', text: "Finishing the program, I feel like I have a real practice now, not just intentions. The Atlanta Track gift was the first one I made with full intention behind it." },
+    { date: '2026-09-20', text: "Talking with the cohort about cause selection felt different than just reading about it. People asked questions I hadn't thought through." },
+    { date: '2026-10-30', text: "Finishing the program, I feel like I have a real practice now, not just intentions. The Atlanta Track gift was the first one I made with full intention behind it." },
   ],
   3: [
-    { date: 'Oct 12, 2026', text: "Made my first gift to youth football in Houston. Smaller than I thought I'd give but it felt right for getting started." },
+    { date: '2026-10-12', text: "Made my first gift to youth football in Houston. Smaller than I thought I'd give but it felt right for getting started." },
   ],
   4: [
-    { date: 'Sep 28, 2026', text: "Connecting my soccer story to giving back to underrepresented soccer programs made the whole thing click for me." },
+    { date: '2026-09-28', text: "Connecting my soccer story to giving back to underrepresented soccer programs made the whole thing click for me." },
   ],
   5: [
-    { date: 'Sep 5, 2026', text: "Honestly not sure what philanthropy means for someone at my career stage. Going to keep showing up and see what comes from it." },
+    { date: '2026-09-05', text: "Honestly not sure what philanthropy means for someone at my career stage. Going to keep showing up and see what comes from it." },
   ],
   6: [
-    { date: 'Oct 10, 2026', text: "The capstone reflection was the most useful part of the program for me. Wrote about what I want my giving to look like in five years and now I have it written down." },
+    { date: '2026-10-10', text: "The capstone reflection was the most useful part of the program for me. Wrote about what I want my giving to look like in five years and now I have it written down." },
   ],
   7: [
-    { date: 'Oct 1, 2026', text: "Got my framework defined but haven't made a gift yet. Want to wait until I have a clearer picture financially before committing to a recurring amount." },
+    { date: '2026-10-01', text: "Got my framework defined but haven't made a gift yet. Want to wait until I have a clearer picture financially before committing to a recurring amount." },
   ],
   // 8: Sofia Reyes (invited) — no reflections
   9: [
-    { date: 'Sep 18, 2026', text: "Baseball gave me a path out of where I grew up. I want my giving to do the same thing for somebody else's kid." },
+    { date: '2026-09-18', text: "Baseball gave me a path out of where I grew up. I want my giving to do the same thing for somebody else's kid." },
   ],
   // 10: Maya Johnson (invited) — no reflections
   11: [
-    { date: 'Oct 22, 2026', text: "First gift went to a youth diversion program. Couldn't have imagined doing that intentionally six months ago." },
+    { date: '2026-10-22', text: "First gift went to a youth diversion program. Couldn't have imagined doing that intentionally six months ago." },
   ],
   12: [
-    { date: 'Oct 8, 2026', text: "Softball is small. The community of girls who play and the women coaching matters to me. That's where my giving is going to stay focused for now." },
+    { date: '2026-10-08', text: "Softball is small. The community of girls who play and the women coaching matters to me. That's where my giving is going to stay focused for now." },
   ],
   13: [
-    { date: 'Oct 14, 2026', text: "Capstone done. The framework gave me language for something I was already doing informally. Now it's structured and intentional." },
+    { date: '2026-10-14', text: "Capstone done. The framework gave me language for something I was already doing informally. Now it's structured and intentional." },
   ],
   14: [
-    { date: 'Oct 26, 2026', text: "Tennis access is the cause that won't leave me alone. Started small with the Bay Area foundation and want to grow it from here." },
+    { date: '2026-10-26', text: "Tennis access is the cause that won't leave me alone. Started small with the Bay Area foundation and want to grow it from here." },
   ],
   15: [
-    { date: 'Oct 18, 2026', text: "First gift made. Equipment funds for high school football — that's where I came from. Felt right for the first one." },
+    { date: '2026-10-18', text: "First gift made. Equipment funds for high school football — that's where I came from. Felt right for the first one." },
   ],
   16: [
-    { date: 'Oct 28, 2026', text: "Slow start for me. Gymnastics is individual and so is figuring this out. Will get there." },
+    { date: '2026-10-28', text: "Slow start for me. Gymnastics is individual and so is figuring this out. Will get there." },
   ],
 };
 

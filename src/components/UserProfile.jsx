@@ -3,13 +3,7 @@ import { SectionLabel } from './SectionLabel.jsx';
 import { Button } from './Button.jsx';
 import { Modal } from './Modal.jsx';
 import { useComms } from '../contexts/CommsContext.jsx';
-
-function formatDate(iso) {
-  const d = new Date(iso);
-  const date = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  return `${date} · ${time}`;
-}
+import { formatDate } from '../utils/formatDate.js';
 
 // Generic contact/user profile modal. Three sections plus a footer CTA.
 // The "Send message" button calls onSendMessage(contact) — typically the

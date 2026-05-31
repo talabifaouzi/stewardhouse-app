@@ -5,13 +5,7 @@ import { Button } from './Button.jsx';
 import { statusFor } from '../surfaces/enterprise/shared/athleteStatus.js';
 import { useComms } from '../contexts/CommsContext.jsx';
 import { athleteReflections } from '../data/enterpriseFixtures.js';
-
-function formatDate(iso) {
-  const d = new Date(iso);
-  const date = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-  const time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
-  return `${date} · ${time}`;
-}
+import { formatDate } from '../utils/formatDate.js';
 
 // Single-athlete profile modal. Six sections: header (with status badge),
 // contact, progress, giving, activity timeline, notes. Renders nothing when
@@ -58,12 +52,12 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
           <SectionLabel>Progress</SectionLabel>
           <Field
             label="GPS"
-            value={athlete.gpsCompleted ? `Completed ${athlete.gpsDate}` : 'Pending'}
+            value={athlete.gpsCompleted ? `Completed ${formatDate(athlete.gpsDate)}` : 'Pending'}
           />
           <Field label="Lessons" value={`${athlete.lessons} of 9 completed`} />
           <Field
             label="Certification"
-            value={athlete.certified ? `Awarded ${athlete.certDate}` : 'Not yet awarded'}
+            value={athlete.certified ? `Awarded ${formatDate(athlete.certDate)}` : 'Not yet awarded'}
             last
           />
         </Card>
@@ -82,7 +76,7 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
               <ul style={listResetStyle}>
                 {giftEvents.slice(0, 3).map((g) => (
                   <li key={`${g.date}-${g.label}`} style={giftRowStyle}>
-                    <span style={giftDateStyle}>{g.date}</span>
+                    <span style={giftDateStyle}>{formatDate(g.date)}</span>
                     <span style={giftLabelStyle}>{g.label}</span>
                   </li>
                 ))}
@@ -101,7 +95,7 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
             <ul style={listResetStyle}>
               {[...reflections].reverse().map((r, i, arr) => (
                 <li key={r.date} style={reflectionItemStyle(i === arr.length - 1)}>
-                  <p style={reflectionDateStyle}>{r.date}</p>
+                  <p style={reflectionDateStyle}>{formatDate(r.date)}</p>
                   <p style={reflectionTextStyle}>{r.text}</p>
                 </li>
               ))}
@@ -117,7 +111,7 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
               const isLast = i === athlete.activity.length - 1;
               return (
                 <li key={`${e.date}-${e.type}-${e.label}`} style={activityRowStyle(isLast)}>
-                  <span style={activityDateStyle}>{e.date}</span>
+                  <span style={activityDateStyle}>{formatDate(e.date)}</span>
                   <span style={activityTypeStyle}>{TYPE_LABEL[e.type] || e.type}</span>
                   <span style={activityLabelStyle}>{e.label}</span>
                 </li>

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { formatDate } from '../utils/formatDate.js';
 
 // Month-grid calendar widget. Pure CSS grid, no external library.
 // Props: workshops (array), onWorkshopClick (fn).
@@ -22,6 +23,13 @@ function dateKey(year, month, day) {
   return `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 }
 
+// Parse "YYYY-MM-DD" as local midnight (not UTC), to avoid day-shift
+// in negative-UTC offsets when extracting year/month/date via getters.
+function parseIsoLocal(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m - 1, d);
+}
+
 export default function WorkshopCalendar({ workshops, onWorkshopClick }) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
@@ -31,7 +39,7 @@ export default function WorkshopCalendar({ workshops, onWorkshopClick }) {
   // Workshop lookup by YYYY-MM-DD
   const workshopsByDate = {};
   workshops.forEach((w) => {
-    const d = new Date(w.date);
+    const d = parseIsoLocal(w.date);
     const key = dateKey(d.getFullYear(), d.getMonth(), d.getDate());
     if (!workshopsByDate[key]) workshopsByDate[key] = [];
     workshopsByDate[key].push(w);
@@ -39,19 +47,19 @@ export default function WorkshopCalendar({ workshops, onWorkshopClick }) {
 
   // Derived: does the current view month contain any workshops?
   const hasWorkshopsInCurrentMonth = workshops.some((w) => {
-    const d = new Date(w.date);
+    const d = parseIsoLocal(w.date);
     return d.getFullYear() === year && d.getMonth() === month;
   });
 
   // First workshop after today (for the "Next workshop" pointer banner)
   const now = new Date();
   const nextWorkshop = [...workshops]
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .find((w) => new Date(w.date) > now);
+    .sort((a, b) => parseIsoLocal(a.date) - parseIsoLocal(b.date))
+    .find((w) => parseIsoLocal(w.date) > now);
 
   const jumpToNextWorkshop = () => {
     if (!nextWorkshop) return;
-    const target = new Date(nextWorkshop.date);
+    const target = parseIsoLocal(nextWorkshop.date);
     setCurrentDate(new Date(target.getFullYear(), target.getMonth(), 1));
   };
 
@@ -162,7 +170,7 @@ function NextWorkshopBanner({ workshop, onClick }) {
         background: hovered ? 'var(--sh-bronze-tint)' : 'var(--sh-bg-tint)',
       }}
     >
-      Next workshop: {workshop.date} — {workshop.title}
+      Next workshop: {formatDate(workshop.date)} — {workshop.title}
     </button>
   );
 }

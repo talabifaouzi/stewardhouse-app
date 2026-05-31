@@ -3,6 +3,7 @@ import { exclusions, complianceAuditLog, CURRENT_USER } from '../../data/enterpr
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import ExclusionDetail from '../../components/ExclusionDetail.jsx';
+import { formatDateTime } from '../../utils/formatDate.js';
 
 export default function EnterpriseCompliance() {
   const [activeExclusion, setActiveExclusion] = useState(null);
@@ -122,7 +123,7 @@ function AuditEntry({ entry, isLast }) {
     <div style={auditEntryStyle(isLast)}>
       <div style={auditTopRowStyle}>
         <div style={auditTimestampGroupStyle}>
-          <span style={auditTimestampStyle}>{entry.timestamp}</span>
+          <span style={auditTimestampStyle}>{formatDateTime(entry.timestamp)}</span>
           {entry.isSession && <span style={sessionPillStyle}>SESSION</span>}
         </div>
         <span style={auditUserStyle}>

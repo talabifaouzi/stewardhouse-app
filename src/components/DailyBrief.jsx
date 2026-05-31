@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from './Card.jsx';
 import { SectionLabel } from './SectionLabel.jsx';
+import { formatDate } from '../utils/formatDate.js';
 
 // Generic 4-section briefing shell. Sections with zero items hide entirely.
 // Attention section gets a bronze-deep bullet accent to flag priority items
@@ -25,7 +26,7 @@ export default function DailyBrief({
     <Card>
       <div style={headerRowStyle}>
         <SectionLabel>Today's brief</SectionLabel>
-        <span style={notionalDateStyle}>{notionalDate}</span>
+        <span style={notionalDateStyle}>{formatDate(notionalDate)}</span>
       </div>
       {sections.map((s, i) => (
         <BriefSection

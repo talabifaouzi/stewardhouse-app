@@ -3,6 +3,7 @@ import { Card } from '../../../components/Card.jsx';
 import { Button } from '../../../components/Button.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import { Modal } from '../../../components/Modal.jsx';
+import { formatDate } from '../../../utils/formatDate.js';
 
 // -----------------------------------------------------------------------------
 // Constants
@@ -416,7 +417,7 @@ function Step7Signoff({ data, onSignoffChange, partnershipType }) {
           <ReviewRow label="Status" value="Pending external completion" />
         ) : (
           data.workshops.map((w) => (
-            <ReviewRow key={w.id} label={`Workshop ${w.id}`} value={`${w.date} · ${w.title}`} />
+            <ReviewRow key={w.id} label={`Workshop ${w.id}`} value={`${formatDate(w.date)} · ${w.title}`} />
           ))
         )}
       </div>

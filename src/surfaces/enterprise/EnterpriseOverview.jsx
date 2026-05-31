@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { athletes, engagementTimeline, engagementWeekDates, engagedAthletesByWeek, dailyBriefItems } from '../../data/enterpriseFixtures.js';
+import { formatDate } from '../../utils/formatDate.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import StatTile from '../../components/StatTile.jsx';
@@ -38,7 +39,7 @@ export default function EnterpriseOverview() {
   if (activeWeek !== null) {
     const weekIds = engagedAthletesByWeek[activeWeek] || [];
     filteredAthletes = athletes.filter((a) => weekIds.includes(a.id));
-    modalTitle = `Engaged athletes — week ending ${engagementWeekDates[activeWeek]} — ${filteredAthletes.length} athletes`;
+    modalTitle = `Engaged athletes — week ending ${formatDate(engagementWeekDates[activeWeek])} — ${filteredAthletes.length} athletes`;
     filterModalOpen = true;
   } else if (config) {
     filteredAthletes = athletes.filter(config.filter);
@@ -94,9 +95,9 @@ export default function EnterpriseOverview() {
         </div>
         <BarChart
           data={engagementTimeline}
-          labels={engagementWeekDates}
+          labels={engagementWeekDates.map((d) => formatDate(d, { omitYear: true }))}
           onBarClick={(_, i) => openWeek(i)}
-          ariaLabel={`Weekly engagement rate over 12 weeks ending ${engagementWeekDates[engagementWeekDates.length - 1]}, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
+          ariaLabel={`Weekly engagement rate over 12 weeks ending ${formatDate(engagementWeekDates[engagementWeekDates.length - 1])}, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
         />
         <p style={engagementCaptionStyle}>
           Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.

@@ -15,6 +15,7 @@ import WorkshopDetail from '../../../components/WorkshopDetail.jsx';
 import FilteredAthletesModal from '../../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../../components/AthleteProfile.jsx';
 import { useComms } from '../../../contexts/CommsContext.jsx';
+import { formatDate } from '../../../utils/formatDate.js';
 import {
   tot,
   gpsRate,
@@ -43,7 +44,7 @@ export default function ProgramSummary() {
     ? athletes.filter((a) => (engagedAthletesByWeek[activeWeek] || []).includes(a.id))
     : [];
   const weekTitle = activeWeek !== null
-    ? `Engaged athletes — week ending ${engagementWeekDates[activeWeek]} — ${weekAthletes.length} athletes`
+    ? `Engaged athletes — week ending ${formatDate(engagementWeekDates[activeWeek])} — ${weekAthletes.length} athletes`
     : '';
 
   return (
@@ -80,9 +81,9 @@ export default function ProgramSummary() {
           </div>
           <BarChart
             data={engagementTimeline}
-            labels={engagementWeekDates}
+            labels={engagementWeekDates.map((d) => formatDate(d, { omitYear: true }))}
             onBarClick={(_, i) => setActiveWeek(i)}
-            ariaLabel={`Weekly engagement rate over 12 weeks ending ${engagementWeekDates[engagementWeekDates.length - 1]}, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
+            ariaLabel={`Weekly engagement rate over 12 weeks ending ${formatDate(engagementWeekDates[engagementWeekDates.length - 1])}, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
           />
           <p style={engagementCaptionStyle}>
             Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.
@@ -150,7 +151,7 @@ function WorkshopRow({ workshop, isLast, onClick }) {
         outlineOffset: '-2px',
       }}
     >
-      <div style={workshopDateStyle}>{workshop.date}</div>
+      <div style={workshopDateStyle}>{formatDate(workshop.date)}</div>
       <div style={workshopTitleStyle}>{workshop.title}</div>
       <div style={workshopMetaStyle}>
         {workshop.attendees != null ? `${workshop.attendees} attended` : capitalize(workshop.status)}
