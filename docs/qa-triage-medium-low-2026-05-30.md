@@ -23,34 +23,35 @@ Working numbers (memory + audit exec summary) said "76 Mediums (#43-102) / 55 Lo
 
 | Disposition | Count |
 |---|---|
-| ALREADY-CLOSED | 4 |
-| FIX-NOW | 5 |
+| ALREADY-CLOSED | 6 |
+| FIX-NOW | 3 |
 | BATCH | 60 |
 | WON'T-FIX | 41 |
 | DEFER | 5 |
 | **Total** | **115** |
 
+**Update 2026-05-31:** Cluster A shipped (commit `bc0beb9`). #93 and #94 moved to ALREADY-CLOSED. Cluster A also resolved audit High **#31** (Chrome `userRole` should be a job title, not a department) — the wire-up to `CURRENT_USER.title` closes #31 as a side effect. #31 was outside this triage's Medium+Low scope but is noted here for cross-reference. Remaining FIX-NOW clusters: B (#91 lesson-count reconciliation) and C (#76 + #82 voice at high-visibility surfaces).
+
 ---
 
-## ALREADY-CLOSED (4)
+## ALREADY-CLOSED (6)
 
 Resolved incidentally by slices shipped this session. Verified against current main.
 
 - **#46** — formatDate helper duplication. Closed by data slice 1 (`be6febc`) — new `src/utils/formatDate.js`, both AthleteProfile + UserProfile import from it.
+- **#93** — Chrome `userName` + `userRole` hardcoded vs CURRENT_USER. Closed by Cluster A (`bc0beb9`) — `userName={CURRENT_USER.name}`, `userRole={CURRENT_USER.title}`. Persona swap now propagates. Also closes audit High **#31** (Chrome role slot should be a job title, not a dept) as a side effect.
+- **#94** — SetupWizard hardcoded Diane name/email/title vs `contacts` canonical. Closed by Cluster A (`bc0beb9`) — DEFAULT_STATE Diane fields now derive from CURRENT_USER. All three sources of truth collapsed to one.
 - **#118** — SetupWizard `'✓'` stepper emoji. Closed by Criticals bundle (`33cb42f`) under Critical #4 (SVG check replacement).
 - **#124** — `notionalDate` as embedded date-string, untestable. Closed by data slice 1 (`be6febc`) — now ISO `'2026-11-12'`, routed through `formatDate`.
 - **#156** — cert date ↔ activity `certified` event date match. Closed by Criticals bundle (`33cb42f`) under Critical #9 (lessons 7→9 + activity entries appended).
 
 ---
 
-## FIX-NOW (5)
+## FIX-NOW (3)
 
 Correctness or user-visible-wrong only. Clustered for future slice scoping.
 
-### Cluster A — Persona / data consistency (2)
-
-- **#93** — `EnterpriseSurface.jsx:25, 71-73` Chrome receives `userName="Diane Okonkwo"` and `userRole="Athletic Department"` as string literals. CURRENT_USER is derived from contacts. Persona swap silently breaks the Chrome strip. Wire to CURRENT_USER.
-- **#94** — `SetupWizard.jsx:39, 41, 56` hardcodes Diane as `"Director of Athletics Development"` while `contacts[].title` (canonical) is `"Senior Director, Athletic Development"` (Bundle 1 norm, commit `fd7b2b0`). Three sources of truth for one person. Wire SetupWizard to CURRENT_USER / contacts.
+### ~~Cluster A — Persona / data consistency~~ — SHIPPED `bc0beb9` (closes #31, #93, #94)
 
 ### Cluster B — Fixture integrity (1)
 
