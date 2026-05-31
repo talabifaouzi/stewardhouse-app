@@ -465,8 +465,6 @@ export const workshops = [
   },
 ];
 
-export const engagementTimeline = [35, 42, 50, 48, 58, 62, 55, 67, 72, 64, 70, 75]; // 12 weeks of weekly active %
-
 /** @type {Array<string>} */
 export const engagementWeekDates = [
   '2026-08-31', '2026-09-07', '2026-09-14', '2026-09-21', '2026-09-28', '2026-10-05',
@@ -488,6 +486,12 @@ export const engagedAthletesByWeek = [
   [1, 2, 3, 4, 6, 9, 11, 12, 13, 14, 15],        // W11 — 11 (~68.8%)
   [1, 2, 3, 4, 6, 7, 9, 11, 12, 13, 14, 15],     // W12 — 12 (75%)
 ];
+
+// Weekly active % — derived from engagedAthletesByWeek over full roster size.
+// Keeps bar heights consistent with modal counts when bars are clicked.
+export const engagementTimeline = engagedAthletesByWeek.map(
+  (ids) => Math.round((ids.length / athletes.length) * 100),
+);
 
 /** @type {Array<Exclusion>} */
 export const exclusions = [
@@ -601,7 +605,9 @@ export const currentCohortSnapshot = {
   totalGifts: 33,
   totalDollarsMoved: 4900,        // sum of $-amounts in athletes' activity gift_made events (tracked-only — undercounts vs gifts count)
   workshopAttendanceRate: 75,     // W1 12/16 + W2 12/16 averaged
-  avgWeeklyEngagement: 58,        // average of engagementTimeline values
+  avgWeeklyEngagement: Math.round(
+    engagementTimeline.reduce((sum, n) => sum + n, 0) / engagementTimeline.length,
+  ),
   asOfNote: 'Through Nov 17, 2026 (mid-program)',
 };
 
