@@ -2,6 +2,15 @@ import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Chrome from '../../components/Chrome.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
+import unified from '../../data/unified/index.js';
+
+// Operations Overview stat values — computed once at module load from the
+// unified data layer. unified import is eager: it runs the three adapters +
+// synthetic seed + assemble at first reference. No useMemo needed; these
+// are pure const integers, not state.
+const INDIVIDUAL_COUNT  = unified.personsBy({ type: 'individual' }).length;
+const INSTITUTION_COUNT = unified.countBy('institutions');
+const PRACTICE_COUNT    = unified.countBy('advisorPractices');
 
 const NAV_ITEMS = [
   { key: 'home', label: 'Overview', path: '/operations' },
@@ -92,9 +101,9 @@ function OperationsHome() {
         gap: 'var(--sh-space-4)',
         marginBottom: 'var(--sh-space-8)',
       }}>
-        <Stat label="Individuals" value="142" sub="Active in last 30 days" />
-        <Stat label="Institutions" value="4" sub="Active programs" />
-        <Stat label="Philanthropic Advisors" value="11" sub="Practices on platform" />
+        <Stat label="Individuals" value={INDIVIDUAL_COUNT} sub="On platform" />
+        <Stat label="Institutions" value={INSTITUTION_COUNT} sub="Active programs" />
+        <Stat label="Advisor Practices" value={PRACTICE_COUNT} sub="On platform" />
         <Stat label="Open issues" value="2" sub="Awaiting response" />
       </div>
 
