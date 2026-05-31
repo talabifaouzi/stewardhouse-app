@@ -69,8 +69,8 @@ function EnterpriseSurfaceInner() {
     }}>
       <Chrome
         surface="enterprise"
-        userName="Diane Okonkwo"
-        userRole="Athletic Department"
+        userName={CURRENT_USER.name}
+        userRole={CURRENT_USER.title}
         navItems={NAV_ITEMS}
         activeNav={activeNav}
         onUserClick={() => setActiveContact(diane)}

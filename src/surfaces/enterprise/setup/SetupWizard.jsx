@@ -4,6 +4,7 @@ import { Button } from '../../../components/Button.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import { Modal } from '../../../components/Modal.jsx';
 import { formatDate } from '../../../utils/formatDate.js';
+import { CURRENT_USER } from '../../../data/enterpriseFixtures.js';
 
 // -----------------------------------------------------------------------------
 // Constants
@@ -36,9 +37,9 @@ const DEFAULT_STATE = {
     name: 'Cooper State University',
     sector: 'Athletics',
     dept: 'Athletic Department',
-    contactName: 'Diane Okonkwo',
-    contactEmail: 'diane.okonkwo@cooperstate.edu',
-    contactTitle: 'Director of Athletics Development',
+    contactName: CURRENT_USER.name,
+    contactEmail: CURRENT_USER.email,
+    contactTitle: CURRENT_USER.title,
   },
   partnership: {
     tier: 'revenue-sports',
@@ -53,7 +54,7 @@ const DEFAULT_STATE = {
     note: 'Cooper State pilot cohort (pre-filled demo data)',
   },
   roles: {
-    programAdmin: { name: 'Diane Okonkwo', email: 'diane.okonkwo@cooperstate.edu' },
+    programAdmin: { name: CURRENT_USER.name, email: CURRENT_USER.email },
     complianceOfficer: { name: 'Sarah Mitchell', email: 'sarah.mitchell@cooperstate.edu' },
     devDirector: { name: 'Sarah Johnson', email: 'sarah.johnson@cooperstate.edu' },
   },
