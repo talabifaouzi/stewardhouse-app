@@ -92,7 +92,7 @@ export default function WorkshopDetail({ isOpen, onClose, workshop, athletesById
         {/* Module reference */}
         <p style={moduleRefStyle}>
           Maps to curriculum: <span style={moduleNameStyle}>{workshop.module}</span>.
-          Athletes complete the corresponding module on the Individual surface.
+          Athletes complete the corresponding module in their own workspace.
         </p>
       </div>
     </Modal>

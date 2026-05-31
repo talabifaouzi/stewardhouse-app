@@ -119,7 +119,7 @@ export const athletes = [
     status: "active", joinDate: "Aug 25", badge: "The Amplifier", certified: true, certDate: "Nov 2, 2026",
     email: "aaliyah.williams@cooperstate.edu",
     phone: "(555) 248-9102",
-    notes: "Pre-med, planning to specialize in pediatrics. Strong focus on funding youth sports programs in underserved communities where access to formal training is limited.",
+    notes: "Pre-med, planning to specialize in pediatrics. Funding interest centers on youth sports programs in underserved communities where access to formal training is limited.",
     activity: [
       { date: "2026-11-02", type: "certified",         label: "Certification awarded" },
       { date: "2026-10-30", type: "lesson_completed",  label: "Lesson 9: Capstone Reflection" },

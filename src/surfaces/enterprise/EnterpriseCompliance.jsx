@@ -40,7 +40,7 @@ export default function EnterpriseCompliance() {
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Compliance</h1>
       <p style={subtitleStyle}>
-        The department surfaces compliance-relevant information to athletes. Final filings and approvals remain with the school's compliance officer; the platform does not gatekeep or evaluate.
+        The department surfaces compliance-relevant information to athletes. Final filings and approvals remain with the school's compliance officer; the platform does not adjudicate or evaluate.
       </p>
 
       <div style={cardStackStyle}>

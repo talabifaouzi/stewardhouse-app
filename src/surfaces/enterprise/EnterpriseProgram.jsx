@@ -63,7 +63,7 @@ export default function EnterpriseProgram() {
         {/* Card 2 — Workshop calendar */}
         <Card>
           <SectionLabel>Workshop calendar</SectionLabel>
-          <p style={framingStyle}>Five workshops over the program term. Click a workshop to view details.</p>
+          <p style={framingStyle}>Five workshops over the program term.</p>
           <WorkshopCalendar workshops={workshops} onWorkshopClick={setActiveWorkshop} />
         </Card>
 

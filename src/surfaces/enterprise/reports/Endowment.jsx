@@ -32,7 +32,7 @@ export default function Endowment() {
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Endowment</h1>
       <p style={subtitleStyle}>
-        Phase 1 snapshot and forward modeling. Structural details subject to legal review.
+        Current snapshot and forward modeling. Structural details subject to legal review.
       </p>
 
       {/* Phase 1 — Current state */}
