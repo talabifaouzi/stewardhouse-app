@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 /**
  * @typedef {Object} ModalStackValue
@@ -19,6 +19,8 @@ const ModalStackContext = createContext({
 
 export function ModalStackProvider({ children }) {
   const [stack, setStack] = useState([]);
+  const stackRef = useRef(stack);
+  stackRef.current = stack;
 
   const push = useCallback((id) => {
     setStack((s) => (s.includes(id) ? s : [...s, id]));
@@ -28,8 +30,11 @@ export function ModalStackProvider({ children }) {
     setStack((s) => s.filter((x) => x !== id));
   }, []);
 
-  const isTop = useCallback((id) => stack[stack.length - 1] === id, [stack]);
-  const indexOf = useCallback((id) => stack.indexOf(id), [stack]);
+  const isTop = useCallback(
+    (id) => stackRef.current[stackRef.current.length - 1] === id,
+    [],
+  );
+  const indexOf = useCallback((id) => stackRef.current.indexOf(id), []);
 
   useEffect(() => {
     if (stack.length === 0) return;
@@ -40,9 +45,10 @@ export function ModalStackProvider({ children }) {
     };
   }, [stack.length]);
 
+  const depth = stack.length;
   const value = useMemo(
-    () => ({ push, pop, isTop, indexOf, depth: stack.length }),
-    [push, pop, isTop, indexOf, stack.length],
+    () => ({ push, pop, isTop, indexOf, depth }),
+    [push, pop, isTop, indexOf, depth],
   );
 
   return (
