@@ -451,7 +451,7 @@ export const workshops = [
       { athleteId: 2,  attended: true,  note: null },
       { athleteId: 3,  attended: true,  note: null },
       { athleteId: 4,  attended: true,  note: null },
-      { athleteId: 5,  attended: false, note: "Stalled — no contact since Sep 5" },
+      { athleteId: 5,  attended: false, note: "No contact since Sep 5" },
       { athleteId: 6,  attended: true,  note: null },
       { athleteId: 7,  attended: true,  note: null },
       { athleteId: 8,  attended: false, note: "Invited, still not engaged" },

@@ -12,7 +12,7 @@ const REPORT_CARDS = [
   { slug: 'cohort',    title: 'Cohort Comparison',       desc: 'Year-over-year and sport-level comparisons.' },
   { slug: 'readiness', title: 'Philanthropic Readiness', desc: 'Per-athlete structural progress against program gates.' },
   { slug: 'program-outputs', title: 'Program Outputs',   desc: 'Activity summary: dollars moved, certifications, gifts. Outputs reporting, not return calculation.' },
-  { slug: 'endowment', title: 'Endowment',               desc: '$8.5K/yr endowment performance and projections.' },
+  { slug: 'endowment', title: 'Endowment',               desc: '$8.5K/yr endowment snapshot and projections.' },
 ];
 
 export default function EnterpriseReports() {
