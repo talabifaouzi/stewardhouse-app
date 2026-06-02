@@ -285,6 +285,26 @@
  * @property {Object} extensions                  Per-source bag (none required this slice).
  */
 
+/**
+ * A normalized platform-activity event derived from an underlying record with
+ * a real timestamp. Pure projection — no stored entity, no synthetic seed;
+ * produced lazily by unified.recentActivity({ limit }).
+ *
+ * description names the participant/org in prose pulled from the underlying
+ * record's .name (Slice C name-from-record discipline). Never fabricated,
+ * never a new variant — only the assembled record's actual string.
+ *
+ * @typedef {Object} ActivityItem
+ * @property {string} timestamp                  ISO YYYY-MM-DD from the underlying record
+ * @property {'Individual'|'Advisor'|'Enterprise'|'Operations'} surface
+ * @property {string} description                Prose; names pulled from real records verbatim
+ * @property {'person'|'org'|'advisorPractice'|'institution'|null} relatedEntityType
+ * @property {string|null} relatedEntityId
+ * @property {('cr-connected'|'cr-conversing'|'cr-gave'|'cr-ongoing'|'issue-opened'|'issue-resolved')} sourceEventType
+ *                                               Which derivation produced this item — for
+ *                                               dedup checks and test introspection.
+ */
+
 // This file is type definitions only. Consumers import the runtime
 // SOURCE_SURFACE enum from ./sources.js and (once landed in slice 6) the
 // assembled store + query helpers from ./index.js.

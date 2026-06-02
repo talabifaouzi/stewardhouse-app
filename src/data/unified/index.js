@@ -36,6 +36,11 @@
 //   unified.issueCountByCategory()             → {support, 'data-integrity', onboarding,
 //                                                'content-review', connection}
 //
+//   unified.recentActivity({limit})            → Array<ActivityItem>  sorted timestamp desc
+//                                                Derived projection over existing records
+//                                                (CR stage transitions + Issue events).
+//                                                Default limit = 8.
+//
 // RECORD-LEVEL — separate explicit queries, NOT default landing data:
 //   unified.connectionsByGiver(personId)       → Array<ConnectionRequest>
 //   unified.connectionsByTarget(orgIdOrName)   → Array<ConnectionRequest>
@@ -85,6 +90,88 @@ function computeFunnel(crs) {
 
 function divOrNull(num, denom) {
   return denom === 0 ? null : num / denom;
+}
+
+// ---------------------------------------------------------------------------
+// Activity projection helpers (Slice E)
+// ---------------------------------------------------------------------------
+
+// CR stages signal-worthy for the recent-activity feed. matched/viewed are
+// suppressed (too noisy — every funder matches and views continuously).
+const CR_SIGNAL_STAGES = ['connected', 'conversing', 'gave', 'ongoing'];
+
+// O(1) lookup indexes for the projection's name + amount resolution.
+const _personsById = new Map(persons.map((p) => [p.id, p]));
+const _giftsById   = new Map(gifts.map((g) => [g.id, g]));
+
+// Map a Person.sourceSurface to the activity-feed surface label. Synthetic
+// individuals map to 'Individual' (their conceptual surface).
+function surfaceForPersonSource(src) {
+  if (src === 'enterprise') return 'Enterprise';
+  if (src === 'advisor')    return 'Advisor';
+  return 'Individual'; // 'individual' | 'synthetic'
+}
+
+// Map an Issue's relatedEntity to the activity-feed surface label.
+function surfaceForIssue(issue) {
+  const t = issue.relatedEntityType;
+  if (t === 'advisorPractice') return 'Advisor';
+  if (t === 'institution')     return 'Enterprise';
+  if (t === 'person') {
+    const p = _personsById.get(issue.relatedEntityId);
+    return p ? surfaceForPersonSource(p.sourceSurface) : 'Operations';
+  }
+  // 'org' or null → Operations (org work and platform-level both internal)
+  return 'Operations';
+}
+
+// Build an ActivityItem for one CR stage transition. The 'gave' description
+// looks up Gift.amount via cr.giftId (single-source dedup rule); unified.gifts
+// is NEVER iterated for activity events. Every Gift in the current seed has
+// a corresponding CR — a future Gift without a CR would be missed by this
+// projection. That's the documented assumption.
+function buildCrEvent(cr, stage) {
+  const ts = cr.stageTimestamps[`${stage}At`];
+  const giver = _personsById.get(cr.giverPersonId);
+  // assemble.runChecks guarantees giver resolves; defensive fallback if not.
+  const giverName  = giver ? giver.name : '(unknown person)';
+  const targetName = cr.targetOrgName || '(unknown org)';
+  let description;
+  if (stage === 'connected') {
+    description = `${giverName} opted to connect with ${targetName}`;
+  } else if (stage === 'conversing') {
+    description = `${giverName} is in correspondence with ${targetName}`;
+  } else if (stage === 'gave') {
+    const gift = _giftsById.get(cr.giftId);
+    const amount = gift && typeof gift.amount === 'number' ? gift.amount : null;
+    description = amount === null
+      ? `${giverName} gave to ${targetName}`
+      : `${giverName} gave $${amount.toLocaleString()} to ${targetName}`;
+  } else { // 'ongoing'
+    description = `${giverName}'s connection with ${targetName} is ongoing`;
+  }
+  return {
+    timestamp: ts,
+    surface: giver ? surfaceForPersonSource(giver.sourceSurface) : 'Operations',
+    description,
+    relatedEntityType: 'person',
+    relatedEntityId: cr.giverPersonId,
+    sourceEventType: `cr-${stage}`,
+  };
+}
+
+function buildIssueEvent(issue, kind) {
+  const ts = kind === 'opened' ? issue.openedAt : issue.resolvedAt;
+  return {
+    timestamp: ts,
+    surface: surfaceForIssue(issue),
+    description: kind === 'opened'
+      ? `Issue opened: ${issue.summary}`
+      : `Issue resolved: ${issue.summary}`,
+    relatedEntityType: issue.relatedEntityType,
+    relatedEntityId: issue.relatedEntityId,
+    sourceEventType: `issue-${kind}`,
+  };
 }
 
 const unified = {
@@ -250,6 +337,58 @@ const unified = {
       if (i.category in counts) counts[i.category] += 1;
     }
     return counts;
+  },
+
+  // -- Activity projection (Slice E) — derived feed --
+
+  /**
+   * Recent platform-activity feed — a sorted-desc projection over existing
+   * records' real timestamps. Pure: derives entirely from the assembled
+   * store; emits NO new records, creates no profiles.
+   *
+   * Sources (per spec): CR stage transitions at connected/conversing/gave/
+   * ongoing (skipping matched/viewed as noise), plus Issue opened/resolved
+   * events. Gifts are deduped via the CR 'gave' transition (each anchored
+   * Gift surfaces exactly once via its CR; unified.gifts is never iterated).
+   *
+   * Descriptions name participants/orgs from real records' .name fields
+   * verbatim — never fabricated, never a new variant.
+   *
+   * Sort: timestamp DESC, then sourceEventType ASC, then underlying record
+   * id ASC — fully deterministic across runs.
+   *
+   * @param {{ limit?: number }} [opts]  Default limit = 8.
+   * @returns {Array<import('./types.js').ActivityItem>}
+   */
+  recentActivity({ limit = 8 } = {}) {
+    const pairs = []; // [item, sourceRecordId] for stable tie-break
+
+    // CR stage events.
+    for (const cr of connectionRequests) {
+      for (const stage of CR_SIGNAL_STAGES) {
+        if (cr.stageTimestamps[`${stage}At`] === null) continue;
+        pairs.push([buildCrEvent(cr, stage), cr.id]);
+      }
+    }
+
+    // Issue events — opened always; resolved when applicable.
+    for (const it of issues) {
+      pairs.push([buildIssueEvent(it, 'opened'), it.id]);
+      if (it.resolvedAt !== null) {
+        pairs.push([buildIssueEvent(it, 'resolved'), it.id]);
+      }
+    }
+
+    // Sort timestamp DESC; tie-break sourceEventType ASC then record id ASC.
+    pairs.sort((a, b) => {
+      const cmpTs = b[0].timestamp.localeCompare(a[0].timestamp);
+      if (cmpTs !== 0) return cmpTs;
+      const cmpType = a[0].sourceEventType.localeCompare(b[0].sourceEventType);
+      if (cmpType !== 0) return cmpType;
+      return a[1].localeCompare(b[1]);
+    });
+
+    return pairs.slice(0, limit).map(([item]) => item);
   },
 };
 
