@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Chrome from '../../components/Chrome.jsx';
 import { Card } from '../../components/Card.jsx';
@@ -28,6 +29,21 @@ const FUNNEL_STAGES = [
   { key: 'gave',       label: 'Gave' },
   { key: 'ongoing',    label: 'Ongoing' },
 ];
+
+// Open issues — tile + card data (Slice D). Module-level captures match the
+// FUNNEL / METRICS pattern; openIssues() already returns the records sorted
+// by openedAt descending (Slice C helper contract).
+const OPEN_ISSUE_COUNT = unified.openIssueCount();
+const OPEN_ISSUES      = unified.openIssues();
+
+// Maps Issue.relatedEntityType to the unified-store array name, for the
+// per-row relatedEntity name lookup in the IssueRow expand.
+const ENTITY_FOR_TYPE = {
+  person: 'persons',
+  org: 'orgs',
+  advisorPractice: 'advisorPractices',
+  institution: 'institutions',
+};
 
 const NAV_ITEMS = [
   { key: 'home', label: 'Overview', path: '/operations' },
@@ -111,8 +127,9 @@ function OperationsHome() {
         </p>
       </div>
 
-      {/* Demonstrative-state caveat — applies to the funnel + pilot headlines below.
-          Phrased so no synthetic number reads as live traction. */}
+      {/* Demonstrative-state caveat — applies to the funnel, pilot headlines,
+          and the open-issues card below. Phrased so no synthetic number reads
+          as live traction. */}
       <p style={{
         fontSize: 'var(--sh-text-xs)',
         color: 'var(--sh-text-muted)',
@@ -120,8 +137,8 @@ function OperationsHome() {
         marginBottom: 'var(--sh-space-5)',
         maxWidth: '720px',
       }}>
-        Mission funnel and pilot headlines below are demonstrative — drawn from the
-        synthetic seed, not live platform traction.
+        Mission funnel, pilot headlines, and open-issues card below are
+        demonstrative — drawn from the synthetic seed, not live platform traction.
       </p>
 
       {/* Mission funnel — primary pillar (Slice B) */}
@@ -170,7 +187,7 @@ function OperationsHome() {
           <Stat label="Individuals" value={INDIVIDUAL_COUNT} sub="On platform" />
           <Stat label="Institutions" value={INSTITUTION_COUNT} sub="Active programs" />
           <Stat label="Advisor Practices" value={PRACTICE_COUNT} sub="On platform" />
-          <Stat label="Open issues" value="2" sub="Awaiting response" />
+          <Stat label="Open issues" value={OPEN_ISSUE_COUNT} sub="Awaiting response" />
         </div>
       </div>
 
@@ -191,41 +208,20 @@ function OperationsHome() {
 
         <Card tint>
           <SectionLabel>Open issues</SectionLabel>
-          <div style={{
-            padding: 'var(--sh-space-3) 0',
-            borderBottom: 'var(--sh-border-divider)',
-          }}>
-            <p style={{
-              fontSize: 'var(--sh-text-sm)',
-              color: 'var(--sh-text-primary)',
-              marginBottom: '2px',
-            }}>
-              Cloudflare deploy fails after merge
-            </p>
-            <p style={{
-              fontSize: 'var(--sh-text-xs)',
-              color: 'var(--sh-text-muted)',
-            }}>
-              Filed 2 hours ago · platform health
-            </p>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {OPEN_ISSUES.map((issue, i) => (
+              <IssueRow key={issue.id} issue={issue} first={i === 0} />
+            ))}
           </div>
-          <div style={{
-            padding: 'var(--sh-space-3) 0',
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            fontStyle: 'italic',
+            marginTop: 'var(--sh-space-4)',
+            marginBottom: 0,
           }}>
-            <p style={{
-              fontSize: 'var(--sh-text-sm)',
-              color: 'var(--sh-text-primary)',
-              marginBottom: '2px',
-            }}>
-              Reuben Asare reports content not surfacing
-            </p>
-            <p style={{
-              fontSize: 'var(--sh-text-xs)',
-              color: 'var(--sh-text-muted)',
-            }}>
-              Filed yesterday · individual support
-            </p>
-          </div>
+            Per-issue drill-down pending — Operations route-pages slice.
+          </p>
         </Card>
       </div>
     </main>
@@ -293,6 +289,146 @@ function FunnelRow({ label, count, max }) {
       }}>
         {count}
       </p>
+    </div>
+  );
+}
+
+// Pure ISO-date math for "Filed N days ago" — uses Date.UTC for numeric
+// arithmetic (no string-parse timezone shift) and pulls today from the
+// user's clock via new Date() so the relative text ages naturally.
+function daysAgo(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const opened = Date.UTC(y, m - 1, d);
+  const now = new Date();
+  const today = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.round((today - opened) / 86_400_000);
+}
+
+function formatFiled(iso) {
+  const n = daysAgo(iso);
+  if (n === 0) return 'Filed today';
+  if (n === 1) return 'Filed yesterday';
+  if (n < 0)   return `Filed in ${-n} day${-n === 1 ? '' : 's'}`;
+  return `Filed ${n} days ago`;
+}
+
+// SVG chevron — brand is SVG icons only (no unicode glyphs). Rotates 90°
+// when the row is expanded, indicating the down-arrow state.
+function Chevron({ expanded }) {
+  return (
+    <svg
+      width="10"
+      height="10"
+      viewBox="0 0 10 10"
+      fill="none"
+      aria-hidden="true"
+      style={{
+        flexShrink: 0,
+        color: 'var(--sh-text-muted)',
+        transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+        transition: 'transform 150ms ease',
+      }}
+    >
+      <path
+        d="M3 1.5 L7 5 L3 8.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        fill="none"
+      />
+    </svg>
+  );
+}
+
+function IssueRow({ issue, first }) {
+  const [expanded, setExpanded] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const related = issue.relatedEntityType
+    ? unified.byId(ENTITY_FOR_TYPE[issue.relatedEntityType], issue.relatedEntityId)
+    : null;
+  const relatedLine = issue.relatedEntityType === null
+    ? 'Platform-level (no specific record)'
+    : `About: ${related ? related.name : '(unresolved)'} (${issue.relatedEntityType})`;
+
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => setExpanded((v) => !v)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setExpanded((v) => !v);
+        }
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: 'var(--sh-space-3)',
+        marginLeft: 'calc(var(--sh-space-3) * -1)',
+        marginRight: 'calc(var(--sh-space-3) * -1)',
+        borderTop: first ? 'none' : 'var(--sh-border-divider)',
+        cursor: 'pointer',
+        background: hovered ? 'var(--sh-bronze-tint)' : 'transparent',
+        transition: 'background 150ms ease',
+        userSelect: 'none',
+      }}
+    >
+      <div style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 'var(--sh-space-3)',
+      }}>
+        <p style={{
+          flex: 1,
+          fontSize: 'var(--sh-text-sm)',
+          color: 'var(--sh-text-primary)',
+          margin: 0,
+          marginBottom: '2px',
+          lineHeight: 1.45,
+        }}>
+          {issue.summary}
+        </p>
+        <div style={{ paddingTop: '4px' }}>
+          <Chevron expanded={expanded} />
+        </div>
+      </div>
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        margin: 0,
+      }}>
+        {formatFiled(issue.openedAt)} · {issue.category} · {issue.severity}
+      </p>
+      {expanded && (
+        <div style={{
+          marginTop: 'var(--sh-space-3)',
+          padding: 'var(--sh-space-4)',
+          background: 'var(--sh-card)',
+          borderLeft: '3px solid var(--sh-bronze)',
+          borderRadius: 'var(--sh-radius-md)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--sh-space-1)',
+        }}>
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-secondary)',
+            margin: 0,
+          }}>
+            Opened {issue.openedAt}
+          </p>
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-secondary)',
+            margin: 0,
+          }}>
+            {relatedLine}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
