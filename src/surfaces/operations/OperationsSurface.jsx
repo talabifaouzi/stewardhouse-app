@@ -7,10 +7,27 @@ import unified from '../../data/unified/index.js';
 // Operations Overview stat values — computed once at module load from the
 // unified data layer. unified import is eager: it runs the three adapters +
 // synthetic seed + assemble at first reference. No useMemo needed; these
-// are pure const integers, not state.
+// are pure const integers / plain objects, not state.
 const INDIVIDUAL_COUNT  = unified.personsBy({ type: 'individual' }).length;
 const INSTITUTION_COUNT = unified.countBy('institutions');
 const PRACTICE_COUNT    = unified.countBy('advisorPractices');
+
+// Mission-funnel pillar (Slice B): aggregate-only, derived from the
+// ConnectionRequest entity. The funnel and pilot headlines below are
+// demonstrative — drawn from the synthetic seed, not live traction.
+const FUNNEL  = unified.connectionFunnel();
+const METRICS = unified.pilotMetrics();
+
+// Ordered stages for the funnel rendering. Descriptive labels — no scoring,
+// no ranking. Each later stage is a subset of all earlier stages.
+const FUNNEL_STAGES = [
+  { key: 'matched',    label: 'Matched' },
+  { key: 'viewed',     label: 'Viewed' },
+  { key: 'connected',  label: 'Connected' },
+  { key: 'conversing', label: 'Conversing' },
+  { key: 'gave',       label: 'Gave' },
+  { key: 'ongoing',    label: 'Ongoing' },
+];
 
 const NAV_ITEMS = [
   { key: 'home', label: 'Overview', path: '/operations' },
@@ -94,17 +111,67 @@ function OperationsHome() {
         </p>
       </div>
 
-      {/* Aggregate stats */}
+      {/* Demonstrative-state caveat — applies to the funnel + pilot headlines below.
+          Phrased so no synthetic number reads as live traction. */}
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        fontStyle: 'italic',
+        marginBottom: 'var(--sh-space-5)',
+        maxWidth: '720px',
+      }}>
+        Mission funnel and pilot headlines below are demonstrative — drawn from the
+        synthetic seed, not live platform traction.
+      </p>
+
+      {/* Mission funnel — primary pillar (Slice B) */}
+      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
+        <MissionFunnel funnel={FUNNEL} />
+      </div>
+
+      {/* Pilot headlines — four cards derived from pilotMetrics() */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
         gap: 'var(--sh-space-4)',
         marginBottom: 'var(--sh-space-8)',
       }}>
-        <Stat label="Individuals" value={INDIVIDUAL_COUNT} sub="On platform" />
-        <Stat label="Institutions" value={INSTITUTION_COUNT} sub="Active programs" />
-        <Stat label="Advisor Practices" value={PRACTICE_COUNT} sub="On platform" />
-        <Stat label="Open issues" value="2" sub="Awaiting response" />
+        <Stat
+          label="Relationships continuing"
+          value={METRICS.ongoingCount}
+          sub="post-gift, still engaged"
+        />
+        <Stat
+          label="Orgs supported"
+          value={METRICS.distinctOrgsAtGave}
+          sub="distinct nonprofits at gave or ongoing"
+        />
+        <Stat
+          label="Total given via StewardHouse"
+          value={`$${METRICS.totalDollarsAtGave.toLocaleString()}`}
+          sub={`across ${METRICS.gaveCount} gifts`}
+        />
+        <Stat
+          label="Matched → gave"
+          value={`${Math.round(METRICS.conversionMatchedToGave * 100)}%`}
+          sub="cumulative funnel conversion"
+        />
+      </div>
+
+      {/* Platform composition — existing four tiles, demoted below the funnel pillar.
+          Three derived counts plus the hardcoded Open issues (wired in Slice C). */}
+      <div style={{ marginBottom: 'var(--sh-space-8)' }}>
+        <SectionLabel>Platform composition</SectionLabel>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: 'var(--sh-space-4)',
+        }}>
+          <Stat label="Individuals" value={INDIVIDUAL_COUNT} sub="On platform" />
+          <Stat label="Institutions" value={INSTITUTION_COUNT} sub="Active programs" />
+          <Stat label="Advisor Practices" value={PRACTICE_COUNT} sub="On platform" />
+          <Stat label="Open issues" value="2" sub="Awaiting response" />
+        </div>
       </div>
 
       <div style={{
@@ -162,6 +229,71 @@ function OperationsHome() {
         </Card>
       </div>
     </main>
+  );
+}
+
+function MissionFunnel({ funnel }) {
+  // matched is always the total CR count, so it's the natural 100% reference.
+  // Guard against an empty seed: max=1 keeps width math well-defined (0/1 = 0).
+  const max = funnel.matched || 1;
+  return (
+    <Card>
+      <SectionLabel>Mission funnel</SectionLabel>
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--sh-space-3)',
+      }}>
+        {FUNNEL_STAGES.map((s) => (
+          <FunnelRow key={s.key} label={s.label} count={funnel[s.key]} max={max} />
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function FunnelRow({ label, count, max }) {
+  const pct = (count / max) * 100;
+  return (
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: '140px 1fr 56px',
+      alignItems: 'center',
+      gap: 'var(--sh-space-4)',
+    }}>
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        fontWeight: 500,
+        margin: 0,
+      }}>
+        {label}
+      </p>
+      <div style={{
+        height: '8px',
+        background: 'var(--sh-bg-tint)',
+        borderRadius: 'var(--sh-radius-sm)',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          width: `${pct}%`,
+          height: '100%',
+          background: 'var(--sh-bronze)',
+          borderRadius: 'inherit',
+        }} />
+      </div>
+      <p style={{
+        fontFamily: 'var(--sh-font-serif)',
+        fontSize: 'var(--sh-text-xl)',
+        color: 'var(--sh-text-primary)',
+        textAlign: 'right',
+        margin: 0,
+      }}>
+        {count}
+      </p>
+    </div>
   );
 }
 

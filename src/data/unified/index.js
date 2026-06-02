@@ -148,15 +148,21 @@ const unified = {
    * stage 'gave' or 'ongoing' (skipping any null amount). medianDaysMatchedToGave
    * is computed from the stageTimestamps of CRs that have reached 'gave';
    * null when fewer than 5 such CRs exist.
+   *
+   * distinctOrgsAtGave is the count of unique recipient orgs across CRs at
+   * 'gave'/'ongoing'. Key: targetOrgId when present, else `name:${targetOrgName}`.
+   * Pure aggregate — no record list exposed (record-level access stays in
+   * connectionsByTarget).
    */
   pilotMetrics() {
     const reached = computeFunnel(connectionRequests);
     const totalIndividuals = persons.filter((p) => p.type === 'individual').length;
 
-    // Sum dollars at gave: look up Gift.amount via giftId for CRs at gave/ongoing.
+    // Sum dollars at gave + collect distinct target orgs + dwell samples in one pass.
     const giftById = new Map(gifts.map((g) => [g.id, g]));
     let totalDollarsAtGave = 0;
     const matchedToGaveDwells = [];
+    const orgKeysAtGave = new Set();
     for (const cr of connectionRequests) {
       if (cr.stage !== 'gave' && cr.stage !== 'ongoing') continue;
       if (cr.giftId !== null) {
@@ -167,6 +173,7 @@ const unified = {
       if (matchedAt !== null && gaveAt !== null) {
         matchedToGaveDwells.push(daysBetween(matchedAt, gaveAt));
       }
+      orgKeysAtGave.add(cr.targetOrgId || `name:${cr.targetOrgName}`);
     }
 
     return {
@@ -182,6 +189,7 @@ const unified = {
       medianDaysMatchedToGave:
         matchedToGaveDwells.length < 5 ? null : median(matchedToGaveDwells),
       totalDollarsAtGave,
+      distinctOrgsAtGave: orgKeysAtGave.size,
     };
   },
 
