@@ -182,6 +182,64 @@
  * @property {Object} extensions
  */
 
+/**
+ * A funder's structured intent to connect with a recipient org. Records the
+ * platform's primary action — opting in to a relationship with an org —
+ * separately from any monetary gift event. Powers the mission funnel and
+ * (later) the activity stream.
+ *
+ * Nullable-FK pattern mirrors Gift: targetOrgId is FK → Org.id when the
+ * record links structurally to a catalog org; otherwise targetOrgId is null
+ * and targetOrgName carries the string. The synthetic seed populates
+ * targetOrgId by matching the 17-org catalog on name.
+ *
+ * Stages are DESCRIPTIVE, not scored or ranked. The full lifecycle, in order:
+ * matched → viewed → connected → conversing → gave → ongoing.
+ *
+ * Stage semantics:
+ * - matched:     org surfaced to this funder in the discovery view
+ * - viewed:      funder opened the org's discovery card
+ * - connected:   funder explicitly opted in (Share/Connect/Signal Interest)
+ * - conversing:  two-way correspondence has occurred
+ * - gave:        a monetary Gift occurred; CR is anchored to that Gift via giftId
+ * - ongoing:     post-gift relationship continues without requiring a second Gift
+ *
+ * Lifecycle is monotonic — a record only moves forward. Backward transitions
+ * are not modeled.
+ *
+ * giftId is REQUIRED at stage 'gave' or 'ongoing' and MUST resolve to an
+ * existing Gift record. A CR at 'gave'/'ongoing' with null giftId is a
+ * runChecks failure. No fabricated Gifts.
+ *
+ * stageTimestamps:
+ * - Per-stage ISO YYYY-MM-DD recording when each stage was first reached.
+ *   null for not-yet-reached.
+ * - Monotonic across populated values (any non-null timestamp implies all
+ *   earlier-stage timestamps are non-null AND ≤ it).
+ * - For CRs anchored to a Gift, stageTimestamps.gaveAt MUST equal the
+ *   anchored Gift's date exactly; matched..conversing precede it;
+ *   ongoingAt (when populated) follows it.
+ *
+ * @typedef {Object} ConnectionRequest
+ * @property {string} id                          `cr-{sourceSurface}-{seq}`
+ * @property {string} giverPersonId               FK → Person.id (must resolve in assembled store)
+ * @property {string|null} targetOrgId            FK → Org.id (null when no catalog match)
+ * @property {string|null} targetOrgName          Name string; null only if structural FK is set
+ * @property {'matched'|'viewed'|'connected'|'conversing'|'gave'|'ongoing'} stage
+ * @property {{
+ *   matchedAt:    string|null,
+ *   viewedAt:     string|null,
+ *   connectedAt:  string|null,
+ *   conversingAt: string|null,
+ *   gaveAt:       string|null,
+ *   ongoingAt:    string|null
+ * }} stageTimestamps                             Per-stage ISO YYYY-MM-DD; null for not-yet-reached.
+ * @property {string|null} giftId                 FK → Gift.id. REQUIRED at 'gave'/'ongoing'.
+ *                                                Null at all earlier stages.
+ * @property {SourceSurface} sourceSurface
+ * @property {Object} extensions                  Per-source bag (none required this slice).
+ */
+
 // This file is type definitions only. Consumers import the runtime
 // SOURCE_SURFACE enum from ./sources.js and (once landed in slice 6) the
 // assembled store + query helpers from ./index.js.

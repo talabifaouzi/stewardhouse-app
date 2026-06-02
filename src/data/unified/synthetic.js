@@ -44,8 +44,38 @@
 // -----------------------------------------------------------------------------
 
 import { SOURCE_SURFACE } from './sources.js';
+import { adaptEnterprise } from './adapters/enterprise.js';
+import { adaptAdvisor } from './adapters/advisor.js';
+import { adaptIndividual } from './adapters/individual.js';
 
 const SOURCE = SOURCE_SURFACE.SYNTHETIC;
+
+// ConnectionRequest seed parameters (slice A).
+//
+// All CRs in this slice carry sourceSurface = 'synthetic' (decision D1) —
+// no upstream source (enterprise/advisor/individual) emits ConnectionRequests;
+// the entity is born here. The CR seed still draws facts from the adapter
+// outputs: 21 CRs at stage 'gave'/'ongoing' are anchored to existing Gift
+// records (18 enterprise + 3 individual), so gaveAt === Gift.date exactly.
+//
+// Marcus the funder is p-individual-c-001 — the Person record carrying the
+// explicit giving identity (Marcus also exists as p-advisor-c-001 and
+// p-enterprise-m-001; same-person dedup is deferred). All Marcus CRs use
+// p-individual-c-001 as giverPersonId.
+const PRE_GAVE_BASE = '2026-02-01';      // start of the ~120-day pre-gave window
+const MARCUS_FUNDER_ID = 'p-individual-c-001';
+
+// Stage-time spacing (days) for synthesized pre-gave timestamps.
+const DAYS_MATCHED_TO_VIEWED = 5;
+const DAYS_VIEWED_TO_CONNECTED = 7;
+const DAYS_CONNECTED_TO_CONVERSING = 10;
+// Backwards offsets for anchored CRs: matched..conversing precede gaveAt.
+// Same numeric spacing, applied as subtractions from gaveAt.
+const DAYS_CONVERSING_TO_GAVE = 10;
+const DAYS_CONNECTED_TO_GAVE = DAYS_CONNECTED_TO_CONVERSING + DAYS_CONVERSING_TO_GAVE; // 20
+const DAYS_VIEWED_TO_GAVE = DAYS_VIEWED_TO_CONNECTED + DAYS_CONNECTED_TO_GAVE;          // 27
+const DAYS_MATCHED_TO_GAVE = DAYS_MATCHED_TO_VIEWED + DAYS_VIEWED_TO_GAVE;              // 32
+const DAYS_GAVE_TO_ONGOING = 60;
 
 // Real first names from all three adapter sources — compiled from athletes,
 // contacts, advisor clients, individual profile, SetupWizard hardcodes
@@ -303,6 +333,225 @@ const STAFF_ROWS = [
 ];
 
 // -----------------------------------------------------------------------------
+// ConnectionRequest helpers (slice A)
+// -----------------------------------------------------------------------------
+
+// Pure ISO-date addition. Uses Date.UTC for the arithmetic (no string-parsing
+// timezone issues — only purely-numeric inputs go in). Avoids the
+// new Date('YYYY-MM-DD') UTC-day-shift gotcha the enterprise slice hit.
+function addDays(iso, days) {
+  const [y, m, d] = iso.split('-').map(Number);
+  const ms = Date.UTC(y, m - 1, d) + days * 86_400_000;
+  const dt = new Date(ms);
+  const y2 = dt.getUTCFullYear();
+  const m2 = String(dt.getUTCMonth() + 1).padStart(2, '0');
+  const d2 = String(dt.getUTCDate()).padStart(2, '0');
+  return `${y2}-${m2}-${d2}`;
+}
+
+// Build the per-stage timestamp bag for a pre-gave CR. Each populated
+// timestamp is strictly later than the previous (DAYS_* spacings).
+function preGaveTimestamps(matchedAt, stage) {
+  const t = {
+    matchedAt,
+    viewedAt: null,
+    connectedAt: null,
+    conversingAt: null,
+    gaveAt: null,
+    ongoingAt: null,
+  };
+  if (stage === 'matched') return t;
+  t.viewedAt = addDays(matchedAt, DAYS_MATCHED_TO_VIEWED);
+  if (stage === 'viewed') return t;
+  t.connectedAt = addDays(t.viewedAt, DAYS_VIEWED_TO_CONNECTED);
+  if (stage === 'connected') return t;
+  t.conversingAt = addDays(t.connectedAt, DAYS_CONNECTED_TO_CONVERSING);
+  if (stage === 'conversing') return t;
+  throw new Error(`preGaveTimestamps: not a pre-gave stage: ${stage}`);
+}
+
+// Build the per-stage timestamp bag for a Gift-anchored CR. gaveAt MUST
+// equal the anchored Gift's actual date (no contradicting synthesis);
+// matched..conversing precede it; ongoingAt follows it when present.
+function anchoredTimestamps(giftDate, isOngoing) {
+  const matchedAt = addDays(giftDate, -DAYS_MATCHED_TO_GAVE);
+  const viewedAt = addDays(giftDate, -DAYS_VIEWED_TO_GAVE);
+  const connectedAt = addDays(giftDate, -DAYS_CONNECTED_TO_GAVE);
+  const conversingAt = addDays(giftDate, -DAYS_CONVERSING_TO_GAVE);
+  return {
+    matchedAt,
+    viewedAt,
+    connectedAt,
+    conversingAt,
+    gaveAt: giftDate,
+    ongoingAt: isOngoing ? addDays(giftDate, DAYS_GAVE_TO_ONGOING) : null,
+  };
+}
+
+function nameToOrgId(name, orgs) {
+  const match = orgs.find((o) => o.name === name);
+  return match ? match.id : null;
+}
+
+/**
+ * Build the synthetic ConnectionRequest seed (105 records). All records
+ * carry sourceSurface = 'synthetic' regardless of which source's Gift
+ * they anchor to (decision D1).
+ *
+ * Spread (current-stage counts): matched 50 · viewed 20 · connected 10 ·
+ * conversing 4 · gave 16 · ongoing 5. Funnel-cumulative reads:
+ * reachedMatched 105 → viewed 55 → connected 35 → conversing 25 → gave 21
+ * → ongoing 5.
+ *
+ * Ground-truth anchors (21 CRs):
+ * - Marcus's 3 individual gifts → 3 'ongoing' (giverPersonId = MARCUS_FUNDER_ID).
+ * - Enterprise gifts (18) sorted by date ascending; the earliest 2 become
+ *   'ongoing' (oldest giving relationships read as continuing); the
+ *   remaining 16 stay 'gave'.
+ *
+ * Pre-gave allocation (84 CRs):
+ * - Marcus: 3 matched + 2 viewed + 1 connected + 1 conversing = 7 CRs
+ *   targeting orgs that don't collide with Marcus's anchored 3 (by org name).
+ * - Other persons (77 slots): one CR per non-Marcus individual across
+ *   16 enterprise athletes + 9 advisor clients + 51 synthetic individuals,
+ *   plus 1 extra synthetic CR (p-synthetic-001 second org), totaling 77.
+ *   Stage assigned by slot index: positions 0-46 matched (47), 47-64 viewed
+ *   (18), 65-73 connected (9), 74-76 conversing (3).
+ *
+ * Org target rule: cycle the 17-org catalog by index. targetOrgId is the
+ * matched catalog Org.id; targetOrgName is the catalog Org.name. For anchored
+ * CRs, targetOrgName comes from the Gift's recipientOrgName; targetOrgId is
+ * populated via name-match against the catalog (null when no match).
+ *
+ * @param {ReturnType<typeof adaptEnterprise>} enterprise
+ * @param {ReturnType<typeof adaptAdvisor>} advisor
+ * @param {ReturnType<typeof adaptIndividual>} individual
+ * @returns {Array<Object>} ConnectionRequest records
+ */
+function buildConnectionRequests(enterprise, advisor, individual) {
+  const orgs = individual.orgs;
+  const crs = [];
+  let seq = 0;
+  const nextId = () => `cr-synthetic-${++seq}`;
+
+  // Phase 1 — Marcus's 3 individual gifts → 3 'ongoing' CRs.
+  for (const g of individual.gifts) {
+    crs.push({
+      id: nextId(),
+      giverPersonId: MARCUS_FUNDER_ID,
+      targetOrgId: nameToOrgId(g.recipientOrgName, orgs),
+      targetOrgName: g.recipientOrgName,
+      stage: 'ongoing',
+      stageTimestamps: anchoredTimestamps(g.date, true),
+      giftId: g.id,
+      sourceSurface: SOURCE,
+      extensions: {},
+    });
+  }
+
+  // Phase 2 — 18 enterprise gifts → 2 'ongoing' (earliest) + 16 'gave'.
+  // Sort by date ascending; ties broken by gift id for determinism.
+  const enterpriseGiftsSorted = [...enterprise.gifts].sort((a, b) => {
+    const dCmp = a.date.localeCompare(b.date);
+    return dCmp !== 0 ? dCmp : a.id.localeCompare(b.id);
+  });
+  enterpriseGiftsSorted.forEach((g, i) => {
+    const isOngoing = i < 2;
+    crs.push({
+      id: nextId(),
+      giverPersonId: g.giverPersonId,
+      targetOrgId: nameToOrgId(g.recipientOrgName, orgs),
+      targetOrgName: g.recipientOrgName,
+      stage: isOngoing ? 'ongoing' : 'gave',
+      stageTimestamps: anchoredTimestamps(g.date, isOngoing),
+      giftId: g.id,
+      sourceSurface: SOURCE,
+      extensions: {},
+    });
+  });
+
+  // Phase 3 — Marcus's 7 pre-gave CRs (3m + 2v + 1c + 1conv).
+  // Avoid org names Marcus already targets via Phase 1.
+  const marcusUsedOrgNames = new Set(
+    crs
+      .filter((c) => c.giverPersonId === MARCUS_FUNDER_ID)
+      .map((c) => c.targetOrgName),
+  );
+  const marcusStageOrder = [
+    'matched', 'matched', 'matched',
+    'viewed', 'viewed',
+    'connected',
+    'conversing',
+  ];
+  let marcusOrgIdx = 0;
+  marcusStageOrder.forEach((stage, k) => {
+    // Pick next catalog org Marcus doesn't already target.
+    while (marcusUsedOrgNames.has(orgs[marcusOrgIdx % orgs.length].name)) {
+      marcusOrgIdx += 1;
+    }
+    const targetOrg = orgs[marcusOrgIdx % orgs.length];
+    marcusOrgIdx += 1;
+    marcusUsedOrgNames.add(targetOrg.name);
+    // Spread Marcus pre-gave matchedAt dates ~7 days apart across the window.
+    const matchedAt = addDays(PRE_GAVE_BASE, k * 7);
+    crs.push({
+      id: nextId(),
+      giverPersonId: MARCUS_FUNDER_ID,
+      targetOrgId: targetOrg.id,
+      targetOrgName: targetOrg.name,
+      stage,
+      stageTimestamps: preGaveTimestamps(matchedAt, stage),
+      giftId: null,
+      sourceSurface: SOURCE,
+      extensions: {},
+    });
+  });
+
+  // Phase 4 — 77 pre-gave CRs across non-Marcus individuals.
+  // Persons in deterministic order: 16 enterprise athletes (source order) +
+  // 9 advisor clients (source order) + 51 synthetic individuals (1..51),
+  // plus 1 extra synthetic (p-synthetic-001 second org) = 77 slots.
+  const enterpriseAthletes = enterprise.persons.filter((p) => p.type === 'individual');
+  const advisorClients = advisor.persons.filter((p) => p.type === 'individual');
+  const syntheticIndividualIds = [];
+  for (let i = 1; i <= 51; i += 1) {
+    syntheticIndividualIds.push(`p-synthetic-${String(i).padStart(3, '0')}`);
+  }
+  const otherPersonIds = [
+    ...enterpriseAthletes.map((p) => p.id),
+    ...advisorClients.map((p) => p.id),
+    ...syntheticIndividualIds,
+    syntheticIndividualIds[0], // extra: p-synthetic-001 second CR
+  ];
+
+  // Stage assignment by slot index — 47 matched + 18 viewed + 9 connected + 3 conversing.
+  const stageForSlot = (i) => {
+    if (i < 47) return 'matched';
+    if (i < 47 + 18) return 'viewed';
+    if (i < 47 + 18 + 9) return 'connected';
+    return 'conversing';
+  };
+
+  otherPersonIds.forEach((personId, i) => {
+    const targetOrg = orgs[i % orgs.length];
+    const matchedAt = addDays(PRE_GAVE_BASE, i % 119); // spread across the ~120-day window
+    crs.push({
+      id: nextId(),
+      giverPersonId: personId,
+      targetOrgId: targetOrg.id,
+      targetOrgName: targetOrg.name,
+      stage: stageForSlot(i),
+      stageTimestamps: preGaveTimestamps(matchedAt, stageForSlot(i)),
+      giftId: null,
+      sourceSurface: SOURCE,
+      extensions: {},
+    });
+  });
+
+  return crs;
+}
+
+// -----------------------------------------------------------------------------
 // Build the bundle
 // -----------------------------------------------------------------------------
 
@@ -313,6 +562,10 @@ function padId(n) {
 /**
  * Get the synthetic seed bundle. Pure: same shape every call.
  *
+ * Calls the three adapters internally to source the existing Gift records
+ * the ConnectionRequest seed anchors to (decision: keep getSynthetic's
+ * argless signature stable; adapters are pure and cheap to re-run).
+ *
  * @returns {{
  *   persons: Array<Object>,
  *   institutions: Array<Object>,
@@ -321,6 +574,7 @@ function padId(n) {
  *   gifts: Array<Object>,
  *   cohorts: Array<Object>,
  *   orgs: Array<Object>,
+ *   connectionRequests: Array<Object>,
  * }}
  */
 export function getSynthetic() {
@@ -369,6 +623,15 @@ export function getSynthetic() {
     }),
   );
 
+  // ConnectionRequests (105) — slice A seed.
+  // Pull adapter bundles for Gift anchoring (21 anchored CRs reference real
+  // Gifts; gaveAt === Gift.date exactly). Adapters are pure; re-calling them
+  // here is cheap and keeps getSynthetic's argless signature unchanged.
+  const enterprise = adaptEnterprise();
+  const advisor = adaptAdvisor();
+  const individual = adaptIndividual();
+  const connectionRequests = buildConnectionRequests(enterprise, advisor, individual);
+
   return {
     persons,
     institutions: SYNTHETIC_INSTITUTIONS,
@@ -377,6 +640,7 @@ export function getSynthetic() {
     gifts: [],
     cohorts: [],
     orgs: [],
+    connectionRequests,
   };
 }
 
@@ -414,6 +678,7 @@ export function runChecks(bundle) {
     gifts: 0,
     cohorts: 0,
     orgs: 0,
+    connectionRequests: 105, // slice A seed
   };
   const actual = {
     persons: b.persons.length,
@@ -423,6 +688,7 @@ export function runChecks(bundle) {
     gifts: b.gifts.length,
     cohorts: b.cohorts.length,
     orgs: b.orgs.length,
+    connectionRequests: b.connectionRequests.length,
   };
   for (const key of Object.keys(expected)) {
     if (actual[key] !== expected[key]) {
@@ -430,13 +696,14 @@ export function runChecks(bundle) {
     }
   }
 
-  // sourceSurface tag check across all 5 emitted arrays.
+  // sourceSurface tag check across all emitted arrays (incl. connectionRequests).
   const wrongSource = [];
   const allArrays = [
     ['persons', b.persons],
     ['institutions', b.institutions],
     ['advisorPractices', b.advisorPractices],
     ['programParticipations', b.programParticipations],
+    ['connectionRequests', b.connectionRequests],
   ];
   for (const [arrName, arr] of allArrays) {
     for (const r of arr) {
@@ -517,13 +784,149 @@ export function runChecks(bundle) {
     errors.push(`synthetic first names collide with real persons: ${unique.join(', ')}`);
   }
 
-  // Info: per-context participation counts.
+  // ConnectionRequest-specific hard checks.
+  // Current-stage distribution must match the approved spread (D2).
+  const expectedStageCounts = {
+    matched: 50,
+    viewed: 20,
+    connected: 10,
+    conversing: 4,
+    gave: 16,
+    ongoing: 5,
+  };
+  const actualStageCounts = {
+    matched: 0, viewed: 0, connected: 0, conversing: 0, gave: 0, ongoing: 0,
+  };
+  for (const cr of b.connectionRequests) {
+    if (cr.stage in actualStageCounts) {
+      actualStageCounts[cr.stage] += 1;
+    } else {
+      errors.push(`unknown CR stage: ${cr.id} stage=${cr.stage}`);
+    }
+  }
+  for (const key of Object.keys(expectedStageCounts)) {
+    if (actualStageCounts[key] !== expectedStageCounts[key]) {
+      errors.push(
+        `CR stage ${key}: expected ${expectedStageCounts[key]}, got ${actualStageCounts[key]}`,
+      );
+    }
+  }
+
+  // giftId presence rule: REQUIRED at 'gave'/'ongoing'; null at all earlier stages.
+  const giftIdViolations = [];
+  for (const cr of b.connectionRequests) {
+    const isAtGave = cr.stage === 'gave' || cr.stage === 'ongoing';
+    if (isAtGave && cr.giftId === null) {
+      giftIdViolations.push({ id: cr.id, stage: cr.stage, reason: 'null giftId at gave/ongoing' });
+    }
+    if (!isAtGave && cr.giftId !== null) {
+      giftIdViolations.push({ id: cr.id, stage: cr.stage, reason: `non-null giftId at ${cr.stage}` });
+    }
+  }
+  if (giftIdViolations.length > 0) {
+    errors.push(`CR giftId presence violations: ${JSON.stringify(giftIdViolations)}`);
+  }
+
+  // Stage-timestamp monotonicity per CR (any non-null timestamp implies all
+  // earlier-stage timestamps are non-null AND non-decreasing).
+  const STAGE_ORDER = ['matchedAt', 'viewedAt', 'connectedAt', 'conversingAt', 'gaveAt', 'ongoingAt'];
+  const monotonicityViolations = [];
+  for (const cr of b.connectionRequests) {
+    const ts = cr.stageTimestamps;
+    let lastSeen = null;
+    let firstNullIdx = -1;
+    for (let i = 0; i < STAGE_ORDER.length; i += 1) {
+      const v = ts[STAGE_ORDER[i]];
+      if (v === null) {
+        if (firstNullIdx === -1) firstNullIdx = i;
+      } else {
+        if (firstNullIdx !== -1) {
+          monotonicityViolations.push({
+            id: cr.id,
+            reason: `non-null ${STAGE_ORDER[i]} after null ${STAGE_ORDER[firstNullIdx]}`,
+          });
+        }
+        if (lastSeen !== null && v < lastSeen) {
+          monotonicityViolations.push({
+            id: cr.id,
+            reason: `${STAGE_ORDER[i]}=${v} precedes prior ${lastSeen}`,
+          });
+        }
+        lastSeen = v;
+      }
+    }
+  }
+  if (monotonicityViolations.length > 0) {
+    errors.push(`CR stage-timestamp monotonicity: ${JSON.stringify(monotonicityViolations)}`);
+  }
+
+  // gaveAt MUST equal anchored Gift.date exactly (D3 correction).
+  // Cross-check by collecting all anchored CRs and verifying via Gift lookup.
+  // We re-pull adapter outputs once here for the cross-check; pure call.
+  const allGifts = [
+    ...adaptEnterprise().gifts,
+    ...adaptIndividual().gifts,
+  ];
+  const giftById = new Map(allGifts.map((g) => [g.id, g]));
+  const gaveAtViolations = [];
+  for (const cr of b.connectionRequests) {
+    if (cr.giftId === null) continue;
+    const g = giftById.get(cr.giftId);
+    if (!g) continue; // FK-orphan check is in assemble.runChecks; skip here
+    if (cr.stageTimestamps.gaveAt !== g.date) {
+      gaveAtViolations.push({
+        id: cr.id,
+        giftId: cr.giftId,
+        gaveAt: cr.stageTimestamps.gaveAt,
+        giftDate: g.date,
+      });
+    }
+  }
+  if (gaveAtViolations.length > 0) {
+    errors.push(`CR gaveAt ≠ Gift.date: ${JSON.stringify(gaveAtViolations)}`);
+  }
+
+  // Cumulative-reached funnel (D1 correction): each later stage must be
+  // a subset of all earlier stages. Returned as info for read-API self-tests.
+  const reached = { matched: 0, viewed: 0, connected: 0, conversing: 0, gave: 0, ongoing: 0 };
+  for (const cr of b.connectionRequests) {
+    for (const stageName of Object.keys(reached)) {
+      if (cr.stageTimestamps[`${stageName}At`] !== null) reached[stageName] += 1;
+    }
+  }
+  // Hard check: funnel is non-increasing.
+  const funnelOrder = ['matched', 'viewed', 'connected', 'conversing', 'gave', 'ongoing'];
+  for (let i = 1; i < funnelOrder.length; i += 1) {
+    if (reached[funnelOrder[i]] > reached[funnelOrder[i - 1]]) {
+      errors.push(
+        `funnel non-monotonic: reached.${funnelOrder[i]}=${reached[funnelOrder[i]]} > reached.${funnelOrder[i - 1]}=${reached[funnelOrder[i - 1]]}`,
+      );
+    }
+  }
+  // Hard check: reachedMatched === total CR count (every CR has matchedAt).
+  if (reached.matched !== b.connectionRequests.length) {
+    errors.push(
+      `reached.matched=${reached.matched} ≠ connectionRequests.length=${b.connectionRequests.length}`,
+    );
+  }
+
+  // Info: per-context participation counts; current-stage counts; reached counts.
   const perContext = {};
   for (const pp of b.programParticipations) {
     perContext[pp.contextId] = (perContext[pp.contextId] || 0) + 1;
   }
 
-  return { pass: errors.length === 0, errors, expected, actual, info: { perContextParticipations: perContext } };
+  return {
+    pass: errors.length === 0,
+    errors,
+    expected,
+    actual,
+    info: {
+      perContextParticipations: perContext,
+      currentStageCounts: actualStageCounts,
+      reachedCounts: reached,
+    },
+  };
 }
 
 export default getSynthetic;

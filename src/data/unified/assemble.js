@@ -48,6 +48,7 @@ const ENTITY_NAMES = [
   'gifts',
   'orgs',
   'cohorts',
+  'connectionRequests',
 ];
 
 // Source-order concatenation. Sources that don't produce an entity contribute [].
@@ -67,6 +68,7 @@ const programParticipations = concat('programParticipations');
 const gifts = concat('gifts');
 const orgs = concat('orgs');
 const cohorts = concat('cohorts');
+const connectionRequests = concat('connectionRequests');
 
 // ----------------------------------------------------------------------------
 // FK wiring at assemble
@@ -116,6 +118,7 @@ export const assembledStore = {
   gifts,
   orgs,
   cohorts,
+  connectionRequests,
   // Preserved so runChecks can do composition integrity against source lengths.
   sources,
 };
@@ -288,6 +291,32 @@ export function runChecks(store) {
   }
   if (giftOrphans.length) {
     errors.push(`gift FK orphans: ${JSON.stringify(giftOrphans)}`);
+  }
+
+  // ConnectionRequests — FK resolution + giftId-required-at-gave/ongoing.
+  const orgIdSet = new Set(s.orgs.map((o) => o.id));
+  const giftIdSet = new Set(s.gifts.map((g) => g.id));
+  const crOrphans = [];
+  for (const cr of s.connectionRequests) {
+    if (!personIds.has(cr.giverPersonId)) {
+      crOrphans.push({ id: cr.id, missing: 'giverPersonId', value: cr.giverPersonId });
+    }
+    if (cr.targetOrgId !== null && !orgIdSet.has(cr.targetOrgId)) {
+      crOrphans.push({ id: cr.id, missing: 'targetOrgId', value: cr.targetOrgId });
+    }
+    if (cr.giftId !== null && !giftIdSet.has(cr.giftId)) {
+      crOrphans.push({ id: cr.id, missing: 'giftId', value: cr.giftId });
+    }
+    if ((cr.stage === 'gave' || cr.stage === 'ongoing') && cr.giftId === null) {
+      crOrphans.push({
+        id: cr.id,
+        missing: `giftId required at stage ${cr.stage}`,
+        value: null,
+      });
+    }
+  }
+  if (crOrphans.length) {
+    errors.push(`connectionRequest FK orphans: ${JSON.stringify(crOrphans)}`);
   }
 
   return {
