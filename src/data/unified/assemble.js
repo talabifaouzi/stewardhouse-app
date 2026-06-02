@@ -49,6 +49,7 @@ const ENTITY_NAMES = [
   'orgs',
   'cohorts',
   'connectionRequests',
+  'issues',
 ];
 
 // Source-order concatenation. Sources that don't produce an entity contribute [].
@@ -69,6 +70,7 @@ const gifts = concat('gifts');
 const orgs = concat('orgs');
 const cohorts = concat('cohorts');
 const connectionRequests = concat('connectionRequests');
+const issues = concat('issues');
 
 // ----------------------------------------------------------------------------
 // FK wiring at assemble
@@ -119,6 +121,7 @@ export const assembledStore = {
   orgs,
   cohorts,
   connectionRequests,
+  issues,
   // Preserved so runChecks can do composition integrity against source lengths.
   sources,
 };
@@ -317,6 +320,81 @@ export function runChecks(store) {
   }
   if (crOrphans.length) {
     errors.push(`connectionRequest FK orphans: ${JSON.stringify(crOrphans)}`);
+  }
+
+  // Issues — enum validity, status/timestamp coherence, relatedEntity coupling
+  // and FK resolution against the assembled store.
+  const ISSUE_STATUSES = new Set(['open', 'in-progress', 'resolved']);
+  const ISSUE_SEVERITIES = new Set(['low', 'normal', 'high']);
+  const ISSUE_CATEGORIES = new Set([
+    'support', 'data-integrity', 'onboarding', 'content-review', 'connection',
+  ]);
+  const RELATED_TYPE_TO_SET = {
+    person: personIds,
+    org: orgIdSet,
+    advisorPractice: practiceIds,
+    institution: instIds,
+  };
+  const issueOrphans = [];
+  for (const it of s.issues) {
+    if (!ISSUE_STATUSES.has(it.status)) {
+      issueOrphans.push({ id: it.id, missing: 'status enum', value: it.status });
+    }
+    if (!ISSUE_SEVERITIES.has(it.severity)) {
+      issueOrphans.push({ id: it.id, missing: 'severity enum', value: it.severity });
+    }
+    if (!ISSUE_CATEGORIES.has(it.category)) {
+      issueOrphans.push({ id: it.id, missing: 'category enum', value: it.category });
+    }
+    const isResolved = it.status === 'resolved';
+    if (isResolved && it.resolvedAt === null) {
+      issueOrphans.push({ id: it.id, missing: 'resolvedAt (status=resolved)', value: null });
+    }
+    if (!isResolved && it.resolvedAt !== null) {
+      issueOrphans.push({
+        id: it.id,
+        missing: 'resolvedAt should be null',
+        value: `${it.status}/${it.resolvedAt}`,
+      });
+    }
+    if (it.resolvedAt !== null && it.resolvedAt < it.openedAt) {
+      issueOrphans.push({
+        id: it.id,
+        missing: 'resolvedAt >= openedAt',
+        value: `${it.resolvedAt} < ${it.openedAt}`,
+      });
+    }
+    // relatedEntity coupling.
+    const typeNull = it.relatedEntityType === null;
+    const idNull = it.relatedEntityId === null;
+    if (typeNull !== idNull) {
+      issueOrphans.push({
+        id: it.id,
+        missing: 'relatedEntity coupling',
+        value: `type=${it.relatedEntityType}, id=${it.relatedEntityId}`,
+      });
+      continue;
+    }
+    // relatedEntity FK resolution.
+    if (!typeNull) {
+      const idSet = RELATED_TYPE_TO_SET[it.relatedEntityType];
+      if (!idSet) {
+        issueOrphans.push({
+          id: it.id,
+          missing: 'relatedEntityType unknown',
+          value: it.relatedEntityType,
+        });
+      } else if (!idSet.has(it.relatedEntityId)) {
+        issueOrphans.push({
+          id: it.id,
+          missing: `relatedEntityId (${it.relatedEntityType})`,
+          value: it.relatedEntityId,
+        });
+      }
+    }
+  }
+  if (issueOrphans.length) {
+    errors.push(`issue FK / shape orphans: ${JSON.stringify(issueOrphans)}`);
   }
 
   return {

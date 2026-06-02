@@ -16,6 +16,7 @@
 //   unified.orgs                               → Array<Org>
 //   unified.cohorts                            → Array<Cohort>
 //   unified.connectionRequests                 → Array<ConnectionRequest>
+//   unified.issues                             → Array<Issue>
 //
 //   unified.personsBy({type, sourceSurface})   → Array<Person> (both filters optional)
 //   unified.participationsByContext(contextId) → Array<ProgramParticipation>
@@ -28,6 +29,12 @@
 //                                                CUMULATIVE-REACHED counts (non-increasing).
 //   unified.connectionFunnelBy({sourceSurface})→ same shape, filtered by sourceSurface.
 //   unified.pilotMetrics()                     → conversion + dollars-at-gave + median-days rollup.
+//
+//   unified.openIssueCount()                   → number  (status === 'open')
+//   unified.openIssues()                       → Array<Issue>  sorted openedAt desc
+//   unified.issueCountByStatus()               → {open, 'in-progress', resolved}
+//   unified.issueCountByCategory()             → {support, 'data-integrity', onboarding,
+//                                                'content-review', connection}
 //
 // RECORD-LEVEL — separate explicit queries, NOT default landing data:
 //   unified.connectionsByGiver(personId)       → Array<ConnectionRequest>
@@ -44,6 +51,7 @@ const {
   orgs,
   cohorts,
   connectionRequests,
+  issues,
 } = assembledStore;
 
 const ENTITY_MAP = {
@@ -55,6 +63,7 @@ const ENTITY_MAP = {
   orgs,
   cohorts,
   connectionRequests,
+  issues,
 };
 
 // Stage order — descriptive lifecycle, no scoring or ranking.
@@ -87,6 +96,7 @@ const unified = {
   orgs,
   cohorts,
   connectionRequests,
+  issues,
 
   personsBy({ type, sourceSurface } = {}) {
     return persons.filter(
@@ -203,6 +213,43 @@ const unified = {
     return connectionRequests.filter(
       (cr) => cr.targetOrgId === orgIdOrName || cr.targetOrgName === orgIdOrName,
     );
+  },
+
+  // -- Issue queries — operator access; list exposure is purposeful --
+
+  openIssueCount() {
+    return issues.filter((i) => i.status === 'open').length;
+  },
+
+  /**
+   * Open issues sorted by openedAt descending (newest first). Operator
+   * access — record-level exposure is intentional for the Open-issues
+   * card in the next slice. Returned records are the assembled-store
+   * objects directly; callers should treat them as read-only.
+   */
+  openIssues() {
+    return issues
+      .filter((i) => i.status === 'open')
+      .slice()
+      .sort((a, b) => b.openedAt.localeCompare(a.openedAt));
+  },
+
+  issueCountByStatus() {
+    const counts = { open: 0, 'in-progress': 0, resolved: 0 };
+    for (const i of issues) {
+      if (i.status in counts) counts[i.status] += 1;
+    }
+    return counts;
+  },
+
+  issueCountByCategory() {
+    const counts = {
+      support: 0, 'data-integrity': 0, onboarding: 0, 'content-review': 0, connection: 0,
+    };
+    for (const i of issues) {
+      if (i.category in counts) counts[i.category] += 1;
+    }
+    return counts;
   },
 };
 

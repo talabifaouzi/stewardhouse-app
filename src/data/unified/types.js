@@ -183,6 +183,51 @@
  */
 
 /**
+ * An operator work-item the StewardHouse internal team tracks. Issues are
+ * the operational substrate — support tickets the team is fielding,
+ * integrity flags caught by adapters/assemble, content-review queues,
+ * onboarding stalls, connection follow-ups.
+ *
+ * Status is a small lifecycle: open → in-progress → resolved. resolvedAt
+ * is non-null iff status === 'resolved' and must be ≥ openedAt when
+ * populated. Backward transitions are not modeled.
+ *
+ * Severity rates the ISSUE's urgency for triage — never a person, org,
+ * practice, or institution. Values are descriptive ('low' | 'normal' |
+ * 'high'). No scoring or ranking of participants exists in this entity.
+ *
+ * Categories are descriptive only. Five values cover the operator queues
+ * Phase 1 surfaces emit: support requests, data-integrity sweeps,
+ * onboarding stalls, content-review backlogs, and connection follow-ups.
+ *
+ * relatedEntity refs (relatedEntityType + relatedEntityId, both nullable,
+ * coupled) carry an optional FK to a record the issue is "about" — a
+ * Person who reported support, an Org awaiting profile review, a
+ * Practice with stalled onboarding, an Institution with a compliance
+ * pause. Both fields must be null together or non-null together; the
+ * pair must resolve in the assembled store when populated. assemble.runChecks
+ * enforces both the coupling and the FK resolution per relatedEntityType.
+ *
+ * @typedef {Object} Issue
+ * @property {string} id                          `issue-{sourceSurface}-{seq}`
+ * @property {'support'|'data-integrity'|'onboarding'|'content-review'|'connection'} category
+ * @property {'open'|'in-progress'|'resolved'} status
+ * @property {'low'|'normal'|'high'} severity     Rates the issue's triage urgency
+ *                                                ONLY — never a participant.
+ * @property {string} openedAt                    ISO YYYY-MM-DD
+ * @property {string|null} resolvedAt             ISO YYYY-MM-DD; non-null iff status === 'resolved';
+ *                                                must be ≥ openedAt when populated
+ * @property {string} summary                     One-line operator-facing description
+ * @property {'person'|'org'|'advisorPractice'|'institution'|null} relatedEntityType
+ *                                                null when the issue isn't about a specific record.
+ * @property {string|null} relatedEntityId        FK to the named entity. Coupled with relatedEntityType:
+ *                                                both null together or both non-null together.
+ *                                                Resolves in assembled store when populated.
+ * @property {SourceSurface} sourceSurface
+ * @property {Object} extensions                  Per-source bag (none required this slice).
+ */
+
+/**
  * A funder's structured intent to connect with a recipient org. Records the
  * platform's primary action — opting in to a relationship with an org —
  * separately from any monetary gift event. Powers the mission funnel and

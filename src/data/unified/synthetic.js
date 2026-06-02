@@ -552,6 +552,138 @@ function buildConnectionRequests(enterprise, advisor, individual) {
 }
 
 // -----------------------------------------------------------------------------
+// Issue seed (slice C)
+// -----------------------------------------------------------------------------
+//
+// 14 demo work-items, sourceSurface = 'synthetic'. NOT real support tickets.
+// Every relatedEntityId references a record that exists in the adapter
+// sources or this synthetic bundle (assemble.runChecks enforces FK
+// resolution). The linked record's name appears verbatim in the summary
+// for each non-null reference, so drill-through tells a consistent story.
+//
+// Status distribution: 6 open · 3 in-progress · 5 resolved = 14 total.
+// 5 categories · 3 severity levels — both descriptive, no scoring.
+//
+// Severity rates the ISSUE's triage urgency only, never a participant.
+//
+// Dates: openedAt spread deterministically across the 30 days preceding
+// 2026-06-01. resolvedAt populated only when status === 'resolved'
+// (3–14 days after openedAt). All dates ISO YYYY-MM-DD; string-comparable.
+
+const ISSUES_SPEC = [
+  // OPEN (6) — lean recent
+  {
+    status: 'open', severity: 'normal', category: 'support',
+    summary: 'Reuben Asare reports curriculum content not surfacing on dashboard',
+    relatedEntityType: 'person', relatedEntityId: 'p-advisor-c-003',
+    openedAt: '2026-05-30', resolvedAt: null,
+  },
+  {
+    status: 'open', severity: 'low', category: 'support',
+    summary: "Daria Volkov can't access GPS draft after page refresh",
+    relatedEntityType: 'person', relatedEntityId: 'p-synthetic-001',
+    openedAt: '2026-05-28', resolvedAt: null,
+  },
+  {
+    status: 'open', severity: 'high', category: 'data-integrity',
+    summary: "Several enterprise gift labels don't resolve to catalog org names — manual sweep pending",
+    relatedEntityType: null, relatedEntityId: null,
+    openedAt: '2026-05-26', resolvedAt: null,
+  },
+  {
+    status: 'open', severity: 'normal', category: 'onboarding',
+    summary: 'Wayfinder Athlete Foundation Services — two new-stage clients beyond 30 days without first session',
+    relatedEntityType: 'advisorPractice', relatedEntityId: 'practice-wayfinder',
+    openedAt: '2026-05-24', resolvedAt: null,
+  },
+  {
+    status: 'open', severity: 'normal', category: 'content-review',
+    summary: 'New nonprofit profile awaiting copy review — CodePath Forward',
+    relatedEntityType: 'org', relatedEntityId: 'org-1',
+    openedAt: '2026-05-22', resolvedAt: null,
+  },
+  {
+    status: 'open', severity: 'low', category: 'connection',
+    summary: 'Marcus Thompson connection to Level Playing Field stalled at conversing for 21 days',
+    relatedEntityType: 'person', relatedEntityId: 'p-individual-c-001',
+    openedAt: '2026-05-31', resolvedAt: null,
+  },
+  // IN-PROGRESS (3)
+  {
+    status: 'in-progress', severity: 'normal', category: 'support',
+    summary: 'Naomi Pierce asks how to share giving plan draft with a co-trustee',
+    relatedEntityType: 'person', relatedEntityId: 'p-advisor-c-008',
+    openedAt: '2026-05-20', resolvedAt: null,
+  },
+  {
+    status: 'in-progress', severity: 'low', category: 'data-integrity',
+    summary: 'Westgate State College endowment field blank on Overview — investigating',
+    relatedEntityType: 'institution', relatedEntityId: 'inst-westgate',
+    openedAt: '2026-05-18', resolvedAt: null,
+  },
+  {
+    status: 'in-progress', severity: 'normal', category: 'content-review',
+    summary: 'Mission text proofread pending for STEM Sisters Initiative profile',
+    relatedEntityType: 'org', relatedEntityId: 'org-2',
+    openedAt: '2026-05-16', resolvedAt: null,
+  },
+  // RESOLVED (5) — lean older, with resolvedAt 3–14 days after openedAt
+  {
+    status: 'resolved', severity: 'low', category: 'support',
+    summary: 'Vincent Korhonen stale account email corrected',
+    relatedEntityType: 'person', relatedEntityId: 'p-synthetic-028',
+    openedAt: '2026-05-14', resolvedAt: '2026-05-18',
+  },
+  {
+    status: 'resolved', severity: 'high', category: 'data-integrity',
+    summary: 'Cross-adapter gift composition divergence — confirmed source-data shape, not a bug',
+    relatedEntityType: null, relatedEntityId: null,
+    openedAt: '2026-05-10', resolvedAt: '2026-05-22',
+  },
+  {
+    status: 'resolved', severity: 'normal', category: 'onboarding',
+    summary: 'Cooper State University athlete onboarding paused during NIL disclosure update — cleared',
+    relatedEntityType: 'institution', relatedEntityId: 'inst-cooperstate',
+    openedAt: '2026-05-08', resolvedAt: '2026-05-15',
+  },
+  {
+    status: 'resolved', severity: 'normal', category: 'content-review',
+    summary: 'Cooper State University setup wizard step review completed',
+    relatedEntityType: 'institution', relatedEntityId: 'inst-cooperstate',
+    openedAt: '2026-05-04', resolvedAt: '2026-05-12',
+  },
+  {
+    status: 'resolved', severity: 'low', category: 'connection',
+    summary: 'Suki Yamada connection re-routing after org rename',
+    relatedEntityType: 'person', relatedEntityId: 'p-synthetic-015',
+    openedAt: '2026-05-02', resolvedAt: '2026-05-09',
+  },
+];
+
+function buildIssues() {
+  return ISSUES_SPEC.map((s, i) => ({
+    id: `issue-synthetic-${i + 1}`,
+    category: s.category,
+    status: s.status,
+    severity: s.severity,
+    openedAt: s.openedAt,
+    resolvedAt: s.resolvedAt,
+    summary: s.summary,
+    relatedEntityType: s.relatedEntityType,
+    relatedEntityId: s.relatedEntityId,
+    sourceSurface: SOURCE,
+    extensions: {},
+  }));
+}
+
+const ISSUE_CATEGORIES = new Set([
+  'support', 'data-integrity', 'onboarding', 'content-review', 'connection',
+]);
+const ISSUE_STATUSES = new Set(['open', 'in-progress', 'resolved']);
+const ISSUE_SEVERITIES = new Set(['low', 'normal', 'high']);
+const ISO_DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+// -----------------------------------------------------------------------------
 // Build the bundle
 // -----------------------------------------------------------------------------
 
@@ -575,6 +707,7 @@ function padId(n) {
  *   cohorts: Array<Object>,
  *   orgs: Array<Object>,
  *   connectionRequests: Array<Object>,
+ *   issues: Array<Object>,
  * }}
  */
 export function getSynthetic() {
@@ -632,6 +765,9 @@ export function getSynthetic() {
   const individual = adaptIndividual();
   const connectionRequests = buildConnectionRequests(enterprise, advisor, individual);
 
+  // Issues (14) — slice C seed.
+  const issues = buildIssues();
+
   return {
     persons,
     institutions: SYNTHETIC_INSTITUTIONS,
@@ -641,6 +777,7 @@ export function getSynthetic() {
     cohorts: [],
     orgs: [],
     connectionRequests,
+    issues,
   };
 }
 
@@ -679,6 +816,7 @@ export function runChecks(bundle) {
     cohorts: 0,
     orgs: 0,
     connectionRequests: 105, // slice A seed
+    issues: 14,              // slice C seed
   };
   const actual = {
     persons: b.persons.length,
@@ -689,6 +827,7 @@ export function runChecks(bundle) {
     cohorts: b.cohorts.length,
     orgs: b.orgs.length,
     connectionRequests: b.connectionRequests.length,
+    issues: b.issues.length,
   };
   for (const key of Object.keys(expected)) {
     if (actual[key] !== expected[key]) {
@@ -704,6 +843,7 @@ export function runChecks(bundle) {
     ['advisorPractices', b.advisorPractices],
     ['programParticipations', b.programParticipations],
     ['connectionRequests', b.connectionRequests],
+    ['issues', b.issues],
   ];
   for (const [arrName, arr] of allArrays) {
     for (const r of arr) {
@@ -910,6 +1050,89 @@ export function runChecks(bundle) {
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // Issue-specific hard checks (slice C)
+  // ---------------------------------------------------------------------------
+  const issueIds = new Set();
+  const issueStatusCounts = { open: 0, 'in-progress': 0, resolved: 0 };
+  const issueSeverityCounts = { low: 0, normal: 0, high: 0 };
+  const issueCategoryCounts = {
+    support: 0, 'data-integrity': 0, onboarding: 0, 'content-review': 0, connection: 0,
+  };
+  for (const it of b.issues) {
+    // ID uniqueness within the bundle.
+    if (issueIds.has(it.id)) {
+      errors.push(`duplicate issue id: ${it.id}`);
+    }
+    issueIds.add(it.id);
+
+    // Enum validity.
+    if (!ISSUE_STATUSES.has(it.status)) {
+      errors.push(`issue ${it.id}: invalid status "${it.status}"`);
+    } else {
+      issueStatusCounts[it.status] += 1;
+    }
+    if (!ISSUE_SEVERITIES.has(it.severity)) {
+      errors.push(`issue ${it.id}: invalid severity "${it.severity}"`);
+    } else {
+      issueSeverityCounts[it.severity] += 1;
+    }
+    if (!ISSUE_CATEGORIES.has(it.category)) {
+      errors.push(`issue ${it.id}: invalid category "${it.category}"`);
+    } else {
+      issueCategoryCounts[it.category] += 1;
+    }
+
+    // Date validity.
+    if (!ISO_DATE_RE.test(it.openedAt)) {
+      errors.push(`issue ${it.id}: openedAt "${it.openedAt}" not valid ISO YYYY-MM-DD`);
+    }
+
+    // Status / timestamp coherence: resolvedAt non-null iff status === 'resolved'.
+    const isResolved = it.status === 'resolved';
+    if (isResolved && it.resolvedAt === null) {
+      errors.push(`issue ${it.id}: status=resolved but resolvedAt is null`);
+    }
+    if (!isResolved && it.resolvedAt !== null) {
+      errors.push(`issue ${it.id}: status=${it.status} but resolvedAt is "${it.resolvedAt}"`);
+    }
+
+    // Date order: resolvedAt >= openedAt when both populated (string compare on ISO).
+    if (it.resolvedAt !== null) {
+      if (!ISO_DATE_RE.test(it.resolvedAt)) {
+        errors.push(`issue ${it.id}: resolvedAt "${it.resolvedAt}" not valid ISO YYYY-MM-DD`);
+      } else if (it.resolvedAt < it.openedAt) {
+        errors.push(`issue ${it.id}: resolvedAt ${it.resolvedAt} precedes openedAt ${it.openedAt}`);
+      }
+    }
+
+    // relatedEntity coupling: both null or both non-null.
+    const typeNull = it.relatedEntityType === null;
+    const idNull = it.relatedEntityId === null;
+    if (typeNull !== idNull) {
+      errors.push(
+        `issue ${it.id}: relatedEntity coupling violated — type=${it.relatedEntityType}, id=${it.relatedEntityId}`,
+      );
+    }
+    // relatedEntityType, when non-null, must be one of the four entity-type strings.
+    if (!typeNull) {
+      const validTypes = new Set(['person', 'org', 'advisorPractice', 'institution']);
+      if (!validTypes.has(it.relatedEntityType)) {
+        errors.push(`issue ${it.id}: invalid relatedEntityType "${it.relatedEntityType}"`);
+      }
+    }
+  }
+
+  // Expected current-stage distribution (matches slice C spec: 6 open, 3 in-progress, 5 resolved).
+  const expectedIssueStatus = { open: 6, 'in-progress': 3, resolved: 5 };
+  for (const k of Object.keys(expectedIssueStatus)) {
+    if (issueStatusCounts[k] !== expectedIssueStatus[k]) {
+      errors.push(
+        `issue status ${k}: expected ${expectedIssueStatus[k]}, got ${issueStatusCounts[k]}`,
+      );
+    }
+  }
+
   // Info: per-context participation counts; current-stage counts; reached counts.
   const perContext = {};
   for (const pp of b.programParticipations) {
@@ -925,6 +1148,11 @@ export function runChecks(bundle) {
       perContextParticipations: perContext,
       currentStageCounts: actualStageCounts,
       reachedCounts: reached,
+      issueStats: {
+        byStatus: issueStatusCounts,
+        bySeverity: issueSeverityCounts,
+        byCategory: issueCategoryCounts,
+      },
     },
   };
 }
