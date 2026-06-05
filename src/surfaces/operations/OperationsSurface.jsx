@@ -45,6 +45,35 @@ const ENTITY_FOR_TYPE = {
   institution: 'institutions',
 };
 
+// Recent Activity card (Slice F). Card-level curation: exclude issue-opened
+// events so this card doesn't duplicate the Open-issues card next to it.
+// recentActivity() stays a faithful full feed; filtering happens here only.
+// Filter BEFORE slicing so the 6 are post-exclusion.
+const RECENT_ACTIVITY_LIMIT = 6;
+const RECENT_ACTIVITY = unified.recentActivity({ limit: 105 })
+  .filter((i) => i.sourceEventType !== 'issue-opened')
+  .slice(0, RECENT_ACTIVITY_LIMIT);
+
+// Surface accent colors — promoted from inside the old passive ActivityRow.
+// Keys match ActivityItem.surface emissions from Slice E ('Advisor' not
+// 'Philanthropic Advisor'); Operations is the platform's primary bronze
+// (reads as platform/internal for org and platform-level events).
+const SURFACE_COLORS = {
+  Individual: 'var(--sh-individual-accent)',
+  Advisor: 'var(--sh-advisor-accent)',
+  Enterprise: 'var(--sh-enterprise-accent)',
+  Operations: 'var(--sh-bronze)',
+};
+
+// Short-form month names for the absolute-date format used by formatTimeAgo
+// (≥56 days) and the IssueRow/ActivityRow expand "Logged Mon DD, YYYY".
+const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+function formatAbsDate(iso) {
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${MONTH_SHORT[m - 1]} ${d}, ${y}`;
+}
+
 const NAV_ITEMS = [
   { key: 'home', label: 'Overview', path: '/operations' },
   { key: 'individuals', label: 'Individuals', path: '/operations/individuals' },
@@ -137,8 +166,9 @@ function OperationsHome() {
         marginBottom: 'var(--sh-space-5)',
         maxWidth: '720px',
       }}>
-        Mission funnel, pilot headlines, and open-issues card below are
-        demonstrative — drawn from the synthetic seed, not live platform traction.
+        Mission funnel, pilot headlines, and the open-issues + recent-activity
+        cards below are demonstrative — drawn from the synthetic seed, not live
+        platform traction.
       </p>
 
       {/* Mission funnel — primary pillar (Slice B) */}
@@ -199,11 +229,23 @@ function OperationsHome() {
         <Card>
           <SectionLabel>Recent activity</SectionLabel>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
-            <ActivityRow time="14 min ago" surface="Philanthropic Advisor" detail="Morgan Walker created a new fork of 'Reading a 990' lesson" first />
-            <ActivityRow time="2 hr ago" surface="Individual" detail="Marcus Thompson reviewed his giving plan" />
-            <ActivityRow time="3 hr ago" surface="Enterprise" detail="Cooper State University · 3 athletes added to roster" />
-            <ActivityRow time="6 hr ago" surface="Philanthropic Advisor" detail="Cohort 'Cooper State Tigers — basketball' published an update" />
+            {RECENT_ACTIVITY.map((item, i) => (
+              <ActivityRowInteractive
+                key={`${item.timestamp}-${item.sourceEventType}-${i}`}
+                item={item}
+                first={i === 0}
+              />
+            ))}
           </div>
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            fontStyle: 'italic',
+            marginTop: 'var(--sh-space-4)',
+            marginBottom: 0,
+          }}>
+            Per-activity drill-down pending — Operations route-pages slice.
+          </p>
         </Card>
 
         <Card tint>
@@ -310,6 +352,27 @@ function formatFiled(iso) {
   if (n === 1) return 'Filed yesterday';
   if (n < 0)   return `Filed in ${-n} day${-n === 1 ? '' : 's'}`;
   return `Filed ${n} days ago`;
+}
+
+// Relative-time helper for the Recent Activity card (Slice F). Bands:
+//   0       → "today"
+//   1       → "yesterday"
+//   2-13    → "N days ago"
+//   14-55   → "N weeks ago"   (rounded to nearest week)
+//   ≥56     → absolute "Mon DD, YYYY" via formatAbsDate
+// Uses the same daysAgo() helper as formatFiled, computed against the user's
+// local current date.
+function formatTimeAgo(iso) {
+  const n = daysAgo(iso);
+  if (n === 0) return 'today';
+  if (n === 1) return 'yesterday';
+  if (n < 0)   return `in ${-n} day${-n === 1 ? '' : 's'}`;
+  if (n <= 13) return `${n} days ago`;
+  if (n <= 55) {
+    const weeks = Math.round(n / 7);
+    return `${weeks} weeks ago`;
+  }
+  return formatAbsDate(iso);
 }
 
 // SVG chevron — brand is SVG icons only (no unicode glyphs). Rotates 90°
@@ -433,50 +496,111 @@ function IssueRow({ issue, first }) {
   );
 }
 
-function ActivityRow({ time, surface, detail, first }) {
-  const surfaceColors = {
-    Individual: 'var(--sh-individual-accent)',
-    Enterprise: 'var(--sh-enterprise-accent)',
-    'Philanthropic Advisor': 'var(--sh-advisor-accent)',
-  };
+function ActivityRowInteractive({ item, first }) {
+  const [expanded, setExpanded] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  const related = item.relatedEntityType
+    ? unified.byId(ENTITY_FOR_TYPE[item.relatedEntityType], item.relatedEntityId)
+    : null;
+  const relatedLine = item.relatedEntityType === null
+    ? 'Platform-level (no specific record)'
+    : `About: ${related ? related.name : '(unresolved)'} (${item.relatedEntityType})`;
+
+  const surfaceAccent = SURFACE_COLORS[item.surface] || 'var(--sh-text-muted)';
+
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'flex-start',
-      gap: 'var(--sh-space-4)',
-      padding: 'var(--sh-space-3) 0',
-      borderTop: first ? 'none' : 'var(--sh-border-divider)',
-    }}>
-      <div style={{ minWidth: '90px' }}>
-        <p style={{
-          fontSize: 'var(--sh-text-xs)',
-          color: 'var(--sh-text-muted)',
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => setExpanded((v) => !v)}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          setExpanded((v) => !v);
+        }
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: 'var(--sh-space-3)',
+        marginLeft: 'calc(var(--sh-space-3) * -1)',
+        marginRight: 'calc(var(--sh-space-3) * -1)',
+        borderTop: first ? 'none' : 'var(--sh-border-divider)',
+        cursor: 'pointer',
+        background: hovered ? 'var(--sh-bronze-tint)' : 'transparent',
+        transition: 'background 150ms ease',
+        userSelect: 'none',
+      }}
+    >
+      <div style={{
+        display: 'flex',
+        alignItems: 'flex-start',
+        gap: 'var(--sh-space-3)',
+      }}>
+        <div style={{ minWidth: '90px' }}>
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            margin: 0,
+          }}>
+            {formatTimeAgo(item.timestamp)}
+          </p>
+        </div>
+        <span style={{
+          fontSize: '10px',
+          padding: '2px 8px',
+          borderRadius: 'var(--sh-radius-full)',
+          background: 'var(--sh-bg-tint)',
+          color: 'var(--sh-text-secondary)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.06em',
+          fontWeight: 500,
+          flexShrink: 0,
+          border: `0.5px solid ${surfaceAccent}`,
         }}>
-          {time}
+          {item.surface}
+        </span>
+        <p style={{
+          flex: 1,
+          fontSize: 'var(--sh-text-sm)',
+          color: 'var(--sh-text-secondary)',
+          lineHeight: 1.5,
+          margin: 0,
+        }}>
+          {item.description}
         </p>
+        <div style={{ paddingTop: '4px' }}>
+          <Chevron expanded={expanded} />
+        </div>
       </div>
-      <span style={{
-        fontSize: '10px',
-        padding: '2px 8px',
-        borderRadius: 'var(--sh-radius-full)',
-        background: 'var(--sh-bg-tint)',
-        color: 'var(--sh-text-secondary)',
-        textTransform: 'uppercase',
-        letterSpacing: '0.06em',
-        fontWeight: 500,
-        flexShrink: 0,
-        border: `0.5px solid ${surfaceColors[surface]}`,
-      }}>
-        {surface}
-      </span>
-      <p style={{
-        flex: 1,
-        fontSize: 'var(--sh-text-sm)',
-        color: 'var(--sh-text-secondary)',
-        lineHeight: 1.5,
-      }}>
-        {detail}
-      </p>
+      {expanded && (
+        <div style={{
+          marginTop: 'var(--sh-space-3)',
+          padding: 'var(--sh-space-4)',
+          background: 'var(--sh-card)',
+          borderLeft: '3px solid var(--sh-bronze)',
+          borderRadius: 'var(--sh-radius-md)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 'var(--sh-space-1)',
+        }}>
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-secondary)',
+            margin: 0,
+          }}>
+            Logged {formatAbsDate(item.timestamp)}
+          </p>
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-secondary)',
+            margin: 0,
+          }}>
+            {relatedLine}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
