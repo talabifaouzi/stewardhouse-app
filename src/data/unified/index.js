@@ -41,11 +41,21 @@
 //                                                (CR stage transitions + Issue events).
 //                                                Default limit = 8.
 //
+//   unified.platformHealth()                   → {suites[5], suitesPassing, suitesTotal,
+//                                                  allPass, composition, informational,
+//                                                  externalMonitoring}
+//                                                LIVE system-status rollup; pass/fail
+//                                                derived from the 5 runChecks suites.
+//
 // RECORD-LEVEL — separate explicit queries, NOT default landing data:
 //   unified.connectionsByGiver(personId)       → Array<ConnectionRequest>
 //   unified.connectionsByTarget(orgIdOrName)   → Array<ConnectionRequest>
 
-import { assembledStore } from './assemble.js';
+import { assembledStore, runChecks as assembleRunChecks } from './assemble.js';
+import { runChecks as syntheticRunChecks } from './synthetic.js';
+import { runChecks as enterpriseRunChecks } from './adapters/enterprise.js';
+import { runChecks as advisorRunChecks } from './adapters/advisor.js';
+import { runChecks as individualRunChecks } from './adapters/individual.js';
 
 const {
   persons,
@@ -389,6 +399,130 @@ const unified = {
     });
 
     return pairs.slice(0, limit).map(([item]) => item);
+  },
+
+  // -- Platform health (LIVE system status) — Slice G --
+
+  /**
+   * Live system-status rollup. Runs the five existing runChecks suites
+   * (assemble, synthetic, enterprise adapter, advisor adapter, individual
+   * adapter) and returns a structured summary. Every pass/errorCount value
+   * is DERIVED from the live runChecks output — nothing hardcoded.
+   *
+   * This is the data layer's own integrity, NOT a metric over the synthetic
+   * seed; the checks ARE live even though the records they check include
+   * synthetic data. UI consumers should label it accordingly so it isn't
+   * confused with the demonstrative funnel/headlines/cards.
+   *
+   * Pure: traverses already-loaded arrays. No side effects.
+   *
+   * @returns {{
+   *   suites: Array<{key: string, label: string, pass: boolean, errorCount: number,
+   *                  errors: string[], note: string}>,
+   *   suitesPassing: number,
+   *   suitesTotal: number,
+   *   allPass: boolean,
+   *   composition: {totalRecords: number, entityTypes: number, sources: string[]},
+   *   informational: Array<{key: string, text: string, detail: string}>,
+   *   externalMonitoring: 'not-wired',
+   * }}
+   */
+  platformHealth() {
+    const assResult   = assembleRunChecks();
+    const synthResult = syntheticRunChecks();
+    const entResult   = enterpriseRunChecks();
+    const advResult   = advisorRunChecks();
+    const indResult   = individualRunChecks();
+
+    const suites = [
+      {
+        key: 'assemble',
+        label: 'assemble',
+        pass: assResult.pass,
+        errorCount: assResult.errors.length,
+        errors: assResult.errors,
+        note: 'composition + FK + ID uniqueness',
+      },
+      {
+        key: 'synthetic',
+        label: 'synthetic seed',
+        pass: synthResult.pass,
+        errorCount: synthResult.errors.length,
+        errors: synthResult.errors,
+        note: 'counts + FKs + enum/distribution',
+      },
+      {
+        key: 'enterprise',
+        label: 'enterprise adapter',
+        pass: entResult.pass,
+        errorCount: entResult.errors.length,
+        errors: entResult.errors,
+        note: 'counts + role map + parseGiftLabel test',
+      },
+      {
+        key: 'advisor',
+        label: 'advisor adapter',
+        pass: advResult.pass,
+        errorCount: advResult.errors.length,
+        errors: advResult.errors,
+        note: 'counts + cohort FKs',
+      },
+      {
+        key: 'individual',
+        label: 'individual adapter',
+        pass: indResult.pass,
+        errorCount: indResult.errors.length,
+        errors: indResult.errors,
+        note: 'counts + gift date parse test',
+      },
+    ];
+
+    const suitesPassing = suites.filter((s) => s.pass).length;
+    const suitesTotal   = suites.length;
+    const allPass       = suitesPassing === suitesTotal;
+
+    // composition.totalRecords = sum of all 9 entity-type lengths in the
+    // assembled store. entityTypes = 9. sources = source-bundle keys.
+    const ENTITY_NAMES = [
+      'persons', 'institutions', 'advisorPractices', 'programParticipations',
+      'gifts', 'orgs', 'cohorts', 'connectionRequests', 'issues',
+    ];
+    let totalRecords = 0;
+    for (const name of ENTITY_NAMES) totalRecords += ENTITY_MAP[name].length;
+    const sources = Object.keys(assembledStore.sources);
+
+    // informational: pull live numbers from each adapter's runChecks().info.
+    // The audit identified two entries that read as honest, useful context:
+    // enterprise gift-count divergence, and advisor pre-plan-client count.
+    const informational = [];
+    if (entResult.info
+        && typeof entResult.info.giftEvents === 'number'
+        && typeof entResult.info.giftFieldSum === 'number') {
+      informational.push({
+        key: 'enterprise-gift-divergence',
+        text: 'Enterprise gift events undercount the athlete.gifts field — source-data shape, not a bug',
+        detail: `${entResult.info.giftEvents} logged events vs ${entResult.info.giftFieldSum} in field`,
+      });
+    }
+    if (advResult.info
+        && typeof advResult.info.nullGivingPlanClients === 'number') {
+      const n = advResult.info.nullGivingPlanClients;
+      informational.push({
+        key: 'advisor-null-giving-plan',
+        text: 'Advisor pre-plan clients (informational, not errors)',
+        detail: `${n} client${n === 1 ? '' : 's'} with no givingPlan yet`,
+      });
+    }
+
+    return {
+      suites,
+      suitesPassing,
+      suitesTotal,
+      allPass,
+      composition: { totalRecords, entityTypes: ENTITY_NAMES.length, sources },
+      informational,
+      externalMonitoring: 'not-wired',
+    };
   },
 };
 
