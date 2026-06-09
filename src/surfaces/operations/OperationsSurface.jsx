@@ -54,6 +54,11 @@ const RECENT_ACTIVITY = unified.recentActivity({ limit: 105 })
   .filter((i) => i.sourceEventType !== 'issue-opened')
   .slice(0, RECENT_ACTIVITY_LIMIT);
 
+// Platform health pillar (Slice H). LIVE system-status — sits ABOVE the
+// demonstrative caveat so the caveat's "below" framing stays literally
+// accurate. The pillar is read-only (no interactivity this slice).
+const HEALTH = unified.platformHealth();
+
 // Surface accent colors — promoted from inside the old passive ActivityRow.
 // Keys match ActivityItem.surface emissions from Slice E ('Advisor' not
 // 'Philanthropic Advisor'); Operations is the platform's primary bronze
@@ -154,6 +159,13 @@ function OperationsHome() {
           Monitor and support across all three end-user surfaces. View user activity, surface issues, and provide support.
           This view is internal-only and is never exposed to platform users.
         </p>
+      </div>
+
+      {/* Platform health pillar (Slice H) — LIVE system status. Placed ABOVE
+          the demonstrative caveat so the caveat's "below" framing stays
+          literally accurate; the pillar itself is data-layer integrity. */}
+      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
+        <PlatformHealthCard health={HEALTH} />
       </div>
 
       {/* Demonstrative-state caveat — applies to the funnel, pilot headlines,
@@ -331,6 +343,222 @@ function FunnelRow({ label, count, max }) {
       }}>
         {count}
       </p>
+    </div>
+  );
+}
+
+function PlatformHealthCard({ health }) {
+  const subLabel = {
+    fontSize: 'var(--sh-text-xs)',
+    color: 'var(--sh-text-muted)',
+    textTransform: 'uppercase',
+    letterSpacing: '0.08em',
+    fontWeight: 500,
+    margin: 0,
+    marginBottom: 'var(--sh-space-2)',
+  };
+  const externalMonText = health.externalMonitoring === 'not-wired'
+    ? 'not wired'
+    : health.externalMonitoring;
+
+  return (
+    <Card>
+      {/* Title + LIVE badge */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--sh-space-3)',
+        marginBottom: 'var(--sh-space-3)',
+      }}>
+        <SectionLabel>Platform health</SectionLabel>
+        <span style={{
+          fontSize: '10px',
+          padding: '2px 8px',
+          borderRadius: 'var(--sh-radius-full)',
+          border: '0.5px solid var(--sh-bronze)',
+          color: 'var(--sh-bronze)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          fontWeight: 500,
+          // SectionLabel has marginBottom var(--sh-space-3); shift the badge
+          // up so it sits on the title baseline rather than the gap below it.
+          marginBottom: 'var(--sh-space-3)',
+        }}>
+          Live
+        </span>
+      </div>
+
+      {/* Honesty callout — keeps the LIVE badge honest. */}
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        fontStyle: 'italic',
+        maxWidth: '720px',
+        margin: 0,
+        marginBottom: 'var(--sh-space-5)',
+        lineHeight: 1.5,
+      }}>
+        These checks run live over the assembled data layer. Pass/fail reflects
+        the data layer's own integrity; the records being checked include the
+        synthetic seed.
+      </p>
+
+      {/* Data integrity rollup */}
+      <div style={{ marginBottom: 'var(--sh-space-5)' }}>
+        <p style={subLabel}>Data integrity</p>
+        <p style={{
+          fontFamily: 'var(--sh-font-serif)',
+          fontSize: 'var(--sh-text-xl)',
+          color: health.allPass ? 'var(--sh-text-secondary)' : 'var(--sh-text-primary)',
+          fontWeight: health.allPass ? 400 : 600,
+          margin: 0,
+        }}>
+          {health.suitesPassing} of {health.suitesTotal} check suites passing
+        </p>
+      </div>
+
+      {/* Per-suite breakdown */}
+      <div style={{
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 'var(--sh-space-3)',
+        marginBottom: 'var(--sh-space-5)',
+      }}>
+        {health.suites.map((s) => (
+          <SuiteRow key={s.key} suite={s} />
+        ))}
+      </div>
+
+      {/* Composition rollup */}
+      <div style={{ marginBottom: 'var(--sh-space-5)' }}>
+        <p style={subLabel}>Composition</p>
+        <p style={{
+          fontSize: 'var(--sh-text-sm)',
+          color: 'var(--sh-text-primary)',
+          margin: 0,
+          lineHeight: 1.5,
+        }}>
+          {health.composition.totalRecords} records assembled across {health.composition.entityTypes} entity types
+        </p>
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+          margin: 0,
+          marginTop: '2px',
+        }}>
+          sources: {health.composition.sources.join(' · ')}
+        </p>
+      </div>
+
+      {/* Informational — data-driven, all entries from HEALTH.informational */}
+      {health.informational.length > 0 && (
+        <div style={{ marginBottom: 'var(--sh-space-5)' }}>
+          <p style={subLabel}>Informational — not errors</p>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-3)' }}>
+            {health.informational.map((info) => (
+              <div key={info.key}>
+                <p style={{
+                  fontSize: 'var(--sh-text-sm)',
+                  color: 'var(--sh-text-secondary)',
+                  margin: 0,
+                  lineHeight: 1.5,
+                }}>
+                  {info.text}
+                </p>
+                <p style={{
+                  fontSize: 'var(--sh-text-xs)',
+                  color: 'var(--sh-text-muted)',
+                  margin: 0,
+                  marginTop: '2px',
+                }}>
+                  {info.detail}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* External monitoring */}
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        margin: 0,
+      }}>
+        External monitoring: {externalMonText}
+      </p>
+    </Card>
+  );
+}
+
+function SuiteRow({ suite }) {
+  return (
+    <div>
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'baseline',
+        gap: 'var(--sh-space-4)',
+      }}>
+        <span style={{
+          fontSize: 'var(--sh-text-sm)',
+          color: 'var(--sh-text-primary)',
+        }}>
+          {suite.label}
+        </span>
+        <span style={{
+          fontSize: 'var(--sh-text-sm)',
+          color: suite.pass ? 'var(--sh-text-secondary)' : 'var(--sh-text-primary)',
+          fontWeight: suite.pass ? 400 : 600,
+          flexShrink: 0,
+        }}>
+          {suite.pass ? 'OK' : `${suite.errorCount} error${suite.errorCount === 1 ? '' : 's'}`}
+        </span>
+      </div>
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        margin: 0,
+        marginTop: '2px',
+      }}>
+        {suite.note}
+      </p>
+      {!suite.pass && suite.errors.length > 0 && (
+        <div style={{
+          marginTop: 'var(--sh-space-2)',
+          padding: 'var(--sh-space-3)',
+          background: 'var(--sh-bg-tint)',
+          borderLeft: '3px solid var(--sh-bronze)',
+          borderRadius: 'var(--sh-radius-sm)',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '4px',
+        }}>
+          {suite.errors.slice(0, 3).map((e, i) => (
+            <p key={i} style={{
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-text-secondary)',
+              fontFamily: 'monospace',
+              margin: 0,
+              lineHeight: 1.5,
+              wordBreak: 'break-word',
+            }}>
+              {e}
+            </p>
+          ))}
+          {suite.errorCount > 3 && (
+            <p style={{
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-text-muted)',
+              fontStyle: 'italic',
+              margin: 0,
+              marginTop: '2px',
+            }}>
+              Showing first 3 of {suite.errorCount}
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
