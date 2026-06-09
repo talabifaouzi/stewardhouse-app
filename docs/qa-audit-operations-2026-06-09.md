@@ -40,7 +40,7 @@ branch `qa-audit-operations` cut from main.
 ### QA-006 — `PlatformHealth` route stub conflicts with the live `<PlatformHealthCard>` on Overview
 - **Severity:** normal
 - **Location:** `PlatformHealth` route, lines 916–951 vs `PlatformHealthCard`, lines 350–492
-- **Problem:** The `/operations/health` stub copy describes "Deploys, errors, latency, and active sessions across the platform" and says "Section scaffolded · monitoring will integrate when production traffic begins." But the Overview's live `<PlatformHealthCard>` already surfaces what we honestly can — data-layer integrity, which is real. The stub describes future-state monitoring as if no health view exists; the operator who navigated to `/operations/health` from the nav is told nothing's wired when something is.
+- **Problem:** The `/operations/health` stub copy describes "Deploys, errors, latency, and active sessions across the platform" and says "Section scaffolded · monitoring will integrate when production traffic begins." But the Overview's live `<PlatformHealthCard>` already surfaces what we honestly can — data-layer integrity, which is real. The stub describes future-state monitoring as if no health view exists; the operator who navigated to `/operations/health` from the nav is told nothing's wired when something is. **Recon detail (2026-06-09 nav inventory):** the stub's subtitle promise — *"Deploys, errors, latency, and active sessions"* — names exactly the four external-monitoring placeholders the live `<PlatformHealthCard>` flags as `External monitoring: not wired`. Same surface name (`PlatformHealth` route component / `PlatformHealthCard` Overview component), contradictory promises within one surface: one says nothing's wired; the other says all five live `runChecks` suites are passing.
 - **Direction:** rewrite the route stub to acknowledge the data-layer integrity view that exists, point operators back to the Overview pillar for the live signal, and re-scope the stub copy to the genuine deferred work (external monitoring, deploys).
 
 ### QA-007 — `RECENT_ACTIVITY` uses hardcoded `limit: 105` as a "fetch all" proxy
@@ -94,6 +94,12 @@ branch `qa-audit-operations` cut from main.
 - **Location:** `ActivityRowInteractive` lines 727–834
 - **Problem:** Row click expands. Surface chip looks tappable but isn't (clicking it triggers the same row expand, not a filter-by-surface). Both look interactive but only the row click does anything.
 - **Direction:** either make the chip an actual filter ("show only Enterprise events"), or visually de-emphasize it so it doesn't suggest interaction.
+
+### QA-055 — Organizations have no operator view (drill-to-composition breaks at every org reference)
+- **Severity:** normal
+- **Location:** `NAV_ITEMS` lines 82–88 (no `orgs` route); references in pilot headlines (line 205, `METRICS.distinctOrgsAtGave` = 21) and recent-activity descriptions (cr-gave / cr-connected items naming target orgs verbatim, e.g. "Chris Walker's connection with Small Town Sports Coalition is ongoing")
+- **Problem:** 17 nonprofit Org records live in `unified.orgs` and surface in two places on the Overview today — the "Orgs supported" pilot headline (21 distinct) and the Recent activity descriptions (every cr-* event names a target org). But no Operations nav route lists organizations. The drill-to-composition principle ("all lists and cards interactive across every surface") breaks at every org reference: an operator can read about "Small Town Sports Coalition" in a recent-activity row but has no path to an organization-detail view, because organizations as a concept have no nav home in Operations. The 4 nav routes (Individuals / Institutions / Philanthropic Advisors / Platform health) silently exclude `orgs` from the operator IA — they exist in the data layer but not in the surface's mental model.
+- **Direction:** the route-pages spec adds an Organizations directory route (e.g. `/operations/organizations`), and either the pilot headline or the recent-activity expand drills into it. Without that, every org-mentioning row dead-ends on the Overview.
 
 ---
 
@@ -169,6 +175,12 @@ branch `qa-audit-operations` cut from main.
 - **Problem:** The honesty callout that follows ("These checks run live over the assembled data layer…") already carries the live framing. The "Live" pill duplicates and risks over-claiming as marketing badge ("LIVE!") rather than honest signal.
 - **Direction:** drop the pill; keep the callout. Card title "Platform health" + the callout sentence carry the meaning.
 
+### QA-054 — Overview IA leads with Platform health — sysadmin-first ordering on a mission-stewardship surface
+- **Severity:** normal
+- **Location:** `OperationsHome` lines 128–283, top-down: page header (lines 135–162) → Platform health Card (lines 164–169, Slice H placement) → demonstrative caveat (lines 171–184) → Mission funnel (lines 186–189) → Pilot headlines (lines 192–218) → Platform composition (lines 220–234) → bottom row Recent activity + Open issues (lines 236–280)
+- **Problem:** The page's three implicit questions for the operator — *(1) what needs attention right now*, *(2) is the mission progressing*, *(3) is the platform sound* — are all present but inverted in priority. Platform health (Q3) leads; Mission progression (Q2) sits middle; the attention-shaped content (Open issues card, Recent activity feed) lands at the bottom in the two-column row. This is sysadmin-first ordering on a surface whose primary purpose is mission stewardship, not infrastructure monitoring. The Slice H placement chose "above the demonstrative caveat" specifically so the caveat's "below" scoping would stay literal — re-ordering health to the bottom is therefore not just a card swap but requires reframing the caveat (its "below" no longer scopes the demonstrative cards if health moves beneath them).
+- **Direction:** reorder so attention-shaped + mission content lead and Platform health anchors the bottom; the demonstrative caveat must be reworded in the same change (its "below" scoping breaks when health moves beneath it). Cross-reference QA-001 (funnel framing) and QA-024 ("route-pages slice" copy leakage) — same copy/structure bundle.
+
 ### QA-024 — "Operations route-pages slice" leaks internal terminology into operator-facing copy
 - **Severity:** normal
 - **Location:** lines 259 (Recent activity footnote) and 277 (Open issues footnote)
@@ -204,6 +216,12 @@ branch `qa-audit-operations` cut from main.
 - **Location:** lines 483–489
 - **Problem:** The literal string "not wired" reads as engineer-speak. Operator-facing copy would say "External monitoring: not yet enabled" or "External monitoring: pending integration."
 - **Direction:** revise the display string (the underlying enum `'not-wired'` is fine to keep code-side).
+
+### QA-056 — "Philanthropic Advisors" nav label routes to what the data layer models as `advisorPractices`
+- **Severity:** low
+- **Location:** `NAV_ITEMS` line 86 (`label: 'Philanthropic Advisors'` → `path: '/operations/advisors'`); routes to `<UserList kind="advisors" />` whose underlying entity is `unified.advisorPractices` (7 records: Walker + 6 synthetic). Compare against unified shape: each `advisorPractice` has a `leadPersonId` (the named advisor), `coAdvisorPersonIds`, `clientPersonIds`, `cohortIds` — the entity is a practice, not a person.
+- **Problem:** Nav label implies people ("Philanthropic Advisors"); the entity behind the route is practices (org-shaped: lead + co-advisors + clients). The operator's mental model is two-layer (Walker Practice → Morgan Walker the lead → N. Park + T. Reeves as co-advisors → 9 clients), but the nav label collapses that to "Advisors." Compounds QA-005 (the platform-composition tile uses "Advisor Practices" for the same route — three labels for one concept now: "Philanthropic Advisors" in nav, "Advisor Practices" in tile, `advisorPractices` in code).
+- **Direction:** resolve label and content together in the route-pages spec — e.g. "Advisor Practices" route listing each practice with its lead advisor named ("Walker Philanthropic Advisory — Morgan Walker, lead"), and align nav + tile + code on one term.
 
 ---
 
@@ -374,23 +392,23 @@ branch `qa-audit-operations` cut from main.
 | Category | Findings |
 |---|---:|
 | 1. Data binding & provenance/honesty | 6 (QA-003, QA-004, QA-005, QA-006, QA-007, QA-008) |
-| 2. Interaction & all-cards-interactive | 6 (QA-009, QA-010, QA-011, QA-012, QA-013, QA-014) |
+| 2. Interaction & all-cards-interactive | 7 (QA-009, QA-010, QA-011, QA-012, QA-013, QA-014, QA-055) |
 | 3. Accessibility | 9 (QA-015, QA-016, QA-017, QA-018, QA-019, QA-020, QA-021, QA-022, QA-023) |
-| 4. Copy & labeling | 8 (QA-001, QA-002, QA-024, QA-025, QA-026, QA-027, QA-028, QA-029) — QA-001/002 seeded |
+| 4. Copy & labeling | 10 (QA-001, QA-002, QA-024, QA-025, QA-026, QA-027, QA-028, QA-029, QA-054, QA-056) — QA-001/002 seeded |
 | 5. Brand & visual | 7 (QA-030, QA-031, QA-032, QA-033, QA-034, QA-035, QA-036) |
 | 6. Layout & responsive | 4 (QA-037, QA-038, QA-039, QA-040) |
 | 7. Stubs & dead-ends | 3 (QA-041, QA-042, QA-043) |
 | 8. Code quality & consistency | 10 (QA-044, QA-045, QA-046, QA-047, QA-048, QA-049, QA-050, QA-051, QA-052, QA-053) |
-| **Total** | **53** |
+| **Total** | **56** |
 
 ### By severity
 
 | Severity | Findings | List |
 |---|---:|---|
 | high | 5 | QA-015, QA-016, QA-017, QA-018, QA-041 |
-| normal | 14 | QA-001, QA-003, QA-004, QA-005, QA-006, QA-009, QA-010, QA-019, QA-020, QA-021, QA-022, QA-024, QA-030, QA-037 |
-| low | 34 | QA-002, QA-007, QA-008, QA-011, QA-012, QA-013, QA-014, QA-023, QA-025, QA-026, QA-027, QA-028, QA-029, QA-031–QA-036, QA-038–QA-040, QA-042–QA-053 |
-| **Total** | **53** | |
+| normal | 16 | QA-001, QA-003, QA-004, QA-005, QA-006, QA-009, QA-010, QA-019, QA-020, QA-021, QA-022, QA-024, QA-030, QA-037, QA-054, QA-055 |
+| low | 35 | QA-002, QA-007, QA-008, QA-011, QA-012, QA-013, QA-014, QA-023, QA-025, QA-026, QA-027, QA-028, QA-029, QA-031–QA-036, QA-038–QA-040, QA-042–QA-053, QA-056 |
+| **Total** | **56** | |
 
 ### Highs (5) — the urgent ones
 
