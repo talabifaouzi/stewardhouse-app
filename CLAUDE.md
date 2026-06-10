@@ -1,189 +1,358 @@
 # StewardHouse — Project Manifest
 
-This file tells Claude Code how to work in this repository. Read it at the
-start of every session. Keep it accurate; update it as locked decisions change.
+Operating context for Claude Code in this repository. Read at the start of every
+session. Update as locked decisions change.
 
-## What StewardHouse is
+---
 
-A philanthropic planning and education platform for athletes, their advisors,
-and athletic departments. The platform is **structural, never advisory or
-fiduciary** — it organizes what an advisor or funder decides; it does not
-decide for them. Phase 1 scope is **athletes only**.
+## 1. Project
+
+**StewardHouse** is a philanthropic planning and education platform for athletes,
+their advisors, and athletic departments. The platform is **structural, never
+advisory or fiduciary** — it organizes what an advisor or funder decides; it does
+not decide for them. Phase 1 scope is **athletes only** (no music / entertainment
+/ creator language in user-facing copy).
 
 The core concept is **bilateral transparency** — a two-sided transparency layer
 between individual funder and nonprofit, expressed through the **Giving
-Partnership Profile (GPP)** (two layers: Giving Style + Giving Identity;
-narrative-based, no scores or grades).
+Partnership Profile (GPP)** (two narrative layers: Giving Style + Giving Identity;
+no scores, no grades).
 
-The current build is a prototype / stress-test tool, not production. Quality
-over speed is the governing value: stress-test before moving forward, build it
-right once, do not optimize for velocity.
+This build is a prototype / stress-test tool, not production. Quality over speed.
+Stress-test before moving forward; build it right once.
 
-## Stack
+**Four user-facing surfaces** under `src/surfaces/` (plus a public landing):
+- **`individual/`** — funder-facing experience (paused at v0.6.1)
+- **`advisor/`** — the advisor surface ("Philanthropic Advisor" in customer copy)
+- **`enterprise/`** — institutions (athletic departments, Phase 1)
+- **`operations/`** — internal StewardHouse staff view (Overview redesigned 2026)
+- **`landing/`** — public entry
 
-- React + Vite, deployed on Cloudflare Pages
-- react-router-dom for routing
-- Static JSON/JS fixtures in `src/data/` (no backend; Candid API integration is future)
-- Styling via CSS custom properties (design tokens) in `src/styles/global.css` —
-  use `var(--sh-*)` tokens, never hardcoded colors or spacing
-- No TypeScript; plain `.jsx`
+---
 
-## Architecture
+## 2. Stack & commands
 
-Five surfaces under `src/surfaces/`, routed in `src/App.jsx`:
-- `landing/` — public entry
-- `individual/` — the funder-facing experience (paused at v0.6.1)
-- `enterprise/` — institutions (athletic departments)
-- `advisor/` — the advisor surface (current focus)
-- `operations/` — internal operations
+- **React 18 + Vite + react-router-dom**. Plain `.jsx`, no TypeScript.
+- **Inline styles over CSS custom properties** — every color, spacing, radius,
+  type-size token lives in `src/styles/tokens.css` as `--sh-*`. Use
+  `var(--sh-*)` in component styles. **No hex literals in components.**
+- **Fixture-driven**, no backend. Source fixtures live in `src/data/`; the
+  unified data layer (see §4) reads them via adapters and exposes a query API.
+- **Auto-deploys to Cloudflare Pages on push to `main`.**
 
-The advisor surface (`src/surfaces/advisor/`) has 8 sections:
-1. PracticeHome.jsx — practice header + journal
-2. ClientRoster.jsx — client roster (stages: New / Active / Mature / Sunset)
-3. ClientWorkspace.jsx — per-client workspace (narrative-led, three movements:
-   pre-session prep, in-session notes, post-session follow-up)
-4. CurriculumLibrary.jsx — base + fork + author
-5. CohortSpace.jsx — cohorts and workshops
-6. Pipeline.jsx — between-session pipeline (Section 6)
-7. Documentation.jsx — documentation hub
-8. PracticeSettings.jsx — practice settings
+Commands:
+- `npm run dev` — Vite dev server (auto-picks a port if 5173 is taken)
+- `npm run build` — production build; the only consistent warning is the
+  pre-existing chunk-size note for the single-bundle output
+- **Node data verification pattern** (used in slice-verify scripts):
+  ```sh
+  node --input-type=module -e "import('./src/data/unified/index.js').then(({default: u}) => { ... })"
+  ```
+  Temp `.mjs` verify scripts at the project root are conventional for slice
+  verification; remove after the slice banks.
 
-The enterprise surface (`src/surfaces/enterprise/`) has 6 sections (Athletics-only
-in Phase 1):
-1. EnterpriseOverview.jsx — program-wide stat grid + 12-week engagement sparkline
-2. EnterpriseRoster.jsx — athletes participating in the program
-3. EnterpriseReports.jsx — program reports (summary, cohort comparison,
-   philanthropic readiness, ROI, endowment)
-4. EnterpriseCompliance.jsx — NIL documentation, disclosures, and exclusions
-5. EnterpriseProgram.jsx — workshops, modules, engagement
-6. EnterpriseSetup.jsx — 7-step program configuration wizard
+---
 
-Enterprise build status: shell + fixtures + Overview real (slices 1–2). Sections
-2–6 currently render scaffolded placeholders pending later slices.
+## 3. Repo map
 
-Shared components live in `src/components/` (Card, Button, SectionLabel,
-HelpIcon, Chrome). Data fixtures live in `src/data/` (clients.js, content.js,
-orgsData.js, enterpriseFixtures.js, etc.).
+```
+src/
+├── App.jsx                         # top-level routes (5 surfaces)
+├── main.jsx                        # React entry + providers
+├── styles/
+│   ├── global.css                  # h-reset, focus-visible (incl. [role="button"])
+│   └── tokens.css                  # all --sh-* design tokens
+├── components/                     # shared across surfaces
+│   ├── Card.jsx                    # accepts as / aria-labelledby (a11y bundle 1)
+│   ├── SectionLabel.jsx            # heading element with level + id props
+│   ├── Chrome.jsx                  # surface chrome (nav, persona, contacts)
+│   ├── AthleteProfile.jsx, UserProfile.jsx, WorkshopDetail.jsx, DailyBrief.jsx,
+│   ├── ExclusionDetail.jsx, ContactsDirectory.jsx, FilteredAthletesModal.jsx,
+│   ├── Modal.jsx, Button.jsx, Tag.jsx, HelpIcon.jsx, BackLink.jsx,
+│   ├── BarChart.jsx, ComposeMessage.jsx, StatTile.jsx, SHLogo.jsx,
+│   └── WorkshopCalendar.jsx
+├── surfaces/
+│   ├── landing/Landing.jsx
+│   ├── individual/                 # 15 .jsx files (paused at v0.6.1)
+│   ├── advisor/                    # 15 .jsx files — 8-section IA, NEVER QA'd
+│   ├── enterprise/                 # 7 surface files + reports/, setup/, shared/
+│   └── operations/OperationsSurface.jsx   # Overview complete; 4 non-home stubs
+├── data/
+│   ├── unified/                    # the unified data layer (see §4)
+│   │   ├── README.md
+│   │   ├── types.js                # JSDoc typedefs for the 9 entities + ActivityItem
+│   │   ├── sources.js              # SOURCE_SURFACE enum
+│   │   ├── adapters/{enterprise,advisor,individual}.js   # source adapters
+│   │   ├── synthetic.js            # synthetic seed bundle + Issue + ConnectionRequest seed
+│   │   ├── assemble.js             # eager-evaluates all 4 sources, runChecks
+│   │   └── index.js                # public read API (see §4)
+│   ├── enterpriseFixtures.js       # athletes, workshops, exclusions, contacts,
+│   │                               # endowmentSnapshot, current/priorCohortSnapshot,
+│   │                               # dailyBriefItems, complianceAuditLog, reflections,
+│   │                               # CURRENT_USER, T() / F() sector helpers
+│   ├── clients.js, cohorts.js, content.js, intakeData.js,
+│   ├── lessonsData.js, orgsData.js, individualProfile.js,
+│   ├── practiceContent.js, documentation.js, teamData.js,
+│   └── cohortSignals.js, themes.js
+└── contexts/                       # IntakeContext, CohortMemberContext, ModalStackContext, CommsContext
+docs/                               # see §8
+```
 
-## Voice & tone (LOCKED)
+---
+
+## 4. Unified data layer (`src/data/unified/`)
+
+Adapter-over-existing pattern: customer-surface fixtures (`enterpriseFixtures.js`,
+`clients.js`, `individualProfile.js`, `orgsData.js`, `cohorts.js`) are NOT
+migrated. Each adapter reads its source and emits unified-shape records.
+Assemble concatenates per-source bundles and wires deferred FKs.
+
+### Nine entities
+
+`persons`, `institutions`, `advisorPractices`, `programParticipations`,
+`gifts`, `orgs`, `cohorts`, `connectionRequests`, `issues`.
+
+Every record carries `sourceSurface` ∈ `'individual' | 'advisor' | 'enterprise'
+| 'synthetic'`. IDs are namespaced: `p-{sourceSurface}-{native-id}`,
+`gift-{sourceSurface}-{seq}`, `cr-synthetic-{seq}`, `issue-synthetic-{seq}`,
+etc. **Same-person dedup across surfaces is deferred** — Marcus appears as
+`p-individual-c-001`, `p-advisor-c-001`, AND `p-enterprise-m-001` (three Person
+records, no merging).
+
+### Four source bundles (assembled into one store)
+
+`enterprise` (21 persons + 1 institution + 16 participations + 18 gifts) ·
+`advisor` (9 persons + 1 practice + 9 participations + 2 cohorts) ·
+`individual` (1 person + 3 gifts + 17 orgs) ·
+`synthetic` (51 individuals + 14 staff/advisor + 3 institutions + 6 practices
++ 51 participations + 105 ConnectionRequests + 14 Issues). Live composition:
+**342 records across 9 entity types**.
+
+### Five `runChecks` suites (all live, all passing)
+
+- `assemble.runChecks` — composition integrity (sum-of-sources === assembled),
+  global ID uniqueness within each entity type, FK orphan resolution across
+  participations / practices / institutions / gifts / connection-requests /
+  issues.
+- `synthetic.runChecks` — entity counts, sourceSurface tags, FK resolution
+  within bundle, first-name uniqueness + collision with real-person set,
+  CR stage-count + monotonic timestamps + `gaveAt === Gift.date`, Issue
+  enum + status/timestamp coherence + relatedEntity coupling.
+- `{enterprise,advisor,individual}.runChecks` — per-adapter counts, FK
+  resolution within bundle, self-tests on parsers (`parseGiftLabel`,
+  `parseGiftDate`), informational `.info` (gift event-vs-field divergence,
+  null-givingPlan count).
+
+### Public read API (`unified.*`)
+
+Direct entity arrays — `persons`, `institutions`, `advisorPractices`,
+`programParticipations`, `gifts`, `orgs`, `cohorts`, `connectionRequests`,
+`issues`.
+
+Query helpers — `personsBy({type, sourceSurface})`,
+`participationsByContext(contextId)`, `giftsByGiver(personId)`,
+`countBy(entityName, predicate?)`, `byId(entityName, id)`.
+
+Aggregate-default projections — `connectionFunnel()` (cumulative-reached
+funnel, monotonically non-increasing), `connectionFunnelBy({sourceSurface})`,
+`pilotMetrics()` (totalIndividuals, per-stage counts, conversions,
+`totalDollarsAtGave`, `distinctOrgsAtGave`, `medianDaysMatchedToGave`),
+`recentActivity({limit})` (sorted timestamp desc — CR stage transitions +
+Issue events; gifts deduped via the CR `gave` transition),
+`platformHealth()` (5 runChecks suites + composition + informational +
+externalMonitoring), `openIssueCount()`, `openIssues()` (sorted openedAt
+desc), `issueCountByStatus()`, `issueCountByCategory()`.
+
+Record-level (explicit, not default landing data) —
+`connectionsByGiver(personId)`, `connectionsByTarget(orgIdOrName)`.
+
+---
+
+## 5. Surface status
+
+| Surface | Status |
+|---|---|
+| **Operations Overview** | **Complete and QA'd.** 8 redesign slices (A–H, 2026-06) banked; QA audit on branch `qa-audit-operations` (53 findings + 3 amendments = 56 total, doc at `docs/qa-audit-operations-2026-06-09.md`; **branch unmerged** by design). Fix bundle 1 (a11y highs QA-015 – 018) and bundle 2 (copy + structure QA-001/002/024/054 + lows 025–029) banked. The four non-home routes (`/operations/{individuals,institutions,advisors,health}`) are stubs pending a route-pages arc — flagged in the audit. |
+| **Enterprise** | **Built and audited.** All 6 sections live (Overview, Roster, Program, Compliance, Reports (+ 5 sub-pages), Setup wizard). QA audit on branch `qa-audit-enterprise` (173 findings, doc at `docs/qa-audit-enterprise-2026-05-30.md`; **branch unmerged** by design). 9 Criticals + all 33 Highs (#17–42) shipped; Mediums + Lows triaged in `docs/qa-triage-medium-low-2026-05-30.md` (Cluster A/B/C closed). Fixture dates are uniformly shifted −192d for coherence with today (`Enterprise fixture date coherence` commit). |
+| **Advisor** | **Built, NEVER QA'd.** 8-section IA (PracticeHome, ClientRoster, ClientWorkspace, CurriculumLibrary, CohortSpace, Pipeline, Documentation, PracticeSettings; plus auxiliary DocCreate/DocDetail/LessonDetail/LessonEditor/DraftsList/CohortDetail). All 9 clients seeded with distinct fictional substance per the locked roster. **No audit doc exists.** |
+| **Individual** | **Paused at v0.6.1.** 15 surface files present (Discover, GPSReveal, GivingModeler, Plan, Positioning, Privacy, Team, History, Learn, CohortView, Letter, Questions, Feedback, GiveScreen, IndividualSurface). Frozen until further notice. |
+| **Landing** | Single file; public entry. |
+
+---
+
+## 6. Slice protocol (build discipline)
+
+Every substantive change runs as a **slice**. The rhythm:
+
+1. **Hard git-state gate.** Confirm current branch and HEAD before starting.
+   For most slices: `main` at the expected SHA, working tree clean. Refuse to
+   proceed if state is unexpected.
+2. **Audit + propose.** Investigate read-only; propose a spec with explicit
+   scope, decisions, verification plan, and suggested commit message. Hold for
+   review. **Do not edit until decisions are locked.**
+3. **Feature branch off main.** One slice = one branch (`slice-{letter}-{name}`,
+   `fix-{topic}-bundle-{n}`, `docs-{topic}-refresh`, etc.).
+4. **Write the slice.** One file at a time when possible; no truncation; no
+   "rest unchanged" markers. Flag anything unusual; do not fix unrelated issues
+   inline.
+5. **Verify.** `npm run build` clean; node smoke against `unified.*` where
+   relevant; per-pattern counts for data slices; UI slices add a dev-server
+   visual check at the named URL.
+6. **HOLD.** Report diffs, verification output, and visual-check URL when
+   relevant. Wait for explicit go-ahead.
+7. **Commit.** Exact message dictated by the founder. **Never append
+   `Co-Authored-By` or any footer.** Never `--amend` after a hook failure (the
+   prior commit didn't happen; fix and create a NEW commit).
+8. **Bank.** `git checkout main; git merge --ff-only {branch}; git push origin
+   main; git branch -d {branch}`. Fast-forward only — refuse if anything
+   intervened on main.
+9. **Audit branches are never merged or deleted.** `qa-audit-enterprise` and
+   `qa-audit-operations` are reference-only and remain on the local clone +
+   origin indefinitely. Findings flow into fix-bundle slices that branch off
+   `main`, not off the audit branch.
+
+Stop background shells (dev server, watch loops) at bank time. Use `TaskStop`,
+not `kill`.
+
+---
+
+## 7. Guardrails
+
+### Path B — the structural-not-advisory boundary
+
+The platform organizes what advisors and funders decide; it does not decide
+for them. **No AI-drafted Giving Partnership Profiles. No custody or payment
+rails. No evaluative recommendations.** Test: exposure (in) vs. evaluative
+recommendation (out). "You should fund X" or "Marcus is ready for a larger
+gift" violates Path B. Surface options; never prescribe.
+
+Not a robo-advisor for charity, not a competitor to advisor-client
+relationships, not a fiduciary, not a fund custodian, not advisor-driven
+matching with scores or rankings.
+
+### No scoring, no ranking
+
+Nonprofit profiles, advisor discovery, GPS, pipeline — narrative-based
+throughout. **Issue severity (`low`/`normal`/`high`) rates the ISSUE's
+triage urgency, never a participant.** The same applies anywhere a number
+or letter could be read as a judgment of a person or org.
+
+### Brand tokens only
+
+Warm beige bg `#FAF7F2`, bronze accent `#8B7355`, white card surfaces,
+Libre Baskerville serif headings, Inter/sans body. Every color / spacing /
+radius / type-size goes through a `--sh-*` token in `src/styles/tokens.css`.
+**No hex literals in components.** SVG icons only (`role="button"` divs get
+the bronze focus-visible ring via global selector). **Zero emoji anywhere
+in the interface.** WCAG AA.
+
+### Voice & tone (LOCKED)
 
 Quiet, editorial. Closer to Aesop or The Atlantic than a consumer app.
+- No exclamation points except in dialogue.
+- No "congratulations" or celebratory language for routine task completion.
+- Sentences carry weight; clauses do work.
+- Meet people where they are — never imply users are at a destination.
+- Spelling: standard English (Merriam-Webster). Correct silently unless the
+  meaning changes.
 
-- No exclamation points except in dialogue
-- No "congratulations" or celebratory language for routine task completion
-- No emoji anywhere in the interface
-- Sentences carry weight; clauses do work
-- Meet people where they are — never imply users are at a destination
-- Spelling: standard English (Merriam-Webster). Correct silently unless the meaning changes.
+### Aggregate-default with purposeful drill
 
-## Build discipline — follow on every task
+Default landing data is aggregate (counts, sums, rollups). Record-level
+queries are exposed but explicit — `connectionsByGiver()` / `openIssues()`
+are separate from `connectionFunnel()` / `openIssueCount()`. UI cards drill
+to record level when there's a real target; when no target exists, render a
+"detail view coming soon" footnote rather than a dead click.
 
-1. **Audit before editing.** When asked to change code, first investigate and
-   report priority-ranked findings with explicit scope boundaries. Do not edit
-   until the change is confirmed.
-2. **One file at a time.** Complete files, no truncation, no "... rest unchanged."
-3. **Validate every phase.** After each change, run the build / lint and confirm
-   it passes before moving on. Do not batch unvalidated edits.
-4. **No silent fixes, no out-of-scope refactoring.** Flag anything unusual before
-   touching it. If you notice an unrelated problem, surface it — do not fix it
-   inline.
-5. **Don't fall in love with the work.** Any code is trashable for a better
-   solution. Prefer the right structure over the written one.
-6. **Commit in small, described increments.** One logical change per commit,
-   clear message. Work on a branch for anything non-trivial.
+### Names verbatim from records
 
-## Product invariants — never violate
+Any participant or org name in user-facing copy must come from the assembled
+record's `.name` field. Never fabricate, never paraphrase. The Slice C
+verify pattern asserts that issue summaries contain the linked record's name
+verbatim; the same discipline applies anywhere copy references a record.
 
-- **No scores, no grades, no rankings.** Anywhere — nonprofit profiles, advisor
-  discovery, GPS, pipeline. Narrative-based throughout.
-- **Path B boundary.** The platform is structural. No AI-drafted Giving
-  Partnership Profiles, no custody or payment rails, no evaluative
-  recommendations. Test: exposure (in) vs. evaluative recommendation (out). If a
-  feature would let the platform make an evaluative recommendation (e.g., "you
-  should fund X" or "Marcus is ready for a larger gift"), it violates Path B.
-  Surface options; never prescribe.
-- **Brand tokens only.** Warm beige background `#FAF7F2`, bronze accent `#8B7355`,
-  white card surfaces, Libre Baskerville serif headings, Inter/sans body. Zero
-  emoji. No AI-generated picture art. SVG icons only. WCAG AA. All via
-  `var(--sh-*)` tokens.
-- **Section 6 vocabulary (locked):** "between-session pipeline" (the name),
-  "surface" (the unified verb), states are Active / Mute / Pause, "cohort
-  updates" is the fifth content type. Per-client settings are "default" vs.
-  "override"; overrides are preserved when practice-wide defaults change.
-- **Phase 1 is athletes only.** No music / entertainment / creator language in
-  user-facing copy.
-- **Discovery is for understanding; giving is for acting.** No donate button on
-  the discovery view.
-- **Connection parity across tiers.** Share / Connect / Signal Interest behave
-  identically regardless of subscription level.
-- **Individual-pushes consent model.** Funders initiate; nonprofits don't push.
-- **StewardHouse never authors org-level content** — only structural elements.
+### Demonstrative vs LIVE honesty boundary
 
-## Client roster (Phase 1 — athletics only)
+Synthetic-derived UI must be labeled demonstrative. Only genuinely live
+signals (e.g., `platformHealth()` traversing actual `runChecks`) may carry
+LIVE framing. On the Operations Overview, the demonstrative-state caveat
+explicitly excepts Platform health; all other regions read as synthetic
+seed, not live platform traction.
 
-9 fictional athletes across 4 stages (`New` / `Active` / `Mature` / `Sunset`,
-renameable per advisor preference):
+### Section 6 vocabulary (LOCKED)
 
-- Marcus Thompson (canonical demo client — `c-001`)
-- Jasmine Rivera
-- Reuben Asare
-- Ezekiel Banner
-- Isaiah Coleman
-- Tariq Williams
-- Bree Caldwell
-- Naomi Pierce
-- Jordan Estes
+"Between-session pipeline" (the name), "surface" (the unified verb), states
+are Active / Mute / Pause, "cohort updates" is the fifth content type.
+Per-client settings are "default" vs "override"; overrides are preserved
+when practice-wide defaults change.
 
-Give each client distinct fictional substance — different sports, gift sizes,
-giving identities, and session histories. **Never copy-paste Marcus's content
-under another name.** Marcus is the canonical demo client and should carry the
-deepest data. Per-stage shape:
+### Section 6 data reconciliation invariant
 
-- **New:** GPS in progress, 0–1 intro sessions, no curriculum delivered yet
-- **Active:** 3–5 sessions, evolving giving plan, ongoing curriculum
-- **Mature:** 8+ sessions, established giving plan, lighter touch
-- **Sunset:** relationship winding down, transition notes
-
-## Data reconciliation invariant (Section 6)
-
-The roster has **9 clients** (c-001 .. c-009). All Section 6 numbers must
-reconcile against those 9:
+The advisor roster has **9 clients** (c-001 .. c-009). All Section 6 numbers
+must reconcile:
 - Each client carries a `pipeline` array: one entry per content type, with
   `state` (Active/Muted/Paused) and `source` (default/override).
-- A client's `activeContent` count === number of entries with state Active.
+- A client's `activeContent` count === entries with state Active.
 - For each content type, across the 9 clients:
   `clientsOnDefault + overrides === 9`.
-- `pipelineDefaults` in `content.js` stores those per-type aggregates and must
-  match what the client `pipeline` arrays actually produce.
+- `pipelineDefaults` in `content.js` matches what the client `pipeline`
+  arrays actually produce.
 - `advisorPracticeProfile.clientCount === 9`.
 
-If you change pipeline data, re-derive and verify these equalities before
-committing. Numbers shown to a user must never contradict each other on screen.
+If pipeline data changes, re-derive and verify equalities BEFORE committing.
 
-## Sector terminology (FUTURE PHASE — reference only)
+### Client roster (Phase 1)
 
-Phase 1 is athletes only; the table below is locked terminology for later
-phases and must not appear in current user-facing copy.
+9 fictional athletes across 4 stages (`New` / `Active` / `Mature` / `Sunset`,
+renameable per advisor preference): Marcus Thompson (canonical demo —
+`c-001`), Jasmine Rivera, Reuben Asare, Ezekiel Banner, Isaiah Coleman,
+Tariq Williams, Bree Caldwell, Naomi Pierce, Jordan Estes. Each carries
+distinct fictional substance — different sports, gift sizes, giving
+identities, session histories. **Never copy-paste Marcus's content under
+another name.**
 
-| Concept | Athletics | Music | Entertainment | Creator |
-|---|---|---|---|---|
-| Client noun | athletes | clients/artists | clients/talent | clients/creators |
-| Admin role | Program Admin | A&R Lead | Talent Manager | Partnerships Lead |
-| Compliance role | Compliance Officer | Legal Team | Legal/Business Affairs | Brand Safety |
-| Event type | workshop | session | session | workshop |
-| Completion | certified | completed | completed | completed |
-| Reinvestment term | endowment visible | Program Reinvestment | Program Reinvestment | Program Reinvestment |
+### Phase 1 is athletes only
 
-Non-athletics sectors use "Program Reinvestment," not "endowment."
+No music / entertainment / creator language in user-facing copy. Sector
+terminology is locked for later phases (athletics → music → entertainment →
+creator, with role / event / completion / reinvestment-term substitutions)
+but must not appear in current UI text. Non-athletics sectors use "Program
+Reinvestment", not "endowment".
 
-## Things this project is NOT
+### Connection model (Individual surface)
 
-- Not a robo-advisor for charity
-- Not a competitor for advisor-client relationships
-- Not a fiduciary or evaluative recommender
-- Not a platform that custodies funds or processes gifts
-- Not advisor-driven matching with scores or rankings
+Share / Connect / Signal Interest behave identically regardless of
+subscription tier. Funders initiate; nonprofits don't push. Discovery is
+for understanding, giving is for acting — **no donate button on the
+discovery view**.
+
+### StewardHouse never authors org-level content
+
+Only structural elements (cause tags, fields, scaffolds). Org profile
+narrative is org-authored or imported (Candid API integration is future).
+
+---
+
+## 8. Key docs
+
+- `docs/qa-audit-enterprise-2026-05-30.md` — 173-finding Enterprise audit (on
+  `qa-audit-enterprise` branch; HEAD of audit).
+- `docs/qa-audit-operations-2026-06-09.md` — 56-finding Operations audit (on
+  `qa-audit-operations` branch; HEAD includes the 3-finding recon amendment).
+- `docs/operations-current-state-2026-05-31.md` — Operations surface inventory
+  (pre-redesign baseline).
+- `docs/operations-overview-discovery-2026-06-01.md` — gap-map between
+  candidate Overview signals and live-versus-needs-new-entity classification
+  (the foundation for slices A–H).
+- `docs/cross-surface-data-model-discovery-2026-05-31.md` — data-shape
+  mapping across all four surfaces (foundation for the unified data layer).
+- `docs/qa-triage-medium-low-2026-05-30.md` — disposition of the 115 Enterprise
+  Medium + Low audit findings.
+- `src/data/unified/README.md` — unified data layer internal notes.
+
+---
 
 ## When in doubt
 
-Ask. Don't assume. Path B violations and brand-token deviations are non-negotiable.
+Ask. Don't assume. Path B violations, brand-token deviations, and Co-Authored-By
+footers are non-negotiable.
