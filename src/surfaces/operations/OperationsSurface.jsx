@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import Chrome from '../../components/Chrome.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
@@ -85,7 +85,7 @@ const NAV_ITEMS = [
   { key: 'individuals', label: 'Individuals', path: '/operations/individuals' },
   { key: 'institutions', label: 'Institutions', path: '/operations/institutions' },
   { key: 'advisors', label: 'Advisor Practices', path: '/operations/advisors' },
-  { key: 'health', label: 'Platform health', path: '/operations/health' },
+  { key: 'organizations', label: 'Organizations', path: '/operations/organizations' },
 ];
 
 export default function OperationsSurface() {
@@ -95,7 +95,7 @@ export default function OperationsSurface() {
     path.includes('/individuals') ? 'individuals' :
     path.includes('/institutions') ? 'institutions' :
     path.includes('/advisors') ? 'advisors' :
-    path.includes('/health') ? 'health' :
+    path.includes('/organizations') ? 'organizations' :
     'home';
 
   return (
@@ -118,7 +118,7 @@ export default function OperationsSurface() {
           <Route path="individuals" element={<UserList kind="individuals" />} />
           <Route path="institutions" element={<UserList kind="institutions" />} />
           <Route path="advisors" element={<UserList kind="advisors" />} />
-          <Route path="health" element={<PlatformHealth />} />
+          <Route path="organizations" element={<UserList kind="organizations" />} />
           <Route path="*" element={<Navigate to="/operations" replace />} />
         </Routes>
       </div>
@@ -131,6 +131,7 @@ function OperationsHome() {
   const compositionLabelId = useId();
   const recentActivityLabelId = useId();
   const openIssuesLabelId = useId();
+  const navigate = useNavigate();
   return (
     <main style={{
       maxWidth: 'var(--sh-content-max)',
@@ -273,9 +274,26 @@ function OperationsHome() {
           gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
           gap: 'var(--sh-space-4)',
         }}>
-          <Stat label="Individuals" value={INDIVIDUAL_COUNT} sub="On platform" />
-          <Stat label="Institutions" value={INSTITUTION_COUNT} sub="Active programs" />
-          <Stat label="Advisor Practices" value={PRACTICE_COUNT} sub="On platform" />
+          <Stat
+            label="Individuals"
+            value={INDIVIDUAL_COUNT}
+            sub="On platform"
+            onClick={() => navigate('/operations/individuals')}
+          />
+          <Stat
+            label="Institutions"
+            value={INSTITUTION_COUNT}
+            sub="Active programs"
+            onClick={() => navigate('/operations/institutions')}
+          />
+          <Stat
+            label="Advisor Practices"
+            value={PRACTICE_COUNT}
+            sub="On platform"
+            onClick={() => navigate('/operations/advisors')}
+          />
+          {/* Open issues stays non-interactive — its drill is the Open-issues
+              card above; clicking the tile would duplicate that affordance. */}
           <Stat label="Open issues" value={OPEN_ISSUE_COUNT} sub="Awaiting response" />
         </div>
       </section>
@@ -821,14 +839,35 @@ function ActivityRowInteractive({ item, first }) {
   );
 }
 
-function Stat({ label, value, sub }) {
+function Stat({ label, value, sub, onClick }) {
+  const [hovered, setHovered] = useState(false);
+  const interactive = typeof onClick === 'function';
+  const handleKeyDown = interactive
+    ? (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }
+    : undefined;
   return (
-    <div style={{
-      background: 'var(--sh-card)',
-      border: 'var(--sh-border-thin)',
-      borderRadius: 'var(--sh-radius-lg)',
-      padding: 'var(--sh-space-5)',
-    }}>
+    <div
+      role={interactive ? 'button' : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onClick={interactive ? onClick : undefined}
+      onKeyDown={handleKeyDown}
+      onMouseEnter={interactive ? () => setHovered(true) : undefined}
+      onMouseLeave={interactive ? () => setHovered(false) : undefined}
+      style={{
+        background: interactive && hovered ? 'var(--sh-bg-tint)' : 'var(--sh-card)',
+        border: 'var(--sh-border-thin)',
+        borderRadius: 'var(--sh-radius-lg)',
+        padding: 'var(--sh-space-5)',
+        cursor: interactive ? 'pointer' : 'default',
+        transition: interactive ? 'background 180ms ease' : undefined,
+        userSelect: interactive ? 'none' : undefined,
+      }}
+    >
       <p style={{
         fontSize: 'var(--sh-text-xs)',
         color: 'var(--sh-text-muted)',
@@ -864,6 +903,7 @@ function UserList({ kind }) {
     individuals: 'Individuals',
     institutions: 'Institutions',
     advisors: 'Advisor Practices',
+    organizations: 'Organizations',
   };
   return (
     <main style={{
@@ -901,39 +941,3 @@ function UserList({ kind }) {
   );
 }
 
-function PlatformHealth() {
-  return (
-    <main style={{
-      maxWidth: 'var(--sh-content-max)',
-      margin: '0 auto',
-      padding: 'var(--sh-space-10) var(--sh-space-8) var(--sh-space-16)',
-    }}>
-      <h1 style={{
-        fontFamily: 'var(--sh-font-serif)',
-        fontSize: 'var(--sh-text-2xl)',
-        color: 'var(--sh-text-primary)',
-        marginBottom: 'var(--sh-space-2)',
-      }}>
-        Platform health
-      </h1>
-      <p style={{
-        fontSize: 'var(--sh-text-md)',
-        color: 'var(--sh-text-secondary)',
-        marginBottom: 'var(--sh-space-8)',
-      }}>
-        Deploys, errors, latency, and active sessions across the platform.
-      </p>
-      <Card tint>
-        <p style={{
-          fontSize: 'var(--sh-text-sm)',
-          color: 'var(--sh-text-muted)',
-          textAlign: 'center',
-          fontStyle: 'italic',
-          padding: 'var(--sh-space-6)',
-        }}>
-          Section scaffolded · monitoring will integrate when production traffic begins.
-        </p>
-      </Card>
-    </main>
-  );
-}
