@@ -13,14 +13,15 @@ const INDIVIDUAL_COUNT  = unified.personsBy({ type: 'individual' }).length;
 const INSTITUTION_COUNT = unified.countBy('institutions');
 const PRACTICE_COUNT    = unified.countBy('advisorPractices');
 
-// Mission-funnel pillar (Slice B): aggregate-only, derived from the
-// ConnectionRequest entity. The funnel and pilot headlines below are
-// demonstrative — drawn from the synthetic seed, not live traction.
+// Relationship-progression pillar (Slice B / fix bundle 2): aggregate-only,
+// derived from the ConnectionRequest entity. Demonstrative — drawn from the
+// synthetic seed, not live traction.
 const FUNNEL  = unified.connectionFunnel();
 const METRICS = unified.pilotMetrics();
 
-// Ordered stages for the funnel rendering. Descriptive labels — no scoring,
-// no ranking. Each later stage is a subset of all earlier stages.
+// Ordered stages for the relationship-progression rendering. Descriptive
+// labels — no scoring, no ranking. Each later stage is a subset of all
+// earlier stages.
 const FUNNEL_STAGES = [
   { key: 'matched',    label: 'Matched' },
   { key: 'viewed',     label: 'Viewed' },
@@ -83,7 +84,7 @@ const NAV_ITEMS = [
   { key: 'home', label: 'Overview', path: '/operations' },
   { key: 'individuals', label: 'Individuals', path: '/operations/individuals' },
   { key: 'institutions', label: 'Institutions', path: '/operations/institutions' },
-  { key: 'advisors', label: 'Philanthropic Advisors', path: '/operations/advisors' },
+  { key: 'advisors', label: 'Advisor Practices', path: '/operations/advisors' },
   { key: 'health', label: 'Platform health', path: '/operations/health' },
 ];
 
@@ -160,21 +161,13 @@ function OperationsHome() {
           maxWidth: '720px',
           lineHeight: 1.6,
         }}>
-          Monitor and support across all three end-user surfaces. View user activity, surface issues, and provide support.
+          Monitor and support across the customer surfaces. View user activity, surface issues, and provide support.
           This view is internal-only and is never exposed to platform users.
         </p>
       </div>
 
-      {/* Platform health pillar (Slice H) — LIVE system status. Placed ABOVE
-          the demonstrative caveat so the caveat's "below" framing stays
-          literally accurate; the pillar itself is data-layer integrity. */}
-      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
-        <PlatformHealthCard health={HEALTH} />
-      </div>
-
-      {/* Demonstrative-state caveat — applies to the funnel, pilot headlines,
-          and the open-issues card below. Phrased so no synthetic number reads
-          as live traction. */}
+      {/* Demonstrative-state caveat — Q1→Q3 IA: explicit exception of Platform
+          health (which is LIVE and anchors the bottom). */}
       <p style={{
         fontSize: 'var(--sh-text-xs)',
         color: 'var(--sh-text-muted)',
@@ -182,69 +175,36 @@ function OperationsHome() {
         marginBottom: 'var(--sh-space-5)',
         maxWidth: '720px',
       }}>
-        Mission funnel, pilot headlines, and the open-issues + recent-activity
-        cards below are demonstrative — drawn from the synthetic seed, not live
-        platform traction.
+        Everything on this page except Platform health is demonstrative — drawn
+        from the synthetic seed, not live platform traction.
       </p>
 
-      {/* Mission funnel — primary pillar (Slice B) */}
-      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
-        <MissionFunnel funnel={FUNNEL} />
-      </div>
-
-      {/* Pilot headlines — four cards derived from pilotMetrics() */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-        gap: 'var(--sh-space-4)',
-        marginBottom: 'var(--sh-space-8)',
-      }}>
-        <Stat
-          label="Relationships continuing"
-          value={METRICS.ongoingCount}
-          sub="post-gift, still engaged"
-        />
-        <Stat
-          label="Orgs supported"
-          value={METRICS.distinctOrgsAtGave}
-          sub="distinct nonprofits at gave or ongoing"
-        />
-        <Stat
-          label="Total given via StewardHouse"
-          value={`$${METRICS.totalDollarsAtGave.toLocaleString()}`}
-          sub={`across ${METRICS.gaveCount} gifts`}
-        />
-        <Stat
-          label="Matched → gave"
-          value={`${Math.round(METRICS.conversionMatchedToGave * 100)}%`}
-          sub="cumulative funnel conversion"
-        />
-      </div>
-
-      {/* Platform composition — existing four tiles, demoted below the funnel pillar.
-          Three derived counts plus the hardcoded Open issues (wired in Slice C). */}
-      <section
-        aria-labelledby={compositionLabelId}
-        style={{ marginBottom: 'var(--sh-space-8)' }}
-      >
-        <SectionLabel id={compositionLabelId}>Platform composition</SectionLabel>
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-          gap: 'var(--sh-space-4)',
-        }}>
-          <Stat label="Individuals" value={INDIVIDUAL_COUNT} sub="On platform" />
-          <Stat label="Institutions" value={INSTITUTION_COUNT} sub="Active programs" />
-          <Stat label="Advisor Practices" value={PRACTICE_COUNT} sub="On platform" />
-          <Stat label="Open issues" value={OPEN_ISSUE_COUNT} sub="Awaiting response" />
-        </div>
-      </section>
-
+      {/* Q1 — attention-shaped content leads: Open issues (wide left, 2fr) +
+          Recent activity (narrow right, 1fr). */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)',
         gap: 'var(--sh-space-6)',
+        marginBottom: 'var(--sh-space-8)',
       }}>
+        <Card tint accent="var(--sh-bronze)" as="section" aria-labelledby={openIssuesLabelId}>
+          <SectionLabel id={openIssuesLabelId}>Open issues</SectionLabel>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {OPEN_ISSUES.map((issue, i) => (
+              <IssueRow key={issue.id} issue={issue} first={i === 0} />
+            ))}
+          </div>
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            fontStyle: 'italic',
+            marginTop: 'var(--sh-space-4)',
+            marginBottom: 0,
+          }}>
+            Per-issue detail view coming soon.
+          </p>
+        </Card>
+
         <Card as="section" aria-labelledby={recentActivityLabelId}>
           <SectionLabel id={recentActivityLabelId}>Recent activity</SectionLabel>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -263,27 +223,66 @@ function OperationsHome() {
             marginTop: 'var(--sh-space-4)',
             marginBottom: 0,
           }}>
-            Per-activity drill-down pending — Operations route-pages slice.
+            Per-activity detail view coming soon.
           </p>
         </Card>
+      </div>
 
-        <Card tint as="section" aria-labelledby={openIssuesLabelId}>
-          <SectionLabel id={openIssuesLabelId}>Open issues</SectionLabel>
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
-            {OPEN_ISSUES.map((issue, i) => (
-              <IssueRow key={issue.id} issue={issue} first={i === 0} />
-            ))}
-          </div>
-          <p style={{
-            fontSize: 'var(--sh-text-xs)',
-            color: 'var(--sh-text-muted)',
-            fontStyle: 'italic',
-            marginTop: 'var(--sh-space-4)',
-            marginBottom: 0,
-          }}>
-            Per-issue drill-down pending — Operations route-pages slice.
-          </p>
-        </Card>
+      {/* Q2 — Relationship progression pillar */}
+      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
+        <MissionFunnel funnel={FUNNEL} />
+      </div>
+
+      {/* Pilot headlines — four cards derived from pilotMetrics() */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        gap: 'var(--sh-space-4)',
+        marginBottom: 'var(--sh-space-8)',
+      }}>
+        <Stat
+          label="Relationships continuing"
+          value={METRICS.ongoingCount}
+          sub="Post-gift, still engaged"
+        />
+        <Stat
+          label="Orgs supported"
+          value={METRICS.distinctOrgsAtGave}
+          sub="Distinct nonprofits at gave or ongoing"
+        />
+        <Stat
+          label="Total given via StewardHouse"
+          value={`$${METRICS.totalDollarsAtGave.toLocaleString()}`}
+          sub={`Across ${METRICS.gaveCount} gifts`}
+        />
+        <Stat
+          label="Reached giving"
+          value={FUNNEL.gave}
+          sub={`of ${FUNNEL.matched} connections matched`}
+        />
+      </div>
+
+      {/* Q3 — Platform composition (three derived counts plus the Open issues count). */}
+      <section
+        aria-labelledby={compositionLabelId}
+        style={{ marginBottom: 'var(--sh-space-8)' }}
+      >
+        <SectionLabel id={compositionLabelId}>Platform composition</SectionLabel>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gap: 'var(--sh-space-4)',
+        }}>
+          <Stat label="Individuals" value={INDIVIDUAL_COUNT} sub="On platform" />
+          <Stat label="Institutions" value={INSTITUTION_COUNT} sub="Active programs" />
+          <Stat label="Advisor Practices" value={PRACTICE_COUNT} sub="On platform" />
+          <Stat label="Open issues" value={OPEN_ISSUE_COUNT} sub="Awaiting response" />
+        </div>
+      </section>
+
+      {/* Q3 — Platform health pillar (LIVE) anchors the bottom of the page. */}
+      <div>
+        <PlatformHealthCard health={HEALTH} />
       </div>
     </main>
   );
@@ -296,7 +295,7 @@ function MissionFunnel({ funnel }) {
   const labelId = useId();
   return (
     <Card as="section" aria-labelledby={labelId}>
-      <SectionLabel id={labelId}>Mission funnel</SectionLabel>
+      <SectionLabel id={labelId}>Relationship progression</SectionLabel>
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -367,37 +366,15 @@ function PlatformHealthCard({ health }) {
     marginBottom: 'var(--sh-space-2)',
   };
   const externalMonText = health.externalMonitoring === 'not-wired'
-    ? 'not wired'
+    ? 'not yet enabled'
     : health.externalMonitoring;
 
   return (
     <Card as="section" aria-labelledby={labelId}>
-      {/* Title + LIVE badge */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 'var(--sh-space-3)',
-        marginBottom: 'var(--sh-space-3)',
-      }}>
-        <SectionLabel id={labelId}>Platform health</SectionLabel>
-        <span style={{
-          fontSize: '10px',
-          padding: '2px 8px',
-          borderRadius: 'var(--sh-radius-full)',
-          border: '0.5px solid var(--sh-bronze)',
-          color: 'var(--sh-bronze)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          fontWeight: 500,
-          // SectionLabel has marginBottom var(--sh-space-3); shift the badge
-          // up so it sits on the title baseline rather than the gap below it.
-          marginBottom: 'var(--sh-space-3)',
-        }}>
-          Live
-        </span>
-      </div>
+      <SectionLabel id={labelId}>Platform health</SectionLabel>
 
-      {/* Honesty callout — keeps the LIVE badge honest. */}
+      {/* Honesty callout — the live framing the dropped LIVE pill used to carry,
+          now anchored entirely in the prose. */}
       <p style={{
         fontSize: 'var(--sh-text-xs)',
         color: 'var(--sh-text-muted)',
@@ -886,7 +863,7 @@ function UserList({ kind }) {
   const titleMap = {
     individuals: 'Individuals',
     institutions: 'Institutions',
-    advisors: 'Philanthropic Advisors',
+    advisors: 'Advisor Practices',
   };
   return (
     <main style={{
