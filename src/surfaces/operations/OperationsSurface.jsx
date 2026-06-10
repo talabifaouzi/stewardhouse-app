@@ -5,6 +5,7 @@ import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import unified from '../../data/unified/index.js';
 import IndividualsDirectory from './directories/IndividualsDirectory.jsx';
+import InstitutionsDirectory from './directories/InstitutionsDirectory.jsx';
 
 // Operations Overview stat values — computed once at module load from the
 // unified data layer. unified import is eager: it runs the three adapters +
@@ -117,7 +118,7 @@ export default function OperationsSurface() {
         <Routes>
           <Route index element={<OperationsHome />} />
           <Route path="individuals" element={<IndividualsDirectory />} />
-          <Route path="institutions" element={<UserList kind="institutions" />} />
+          <Route path="institutions" element={<InstitutionsDirectory />} />
           <Route path="advisors" element={<UserList kind="advisors" />} />
           <Route path="organizations" element={<UserList kind="organizations" />} />
           <Route path="*" element={<Navigate to="/operations" replace />} />

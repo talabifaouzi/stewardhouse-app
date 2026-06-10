@@ -3,29 +3,20 @@ import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
 import { SOURCE_ACCENT } from './sourceAccents.js';
 
-// Module-level population — 77 individuals across all four sources
-// (individual 1, advisor 9, enterprise 16, synthetic 51). Same-person dedup
-// is deferred: a person active on more than one surface appears once per
-// source (see the dedup footnote at the foot of the directory).
-const ALL = unified.personsBy({ type: 'individual' });
-
-const CONTEXT_LABEL = {
-  individual: 'Individual funder',
-  advisor:    'Advisor client',
-  enterprise: 'Enterprise athlete',
-  synthetic:  'Synthetic',
-};
+// Module-level population — all institutions on the platform. Phase 1
+// totals: 4 records, 1 enterprise (Cooper State University) and 3 synthetic.
+// Sector is "Athletics" across the board today; the Sector column is in
+// place to accommodate multi-sector Phase 2 without a UI change.
+const ALL = unified.institutions;
 
 const SOURCE_FILTERS = [
-  { key: 'individual', label: 'Individual' },
-  { key: 'advisor',    label: 'Advisor' },
   { key: 'enterprise', label: 'Enterprise' },
   { key: 'synthetic',  label: 'Synthetic' },
 ];
 
-const GRID_COLUMNS = 'minmax(160px, 1.4fr) 110px 1.1fr 1fr 1.2fr';
+const GRID_COLUMNS = 'minmax(180px, 1.6fr) 0.9fr 1.2fr 0.9fr 110px 1.4fr 0.5fr';
 
-export default function IndividualsDirectory() {
+export default function InstitutionsDirectory() {
   const [query, setQuery] = useState('');
   const [activeSources, setActiveSources] = useState(
     () => new Set(SOURCE_FILTERS.map(f => f.key))
@@ -33,18 +24,23 @@ export default function IndividualsDirectory() {
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return ALL.filter(p => {
-      if (!activeSources.has(p.sourceSurface)) return false;
-      if (q && !p.name.toLowerCase().includes(q)) return false;
+    return ALL.filter(i => {
+      if (!activeSources.has(i.sourceSurface)) return false;
+      if (q && !i.name.toLowerCase().includes(q)) return false;
       return true;
     });
   }, [query, activeSources]);
 
-  const sourceCount = useMemo(() => {
-    const s = new Set();
-    for (const p of filtered) s.add(p.sourceSurface);
-    return s.size;
-  }, [filtered]);
+  // Unfiltered breakdown for the default header — derived live from data.
+  const breakdown = useMemo(() => {
+    const b = { enterprise: 0, synthetic: 0 };
+    for (const i of ALL) {
+      if (b[i.sourceSurface] !== undefined) b[i.sourceSurface] += 1;
+    }
+    return b;
+  }, []);
+
+  const allOn = activeSources.size === SOURCE_FILTERS.length && query.trim() === '';
 
   function toggleSource(key) {
     setActiveSources(prev => {
@@ -54,6 +50,11 @@ export default function IndividualsDirectory() {
       return next;
     });
   }
+
+  const totalLabel = ALL.length === 1 ? 'institution' : 'institutions';
+  const filteredLabel = filtered.length === 1 ? 'institution' : 'institutions';
+  const entLabel = breakdown.enterprise === 1 ? 'active customer' : 'active customers';
+  const synLabel = breakdown.synthetic === 1 ? 'synthetic' : 'synthetic';
 
   return (
     <main style={{
@@ -67,14 +68,14 @@ export default function IndividualsDirectory() {
         color: 'var(--sh-text-primary)',
         marginBottom: 'var(--sh-space-2)',
       }}>
-        Individuals
+        Institutions
       </h1>
       <p style={{
         fontSize: 'var(--sh-text-md)',
         color: 'var(--sh-text-secondary)',
         marginBottom: 'var(--sh-space-8)',
       }}>
-        Every individual on the platform across all four sources. Search by name; filter by source.
+        Every institution on the platform. Search by name; filter by source.
       </p>
 
       <Card>
@@ -90,7 +91,7 @@ export default function IndividualsDirectory() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search by name"
-            aria-label="Search individuals by name"
+            aria-label="Search institutions by name"
             style={{
               flex: '1 1 240px',
               minWidth: 0,
@@ -139,7 +140,9 @@ export default function IndividualsDirectory() {
           color: 'var(--sh-text-secondary)',
           marginBottom: 'var(--sh-space-5)',
         }}>
-          {filtered.length} {filtered.length === 1 ? 'individual' : 'individuals'} across {sourceCount} {sourceCount === 1 ? 'source' : 'sources'}
+          {allOn
+            ? `${ALL.length} ${totalLabel} · ${breakdown.enterprise} ${entLabel} · ${breakdown.synthetic} ${synLabel}`
+            : `${filtered.length} ${filteredLabel}`}
         </p>
 
         {filtered.length === 0 ? (
@@ -150,10 +153,10 @@ export default function IndividualsDirectory() {
             textAlign: 'center',
             padding: 'var(--sh-space-8)',
           }}>
-            No individuals match this filter.
+            No institutions match this filter.
           </p>
         ) : (
-          <div role="table" aria-label="Individuals">
+          <div role="table" aria-label="Institutions">
             <div role="row" style={{
               display: 'grid',
               gridTemplateColumns: GRID_COLUMNS,
@@ -167,32 +170,40 @@ export default function IndividualsDirectory() {
               letterSpacing: '0.08em',
             }}>
               <div role="columnheader">Name</div>
+              <div role="columnheader">Sector</div>
+              <div role="columnheader">Contract tier</div>
+              <div role="columnheader">Annual</div>
               <div role="columnheader">Source</div>
-              <div role="columnheader">Context</div>
-              <div role="columnheader">Sport</div>
-              <div role="columnheader">ID</div>
+              <div role="columnheader">Partner practice</div>
+              <div role="columnheader">Staff</div>
             </div>
-            {filtered.map((p, i) => {
-              const ext = (p.extensions && p.extensions[p.sourceSurface]) || {};
-              const sport = ext.sport || '—';
-              const accent = SOURCE_ACCENT[p.sourceSurface] || 'var(--sh-text-muted)';
-              const isDash = sport === '—';
+            {filtered.map((i, idx) => {
+              const accent = SOURCE_ACCENT[i.sourceSurface] || 'var(--sh-text-muted)';
+              const partner = i.partnerAdvisorPracticeId
+                ? unified.byId('advisorPractices', i.partnerAdvisorPracticeId)
+                : null;
+              const partnerName = partner ? partner.name : '—';
+              const isDash = partnerName === '—';
+              const staffCount = (i.staffPersonIds || []).length;
               return (
                 <div
                   role="row"
-                  key={p.id}
+                  key={i.id}
                   style={{
                     display: 'grid',
                     gridTemplateColumns: GRID_COLUMNS,
                     gap: 'var(--sh-space-4)',
                     padding: 'var(--sh-space-3)',
-                    borderBottom: i === filtered.length - 1 ? 'none' : 'var(--sh-border-divider)',
+                    borderBottom: idx === filtered.length - 1 ? 'none' : 'var(--sh-border-divider)',
                     fontSize: 'var(--sh-text-sm)',
                     color: 'var(--sh-text-body)',
                     alignItems: 'center',
                   }}
                 >
-                  <div role="cell" style={{ color: 'var(--sh-text-primary)' }}>{p.name}</div>
+                  <div role="cell" style={{ color: 'var(--sh-text-primary)' }}>{i.name}</div>
+                  <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{i.sector}</div>
+                  <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{i.contract?.tier ?? '—'}</div>
+                  <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{i.contract?.annual ?? '—'}</div>
                   <div role="cell">
                     <span style={{
                       display: 'inline-block',
@@ -205,37 +216,18 @@ export default function IndividualsDirectory() {
                       textTransform: 'capitalize',
                       lineHeight: 'var(--sh-line-tight)',
                     }}>
-                      {p.sourceSurface}
+                      {i.sourceSurface}
                     </span>
                   </div>
-                  <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>
-                    {CONTEXT_LABEL[p.sourceSurface]}
-                  </div>
                   <div role="cell" style={{ color: isDash ? 'var(--sh-text-muted)' : 'var(--sh-text-secondary)' }}>
-                    {sport}
+                    {partnerName}
                   </div>
-                  <div role="cell" style={{
-                    fontSize: 'var(--sh-text-xs)',
-                    color: 'var(--sh-text-muted)',
-                    fontFamily: 'monospace',
-                  }}>
-                    {p.id}
-                  </div>
+                  <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{staffCount}</div>
                 </div>
               );
             })}
           </div>
         )}
-
-        <p style={{
-          fontSize: 'var(--sh-text-xs)',
-          color: 'var(--sh-text-muted)',
-          fontStyle: 'italic',
-          marginTop: 'var(--sh-space-5)',
-          marginBottom: 0,
-        }}>
-          A person active on more than one surface appears here once per source; combining those records into a single profile is planned.
-        </p>
       </Card>
     </main>
   );
