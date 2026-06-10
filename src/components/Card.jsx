@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export function Card({ children, padding = 'normal', tint = false, interactive = false, accent = null, style = {}, onClick, ...props }) {
+export function Card({ children, padding = 'normal', tint = false, interactive = false, accent = null, style = {}, onClick, as = 'div', 'aria-labelledby': ariaLabelledBy, ...props }) {
   const [hovered, setHovered] = useState(false);
 
   const padMap = {
@@ -29,16 +29,19 @@ export function Card({ children, padding = 'normal', tint = false, interactive =
     ...style,
   };
 
+  const Wrapper = as;
+
   return (
-    <div
+    <Wrapper
       style={baseStyle}
+      aria-labelledby={ariaLabelledBy}
       onClick={onClick}
       onMouseEnter={isClickable ? () => setHovered(true) : undefined}
       onMouseLeave={isClickable ? () => setHovered(false) : undefined}
       {...props}
     >
       {children}
-    </div>
+    </Wrapper>
   );
 }
 

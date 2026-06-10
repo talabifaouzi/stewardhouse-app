@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Chrome from '../../components/Chrome.jsx';
 import { Card } from '../../components/Card.jsx';
@@ -126,6 +126,10 @@ export default function OperationsSurface() {
 }
 
 function OperationsHome() {
+  // Stable ids wired to each section's SectionLabel for aria-labelledby (QA-018).
+  const compositionLabelId = useId();
+  const recentActivityLabelId = useId();
+  const openIssuesLabelId = useId();
   return (
     <main style={{
       maxWidth: 'var(--sh-content-max)',
@@ -219,8 +223,11 @@ function OperationsHome() {
 
       {/* Platform composition — existing four tiles, demoted below the funnel pillar.
           Three derived counts plus the hardcoded Open issues (wired in Slice C). */}
-      <div style={{ marginBottom: 'var(--sh-space-8)' }}>
-        <SectionLabel>Platform composition</SectionLabel>
+      <section
+        aria-labelledby={compositionLabelId}
+        style={{ marginBottom: 'var(--sh-space-8)' }}
+      >
+        <SectionLabel id={compositionLabelId}>Platform composition</SectionLabel>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
@@ -231,15 +238,15 @@ function OperationsHome() {
           <Stat label="Advisor Practices" value={PRACTICE_COUNT} sub="On platform" />
           <Stat label="Open issues" value={OPEN_ISSUE_COUNT} sub="Awaiting response" />
         </div>
-      </div>
+      </section>
 
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)',
         gap: 'var(--sh-space-6)',
       }}>
-        <Card>
-          <SectionLabel>Recent activity</SectionLabel>
+        <Card as="section" aria-labelledby={recentActivityLabelId}>
+          <SectionLabel id={recentActivityLabelId}>Recent activity</SectionLabel>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {RECENT_ACTIVITY.map((item, i) => (
               <ActivityRowInteractive
@@ -260,8 +267,8 @@ function OperationsHome() {
           </p>
         </Card>
 
-        <Card tint>
-          <SectionLabel>Open issues</SectionLabel>
+        <Card tint as="section" aria-labelledby={openIssuesLabelId}>
+          <SectionLabel id={openIssuesLabelId}>Open issues</SectionLabel>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {OPEN_ISSUES.map((issue, i) => (
               <IssueRow key={issue.id} issue={issue} first={i === 0} />
@@ -286,9 +293,10 @@ function MissionFunnel({ funnel }) {
   // matched is always the total CR count, so it's the natural 100% reference.
   // Guard against an empty seed: max=1 keeps width math well-defined (0/1 = 0).
   const max = funnel.matched || 1;
+  const labelId = useId();
   return (
-    <Card>
-      <SectionLabel>Mission funnel</SectionLabel>
+    <Card as="section" aria-labelledby={labelId}>
+      <SectionLabel id={labelId}>Mission funnel</SectionLabel>
       <div style={{
         display: 'flex',
         flexDirection: 'column',
@@ -348,6 +356,7 @@ function FunnelRow({ label, count, max }) {
 }
 
 function PlatformHealthCard({ health }) {
+  const labelId = useId();
   const subLabel = {
     fontSize: 'var(--sh-text-xs)',
     color: 'var(--sh-text-muted)',
@@ -362,7 +371,7 @@ function PlatformHealthCard({ health }) {
     : health.externalMonitoring;
 
   return (
-    <Card>
+    <Card as="section" aria-labelledby={labelId}>
       {/* Title + LIVE badge */}
       <div style={{
         display: 'flex',
@@ -370,7 +379,7 @@ function PlatformHealthCard({ health }) {
         gap: 'var(--sh-space-3)',
         marginBottom: 'var(--sh-space-3)',
       }}>
-        <SectionLabel>Platform health</SectionLabel>
+        <SectionLabel id={labelId}>Platform health</SectionLabel>
         <span style={{
           fontSize: '10px',
           padding: '2px 8px',
@@ -647,6 +656,7 @@ function IssueRow({ issue, first }) {
     <div
       role="button"
       tabIndex={0}
+      aria-expanded={expanded}
       onClick={() => setExpanded((v) => !v)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -741,6 +751,7 @@ function ActivityRowInteractive({ item, first }) {
     <div
       role="button"
       tabIndex={0}
+      aria-expanded={expanded}
       onClick={() => setExpanded((v) => !v)}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
