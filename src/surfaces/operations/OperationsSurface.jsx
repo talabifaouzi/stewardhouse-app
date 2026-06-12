@@ -11,6 +11,7 @@ import OrganizationsDirectory from './directories/OrganizationsDirectory.jsx';
 import InstitutionDetail from './directories/InstitutionDetail.jsx';
 import AdvisorPracticeDetail from './directories/AdvisorPracticeDetail.jsx';
 import OrganizationDetail from './directories/OrganizationDetail.jsx';
+import IndividualDetail from './directories/IndividualDetail.jsx';
 
 // Operations Overview stat values — computed once at module load from the
 // unified data layer. unified import is eager: it runs the three adapters +
@@ -162,6 +163,7 @@ export default function OperationsSurface() {
         <Routes>
           <Route index element={<OperationsHome />} />
           <Route path="individuals" element={<IndividualsDirectory />} />
+          <Route path="individuals/:id" element={<IndividualDetail />} />
           <Route path="institutions" element={<InstitutionsDirectory />} />
           <Route path="institutions/:id" element={<InstitutionDetail />} />
           <Route path="advisors" element={<AdvisorPracticesDirectory />} />

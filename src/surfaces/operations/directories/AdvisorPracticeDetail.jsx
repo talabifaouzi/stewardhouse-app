@@ -184,8 +184,9 @@ export default function AdvisorPracticeDetail() {
           {lead ? (
             <div>
               <p style={META_VALUE}>
-                {/* Slice-4 retrofit: wrap in <Link to={`/operations/individuals/${lead.id}`}>. */}
-                {lead.name}
+                <Link to={`/operations/individuals/${lead.id}`} style={LINK_STYLE}>
+                  {lead.name}
+                </Link>
                 {' '}
                 <span style={MONO_ID_STYLE}>{lead.id}</span>
               </p>
@@ -227,9 +228,10 @@ export default function AdvisorPracticeDetail() {
                 const title = personTitle(co);
                 return (
                   <div key={co.id}>
-                    {/* Slice-4 retrofit: wrap name in <Link to={`/operations/individuals/${co.id}`}>. */}
                     <p style={META_VALUE}>
-                      {co.name}
+                      <Link to={`/operations/individuals/${co.id}`} style={LINK_STYLE}>
+                        {co.name}
+                      </Link>
                       {' '}
                       <span style={MONO_ID_STYLE}>{co.id}</span>
                     </p>
@@ -300,8 +302,9 @@ export default function AdvisorPracticeDetail() {
                     }}
                   >
                     <div role="cell">
-                      {/* Slice-4 retrofit: wrap name in <Link to={`/operations/individuals/${c.id}`}>. */}
-                      <span style={{ color: 'var(--sh-text-primary)' }}>{c.name}</span>
+                      <Link to={`/operations/individuals/${c.id}`} style={LINK_STYLE}>
+                        {c.name}
+                      </Link>
                       {' '}
                       <span style={MONO_ID_STYLE}>{c.id}</span>
                     </div>

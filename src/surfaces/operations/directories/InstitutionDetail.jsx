@@ -52,6 +52,12 @@ const META_VALUE = {
   lineHeight: 1.5,
 };
 
+const LINK_STYLE = {
+  color: 'var(--sh-text-primary)',
+  textDecoration: 'none',
+  borderBottom: '1px dotted var(--sh-bronze)',
+};
+
 // Resolve a person's title from whichever source-extension carries it.
 // Synthetic staff carry their title under extensions.synthetic.title; enterprise
 // staff carry it under extensions.enterprise.title. Falls back to the bare type
@@ -218,10 +224,7 @@ export default function InstitutionDetail() {
                 ...META_VALUE,
                 marginBottom: 'var(--sh-space-1)',
               }}>
-                <Link
-                  to={`/operations/advisors/${partner.id}`}
-                  style={{ color: 'var(--sh-text-primary)', textDecoration: 'none', borderBottom: '1px dotted var(--sh-bronze)' }}
-                >
+                <Link to={`/operations/advisors/${partner.id}`} style={LINK_STYLE}>
                   {partner.name}
                 </Link>
                 {' '}
@@ -265,9 +268,10 @@ export default function InstitutionDetail() {
                 const title = personTitle(s);
                 return (
                   <div key={s.id}>
-                    {/* Slice-4 retrofit: wrap name in <Link to={`/operations/individuals/${s.id}`}>. */}
                     <p style={META_VALUE}>
-                      {s.name}
+                      <Link to={`/operations/individuals/${s.id}`} style={LINK_STYLE}>
+                        {s.name}
+                      </Link>
                       {' '}
                       <span style={MONO_ID_STYLE}>{s.id}</span>
                     </p>
@@ -339,8 +343,13 @@ export default function InstitutionDetail() {
                     }}
                   >
                     <div role="cell">
-                      {/* Slice-4 retrofit: wrap personName in <Link to={`/operations/individuals/${pp.personId}`}>. */}
-                      <span style={{ color: 'var(--sh-text-primary)' }}>{personName}</span>
+                      {person ? (
+                        <Link to={`/operations/individuals/${person.id}`} style={LINK_STYLE}>
+                          {personName}
+                        </Link>
+                      ) : (
+                        <span style={{ color: 'var(--sh-text-primary)' }}>{personName}</span>
+                      )}
                       {' '}
                       <span style={MONO_ID_STYLE}>{pp.personId}</span>
                     </div>
