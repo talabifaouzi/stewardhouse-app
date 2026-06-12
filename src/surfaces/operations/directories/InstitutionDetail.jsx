@@ -1,10 +1,11 @@
 import { useId } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, Link } from 'react-router-dom';
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import unified from '../../../data/unified/index.js';
 import { resolveSourceAccent } from './sourceAccents.js';
+import NotFoundCard from './NotFoundCard.jsx';
 
 // First detail page in the detail-routes arc — establishes the chrome pattern
 // the other three details (AdvisorPractice / Organization / Individual) follow:
@@ -51,38 +52,6 @@ const META_VALUE = {
   lineHeight: 1.5,
 };
 
-function NotFoundCard({ kind, id }) {
-  return (
-    <main style={{
-      maxWidth: 'var(--sh-content-max)',
-      margin: '0 auto',
-      padding: 'var(--sh-space-10) var(--sh-space-8) var(--sh-space-16)',
-    }}>
-      <BackLink to={DIR_PATH} label={DIR_LABEL} />
-      <Card>
-        <p style={{
-          fontFamily: 'var(--sh-font-serif)',
-          fontSize: 'var(--sh-text-xl)',
-          color: 'var(--sh-text-primary)',
-          margin: 0,
-          marginBottom: 'var(--sh-space-3)',
-        }}>
-          Record not found.
-        </p>
-        <p style={{
-          fontSize: 'var(--sh-text-sm)',
-          color: 'var(--sh-text-secondary)',
-          margin: 0,
-          marginBottom: 'var(--sh-space-4)',
-          lineHeight: 1.5,
-        }}>
-          The id <span style={MONO_ID_STYLE}>"{id}"</span> doesn't match any {kind} on file.
-        </p>
-      </Card>
-    </main>
-  );
-}
-
 // Resolve a person's title from whichever source-extension carries it.
 // Synthetic staff carry their title under extensions.synthetic.title; enterprise
 // staff carry it under extensions.enterprise.title. Falls back to the bare type
@@ -105,7 +74,7 @@ export default function InstitutionDetail() {
 
   const institution = unified.byId('institutions', id);
   if (!institution) {
-    return <NotFoundCard kind="institution" id={id} />;
+    return <NotFoundCard kind="institution" id={id} dirPath={DIR_PATH} dirLabel={DIR_LABEL} />;
   }
 
   const backTo = `${DIR_PATH}${location.state?.fromQuery ?? ''}`;
@@ -249,8 +218,12 @@ export default function InstitutionDetail() {
                 ...META_VALUE,
                 marginBottom: 'var(--sh-space-1)',
               }}>
-                {/* Slice-2 retrofit: wrap in <Link to={`/operations/advisors/${partner.id}`}> once AdvisorPractice detail exists. */}
-                {partner.name}
+                <Link
+                  to={`/operations/advisors/${partner.id}`}
+                  style={{ color: 'var(--sh-text-primary)', textDecoration: 'none', borderBottom: '1px dotted var(--sh-bronze)' }}
+                >
+                  {partner.name}
+                </Link>
                 {' '}
                 <span style={MONO_ID_STYLE}>{partner.id}</span>
               </p>
