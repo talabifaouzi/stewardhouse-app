@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
 import { CAUSES } from '../../../data/intakeData.js';
@@ -33,6 +34,7 @@ const CATEGORY_FILTERS = [
   { key: 'established', label: 'Established' },
   { key: 'emerging',    label: 'Emerging'    },
 ];
+const CAT_KEYS = CATEGORY_FILTERS.map((f) => f.key);
 
 // Distinct causes present across the 17 records — not the full taxonomy —
 // so the chip row stays honest about what's filterable today. Sorted by
@@ -49,6 +51,21 @@ const GRID_COLUMNS = 'minmax(160px, 1.4fr) 0.7fr 1fr 1.3fr 1.5fr';
 const CAUSE_PREVIEW = 3;   // first N cause labels shown inline; rest fold into "+N"
 const MISSION_MAX = 120;
 
+// URL is the source of truth for filter state (slice 5):
+//   ?q=text                    initial search-input value (debounced URL writes)
+//   ?cat=community,established subset of CAT_KEYS; absent = all ON (current default)
+//   ?causes=education,sports   cause IDs; absent = all OFF (current default — note
+//                              the asymmetry vs. cat, mirrors the in-page UX)
+//   ?ids=org-1,org-2           OVERRIDE MODE — controls unmount, render only those
+// Unknown values are silently dropped.
+const Q_DEBOUNCE_MS = 250;
+
+function parseSetParam(raw, validKeys, allOnDefault) {
+  if (raw === null) return new Set(allOnDefault ? validKeys : []);
+  const requested = raw.split(',').map((s) => s.trim()).filter(Boolean);
+  return new Set(requested.filter((k) => validKeys.includes(k)));
+}
+
 function truncate(str, n) {
   if (!str) return '';
   if (str.length <= n) return str;
@@ -56,28 +73,86 @@ function truncate(str, n) {
 }
 
 export default function OrganizationsDirectory() {
-  const [query, setQuery] = useState('');
-  const [activeCats, setActiveCats] = useState(
-    () => new Set(CATEGORY_FILTERS.map(f => f.key))
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const idsRaw = searchParams.get('ids');
+  const overrideIds = idsRaw === null
+    ? null
+    : idsRaw.split(',').map((s) => s.trim()).filter(Boolean);
+  const inOverrideMode = overrideIds !== null;
+
+  const qFromUrl = searchParams.get('q') ?? '';
+  const activeCats = useMemo(
+    () => parseSetParam(searchParams.get('cat'), CAT_KEYS, true),
+    [searchParams],
   );
-  // Causes facet starts EMPTY → no cause filtering applied. Selecting any
-  // subset narrows to orgs matching ANY selected cause (OR within facet).
-  // Facets combine as AND (search AND category AND causes).
-  const [activeCauses, setActiveCauses] = useState(() => new Set());
+  const activeCauses = useMemo(
+    () => parseSetParam(searchParams.get('causes'), DISTINCT_CAUSE_IDS, false),
+    [searchParams],
+  );
+
+  const [qInput, setQInput] = useState(qFromUrl);
+  useEffect(() => { setQInput(qFromUrl); }, [qFromUrl]);
+
+  const debounceRef = useRef(null);
+  useEffect(() => () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+  }, []);
+
+  function writeParam(name, value, isDefault) {
+    setSearchParams((prev) => {
+      const np = new URLSearchParams(prev);
+      if (isDefault) np.delete(name);
+      else np.set(name, value);
+      return np;
+    }, { replace: true });
+  }
+
+  function onQueryChange(next) {
+    setQInput(next);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      writeParam('q', next, next === '');
+    }, Q_DEBOUNCE_MS);
+  }
+
+  function toggleCat(key) {
+    const next = new Set(activeCats);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    const isDefault = next.size === CAT_KEYS.length; // all-ON = default
+    writeParam('cat', [...next].join(','), isDefault);
+  }
+
+  function toggleCause(key) {
+    const next = new Set(activeCauses);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    const isDefault = next.size === 0; // all-OFF = default (mirrors in-page UX)
+    writeParam('causes', [...next].join(','), isDefault);
+  }
+
+  function clearOverride() {
+    setSearchParams({});
+  }
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return ALL.filter(o => {
+    if (inOverrideMode) {
+      const set = new Set(overrideIds);
+      return ALL.filter((o) => set.has(o.id));
+    }
+    const q = qFromUrl.trim().toLowerCase();
+    return ALL.filter((o) => {
       if (!activeCats.has(o.cat)) return false;
       if (q && !o.name.toLowerCase().includes(q)) return false;
       if (activeCauses.size > 0) {
         const orgCauses = o.causes || [];
-        const anyMatch = orgCauses.some(c => activeCauses.has(c));
+        const anyMatch = orgCauses.some((c) => activeCauses.has(c));
         if (!anyMatch) return false;
       }
       return true;
     });
-  }, [query, activeCats, activeCauses]);
+  }, [inOverrideMode, overrideIds, qFromUrl, activeCats, activeCauses]);
 
   // Distinct category count across the full corpus — drives the
   // unfiltered count-header phrasing.
@@ -87,28 +162,10 @@ export default function OrganizationsDirectory() {
     return s.size;
   }, []);
 
-  const allOn =
-    activeCats.size === CATEGORY_FILTERS.length &&
-    activeCauses.size === 0 &&
-    query.trim() === '';
-
-  function toggleCat(key) {
-    setActiveCats(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  }
-
-  function toggleCause(key) {
-    setActiveCauses(prev => {
-      const next = new Set(prev);
-      if (next.has(key)) next.delete(key);
-      else next.add(key);
-      return next;
-    });
-  }
+  const allOn = !inOverrideMode
+    && activeCats.size === CAT_KEYS.length
+    && activeCauses.size === 0
+    && qFromUrl.trim() === '';
 
   const totalLabel    = ALL.length === 1 ? 'organization' : 'organizations';
   const filteredLabel = filtered.length === 1 ? 'organization' : 'organizations';
@@ -137,119 +194,154 @@ export default function OrganizationsDirectory() {
       </p>
 
       <Card>
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          gap: 'var(--sh-space-4)',
-          marginBottom: 'var(--sh-space-4)',
-        }}>
-          <input
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search by name"
-            aria-label="Search organizations by name"
-            style={{
-              flex: '1 1 240px',
-              minWidth: 0,
-              padding: 'var(--sh-space-2) var(--sh-space-3)',
-              fontSize: 'var(--sh-text-sm)',
-              border: 'var(--sh-border-default)',
-              borderRadius: 'var(--sh-radius-md)',
-              background: 'var(--sh-card)',
-              color: 'var(--sh-text-body)',
-            }}
-          />
-          <div role="group" aria-label="Filter by category" style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 'var(--sh-space-2)',
-          }}>
-            {CATEGORY_FILTERS.map(f => {
-              const on = activeCats.has(f.key);
-              return (
-                <button
-                  key={f.key}
-                  type="button"
-                  onClick={() => toggleCat(f.key)}
-                  aria-pressed={on}
-                  style={{
-                    fontSize: 'var(--sh-text-xs)',
-                    fontWeight: 500,
-                    padding: 'var(--sh-space-1) var(--sh-space-3)',
-                    borderRadius: 'var(--sh-radius-full)',
-                    border: on ? '1px solid var(--sh-bronze-deep)' : 'var(--sh-border-default)',
-                    background: on ? 'var(--sh-bronze-tint)' : 'var(--sh-card)',
-                    color: on ? 'var(--sh-bronze-deep)' : 'var(--sh-text-secondary)',
-                    cursor: 'pointer',
-                    transition: 'background 150ms ease, color 150ms ease, border-color 150ms ease',
-                  }}
-                >
-                  {f.label}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+        {!inOverrideMode && (
+          <>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: 'var(--sh-space-4)',
+              marginBottom: 'var(--sh-space-4)',
+            }}>
+              <input
+                type="text"
+                value={qInput}
+                onChange={(e) => onQueryChange(e.target.value)}
+                placeholder="Search by name"
+                aria-label="Search organizations by name"
+                style={{
+                  flex: '1 1 240px',
+                  minWidth: 0,
+                  padding: 'var(--sh-space-2) var(--sh-space-3)',
+                  fontSize: 'var(--sh-text-sm)',
+                  border: 'var(--sh-border-default)',
+                  borderRadius: 'var(--sh-radius-md)',
+                  background: 'var(--sh-card)',
+                  color: 'var(--sh-text-body)',
+                }}
+              />
+              <div role="group" aria-label="Filter by category" style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 'var(--sh-space-2)',
+              }}>
+                {CATEGORY_FILTERS.map((f) => {
+                  const on = activeCats.has(f.key);
+                  return (
+                    <button
+                      key={f.key}
+                      type="button"
+                      onClick={() => toggleCat(f.key)}
+                      aria-pressed={on}
+                      style={{
+                        fontSize: 'var(--sh-text-xs)',
+                        fontWeight: 500,
+                        padding: 'var(--sh-space-1) var(--sh-space-3)',
+                        borderRadius: 'var(--sh-radius-full)',
+                        border: on ? '1px solid var(--sh-bronze-deep)' : 'var(--sh-border-default)',
+                        background: on ? 'var(--sh-bronze-tint)' : 'var(--sh-card)',
+                        color: on ? 'var(--sh-bronze-deep)' : 'var(--sh-text-secondary)',
+                        cursor: 'pointer',
+                        transition: 'background 150ms ease, color 150ms ease, border-color 150ms ease',
+                      }}
+                    >
+                      {f.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
-        <div style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          alignItems: 'center',
-          gap: 'var(--sh-space-3)',
-          marginBottom: 'var(--sh-space-5)',
-        }}>
-          <span style={{
-            fontSize: 'var(--sh-text-xs)',
-            fontWeight: 500,
-            color: 'var(--sh-text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-          }}>
-            Causes
-          </span>
-          <div role="group" aria-label="Filter by cause" style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 'var(--sh-space-2)',
-          }}>
-            {DISTINCT_CAUSE_IDS.map(id => {
-              const on = activeCauses.has(id);
-              return (
-                <button
-                  key={id}
-                  type="button"
-                  onClick={() => toggleCause(id)}
-                  aria-pressed={on}
-                  style={{
-                    fontSize: 'var(--sh-text-xs)',
-                    fontWeight: 500,
-                    padding: 'var(--sh-space-1) var(--sh-space-3)',
-                    borderRadius: 'var(--sh-radius-full)',
-                    border: on ? '1px solid var(--sh-bronze-deep)' : 'var(--sh-border-default)',
-                    background: on ? 'var(--sh-bronze-tint)' : 'var(--sh-card)',
-                    color: on ? 'var(--sh-bronze-deep)' : 'var(--sh-text-secondary)',
-                    cursor: 'pointer',
-                    transition: 'background 150ms ease, color 150ms ease, border-color 150ms ease',
-                  }}
-                >
-                  {CAUSE_LABEL_BY_ID[id] || id}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              alignItems: 'center',
+              gap: 'var(--sh-space-3)',
+              marginBottom: 'var(--sh-space-5)',
+            }}>
+              <span style={{
+                fontSize: 'var(--sh-text-xs)',
+                fontWeight: 500,
+                color: 'var(--sh-text-muted)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
+              }}>
+                Causes
+              </span>
+              <div role="group" aria-label="Filter by cause" style={{
+                display: 'flex',
+                flexWrap: 'wrap',
+                gap: 'var(--sh-space-2)',
+              }}>
+                {DISTINCT_CAUSE_IDS.map((id) => {
+                  const on = activeCauses.has(id);
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => toggleCause(id)}
+                      aria-pressed={on}
+                      style={{
+                        fontSize: 'var(--sh-text-xs)',
+                        fontWeight: 500,
+                        padding: 'var(--sh-space-1) var(--sh-space-3)',
+                        borderRadius: 'var(--sh-radius-full)',
+                        border: on ? '1px solid var(--sh-bronze-deep)' : 'var(--sh-border-default)',
+                        background: on ? 'var(--sh-bronze-tint)' : 'var(--sh-card)',
+                        color: on ? 'var(--sh-bronze-deep)' : 'var(--sh-text-secondary)',
+                        cursor: 'pointer',
+                        transition: 'background 150ms ease, color 150ms ease, border-color 150ms ease',
+                      }}
+                    >
+                      {CAUSE_LABEL_BY_ID[id] || id}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
 
-        <p style={{
-          fontSize: 'var(--sh-text-sm)',
-          color: 'var(--sh-text-secondary)',
-          marginBottom: 'var(--sh-space-5)',
-        }}>
-          {allOn
-            ? `${ALL.length} ${totalLabel} across ${distinctCatCount} ${catLabel}`
-            : `${filtered.length} ${filteredLabel}`}
-        </p>
+        {inOverrideMode ? (
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-secondary)',
+            marginBottom: 'var(--sh-space-5)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--sh-space-3)',
+            flexWrap: 'wrap',
+          }}>
+            <span>Showing {filtered.length} selected</span>
+            <button
+              type="button"
+              onClick={clearOverride}
+              style={{
+                fontSize: 'var(--sh-text-xs)',
+                fontWeight: 500,
+                padding: 'var(--sh-space-1) var(--sh-space-3)',
+                borderRadius: 'var(--sh-radius-full)',
+                border: '1px solid var(--sh-bronze-deep)',
+                background: 'var(--sh-bronze-tint)',
+                color: 'var(--sh-bronze-deep)',
+                cursor: 'pointer',
+                transition: 'background 150ms ease, color 150ms ease',
+              }}
+            >
+              Clear filter
+            </button>
+          </p>
+        ) : (
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-secondary)',
+            marginBottom: 'var(--sh-space-5)',
+          }}>
+            {allOn
+              ? `${ALL.length} ${totalLabel} across ${distinctCatCount} ${catLabel}`
+              : `${filtered.length} ${filteredLabel}`}
+          </p>
+        )}
 
         {filtered.length === 0 ? (
           <p style={{
@@ -285,7 +377,7 @@ export default function OrganizationsDirectory() {
               const causeIds = o.causes || [];
               const shown = causeIds.slice(0, CAUSE_PREVIEW);
               const overflow = causeIds.length - shown.length;
-              const shownLabels = shown.map(c => CAUSE_LABEL_BY_ID[c] || c);
+              const shownLabels = shown.map((c) => CAUSE_LABEL_BY_ID[c] || c);
               const causeText = overflow > 0
                 ? `${shownLabels.join(', ')} +${overflow}`
                 : shownLabels.join(', ');
