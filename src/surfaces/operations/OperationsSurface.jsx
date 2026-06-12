@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import { Routes, Route, useLocation, useNavigate, Navigate } from 'react-router-dom';
+import { Routes, Route, useLocation, useNavigate, Navigate, Link } from 'react-router-dom';
 import Chrome from '../../components/Chrome.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
@@ -68,6 +68,32 @@ const ENTITY_FOR_TYPE = {
   advisorPractice: 'advisorPractices',
   institution: 'institutions',
 };
+
+// Maps the same relatedEntityType to the directory URL segment so the
+// IssueRow / ActivityRow expand "About:" line can link to the detail page
+// (slice 6). person -> /operations/individuals/:id (not /persons/) because
+// the detail route lives under individuals/ for nav consistency — see
+// IndividualDetail header comment.
+const ROUTE_FOR_TYPE = {
+  person: 'individuals',
+  org: 'organizations',
+  advisorPractice: 'advisors',
+  institution: 'institutions',
+};
+
+// Pre-plan-clients drill (slice 6). Derived live from advisor-source program
+// participations whose extensions.advisor.givingPlan is null. Per the entity-
+// boundary decision in adapters/individual.js, giving-plan data lives on
+// ProgramParticipation (not on Person) for the advisor surface — so this
+// filter checks the participation, then maps to the giver's personId. Today
+// the set is { p-advisor-c-002, p-advisor-c-006, p-advisor-c-007 } and its
+// size matches the PlatformHealth informational detail "3 clients with no
+// givingPlan yet" verbatim. Drill destination: /operations/individuals?ids=…
+const PRE_PLAN_CLIENT_IDS = unified.programParticipations
+  .filter((pp) => pp.contextType === 'advisor_practice'
+    && pp.sourceSurface === 'advisor'
+    && !pp.extensions?.advisor?.givingPlan)
+  .map((pp) => pp.personId);
 
 // Card-level curation for the Recent Activity card (Slice F + QA-053).
 // Excludes issue-opened events so this card doesn't duplicate the Open-issues
@@ -286,28 +312,50 @@ function OperationsHome() {
         <RelationshipProgression funnel={FUNNEL} />
       </div>
 
-      {/* Pilot headlines — four cards derived from pilotMetrics() */}
+      {/* Pilot headlines — four cards derived from pilotMetrics().
+          All four are intentionally non-interactive (slice 6, founder ruling
+          option A): each measures a relationship-level or money-level signal
+          that has no honest person-level drill destination today. Per-tile
+          unlock conditions below. The tiles render visually identical to
+          their previous form — no role, no tabindex, no pointer cursor. */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
         gap: 'var(--sh-space-4)',
         marginBottom: 'var(--sh-space-8)',
       }}>
+        {/* Relationships continuing — value counts CRs at stage='ongoing'
+            (5 today), but those 5 CRs are spread across only 3 distinct giver
+            persons. A ?ids=… drill into Individuals would show 3, contradicting
+            the tile's 5. Unlock: a CR-level filtered view that lists ongoing
+            relationships, not the people behind them. */}
         <Stat
           label="Relationships continuing"
           value={METRICS.ongoingCount}
           sub="Post-gift, still engaged"
         />
+        {/* Orgs supported — value counts cataloged + uncataloged orgs combined
+            via Gift.recipientOrgName matching. Today 0/21 gave-or-ongoing CRs
+            resolve to a cataloged org record (D5 amendment), so a drill into
+            Organizations would land empty. Unlock: either wire
+            Gift.recipientOrgId via name-match at assemble, or catalog the
+            gave-stage org names. */}
         <Stat
           label="Orgs supported"
           value={METRICS.distinctOrgsAtGave}
           sub="Distinct nonprofits at gave or ongoing"
         />
+        {/* Total given — no Gifts directory route exists (D4). Unlock: a Gifts
+            directory + detail arc, when the data shape justifies one. */}
         <Stat
           label="Total given via StewardHouse"
           value={`$${METRICS.totalDollarsAtGave.toLocaleString()}`}
           sub={`Across ${METRICS.gaveCount} gifts`}
         />
+        {/* Reached giving — same cardinality story as Relationships continuing:
+            value counts CRs at gave-or-later (21 today), but those 21 CRs are
+            spread across only 12 distinct giver persons. A ?ids=… drill would
+            show 12. Unlock: a CR-level filtered view. */}
         <Stat
           label="Reached giving"
           value={FUNNEL.gave}
@@ -525,26 +573,43 @@ function PlatformHealthCard({ health }) {
         <div style={{ marginBottom: 'var(--sh-space-5)' }}>
           <p style={PLATFORM_HEALTH_SUB_LABEL}>Informational — not errors</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-3)' }}>
-            {health.informational.map((info) => (
-              <div key={info.key}>
-                <p style={{
-                  fontSize: 'var(--sh-text-sm)',
-                  color: 'var(--sh-text-secondary)',
-                  margin: 0,
-                  lineHeight: 1.5,
-                }}>
-                  {info.text}
-                </p>
-                <p style={{
-                  fontSize: 'var(--sh-text-xs)',
-                  color: 'var(--sh-text-muted)',
-                  margin: 0,
-                  marginTop: 'var(--sh-space-half)',
-                }}>
-                  {info.detail}
-                </p>
-              </div>
-            ))}
+            {health.informational.map((info) => {
+              // Slice 6: pre-plan-clients informational drills to the 3
+              // affected clients via the Individuals directory override mode.
+              // Other informational entries (e.g. enterprise gift divergence)
+              // stay read-only per founder ruling — no fabricated destination.
+              const isPrePlanDrill = info.key === 'advisor-null-giving-plan'
+                && PRE_PLAN_CLIENT_IDS.length > 0;
+              return (
+                <div key={info.key}>
+                  <p style={{
+                    fontSize: 'var(--sh-text-sm)',
+                    color: 'var(--sh-text-secondary)',
+                    margin: 0,
+                    lineHeight: 1.5,
+                  }}>
+                    {isPrePlanDrill ? (
+                      <Link
+                        to={`/operations/individuals?ids=${PRE_PLAN_CLIENT_IDS.join(',')}`}
+                        style={INLINE_LINK_STYLE}
+                      >
+                        {info.text}
+                      </Link>
+                    ) : (
+                      info.text
+                    )}
+                  </p>
+                  <p style={{
+                    fontSize: 'var(--sh-text-xs)',
+                    color: 'var(--sh-text-muted)',
+                    margin: 0,
+                    marginTop: 'var(--sh-space-half)',
+                  }}>
+                    {info.detail}
+                  </p>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
@@ -763,13 +828,46 @@ const EXPAND_PANEL_LINE = {
   margin: 0,
 };
 
+// Inline-link treatment used by the IssueRow / ActivityRow "About:" links and
+// the PlatformHealthCard pre-plan-clients drill (slice 6). Same dotted-bronze
+// underline the detail-page cross-links use, picked up against the muted
+// text-secondary color of the expand-panel lines.
+const INLINE_LINK_STYLE = {
+  color: 'var(--sh-text-secondary)',
+  textDecoration: 'none',
+  borderBottom: '1px dotted var(--sh-bronze)',
+};
+
+// Shared "About:" line for IssueRow + ActivityRowInteractive expand panels.
+// Links the related entity's name only when relatedEntityType is non-null AND
+// byId resolves; otherwise plain text. Per D3, inline org names in row
+// description bodies stay plain text — only the structured About: line drills.
+function AboutLine({ relatedEntityType, relatedEntityId, related }) {
+  if (relatedEntityType === null) {
+    return 'Platform-level (no specific record)';
+  }
+  if (!related) {
+    return `About: (unresolved) (${relatedEntityType})`;
+  }
+  const routeSeg = ROUTE_FOR_TYPE[relatedEntityType];
+  if (!routeSeg) {
+    return `About: ${related.name} (${relatedEntityType})`;
+  }
+  return (
+    <>
+      About:{' '}
+      <Link to={`/operations/${routeSeg}/${relatedEntityId}`} style={INLINE_LINK_STYLE}>
+        {related.name}
+      </Link>
+      {' '}({relatedEntityType})
+    </>
+  );
+}
+
 function IssueRow({ issue, first }) {
   const related = issue.relatedEntityType
     ? unified.byId(ENTITY_FOR_TYPE[issue.relatedEntityType], issue.relatedEntityId)
     : null;
-  const relatedLine = issue.relatedEntityType === null
-    ? 'Platform-level (no specific record)'
-    : `About: ${related ? related.name : '(unresolved)'} (${issue.relatedEntityType})`;
 
   return (
     <ExpandableRow
@@ -777,7 +875,13 @@ function IssueRow({ issue, first }) {
       expandedPanel={
         <div style={EXPAND_PANEL_STYLE}>
           <p style={EXPAND_PANEL_LINE}>Opened {issue.openedAt}</p>
-          <p style={EXPAND_PANEL_LINE}>{relatedLine}</p>
+          <p style={EXPAND_PANEL_LINE}>
+            <AboutLine
+              relatedEntityType={issue.relatedEntityType}
+              relatedEntityId={issue.relatedEntityId}
+              related={related}
+            />
+          </p>
         </div>
       }
     >
@@ -824,9 +928,6 @@ function ActivityRowInteractive({ item, first }) {
   const related = item.relatedEntityType
     ? unified.byId(ENTITY_FOR_TYPE[item.relatedEntityType], item.relatedEntityId)
     : null;
-  const relatedLine = item.relatedEntityType === null
-    ? 'Platform-level (no specific record)'
-    : `About: ${related ? related.name : '(unresolved)'} (${item.relatedEntityType})`;
 
   const surfaceAccent = resolveSurfaceColor(item.surface);
 
@@ -836,7 +937,13 @@ function ActivityRowInteractive({ item, first }) {
       expandedPanel={
         <div style={EXPAND_PANEL_STYLE}>
           <p style={EXPAND_PANEL_LINE}>Logged {formatAbsDate(item.timestamp)}</p>
-          <p style={EXPAND_PANEL_LINE}>{relatedLine}</p>
+          <p style={EXPAND_PANEL_LINE}>
+            <AboutLine
+              relatedEntityType={item.relatedEntityType}
+              relatedEntityId={item.relatedEntityId}
+              related={related}
+            />
+          </p>
         </div>
       }
     >

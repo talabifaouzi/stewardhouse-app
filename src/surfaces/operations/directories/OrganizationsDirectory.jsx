@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
 import { CAUSES } from '../../../data/intakeData.js';
+
+const NAME_LINK_STYLE = {
+  color: 'var(--sh-text-primary)',
+  textDecoration: 'none',
+  borderBottom: '1px dotted var(--sh-bronze)',
+};
 
 // Organizations are REFERENCED entities, not platform users — the unclaimed
 // tier of the content-sourcing model. They show up as discovery-catalog
@@ -74,6 +80,17 @@ function truncate(str, n) {
 
 export default function OrganizationsDirectory() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [hoveredId, setHoveredId] = useState(null);
+
+  // Slice 6 — see IndividualsDirectory for the row-click pattern rationale.
+  function onRowClick(e, orgId) {
+    if (e.target.closest('a')) return;
+    navigate(`/operations/organizations/${orgId}`, {
+      state: { fromQuery: location.search },
+    });
+  }
 
   const idsRaw = searchParams.get('ids');
   const overrideIds = idsRaw === null
@@ -385,6 +402,9 @@ export default function OrganizationsDirectory() {
                 <div
                   role="row"
                   key={o.id}
+                  onClick={(e) => onRowClick(e, o.id)}
+                  onMouseEnter={() => setHoveredId(o.id)}
+                  onMouseLeave={() => setHoveredId(null)}
                   style={{
                     display: 'grid',
                     gridTemplateColumns: GRID_COLUMNS,
@@ -394,9 +414,20 @@ export default function OrganizationsDirectory() {
                     fontSize: 'var(--sh-text-sm)',
                     color: 'var(--sh-text-body)',
                     alignItems: 'center',
+                    cursor: 'pointer',
+                    background: hoveredId === o.id ? 'var(--sh-bronze-tint)' : undefined,
+                    transition: 'background 150ms ease',
                   }}
                 >
-                  <div role="cell" style={{ color: 'var(--sh-text-primary)' }}>{o.name}</div>
+                  <div role="cell">
+                    <Link
+                      to={`/operations/organizations/${o.id}`}
+                      state={{ fromQuery: location.search }}
+                      style={NAME_LINK_STYLE}
+                    >
+                      {o.name}
+                    </Link>
+                  </div>
                   <div role="cell" style={{
                     color: 'var(--sh-text-secondary)',
                     textTransform: 'capitalize',

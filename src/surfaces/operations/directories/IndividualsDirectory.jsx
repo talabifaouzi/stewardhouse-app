@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
 import { SOURCE_ACCENT, resolveSourceAccent } from './sourceAccents.js';
+
+const NAME_LINK_STYLE = {
+  color: 'var(--sh-text-primary)',
+  textDecoration: 'none',
+  borderBottom: '1px dotted var(--sh-bronze)',
+};
 
 // Module-level population — 77 individuals across all four sources
 // (individual 1, advisor 9, enterprise 16, synthetic 51). Same-person dedup
@@ -43,6 +49,20 @@ function parseSetParam(raw, validKeys, allOnDefault) {
 
 export default function IndividualsDirectory() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [hoveredId, setHoveredId] = useState(null);
+
+  // Slice 6 — row click navigates to the detail page, preserving the
+  // current filter URL (?source=…&q=… or ?ids=…) so the detail's BackLink
+  // returns to the exact filtered/override view. The anchor-target guard
+  // lets the inner name <Link> handle its own click without double-navigation.
+  function onRowClick(e, personId) {
+    if (e.target.closest('a')) return;
+    navigate(`/operations/individuals/${personId}`, {
+      state: { fromQuery: location.search },
+    });
+  }
 
   // ids takes priority: when present, override mode replaces all other params.
   const idsRaw = searchParams.get('ids');
@@ -278,6 +298,9 @@ export default function IndividualsDirectory() {
                 <div
                   role="row"
                   key={p.id}
+                  onClick={(e) => onRowClick(e, p.id)}
+                  onMouseEnter={() => setHoveredId(p.id)}
+                  onMouseLeave={() => setHoveredId(null)}
                   style={{
                     display: 'grid',
                     gridTemplateColumns: GRID_COLUMNS,
@@ -287,9 +310,20 @@ export default function IndividualsDirectory() {
                     fontSize: 'var(--sh-text-sm)',
                     color: 'var(--sh-text-body)',
                     alignItems: 'center',
+                    cursor: 'pointer',
+                    background: hoveredId === p.id ? 'var(--sh-bronze-tint)' : undefined,
+                    transition: 'background 150ms ease',
                   }}
                 >
-                  <div role="cell" style={{ color: 'var(--sh-text-primary)' }}>{p.name}</div>
+                  <div role="cell">
+                    <Link
+                      to={`/operations/individuals/${p.id}`}
+                      state={{ fromQuery: location.search }}
+                      style={NAME_LINK_STYLE}
+                    >
+                      {p.name}
+                    </Link>
+                  </div>
                   <div role="cell">
                     <span style={{
                       display: 'inline-block',

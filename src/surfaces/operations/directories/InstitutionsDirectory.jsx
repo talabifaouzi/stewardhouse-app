@@ -1,8 +1,14 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-dom';
 import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
 import { SOURCE_ACCENT, resolveSourceAccent } from './sourceAccents.js';
+
+const NAME_LINK_STYLE = {
+  color: 'var(--sh-text-primary)',
+  textDecoration: 'none',
+  borderBottom: '1px dotted var(--sh-bronze)',
+};
 
 // Module-level population — all institutions on the platform. Phase 1
 // totals: 4 records, 1 enterprise (Cooper State University) and 3 synthetic.
@@ -30,6 +36,17 @@ function parseSetParam(raw, validKeys, allOnDefault) {
 
 export default function InstitutionsDirectory() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [hoveredId, setHoveredId] = useState(null);
+
+  // Slice 6 — see IndividualsDirectory for the row-click pattern rationale.
+  function onRowClick(e, instId) {
+    if (e.target.closest('a')) return;
+    navigate(`/operations/institutions/${instId}`, {
+      state: { fromQuery: location.search },
+    });
+  }
 
   const idsRaw = searchParams.get('ids');
   const overrideIds = idsRaw === null
@@ -278,6 +295,9 @@ export default function InstitutionsDirectory() {
                 <div
                   role="row"
                   key={i.id}
+                  onClick={(e) => onRowClick(e, i.id)}
+                  onMouseEnter={() => setHoveredId(i.id)}
+                  onMouseLeave={() => setHoveredId(null)}
                   style={{
                     display: 'grid',
                     gridTemplateColumns: GRID_COLUMNS,
@@ -287,9 +307,20 @@ export default function InstitutionsDirectory() {
                     fontSize: 'var(--sh-text-sm)',
                     color: 'var(--sh-text-body)',
                     alignItems: 'center',
+                    cursor: 'pointer',
+                    background: hoveredId === i.id ? 'var(--sh-bronze-tint)' : undefined,
+                    transition: 'background 150ms ease',
                   }}
                 >
-                  <div role="cell" style={{ color: 'var(--sh-text-primary)' }}>{i.name}</div>
+                  <div role="cell">
+                    <Link
+                      to={`/operations/institutions/${i.id}`}
+                      state={{ fromQuery: location.search }}
+                      style={NAME_LINK_STYLE}
+                    >
+                      {i.name}
+                    </Link>
+                  </div>
                   <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{i.sector}</div>
                   <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{i.contract?.tier ?? '—'}</div>
                   <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{i.contract?.annual ?? '—'}</div>
