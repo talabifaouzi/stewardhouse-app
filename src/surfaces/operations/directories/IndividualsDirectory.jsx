@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
-import { SOURCE_ACCENT } from './sourceAccents.js';
+import { SOURCE_ACCENT, resolveSourceAccent } from './sourceAccents.js';
 
 // Module-level population — 77 individuals across all four sources
 // (individual 1, advisor 9, enterprise 16, synthetic 51). Same-person dedup
@@ -175,7 +175,7 @@ export default function IndividualsDirectory() {
             {filtered.map((p, i) => {
               const ext = (p.extensions && p.extensions[p.sourceSurface]) || {};
               const sport = ext.sport || '—';
-              const accent = SOURCE_ACCENT[p.sourceSurface] || 'var(--sh-text-muted)';
+              const accent = resolveSourceAccent(p.sourceSurface);
               const isDash = sport === '—';
               return (
                 <div

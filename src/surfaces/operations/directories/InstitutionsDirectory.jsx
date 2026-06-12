@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
-import { SOURCE_ACCENT } from './sourceAccents.js';
+import { SOURCE_ACCENT, resolveSourceAccent } from './sourceAccents.js';
 
 // Module-level population — all institutions on the platform. Phase 1
 // totals: 4 records, 1 enterprise (Cooper State University) and 3 synthetic.
@@ -178,7 +178,7 @@ export default function InstitutionsDirectory() {
               <div role="columnheader">Staff</div>
             </div>
             {filtered.map((i, idx) => {
-              const accent = SOURCE_ACCENT[i.sourceSurface] || 'var(--sh-text-muted)';
+              const accent = resolveSourceAccent(i.sourceSurface);
               const partner = i.partnerAdvisorPracticeId
                 ? unified.byId('advisorPractices', i.partnerAdvisorPracticeId)
                 : null;

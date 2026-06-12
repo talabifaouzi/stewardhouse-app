@@ -34,7 +34,14 @@ const METRICS = unified.pilotMetrics();
 // Ordered stages for the relationship-progression rendering. Descriptive
 // labels — no scoring, no ranking. Each later stage is a subset of all
 // earlier stages.
-const FUNNEL_STAGES = [
+//
+// Naming note (bundle 4): this surface-side constant was renamed
+// FUNNEL_STAGES → PROGRESSION_STAGES to match the bundle-2 copy reframe
+// (QA-001). The data layer's own `FUNNEL_STAGES` in src/data/unified/
+// index.js is intentionally left untouched — it's an internal projection
+// helper whose keys are the wire format `connectionFunnel()` returns; the
+// rename asymmetry is intentional and not a missed-site.
+const PROGRESSION_STAGES = [
   { key: 'matched',    label: 'Matched' },
   { key: 'viewed',     label: 'Viewed' },
   { key: 'connected',  label: 'Connected' },
@@ -58,21 +65,21 @@ const ENTITY_FOR_TYPE = {
   institution: 'institutions',
 };
 
-// Recent Activity card (Slice F). Card-level curation: exclude issue-opened
-// events so this card doesn't duplicate the Open-issues card next to it.
-// recentActivity() stays a faithful full feed; filtering happens here only.
-// Filter BEFORE slicing so the 6 are post-exclusion.
-//
-// QA-007 — Upstream bound derived from data, not the 105 magic number that
-// silently tracked the seed size. Each ConnectionRequest emits ≤6 stage
-// transitions (matched..ongoing); each Issue emits ≤2 events (opened /
-// resolved). The product is a permissive ceiling that grows with the data.
+// Card-level curation for the Recent Activity card (Slice F + QA-053).
+// Excludes issue-opened events so this card doesn't duplicate the Open-issues
+// card next to it; filters BEFORE slicing so the display count is
+// post-exclusion. QA-007 bound lives inside: each ConnectionRequest can emit
+// ≤6 stage transitions (matched..ongoing), each Issue ≤2 events (opened /
+// resolved); the product is a permissive ceiling that grows with the data.
+function curateForRecentActivityCard(store, displayLimit) {
+  const rawBound = store.connectionRequests.length * 6 + store.issues.length * 2;
+  return store.recentActivity({ limit: rawBound })
+    .filter((i) => i.sourceEventType !== 'issue-opened')
+    .slice(0, displayLimit);
+}
+
 const RECENT_ACTIVITY_LIMIT = 6;
-const RECENT_ACTIVITY_RAW_BOUND =
-  unified.connectionRequests.length * 6 + unified.issues.length * 2;
-const RECENT_ACTIVITY = unified.recentActivity({ limit: RECENT_ACTIVITY_RAW_BOUND })
-  .filter((i) => i.sourceEventType !== 'issue-opened')
-  .slice(0, RECENT_ACTIVITY_LIMIT);
+const RECENT_ACTIVITY = curateForRecentActivityCard(unified, RECENT_ACTIVITY_LIMIT);
 
 // Platform health pillar (Slice H). LIVE system-status — sits ABOVE the
 // demonstrative caveat so the caveat's "below" framing stays literally
@@ -89,6 +96,23 @@ const SURFACE_COLORS = {
   Enterprise: 'var(--sh-enterprise-accent)',
   Operations: 'var(--sh-bronze)',
 };
+
+const SURFACE_COLORS_FALLBACK = 'var(--sh-text-muted)';
+
+// QA-048 — Resolver with explicit dev-time signal when an
+// ActivityItem.surface value has no accent in the map. Production behavior
+// matches the previous silent `|| 'var(--sh-text-muted)'` fallback exactly
+// (same return value, no console output). The dev warn makes a future
+// projection-vs-map drift loud instead of silent.
+function resolveSurfaceColor(surface) {
+  const hit = SURFACE_COLORS[surface];
+  if (hit !== undefined) return hit;
+  if (import.meta.env?.DEV) {
+    // eslint-disable-next-line no-console
+    console.warn(`[OperationsSurface] No accent for ActivityItem.surface "${surface}" — falling back to muted.`);
+  }
+  return SURFACE_COLORS_FALLBACK;
+}
 
 // Short-form month names for the absolute-date format used by formatTimeAgo
 // (≥56 days) and the IssueRow/ActivityRow expand "Logged Mon DD, YYYY".
@@ -251,7 +275,7 @@ function OperationsHome() {
 
       {/* Q2 — Relationship progression pillar */}
       <div style={{ marginBottom: 'var(--sh-space-6)' }}>
-        <MissionFunnel funnel={FUNNEL} />
+        <RelationshipProgression funnel={FUNNEL} />
       </div>
 
       {/* Pilot headlines — four cards derived from pilotMetrics() */}
@@ -326,7 +350,7 @@ function OperationsHome() {
   );
 }
 
-function MissionFunnel({ funnel }) {
+function RelationshipProgression({ funnel }) {
   // matched is always the total CR count, so it's the natural 100% reference.
   // Guard against an empty seed: max=1 keeps width math well-defined (0/1 = 0).
   const max = funnel.matched || 1;
@@ -339,15 +363,15 @@ function MissionFunnel({ funnel }) {
         flexDirection: 'column',
         gap: 'var(--sh-space-3)',
       }}>
-        {FUNNEL_STAGES.map((s) => (
-          <FunnelRow key={s.key} label={s.label} count={funnel[s.key]} max={max} />
+        {PROGRESSION_STAGES.map((s) => (
+          <ProgressionRow key={s.key} label={s.label} count={funnel[s.key]} max={max} />
         ))}
       </div>
     </Card>
   );
 }
 
-function FunnelRow({ label, count, max }) {
+function ProgressionRow({ label, count, max }) {
   const pct = (count / max) * 100;
   return (
     <div style={{
@@ -395,17 +419,21 @@ function FunnelRow({ label, count, max }) {
   );
 }
 
+// PlatformHealthCard sub-label style — hoisted (QA-046) so the literal isn't
+// re-built per render. Used for the Data integrity / Composition /
+// Informational eyebrow labels inside the card.
+const PLATFORM_HEALTH_SUB_LABEL = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.08em',
+  fontWeight: 500,
+  margin: 0,
+  marginBottom: 'var(--sh-space-2)',
+};
+
 function PlatformHealthCard({ health }) {
   const labelId = useId();
-  const subLabel = {
-    fontSize: 'var(--sh-text-xs)',
-    color: 'var(--sh-text-muted)',
-    textTransform: 'uppercase',
-    letterSpacing: '0.08em',
-    fontWeight: 500,
-    margin: 0,
-    marginBottom: 'var(--sh-space-2)',
-  };
   const externalMonText = health.externalMonitoring === 'not-wired'
     ? 'not yet enabled'
     : health.externalMonitoring;
@@ -432,7 +460,7 @@ function PlatformHealthCard({ health }) {
 
       {/* Data integrity rollup */}
       <div style={{ marginBottom: 'var(--sh-space-5)' }}>
-        <p style={subLabel}>Data integrity</p>
+        <p style={PLATFORM_HEALTH_SUB_LABEL}>Data integrity</p>
         <p style={{
           fontFamily: 'var(--sh-font-serif)',
           fontSize: 'var(--sh-text-xl)',
@@ -458,7 +486,7 @@ function PlatformHealthCard({ health }) {
 
       {/* Composition rollup */}
       <div style={{ marginBottom: 'var(--sh-space-5)' }}>
-        <p style={subLabel}>Composition</p>
+        <p style={PLATFORM_HEALTH_SUB_LABEL}>Composition</p>
         <p style={{
           fontSize: 'var(--sh-text-sm)',
           color: 'var(--sh-text-primary)',
@@ -471,7 +499,7 @@ function PlatformHealthCard({ health }) {
           fontSize: 'var(--sh-text-xs)',
           color: 'var(--sh-text-muted)',
           margin: 0,
-          marginTop: '2px',
+          marginTop: 'var(--sh-space-half)',
         }}>
           {/* QA-008: "synthetic" is the seed, not a customer surface. Frame
               the three real source bundles separately and call the seed
@@ -487,7 +515,7 @@ function PlatformHealthCard({ health }) {
       {/* Informational — data-driven, all entries from HEALTH.informational */}
       {health.informational.length > 0 && (
         <div style={{ marginBottom: 'var(--sh-space-5)' }}>
-          <p style={subLabel}>Informational — not errors</p>
+          <p style={PLATFORM_HEALTH_SUB_LABEL}>Informational — not errors</p>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-3)' }}>
             {health.informational.map((info) => (
               <div key={info.key}>
@@ -503,7 +531,7 @@ function PlatformHealthCard({ health }) {
                   fontSize: 'var(--sh-text-xs)',
                   color: 'var(--sh-text-muted)',
                   margin: 0,
-                  marginTop: '2px',
+                  marginTop: 'var(--sh-space-half)',
                 }}>
                   {info.detail}
                 </p>
@@ -553,7 +581,7 @@ function SuiteRow({ suite }) {
         fontSize: 'var(--sh-text-xs)',
         color: 'var(--sh-text-muted)',
         margin: 0,
-        marginTop: '2px',
+        marginTop: 'var(--sh-space-half)',
       }}>
         {suite.note}
       </p>
@@ -562,17 +590,17 @@ function SuiteRow({ suite }) {
           marginTop: 'var(--sh-space-2)',
           padding: 'var(--sh-space-3)',
           background: 'var(--sh-bg-tint)',
-          borderLeft: '3px solid var(--sh-bronze)',
+          borderLeft: 'var(--sh-border-accent)',
           borderRadius: 'var(--sh-radius-sm)',
           display: 'flex',
           flexDirection: 'column',
-          gap: '4px',
+          gap: 'var(--sh-space-1)',
         }}>
           {suite.errors.slice(0, 3).map((e, i) => (
             <p key={i} style={{
               fontSize: 'var(--sh-text-xs)',
               color: 'var(--sh-text-secondary)',
-              fontFamily: 'monospace',
+              fontFamily: 'var(--sh-font-mono)',
               margin: 0,
               lineHeight: 1.5,
               wordBreak: 'break-word',
@@ -586,7 +614,7 @@ function SuiteRow({ suite }) {
               color: 'var(--sh-text-muted)',
               fontStyle: 'italic',
               margin: 0,
-              marginTop: '2px',
+              marginTop: 'var(--sh-space-half)',
             }}>
               Showing first 3 of {suite.errorCount}
             </p>
@@ -666,10 +694,68 @@ function Chevron({ expanded }) {
   );
 }
 
-function IssueRow({ issue, first }) {
-  const [expanded, setExpanded] = useState(false);
+// ExpandableRow — shared interaction shell for keyboard-expandable rows
+// (QA-044 + QA-050). Owns: role=button, tabIndex, aria-expanded, click +
+// Enter/Space toggling, hover bronze-tint, divider (suppressed on first),
+// padding + negative-margin breakout, userSelect:none. The internal boolean
+// is named `open`; the JSX-bearing prop is `expandedPanel` and the children
+// render-prop receives `open` so the consumer can wire its own Chevron
+// rotation without lifting state.
+function ExpandableRow({ first = false, expandedPanel, children }) {
+  const [open, setOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const toggle = () => setOpen((v) => !v);
+  return (
+    <div
+      role="button"
+      tabIndex={0}
+      aria-expanded={open}
+      onClick={toggle}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggle();
+        }
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        padding: 'var(--sh-space-3)',
+        marginLeft: 'calc(var(--sh-space-3) * -1)',
+        marginRight: 'calc(var(--sh-space-3) * -1)',
+        borderTop: first ? 'none' : 'var(--sh-border-divider)',
+        cursor: 'pointer',
+        background: hovered ? 'var(--sh-bronze-tint)' : 'transparent',
+        transition: 'background 150ms ease',
+        userSelect: 'none',
+      }}
+    >
+      {typeof children === 'function' ? children(open) : children}
+      {open && expandedPanel}
+    </div>
+  );
+}
 
+// Shared expand-panel style for IssueRow / ActivityRowInteractive expand
+// content — the bronze-stripe tile that appears below the row when open.
+const EXPAND_PANEL_STYLE = {
+  marginTop: 'var(--sh-space-3)',
+  padding: 'var(--sh-space-4)',
+  background: 'var(--sh-card)',
+  borderLeft: 'var(--sh-border-accent)',
+  borderRadius: 'var(--sh-radius-md)',
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 'var(--sh-space-1)',
+};
+
+const EXPAND_PANEL_LINE = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  margin: 0,
+};
+
+function IssueRow({ issue, first }) {
   const related = issue.relatedEntityType
     ? unified.byId(ENTITY_FOR_TYPE[issue.relatedEntityType], issue.relatedEntityId)
     : null;
@@ -678,96 +764,55 @@ function IssueRow({ issue, first }) {
     : `About: ${related ? related.name : '(unresolved)'} (${issue.relatedEntityType})`;
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-expanded={expanded}
-      onClick={() => setExpanded((v) => !v)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          setExpanded((v) => !v);
-        }
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        padding: 'var(--sh-space-3)',
-        marginLeft: 'calc(var(--sh-space-3) * -1)',
-        marginRight: 'calc(var(--sh-space-3) * -1)',
-        borderTop: first ? 'none' : 'var(--sh-border-divider)',
-        cursor: 'pointer',
-        background: hovered ? 'var(--sh-bronze-tint)' : 'transparent',
-        transition: 'background 150ms ease',
-        userSelect: 'none',
-      }}
+    <ExpandableRow
+      first={first}
+      expandedPanel={
+        <div style={EXPAND_PANEL_STYLE}>
+          <p style={EXPAND_PANEL_LINE}>Opened {issue.openedAt}</p>
+          <p style={EXPAND_PANEL_LINE}>{relatedLine}</p>
+        </div>
+      }
     >
-      <div style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: 'var(--sh-space-3)',
-      }}>
-        <p style={{
-          flex: 1,
-          fontSize: 'var(--sh-text-sm)',
-          color: 'var(--sh-text-primary)',
-          margin: 0,
-          marginBottom: '2px',
-          lineHeight: 1.45,
-        }}>
-          {issue.summary}
-        </p>
-        <div style={{ paddingTop: '4px' }}>
-          <Chevron expanded={expanded} />
-        </div>
-      </div>
-      <p style={{
-        fontSize: 'var(--sh-text-xs)',
-        color: 'var(--sh-text-muted)',
-        margin: 0,
-      }}>
-        {/* QA-020: <time> wraps the relative-time text so screen readers and
-            tooltips get an absolute-date fallback for unexpanded rows. */}
-        <time dateTime={issue.openedAt} title={formatAbsDate(issue.openedAt)}>
-          {formatFiled(issue.openedAt)}
-        </time>
-        {' · '}{issue.category} · {issue.severity}
-      </p>
-      {expanded && (
-        <div style={{
-          marginTop: 'var(--sh-space-3)',
-          padding: 'var(--sh-space-4)',
-          background: 'var(--sh-card)',
-          borderLeft: '3px solid var(--sh-bronze)',
-          borderRadius: 'var(--sh-radius-md)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 'var(--sh-space-1)',
-        }}>
+      {(open) => (
+        <>
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 'var(--sh-space-3)',
+          }}>
+            <p style={{
+              flex: 1,
+              fontSize: 'var(--sh-text-sm)',
+              color: 'var(--sh-text-primary)',
+              margin: 0,
+              marginBottom: 'var(--sh-space-half)',
+              lineHeight: 1.45,
+            }}>
+              {issue.summary}
+            </p>
+            <div style={{ paddingTop: 'var(--sh-space-1)' }}>
+              <Chevron expanded={open} />
+            </div>
+          </div>
           <p style={{
-            fontSize: 'var(--sh-text-sm)',
-            color: 'var(--sh-text-secondary)',
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
             margin: 0,
           }}>
-            Opened {issue.openedAt}
+            {/* QA-020: <time> wraps the relative-time text so screen readers and
+                tooltips get an absolute-date fallback for unexpanded rows. */}
+            <time dateTime={issue.openedAt} title={formatAbsDate(issue.openedAt)}>
+              {formatFiled(issue.openedAt)}
+            </time>
+            {' · '}{issue.category} · {issue.severity}
           </p>
-          <p style={{
-            fontSize: 'var(--sh-text-sm)',
-            color: 'var(--sh-text-secondary)',
-            margin: 0,
-          }}>
-            {relatedLine}
-          </p>
-        </div>
+        </>
       )}
-    </div>
+    </ExpandableRow>
   );
 }
 
 function ActivityRowInteractive({ item, first }) {
-  const [expanded, setExpanded] = useState(false);
-  const [hovered, setHovered] = useState(false);
-
   const related = item.relatedEntityType
     ? unified.byId(ENTITY_FOR_TYPE[item.relatedEntityType], item.relatedEntityId)
     : null;
@@ -775,113 +820,73 @@ function ActivityRowInteractive({ item, first }) {
     ? 'Platform-level (no specific record)'
     : `About: ${related ? related.name : '(unresolved)'} (${item.relatedEntityType})`;
 
-  const surfaceAccent = SURFACE_COLORS[item.surface] || 'var(--sh-text-muted)';
+  const surfaceAccent = resolveSurfaceColor(item.surface);
 
   return (
-    <div
-      role="button"
-      tabIndex={0}
-      aria-expanded={expanded}
-      onClick={() => setExpanded((v) => !v)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          setExpanded((v) => !v);
-        }
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      style={{
-        padding: 'var(--sh-space-3)',
-        marginLeft: 'calc(var(--sh-space-3) * -1)',
-        marginRight: 'calc(var(--sh-space-3) * -1)',
-        borderTop: first ? 'none' : 'var(--sh-border-divider)',
-        cursor: 'pointer',
-        background: hovered ? 'var(--sh-bronze-tint)' : 'transparent',
-        transition: 'background 150ms ease',
-        userSelect: 'none',
-      }}
+    <ExpandableRow
+      first={first}
+      expandedPanel={
+        <div style={EXPAND_PANEL_STYLE}>
+          <p style={EXPAND_PANEL_LINE}>Logged {formatAbsDate(item.timestamp)}</p>
+          <p style={EXPAND_PANEL_LINE}>{relatedLine}</p>
+        </div>
+      }
     >
-      <div style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: 'var(--sh-space-3)',
-      }}>
-        <div style={{ minWidth: '90px' }}>
-          <p style={{
-            fontSize: 'var(--sh-text-xs)',
-            color: 'var(--sh-text-muted)',
-            margin: 0,
-          }}>
-            {/* QA-020: <time> wraps the relative-time text so screen readers
-                and tooltips get an absolute-date fallback for unexpanded rows. */}
-            <time dateTime={item.timestamp} title={formatAbsDate(item.timestamp)}>
-              {formatTimeAgo(item.timestamp)}
-            </time>
-          </p>
-        </div>
-        <span style={{
-          // QA-031: was the literal '10px' — moved to the nearest token
-          // (--sh-text-xs is 11px, a one-pixel nudge upward).
-          fontSize: 'var(--sh-text-xs)',
-          padding: '2px 8px',
-          borderRadius: 'var(--sh-radius-full)',
-          background: 'var(--sh-bg-tint)',
-          color: 'var(--sh-text-secondary)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.06em',
-          fontWeight: 500,
-          flexShrink: 0,
-          // QA-022: was 0.5px — sub-pixel borders rendered inconsistently
-          // (some browsers rounded to 0). 1px guarantees the chip outline.
-          border: `1px solid ${surfaceAccent}`,
-        }}>
-          {item.surface}
-        </span>
-        <p style={{
-          flex: 1,
-          fontSize: 'var(--sh-text-sm)',
-          color: 'var(--sh-text-secondary)',
-          lineHeight: 1.5,
-          margin: 0,
-          // QA-039: prevent long org names / unbroken strings from breaking
-          // the row layout horizontally.
-          overflowWrap: 'anywhere',
-        }}>
-          {item.description}
-        </p>
-        <div style={{ paddingTop: '4px' }}>
-          <Chevron expanded={expanded} />
-        </div>
-      </div>
-      {expanded && (
+      {(open) => (
         <div style={{
-          marginTop: 'var(--sh-space-3)',
-          padding: 'var(--sh-space-4)',
-          background: 'var(--sh-card)',
-          borderLeft: '3px solid var(--sh-bronze)',
-          borderRadius: 'var(--sh-radius-md)',
           display: 'flex',
-          flexDirection: 'column',
-          gap: 'var(--sh-space-1)',
+          alignItems: 'flex-start',
+          gap: 'var(--sh-space-3)',
         }}>
+          <div style={{ minWidth: '90px' }}>
+            <p style={{
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-text-muted)',
+              margin: 0,
+            }}>
+              {/* QA-020: <time> wraps the relative-time text so screen readers
+                  and tooltips get an absolute-date fallback for unexpanded rows. */}
+              <time dateTime={item.timestamp} title={formatAbsDate(item.timestamp)}>
+                {formatTimeAgo(item.timestamp)}
+              </time>
+            </p>
+          </div>
+          <span style={{
+            // QA-031: was the literal '10px' — moved to the nearest token
+            // (--sh-text-xs is 11px, a one-pixel nudge upward).
+            fontSize: 'var(--sh-text-xs)',
+            padding: '2px 8px',
+            borderRadius: 'var(--sh-radius-full)',
+            background: 'var(--sh-bg-tint)',
+            color: 'var(--sh-text-secondary)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.06em',
+            fontWeight: 500,
+            flexShrink: 0,
+            // QA-022: was 0.5px — sub-pixel borders rendered inconsistently
+            // (some browsers rounded to 0). 1px guarantees the chip outline.
+            border: `1px solid ${surfaceAccent}`,
+          }}>
+            {item.surface}
+          </span>
           <p style={{
+            flex: 1,
             fontSize: 'var(--sh-text-sm)',
             color: 'var(--sh-text-secondary)',
+            lineHeight: 1.5,
             margin: 0,
+            // QA-039: prevent long org names / unbroken strings from breaking
+            // the row layout horizontally.
+            overflowWrap: 'anywhere',
           }}>
-            Logged {formatAbsDate(item.timestamp)}
+            {item.description}
           </p>
-          <p style={{
-            fontSize: 'var(--sh-text-sm)',
-            color: 'var(--sh-text-secondary)',
-            margin: 0,
-          }}>
-            {relatedLine}
-          </p>
+          <div style={{ paddingTop: 'var(--sh-space-1)' }}>
+            <Chevron expanded={open} />
+          </div>
         </div>
       )}
-    </div>
+    </ExpandableRow>
   );
 }
 

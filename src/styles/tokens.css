@@ -52,8 +52,15 @@
   --sh-line-normal: 1.6;
   --sh-line-relaxed: 1.75;
 
+  /* Typography — monospace family (QA-034). Generic keyword for strict
+     zero-visual-change parity with the prior 'monospace' literal. A future
+     visual-judgment bundle can upgrade to a richer stack
+     (ui-monospace, 'SF Mono', Menlo, Consolas, ...). */
+  --sh-font-mono: monospace;
+
   /* Spacing */
   --sh-space-1: 4px;
+  --sh-space-half: 2px; /* QA-032 — sub-pixel micro-gap (metadata-line nudge) */
   --sh-space-2: 8px;
   --sh-space-3: 12px;
   --sh-space-4: 16px;
@@ -76,6 +83,9 @@
   --sh-border-thin: 0.5px solid var(--sh-card-border);
   --sh-border-default: 1px solid var(--sh-card-border);
   --sh-border-divider: 0.5px solid var(--sh-divider);
+  /* QA-033 — bronze accent stripe used as borderLeft on expand panels and
+     the SuiteRow errors block. Shorthand encodes width + style + color. */
+  --sh-border-accent: 3px solid var(--sh-bronze);
 
   /* Layout */
   --sh-content-max: 1200px;

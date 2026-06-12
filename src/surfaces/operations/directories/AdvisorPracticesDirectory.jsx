@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
-import { SOURCE_ACCENT } from './sourceAccents.js';
+import { SOURCE_ACCENT, resolveSourceAccent } from './sourceAccents.js';
 
 // Module-level population — 7 practices: 1 advisor source (Walker
 // Philanthropic Advisory) plus 6 synthetic. Lead-advisor resolution is
@@ -191,7 +191,7 @@ export default function AdvisorPracticesDirectory() {
               <div role="columnheader">Source</div>
             </div>
             {filtered.map((p, idx) => {
-              const accent = SOURCE_ACCENT[p.sourceSurface] || 'var(--sh-text-muted)';
+              const accent = resolveSourceAccent(p.sourceSurface);
               const leadName = LEAD_NAME_BY_PRACTICE[p.id];
               const leadDisplay = leadName || '—';
               const leadIsDash = !leadName;
