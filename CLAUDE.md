@@ -76,7 +76,14 @@ src/
 │   ├── individual/                 # 15 .jsx files (paused at v0.6.1)
 │   ├── advisor/                    # 15 .jsx files — 8-section IA, NEVER QA'd
 │   ├── enterprise/                 # 7 surface files + reports/, setup/, shared/
-│   └── operations/OperationsSurface.jsx   # Overview complete; 4 non-home stubs
+│   └── operations/
+│       ├── OperationsSurface.jsx              # Overview + route shell + 5 directory routes
+│       └── directories/
+│           ├── IndividualsDirectory.jsx       # 77 records, 4-source chips
+│           ├── InstitutionsDirectory.jsx      # 4 records, partner-practice FK
+│           ├── AdvisorPracticesDirectory.jsx  # 7 records, lead-advisor FK
+│           ├── OrganizationsDirectory.jsx     # 17 records, category + cause chips
+│           └── sourceAccents.js               # shared source-accent map for directory pages
 ├── data/
 │   ├── unified/                    # the unified data layer (see §4)
 │   │   ├── README.md
@@ -172,7 +179,7 @@ Record-level (explicit, not default landing data) —
 
 | Surface | Status |
 |---|---|
-| **Operations Overview** | **Complete and QA'd.** 8 redesign slices (A–H, 2026-06) banked; QA audit on branch `qa-audit-operations` (53 findings + 3 amendments = 56 total, doc at `docs/qa-audit-operations-2026-06-09.md`; **branch unmerged** by design). Fix bundle 1 (a11y highs QA-015 – 018) and bundle 2 (copy + structure QA-001/002/024/054 + lows 025–029) banked. The four non-home routes (`/operations/{individuals,institutions,advisors,health}`) are stubs pending a route-pages arc — flagged in the audit. |
+| **Operations Overview** | **Complete and QA'd.** Overview ships 8 redesign slices (A–H, 2026-06); QA audit on branch `qa-audit-operations` (53 findings + 3 amendments = 56 total, doc at `docs/qa-audit-operations-2026-06-09.md`; **branch unmerged** by design). Fix bundle 1 (a11y highs QA-015 – 018) and bundle 2 (copy + structure QA-001/002/024/054 + lows 025–029) banked. **Route-pages arc complete** (5 slices, 2026-06): slice 1 deleted the `health` tab + route stub and added Organizations to the nav, wired the three composition tiles as drills; slices 2–5 shipped live directory pages at `/operations/{individuals,institutions,advisors,organizations}` (Individuals 77 records / Institutions 4 / Advisor Practices 7 / Organizations 17, all fixture-faithful with live-derived count headers). Findings resolved by the arc: QA-006, QA-009, QA-041, QA-055, QA-056 — no high-severity findings remain open. Deliberately deferred: per-record detail routes (next arc), pilot-headline drills (QA-010), Overview row-expand drills. |
 | **Enterprise** | **Built and audited.** All 6 sections live (Overview, Roster, Program, Compliance, Reports (+ 5 sub-pages), Setup wizard). QA audit on branch `qa-audit-enterprise` (173 findings, doc at `docs/qa-audit-enterprise-2026-05-30.md`; **branch unmerged** by design). 9 Criticals + all 33 Highs (#17–42) shipped; Mediums + Lows triaged in `docs/qa-triage-medium-low-2026-05-30.md` (Cluster A/B/C closed). Fixture dates are uniformly shifted −192d for coherence with today (`Enterprise fixture date coherence` commit). |
 | **Advisor** | **Built, NEVER QA'd.** 8-section IA (PracticeHome, ClientRoster, ClientWorkspace, CurriculumLibrary, CohortSpace, Pipeline, Documentation, PracticeSettings; plus auxiliary DocCreate/DocDetail/LessonDetail/LessonEditor/DraftsList/CohortDetail). All 9 clients seeded with distinct fictional substance per the locked roster. **No audit doc exists.** |
 | **Individual** | **Paused at v0.6.1.** 15 surface files present (Discover, GPSReveal, GivingModeler, Plan, Positioning, Privacy, Team, History, Learn, CohortView, Letter, Questions, Feedback, GiveScreen, IndividualSurface). Frozen until further notice. |
@@ -330,6 +337,10 @@ discovery view**.
 
 Only structural elements (cause tags, fields, scaffolds). Org profile
 narrative is org-authored or imported (Candid API integration is future).
+Organizations are referenced entities, not platform users — the unclaimed
+tier of the content-sourcing model; org records appear as discovery-catalog
+entries, gift targets, and connection destinations, and the Operations
+Organizations directory is the operator view of those records.
 
 ---
 
