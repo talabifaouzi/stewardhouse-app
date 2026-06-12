@@ -13,6 +13,14 @@ import OrganizationsDirectory from './directories/OrganizationsDirectory.jsx';
 // unified data layer. unified import is eager: it runs the three adapters +
 // synthetic seed + assemble at first reference. No useMemo needed; these
 // are pure const integers / plain objects, not state.
+//
+// QA-052 — Eager-eval pattern: simply importing this surface (or any module
+// that transitively pulls `src/data/unified/index.js`) executes the entire
+// data pipeline — three adapters + the synthetic seed + assemble + five
+// runChecks suites. Module-level helpers below (`pilotMetrics`,
+// `connectionFunnel`, `openIssues`, `recentActivity`, `platformHealth`) run
+// once at first reference. Cost is one-time but real; bear it in mind when
+// importing this module from a test, a story, or another surface.
 const INDIVIDUAL_COUNT  = unified.personsBy({ type: 'individual' }).length;
 const INSTITUTION_COUNT = unified.countBy('institutions');
 const PRACTICE_COUNT    = unified.countBy('advisorPractices');
@@ -54,8 +62,15 @@ const ENTITY_FOR_TYPE = {
 // events so this card doesn't duplicate the Open-issues card next to it.
 // recentActivity() stays a faithful full feed; filtering happens here only.
 // Filter BEFORE slicing so the 6 are post-exclusion.
+//
+// QA-007 — Upstream bound derived from data, not the 105 magic number that
+// silently tracked the seed size. Each ConnectionRequest emits ≤6 stage
+// transitions (matched..ongoing); each Issue emits ≤2 events (opened /
+// resolved). The product is a permissive ceiling that grows with the data.
 const RECENT_ACTIVITY_LIMIT = 6;
-const RECENT_ACTIVITY = unified.recentActivity({ limit: 105 })
+const RECENT_ACTIVITY_RAW_BOUND =
+  unified.connectionRequests.length * 6 + unified.issues.length * 2;
+const RECENT_ACTIVITY = unified.recentActivity({ limit: RECENT_ACTIVITY_RAW_BOUND })
   .filter((i) => i.sourceEventType !== 'issue-opened')
   .slice(0, RECENT_ACTIVITY_LIMIT);
 
@@ -185,8 +200,9 @@ function OperationsHome() {
       </p>
 
       {/* Q1 — attention-shaped content leads: Open issues (wide left, 2fr) +
-          Recent activity (narrow right, 1fr). */}
-      <div style={{
+          Recent activity (narrow right, 1fr). Collapses to a single column
+          below ~720px via the .sh-ops-attention-row global rule (QA-037). */}
+      <div className="sh-ops-attention-row" style={{
         display: 'grid',
         gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)',
         gap: 'var(--sh-space-6)',
@@ -298,7 +314,7 @@ function OperationsHome() {
           />
           {/* Open issues stays non-interactive — its drill is the Open-issues
               card above; clicking the tile would duplicate that affordance. */}
-          <Stat label="Open issues" value={OPEN_ISSUE_COUNT} sub="Awaiting response" />
+          <Stat label="Open issues" value={OPEN_ISSUE_COUNT} sub="Currently open" />
         </div>
       </section>
 
@@ -336,7 +352,10 @@ function FunnelRow({ label, count, max }) {
   return (
     <div style={{
       display: 'grid',
-      gridTemplateColumns: '140px 1fr 56px',
+      // QA-038: was '140px 1fr 56px' — fixed widths compressed the middle bar
+      // at narrow widths. min-widths keep label and value legible while the
+      // bar takes whatever's left.
+      gridTemplateColumns: 'minmax(110px, max-content) 1fr minmax(48px, max-content)',
       alignItems: 'center',
       gap: 'var(--sh-space-4)',
     }}>
@@ -454,7 +473,14 @@ function PlatformHealthCard({ health }) {
           margin: 0,
           marginTop: '2px',
         }}>
-          sources: {health.composition.sources.join(' · ')}
+          {/* QA-008: "synthetic" is the seed, not a customer surface. Frame
+              the three real source bundles separately and call the seed
+              out by name so the line doesn't conflate the two. */}
+          {(() => {
+            const real = health.composition.sources.filter((s) => s !== 'synthetic');
+            const hasSynthetic = health.composition.sources.includes('synthetic');
+            return `${real.length} source bundle${real.length === 1 ? '' : 's'}: ${real.join(' · ')}${hasSynthetic ? ' + synthetic seed' : ''}`;
+          })()}
         </p>
       </div>
 
@@ -700,7 +726,12 @@ function IssueRow({ issue, first }) {
         color: 'var(--sh-text-muted)',
         margin: 0,
       }}>
-        {formatFiled(issue.openedAt)} · {issue.category} · {issue.severity}
+        {/* QA-020: <time> wraps the relative-time text so screen readers and
+            tooltips get an absolute-date fallback for unexpanded rows. */}
+        <time dateTime={issue.openedAt} title={formatAbsDate(issue.openedAt)}>
+          {formatFiled(issue.openedAt)}
+        </time>
+        {' · '}{issue.category} · {issue.severity}
       </p>
       {expanded && (
         <div style={{
@@ -782,11 +813,17 @@ function ActivityRowInteractive({ item, first }) {
             color: 'var(--sh-text-muted)',
             margin: 0,
           }}>
-            {formatTimeAgo(item.timestamp)}
+            {/* QA-020: <time> wraps the relative-time text so screen readers
+                and tooltips get an absolute-date fallback for unexpanded rows. */}
+            <time dateTime={item.timestamp} title={formatAbsDate(item.timestamp)}>
+              {formatTimeAgo(item.timestamp)}
+            </time>
           </p>
         </div>
         <span style={{
-          fontSize: '10px',
+          // QA-031: was the literal '10px' — moved to the nearest token
+          // (--sh-text-xs is 11px, a one-pixel nudge upward).
+          fontSize: 'var(--sh-text-xs)',
           padding: '2px 8px',
           borderRadius: 'var(--sh-radius-full)',
           background: 'var(--sh-bg-tint)',
@@ -795,7 +832,9 @@ function ActivityRowInteractive({ item, first }) {
           letterSpacing: '0.06em',
           fontWeight: 500,
           flexShrink: 0,
-          border: `0.5px solid ${surfaceAccent}`,
+          // QA-022: was 0.5px — sub-pixel borders rendered inconsistently
+          // (some browsers rounded to 0). 1px guarantees the chip outline.
+          border: `1px solid ${surfaceAccent}`,
         }}>
           {item.surface}
         </span>
@@ -805,6 +844,9 @@ function ActivityRowInteractive({ item, first }) {
           color: 'var(--sh-text-secondary)',
           lineHeight: 1.5,
           margin: 0,
+          // QA-039: prevent long org names / unbroken strings from breaking
+          // the row layout horizontally.
+          overflowWrap: 'anywhere',
         }}>
           {item.description}
         </p>
@@ -899,49 +941,6 @@ function Stat({ label, value, sub, onClick }) {
         {sub}
       </p>
     </div>
-  );
-}
-
-function UserList({ kind }) {
-  const titleMap = {
-    individuals: 'Individuals',
-    institutions: 'Institutions',
-    advisors: 'Advisor Practices',
-    organizations: 'Organizations',
-  };
-  return (
-    <main style={{
-      maxWidth: 'var(--sh-content-max)',
-      margin: '0 auto',
-      padding: 'var(--sh-space-10) var(--sh-space-8) var(--sh-space-16)',
-    }}>
-      <h1 style={{
-        fontFamily: 'var(--sh-font-serif)',
-        fontSize: 'var(--sh-text-2xl)',
-        color: 'var(--sh-text-primary)',
-        marginBottom: 'var(--sh-space-2)',
-      }}>
-        {titleMap[kind]}
-      </h1>
-      <p style={{
-        fontSize: 'var(--sh-text-md)',
-        color: 'var(--sh-text-secondary)',
-        marginBottom: 'var(--sh-space-8)',
-      }}>
-        Aggregate view across all {titleMap[kind].toLowerCase()} on the platform. Filtering, search, and per-user drill-down.
-      </p>
-      <Card tint>
-        <p style={{
-          fontSize: 'var(--sh-text-sm)',
-          color: 'var(--sh-text-muted)',
-          textAlign: 'center',
-          fontStyle: 'italic',
-          padding: 'var(--sh-space-6)',
-        }}>
-          Section scaffolded · aggregation queries will land here when data layer is wired.
-        </p>
-      </Card>
-    </main>
   );
 }
 

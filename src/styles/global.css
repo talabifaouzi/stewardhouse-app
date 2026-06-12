@@ -97,3 +97,11 @@ img, svg {
     padding: 0 var(--sh-space-4);
   }
 }
+
+/* QA-037: Operations Overview attention row collapses to single column
+   below ~720px so neither card compresses to a few-character width. */
+@media (max-width: 720px) {
+  .sh-ops-attention-row {
+    grid-template-columns: 1fr !important;
+  }
+}
