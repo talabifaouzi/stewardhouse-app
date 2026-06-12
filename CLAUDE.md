@@ -79,11 +79,16 @@ src/
 │   └── operations/
 │       ├── OperationsSurface.jsx              # Overview + route shell + 5 directory routes
 │       └── directories/
-│           ├── IndividualsDirectory.jsx       # 77 records, 4-source chips
-│           ├── InstitutionsDirectory.jsx      # 4 records, partner-practice FK
-│           ├── AdvisorPracticesDirectory.jsx  # 7 records, lead-advisor FK
-│           ├── OrganizationsDirectory.jsx     # 17 records, category + cause chips
-│           └── sourceAccents.js               # shared source-accent map for directory pages
+│           ├── IndividualsDirectory.jsx       # 77 records · 4-source chips · URL-state
+│           ├── InstitutionsDirectory.jsx      # 4 records · partner-practice FK · URL-state
+│           ├── AdvisorPracticesDirectory.jsx  # 7 records · lead-advisor FK · URL-state
+│           ├── OrganizationsDirectory.jsx     # 17 records · category + cause chips · URL-state
+│           ├── IndividualDetail.jsx           # type-aware: full for individuals, light for staff/advisor
+│           ├── InstitutionDetail.jsx          # contract · partner · staff · participants · issues
+│           ├── AdvisorPracticeDetail.jsx      # lead · co-advisors · clients · cohorts · partnered institutions
+│           ├── OrganizationDetail.jsx         # Candid/GuideStar profile flow
+│           ├── NotFoundCard.jsx               # shared invalid-id content card
+│           └── sourceAccents.js               # shared source-accent map + resolveSourceAccent helper
 ├── data/
 │   ├── unified/                    # the unified data layer (see §4)
 │   │   ├── README.md
@@ -123,8 +128,13 @@ Every record carries `sourceSurface` ∈ `'individual' | 'advisor' | 'enterprise
 | 'synthetic'`. IDs are namespaced: `p-{sourceSurface}-{native-id}`,
 `gift-{sourceSurface}-{seq}`, `cr-synthetic-{seq}`, `issue-synthetic-{seq}`,
 etc. **Same-person dedup across surfaces is deferred** — Marcus appears as
-`p-individual-c-001`, `p-advisor-c-001`, AND `p-enterprise-m-001` (three Person
+`p-individual-c-001`, `p-advisor-c-001`, AND `p-enterprise-1` (three Person
 records, no merging).
+
+**Shape note (Candid interleave 2026-06):** `Person.extensions.individual.causes`
+is a string-ID array (e.g. `['education','sports','economic']`) — same shape as
+`Org.causes`. Consumers resolve labels from the `CAUSES` taxonomy at render time,
+so cause-label changes in `intakeData.js` propagate without re-shipping fixtures.
 
 ### Four source bundles (assembled into one store)
 
@@ -179,7 +189,7 @@ Record-level (explicit, not default landing data) —
 
 | Surface | Status |
 |---|---|
-| **Operations Overview** | **Complete and QA'd.** Overview ships 8 redesign slices (A–H, 2026-06); QA audit on branch `qa-audit-operations` (53 findings + 3 amendments = 56 total, doc at `docs/qa-audit-operations-2026-06-09.md`; **branch unmerged** by design). Fix bundles 1 (a11y highs QA-015–018), 2 (copy + structure QA-001/002/024/054 + lows 025–029), 3 (`801123a` — decision-free fixes QA-003/007/008/020/022/031/037–039/042/043/052, incl. deletion of the dead `UserList` stub), and 4 (`20354cc` — code quality QA-032/033/034/044/046/048/050/053, the `ExpandableRow` extraction, two QA-048 resolvers, three new tokens, and the Mission→Progression internal renames) banked. **Route-pages arc complete** (5 slices, 2026-06): slice 1 deleted the `health` tab + route stub, added Organizations to the nav, wired composition tiles as drills; slices 2–5 shipped live directory pages at `/operations/{individuals,institutions,advisors,organizations}` (77 / 4 / 7 / 17 records, all fixture-faithful with live-derived count headers). **Audit posture: 42 of 56 findings resolved**; remaining 14 all assigned — QA-010 / QA-012 blocked on the detail-routes arc (QA-023 closes when QA-010 lands); QA-004 / QA-014 / QA-021 / QA-030 / QA-035 / QA-036 awaiting founder visual review; QA-011 / QA-013 / QA-040 / QA-045 / QA-051 pending founder wontfix sign-off (QA-011 reassigned to that slate by founder ruling, consistent with the no-new-footnotes decision on pilot tiles). |
+| **Operations Overview** | **Complete and QA'd.** Overview ships 8 redesign slices (A–H, 2026-06); QA audit on branch `qa-audit-operations` (53 findings + 3 amendments = 56 total, doc at `docs/qa-audit-operations-2026-06-09.md`; **branch unmerged** by design). Fix bundles 1 (a11y highs QA-015–018), 2 (copy + structure QA-001/002/024/054 + lows 025–029), 3 (`801123a` — decision-free fixes QA-003/007/008/020/022/031/037–039/042/043/052, incl. deletion of the dead `UserList` stub), and 4 (`20354cc` — code quality QA-032/033/034/044/046/048/050/053, the `ExpandableRow` extraction, two QA-048 resolvers, three new tokens, and the Mission→Progression internal renames) banked. **Route-pages arc complete** (5 slices, 2026-06): slice 1 deleted the `health` tab + route stub, added Organizations to the nav, wired composition tiles as drills; slices 2–5 shipped live directory pages at `/operations/{individuals,institutions,advisors,organizations}` (77 / 4 / 7 / 17 records, all fixture-faithful with live-derived count headers). **Detail-routes arc complete** (6 slices + Candid interleave, 2026-06): per-record detail routes at `/operations/{dir}/:id` for all four entities — slice 1 (`2d1cf1c` — Institution detail, routing skeleton), 2 (`d327080` — AdvisorPractice detail), 3 (`abe5141` — Organization detail), 4 (`760af13` — Individual detail, type-aware: full view for `type='individual'`, light view for staff/advisor), Candid interleave (`3b7da48` — Organization detail restructured to the GuideStar/Candid profile flow: `foundedYear` literals added to `orgsData.js`, cause label "Economic" → "Economic Mobility" in `intakeData.js`, Person.causes normalized to a string-ID array in `adapters/individual.js`), 5 (`dacde68` — URL-filter state on all four directories: `q` debounced / `source` / `cat` / `causes` / `ids`-override, URL as source of truth, `replace` writes), and 6 (`743de6a` — drill wiring: rows clickable with filter persistence via `location.state.fromQuery`, shared `<AboutLine>` on Issue/Activity expand panels, pre-plan-clients drill behind a build-time derivation gate, ALL FOUR pilot tiles documented-unlinked by founder ruling with per-tile unlock conditions in code) banked. Chrome pattern across detail pages: `<BackLink>` with explicit `to` + `location.state.fromQuery` preservation, shared `<NotFoundCard>` for invalid IDs, dotted-bronze cross-links. **Audit posture: 44 of 56 findings resolved**; remaining 12 — QA-023 blocked on a future CR-level filtered view (re-bucketed: the original auto-close assumed pilot tiles would gain focus; under the documented-unlinked ruling they don't); QA-004 / QA-014 / QA-021 / QA-030 / QA-035 / QA-036 awaiting founder visual review; QA-011 / QA-013 / QA-040 / QA-045 / QA-051 pending founder wontfix sign-off. |
 | **Enterprise** | **Built and audited.** All 6 sections live (Overview, Roster, Program, Compliance, Reports (+ 5 sub-pages), Setup wizard). QA audit on branch `qa-audit-enterprise` (173 findings, doc at `docs/qa-audit-enterprise-2026-05-30.md`; **branch unmerged** by design). 9 Criticals + all 33 Highs (#17–42) shipped; Mediums + Lows triaged in `docs/qa-triage-medium-low-2026-05-30.md` (Cluster A/B/C closed). Fixture dates are uniformly shifted −192d for coherence with today (`Enterprise fixture date coherence` commit). |
 | **Advisor** | **Built, NEVER QA'd.** 8-section IA (PracticeHome, ClientRoster, ClientWorkspace, CurriculumLibrary, CohortSpace, Pipeline, Documentation, PracticeSettings; plus auxiliary DocCreate/DocDetail/LessonDetail/LessonEditor/DraftsList/CohortDetail). All 9 clients seeded with distinct fictional substance per the locked roster. **No audit doc exists.** |
 | **Individual** | **Paused at v0.6.1.** 15 surface files present (Discover, GPSReveal, GivingModeler, Plan, Positioning, Privacy, Team, History, Learn, CohortView, Letter, Questions, Feedback, GiveScreen, IndividualSurface). Frozen until further notice. |
