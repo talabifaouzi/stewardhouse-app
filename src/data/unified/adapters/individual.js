@@ -119,8 +119,15 @@ export function adaptIndividual() {
           geoDetail: individualProfile.geoDetail,
           worldLabel: individualProfile.worldLabel,
           // Giving identity (decision A: lives on Person because individual
-          // has no ProgramParticipation context)
-          causes: individualProfile.causes,
+          // has no ProgramParticipation context).
+          //
+          // Causes normalize to a string-ID array here (not the source
+          // {id, label} objects) so consumers resolve labels from the CAUSES
+          // taxonomy at render time — relabels in intakeData.js propagate
+          // without re-shipping the fixture. This also aligns the shape with
+          // Org.causes (string IDs) and with IntakeContext, which already
+          // maps to IDs for the same reason.
+          causes: individualProfile.causes.map((c) => c.id),
           visibility: individualProfile.visibility,
           budget: individualProfile.budget,
           givingStyle: individualProfile.givingStyle,
@@ -163,6 +170,11 @@ export function adaptIndividual() {
     extensions: {
       individual: {
         years: o.years,
+        // foundedYear added for the Candid-aligned Organization detail page
+        // ("Founded {YYYY}" line). `years` stays untouched for the existing
+        // individual-surface Discover view consumer; the two should be kept
+        // in lockstep until Discover migrates onto foundedYear.
+        foundedYear: o.foundedYear,
         led: o.led,
         badge: o.badge,
         ed: o.ed,

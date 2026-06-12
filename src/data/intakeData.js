@@ -6,7 +6,7 @@ export const CAUSES = [
   { id: 'health', label: 'Health' },
   { id: 'arts', label: 'Arts & Culture' },
   { id: 'environment', label: 'Environment' },
-  { id: 'economic', label: 'Economic' },
+  { id: 'economic', label: 'Economic Mobility' },
   { id: 'housing', label: 'Housing' },
   { id: 'food', label: 'Food Security' },
   { id: 'sports', label: 'Sports' },

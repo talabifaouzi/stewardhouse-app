@@ -53,7 +53,11 @@
  *                                     giving-identity
  *                                     (extensions.individual.{causes,
  *                                     visibility, budget, givingStyle,
- *                                     givingPlanStatement}). Relationship /
+ *                                     givingPlanStatement}). causes is a
+ *                                     string-ID array (matches Org.causes
+ *                                     and IntakeContext) — consumers resolve
+ *                                     labels from CAUSES at render time.
+ *                                     Relationship /
  *                                     advisor work-product data (sessions,
  *                                     privateNotes, givingPlan, pipeline,
  *                                     activity log, lesson/cert state) lives
@@ -156,9 +160,14 @@
  *                                                       from enterprise exclusions[] during
  *                                                       enterprise-adapter pass.
  * @property {SourceSurface} sourceSurface
- * @property {Object} extensions                     Per-source bag (years, led, badge,
- *                                                   ed, boardSize, budget, programs[],
- *                                                   topFunders[], demo, etc.).
+ * @property {Object} extensions                     Per-source bag (years, foundedYear,
+ *                                                   led, badge, ed, boardSize, budget,
+ *                                                   programs[], topFunders[], demo, etc.).
+ *                                                   years and foundedYear are redundant
+ *                                                   (foundedYear = data-now-year − years)
+ *                                                   — both populated until the individual-
+ *                                                   surface Discover migrates onto
+ *                                                   foundedYear.
  */
 
 /**
