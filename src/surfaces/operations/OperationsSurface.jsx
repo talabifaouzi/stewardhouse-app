@@ -4,6 +4,7 @@ import Chrome from '../../components/Chrome.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import unified from '../../data/unified/index.js';
+import { CURRENT_OPS_USER } from '../../data/opsFixtures.js';
 import IndividualsDirectory from './directories/IndividualsDirectory.jsx';
 import InstitutionsDirectory from './directories/InstitutionsDirectory.jsx';
 import AdvisorPracticesDirectory from './directories/AdvisorPracticesDirectory.jsx';
@@ -124,7 +125,12 @@ const SURFACE_COLORS = {
   Individual: 'var(--sh-individual-accent)',
   Advisor: 'var(--sh-advisor-accent)',
   Enterprise: 'var(--sh-enterprise-accent)',
-  Operations: 'var(--sh-bronze)',
+  // QA-030 (founder ruling b1, bundle 5): Operations chip swapped from
+  // var(--sh-bronze) — which collided with Advisor and read heavier than peers
+  // on the bronze-tint row hover — to var(--sh-text-secondary). Operations now
+  // reads as quiet internal/staff, visually distinct from the three customer
+  // surfaces.
+  Operations: 'var(--sh-text-secondary)',
 };
 
 const SURFACE_COLORS_FALLBACK = 'var(--sh-text-muted)';
@@ -180,8 +186,8 @@ export default function OperationsSurface() {
     }}>
       <Chrome
         surface="operations"
-        userName="Faouzi Talabi"
-        userRole="Founder"
+        userName={CURRENT_OPS_USER.name}
+        userRole={CURRENT_OPS_USER.role}
         navItems={NAV_ITEMS}
         activeNav={activeNav}
       />
@@ -275,7 +281,10 @@ function OperationsHome() {
           </div>
           <p style={{
             fontSize: 'var(--sh-text-xs)',
-            color: 'var(--sh-text-muted)',
+            // QA-021 (bundle 5): muted text inside the Open issues tint card
+            // failed AA on the bg-tint background (~3.46:1). text-secondary
+            // (~8:1) is comfortably clear. Mirror on the IssueRow meta line.
+            color: 'var(--sh-text-secondary)',
             fontStyle: 'italic',
             marginTop: 'var(--sh-space-4)',
             marginBottom: 0,
@@ -908,7 +917,9 @@ function IssueRow({ issue, first }) {
           </div>
           <p style={{
             fontSize: 'var(--sh-text-xs)',
-            color: 'var(--sh-text-muted)',
+            // QA-021 (bundle 5): see Open issues card footnote — muted on
+            // bg-tint failed AA contrast; text-secondary clears it.
+            color: 'var(--sh-text-secondary)',
             margin: 0,
           }}>
             {/* QA-020: <time> wraps the relative-time text so screen readers and
@@ -973,14 +984,17 @@ function ActivityRowInteractive({ item, first }) {
             padding: '2px 8px',
             borderRadius: 'var(--sh-radius-full)',
             background: 'var(--sh-bg-tint)',
-            color: 'var(--sh-text-secondary)',
+            // QA-014 (founder ruling A, bundle 5): chip no longer looks
+            // interactive — border dropped, cursor reset to default. Surface
+            // differentiation moves from the border outline to the chip text
+            // color (sage for Individual, bronze for Advisor, slate for
+            // Enterprise; Operations uses text-secondary per QA-030).
+            color: surfaceAccent,
             textTransform: 'uppercase',
             letterSpacing: '0.06em',
             fontWeight: 500,
             flexShrink: 0,
-            // QA-022: was 0.5px — sub-pixel borders rendered inconsistently
-            // (some browsers rounded to 0). 1px guarantees the chip outline.
-            border: `1px solid ${surfaceAccent}`,
+            cursor: 'default',
           }}>
             {item.surface}
           </span>
