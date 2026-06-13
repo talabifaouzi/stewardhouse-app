@@ -46,7 +46,7 @@ export default function Documentation() {
           letterSpacing: '0.08em',
           marginBottom: 'var(--sh-space-2)',
         }}>
-          Section 7 · Documentation
+          Documentation
         </p>
         <div style={{
           display: 'flex',

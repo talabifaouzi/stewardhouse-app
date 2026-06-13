@@ -26,7 +26,7 @@ export default function CohortSpace() {
             letterSpacing: '0.08em',
             marginBottom: 'var(--sh-space-2)',
           }}>
-            Section 5 · Cohorts
+            Cohorts
           </p>
           <h1 style={{
             fontFamily: 'var(--sh-font-serif)',

@@ -56,7 +56,7 @@ export default function DraftsList() {
           letterSpacing: '0.08em',
           marginBottom: 'var(--sh-space-2)',
         }}>
-          Section 4 · Drafts
+          Curriculum library
         </p>
         <h1 style={{
           fontFamily: 'var(--sh-font-serif)',

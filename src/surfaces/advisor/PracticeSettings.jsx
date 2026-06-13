@@ -18,7 +18,7 @@ export default function PracticeSettings() {
           letterSpacing: '0.08em',
           marginBottom: 'var(--sh-space-2)',
         }}>
-          Section 8 · Settings
+          Settings
         </p>
         <h1 style={{
           fontFamily: 'var(--sh-font-serif)',

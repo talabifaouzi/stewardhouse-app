@@ -96,7 +96,7 @@ export default function LessonDetail() {
           letterSpacing: '0.08em',
           marginBottom: 'var(--sh-space-2)',
         }}>
-          Section 4 · Lesson
+          Lesson
         </p>
         <h1 style={{
           fontFamily: 'var(--sh-font-serif)',

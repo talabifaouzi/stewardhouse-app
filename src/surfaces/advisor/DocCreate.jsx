@@ -57,7 +57,7 @@ export default function DocCreate() {
 
       {/* Header */}
       <div style={{ marginBottom: 'var(--sh-space-8)' }}>
-        <p style={eyebrowStyle}>Section 7 · New document</p>
+        <p style={eyebrowStyle}>Documentation</p>
         <h1 style={{
           fontFamily: 'var(--sh-font-serif)',
           fontSize: 'var(--sh-text-2xl)',

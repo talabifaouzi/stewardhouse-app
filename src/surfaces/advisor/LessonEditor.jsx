@@ -131,9 +131,9 @@ export default function LessonEditor({ mode }) {
   };
 
   const eyebrow =
-    mode === 'fork' ? 'Section 4 · Tailor lesson'
-    : mode === 'edit' ? 'Section 4 · Edit lesson'
-    : 'Section 4 · New lesson';
+    mode === 'fork' ? 'Tailor lesson'
+    : mode === 'edit' ? 'Edit lesson'
+    : 'Curriculum library';
   const headingText =
     mode === 'fork' ? `Tailoring: ${sourceLesson.title}`
     : mode === 'edit' ? `Editing: ${sourceLesson.title}`

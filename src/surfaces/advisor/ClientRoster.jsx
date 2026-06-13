@@ -4,7 +4,7 @@ import { Card } from '../../components/Card.jsx';
 import { clients, stages } from '../../data/clients.js';
 
 // Phase 1 scope: athletes only. We filter by sport instead of sector.
-const sports = ['All', 'Basketball', 'Football', 'Soccer', 'Track and field'];
+const sports = ['All', 'Basketball', 'Football', 'Soccer', 'Track and Field'];
 
 export default function ClientRoster() {
   const [searchParams] = useSearchParams();
@@ -36,7 +36,7 @@ export default function ClientRoster() {
           letterSpacing: '0.08em',
           marginBottom: 'var(--sh-space-2)',
         }}>
-          Section 2 · Roster
+          Roster
         </p>
         <h1 style={{
           fontFamily: 'var(--sh-font-serif)',

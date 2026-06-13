@@ -50,7 +50,7 @@ export default function Pipeline() {
           letterSpacing: '0.08em',
           marginBottom: 'var(--sh-space-2)',
         }}>
-          Section 6 · Between-session pipeline
+          Pipeline
         </p>
         <h1 style={{
           fontFamily: 'var(--sh-font-serif)',
