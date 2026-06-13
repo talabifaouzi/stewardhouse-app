@@ -139,7 +139,7 @@ export default function Documentation() {
                     width: '14px',
                     height: '14px',
                     borderRadius: '50%',
-                    border: '0.5px solid #B8AE9E',
+                    border: '1px solid var(--sh-bronze-border)',
                     background: 'transparent',
                     color: 'var(--sh-text-muted)',
                     fontSize: '9px',
@@ -160,7 +160,7 @@ export default function Documentation() {
             {openHint === cat.label && (
               <div style={{
                 background: 'var(--sh-bg-tint)',
-                border: '0.5px solid var(--sh-card-border)',
+                border: '1px solid var(--sh-card-border)',
                 borderRadius: 'var(--sh-radius-md)',
                 padding: 'var(--sh-space-3) var(--sh-space-4)',
                 marginBottom: 'var(--sh-space-3)',

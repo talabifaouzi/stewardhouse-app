@@ -5,6 +5,7 @@ import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { HelpIcon } from '../../components/HelpIcon.jsx';
 import { contentTypes, pipelineDefaults } from '../../data/content.js';
 import { advisorPracticeProfile } from '../../data/clients.js';
+import StateBadge from './StateBadge.jsx';
 
 // Prototype cadence presets per content type. Real product would resolve these
 // against the content engine; here they're a closed set so the segmented control
@@ -207,29 +208,6 @@ function ContentTypeRow({ type, data, onAdjust }) {
 
       <Button variant="secondary" size="sm" onClick={onAdjust}>Adjust</Button>
     </div>
-  );
-}
-
-function StateBadge({ state }) {
-  const colors = {
-    Active: { bg: '#E8F0E5', text: '#3E5A3F' },
-    Mute: { bg: '#F0EBDF', text: '#5A554C' },
-    Pause: { bg: '#F5EFE3', text: '#5A453A' },
-  };
-  const c = colors[state] || colors.Active;
-  return (
-    <span style={{
-      fontSize: '10px',
-      padding: '3px 9px',
-      borderRadius: 'var(--sh-radius-full)',
-      background: c.bg,
-      color: c.text,
-      textTransform: 'uppercase',
-      letterSpacing: '0.06em',
-      fontWeight: 500,
-    }}>
-      {state}
-    </span>
   );
 }
 
@@ -478,7 +456,7 @@ function SegmentedControl({ value, options, onChange }) {
               border: 'none',
               borderLeft: i === 0 ? 'none' : 'var(--sh-border-thin)',
               background: selected ? 'var(--sh-bronze)' : 'transparent',
-              color: selected ? '#FFFFFF' : 'var(--sh-text-secondary)',
+              color: selected ? 'var(--sh-text-on-accent)' : 'var(--sh-text-secondary)',
               cursor: 'pointer',
               fontFamily: 'inherit',
               fontWeight: selected ? 500 : 400,

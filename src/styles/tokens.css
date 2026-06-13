@@ -24,6 +24,18 @@
   --sh-bronze-tint: #F5EFE3;     /* warm bronze tint for selected states */
   --sh-bronze-border: #D9C9B0;   /* bronze-adjacent border */
 
+  /* Color — semantic signals (ADV-004 bundle 2). The Advisor surface's pipeline
+     State badge needs a green-as-active visual signal; the warm-bronze palette
+     can't carry it. These two are the first non-warm semantic colors in the
+     system — establish them as tokens so future surfaces can reuse. */
+  --sh-state-active-bg:   #E8F0E5; /* pale green tint — Active state */
+  --sh-state-active-text: #3E5A3F; /* deep green text on the pale tint */
+
+  /* Color — text on accent (ADV-008 bundle 2). White text on a bronze button
+     background. Distinct token from --sh-card (which is "card surface white")
+     so the semantic intent is clear. */
+  --sh-text-on-accent: #FFFFFF;
+
   /* Color — surface chrome accents
      Each user surface has a subtle accent strip
      to signal context without screaming */

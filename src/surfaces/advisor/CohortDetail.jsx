@@ -395,7 +395,7 @@ export default function CohortDetail() {
               disabled={!canPublish}
               style={{
                 background: 'var(--sh-bronze)',
-                color: 'white',
+                color: 'var(--sh-text-on-accent)',
                 border: 'none',
                 padding: 'var(--sh-space-2) var(--sh-space-4)',
                 borderRadius: '4px',

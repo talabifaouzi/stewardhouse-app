@@ -138,7 +138,7 @@ function FilterGroup({ label, options, value, onChange }) {
               onClick={() => onChange(opt)}
               style={{
                 padding: '5px 11px',
-                border: '0.5px solid',
+                border: '1px solid',
                 borderColor: isActive ? 'var(--sh-bronze)' : 'var(--sh-card-border)',
                 borderRadius: 'var(--sh-radius-full)',
                 background: isActive ? 'var(--sh-bronze-tint)' : 'var(--sh-card)',
@@ -251,10 +251,10 @@ function ClientRow({ client }) {
 
 function StageBadge({ stage }) {
   const colors = {
-    New: { bg: '#F0EBDF', text: '#5A554C' },
-    Active: { bg: '#F5EFE3', text: '#5A453A' },
-    Mature: { bg: '#E8E2D6', text: '#3D3A33' },
-    Sunset: { bg: '#F8F6F0', text: '#8A8579' },
+    New:    { bg: 'var(--sh-divider)',     text: 'var(--sh-text-secondary)' },
+    Active: { bg: 'var(--sh-bronze-tint)', text: 'var(--sh-bronze-deep)' },
+    Mature: { bg: 'var(--sh-card-border)', text: 'var(--sh-text-body)' },
+    Sunset: { bg: 'var(--sh-bg-tint)',     text: 'var(--sh-text-muted)' },
   };
   const c = colors[stage] || colors.Active;
   return (

@@ -5,6 +5,7 @@ import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { clients } from '../../data/clients.js';
 import { cohorts } from '../../data/cohorts.js';
 import { contentTypes, getLessonById } from '../../data/content.js';
+import StateBadge from './StateBadge.jsx';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -573,7 +574,7 @@ function PrivateNotesPanel({ initialNotes }) {
             disabled={!canSubmit}
             style={{
               background: 'var(--sh-bronze)',
-              color: 'white',
+              color: 'var(--sh-text-on-accent)',
               border: 'none',
               padding: 'var(--sh-space-2) var(--sh-space-4)',
               borderRadius: '4px',
@@ -690,29 +691,6 @@ const bulletItemStyle = {
 
 
 // ---- Section 6: between-session pipeline components (from section6-step-a) ----
-
-function StateBadge({ state }) {
-  const colors = {
-    Active: { bg: '#E8F0E5', text: '#3E5A3F' },
-    Mute:   { bg: '#F0EBDF', text: '#5A554C' },
-    Pause:  { bg: '#F5EFE3', text: '#5A453A' },
-  };
-  const c = colors[state] || colors.Active;
-  return (
-    <span style={{
-      fontSize: '10px',
-      padding: '3px 9px',
-      borderRadius: 'var(--sh-radius-full)',
-      background: c.bg,
-      color: c.text,
-      textTransform: 'uppercase',
-      letterSpacing: '0.06em',
-      fontWeight: 500,
-    }}>
-      {state}
-    </span>
-  );
-}
 
 function PipelineRow({ label, state, source, first }) {
   return (
