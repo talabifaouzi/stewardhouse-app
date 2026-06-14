@@ -176,7 +176,7 @@ function FormField({ label, required, children }) {
         marginBottom: 'var(--sh-space-2)',
       }}>
         {label}
-        {required && <span style={{ color: 'var(--sh-bronze)', marginLeft: '4px' }} aria-hidden="true">·</span>}
+        {required && <span style={{ color: 'var(--sh-bronze)', marginLeft: 'var(--sh-space-1)' }} aria-hidden="true">·</span>}
       </p>
       {children}
     </div>
@@ -214,7 +214,7 @@ const inputStyle = {
   boxSizing: 'border-box',
   padding: 'var(--sh-space-3)',
   border: 'var(--sh-border-thin)',
-  borderRadius: '6px',
+  borderRadius: 'var(--sh-radius-md)',
   fontFamily: 'inherit',
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-body)',

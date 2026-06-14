@@ -62,7 +62,7 @@ export default function ClientRoster() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
-              padding: '8px 12px',
+              padding: 'var(--sh-space-2) var(--sh-space-3)',
               border: 'var(--sh-border-thin)',
               borderRadius: 'var(--sh-radius-md)',
               fontSize: 'var(--sh-text-sm)',
@@ -129,7 +129,7 @@ function FilterGroup({ label, options, value, onChange }) {
         letterSpacing: '0.06em',
         marginRight: 'var(--sh-space-1)',
       }}>{label}</span>
-      <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 'var(--sh-space-1)', flexWrap: 'wrap' }}>
         {options.map(opt => {
           const isActive = value === opt;
           return (
@@ -196,7 +196,7 @@ function ClientRow({ client }) {
           display: 'flex',
           alignItems: 'baseline',
           gap: 'var(--sh-space-3)',
-          marginBottom: '2px',
+          marginBottom: 'var(--sh-space-half)',
         }}>
           <p style={{
             fontFamily: 'var(--sh-font-serif)',
@@ -210,7 +210,7 @@ function ClientRow({ client }) {
         <p style={{
           fontSize: 'var(--sh-text-xs)',
           color: 'var(--sh-text-muted)',
-          marginBottom: '4px',
+          marginBottom: 'var(--sh-space-1)',
         }}>
           {client.sport} · {client.level} · started {client.relationshipStartedYear}
         </p>
@@ -227,7 +227,7 @@ function ClientRow({ client }) {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'flex-end',
-        gap: '2px',
+        gap: 'var(--sh-space-half)',
         minWidth: '120px',
       }}>
         <p style={{
@@ -259,8 +259,9 @@ function StageBadge({ stage }) {
   const c = colors[stage] || colors.Active;
   return (
     <span style={{
-      fontSize: '10px',
-      padding: '2px 8px',
+      // ADV-006 F1 ruling: was '10px' — nearest token (+1px nudge).
+      fontSize: 'var(--sh-text-xs)',
+      padding: 'var(--sh-space-half) var(--sh-space-2)',
       borderRadius: 'var(--sh-radius-full)',
       background: c.bg,
       color: c.text,

@@ -152,7 +152,7 @@ function ContentTypeRow({ type, data, onAdjust }) {
           fontFamily: 'var(--sh-font-serif)',
           fontSize: 'var(--sh-text-base)',
           color: 'var(--sh-text-primary)',
-          marginBottom: '2px',
+          marginBottom: 'var(--sh-space-half)',
         }}>
           {type.label}
         </p>
@@ -174,7 +174,7 @@ function ContentTypeRow({ type, data, onAdjust }) {
           color: 'var(--sh-text-muted)',
           textTransform: 'uppercase',
           letterSpacing: '0.06em',
-          marginBottom: '2px',
+          marginBottom: 'var(--sh-space-half)',
         }}>
           Cadence
         </p>
@@ -194,7 +194,7 @@ function ContentTypeRow({ type, data, onAdjust }) {
           color: 'var(--sh-text-muted)',
           textTransform: 'uppercase',
           letterSpacing: '0.06em',
-          marginBottom: '2px',
+          marginBottom: 'var(--sh-space-half)',
         }}>
           Coverage
         </p>
@@ -310,7 +310,7 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
             style={{
               background: 'transparent',
               border: 'none',
-              fontSize: '22px',
+              fontSize: 'var(--sh-text-xl)',
               cursor: 'pointer',
               color: 'var(--sh-text-muted)',
               padding: '0 var(--sh-space-2)',
@@ -451,7 +451,7 @@ function SegmentedControl({ value, options, onChange }) {
             type="button"
             onClick={() => onChange(opt)}
             style={{
-              padding: '8px 16px',
+              padding: 'var(--sh-space-2) var(--sh-space-4)',
               fontSize: 'var(--sh-text-sm)',
               border: 'none',
               borderLeft: i === 0 ? 'none' : 'var(--sh-border-thin)',

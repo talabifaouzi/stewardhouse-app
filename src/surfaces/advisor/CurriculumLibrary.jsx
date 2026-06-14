@@ -118,7 +118,7 @@ export default function CurriculumLibrary() {
             Author new
           </Button>
           <Button variant="secondary" onClick={() => navigate('/advisor/curriculum/drafts')}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sh-space-2)' }}>
               View drafts
               {draftsCount > 0 && <Tag color="bronze">{draftsCount}</Tag>}
             </span>
@@ -156,7 +156,7 @@ export default function CurriculumLibrary() {
             boxSizing: 'border-box',
             padding: 'var(--sh-space-3)',
             border: 'var(--sh-border-thin)',
-            borderRadius: '6px',
+            borderRadius: 'var(--sh-radius-md)',
             fontFamily: 'inherit',
             fontSize: 'var(--sh-text-sm)',
             color: 'var(--sh-text-body)',
@@ -244,7 +244,7 @@ function FilterChip({ label, selected, onClick }) {
         background: selected ? 'var(--sh-bronze-tint)' : 'transparent',
         color: selected ? 'var(--sh-bronze-deep)' : 'var(--sh-text-secondary)',
         border: selected ? '1px solid transparent' : 'var(--sh-border-thin)',
-        padding: '4px 12px',
+        padding: 'var(--sh-space-1) var(--sh-space-3)',
         borderRadius: 'var(--sh-radius-full)',
         fontSize: 'var(--sh-text-xs)',
         fontFamily: 'inherit',
@@ -313,7 +313,7 @@ function LessonRow({ lesson, first }) {
         display: 'flex',
         alignItems: 'baseline',
         gap: 'var(--sh-space-2)',
-        marginBottom: '2px',
+        marginBottom: 'var(--sh-space-half)',
       }}>
         <p style={{
           fontFamily: 'var(--sh-font-serif)',

@@ -109,7 +109,7 @@ function Meta({ label, value }) {
         color: 'var(--sh-text-muted)',
         textTransform: 'uppercase',
         letterSpacing: '0.06em',
-        marginBottom: '2px',
+        marginBottom: 'var(--sh-space-half)',
       }}>
         {label}
       </p>

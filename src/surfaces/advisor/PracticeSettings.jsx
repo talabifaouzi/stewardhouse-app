@@ -108,7 +108,7 @@ function SettingRow({ label, value, last, action }) {
           color: 'var(--sh-text-muted)',
           textTransform: 'uppercase',
           letterSpacing: '0.06em',
-          marginBottom: '2px',
+          marginBottom: 'var(--sh-space-half)',
         }}>
           {label}
         </p>

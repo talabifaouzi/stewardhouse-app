@@ -132,7 +132,7 @@ function DraftRow({ draft, first }) {
         display: 'flex',
         alignItems: 'baseline',
         gap: 'var(--sh-space-2)',
-        marginBottom: '2px',
+        marginBottom: 'var(--sh-space-half)',
       }}>
         <p style={{
           fontFamily: 'var(--sh-font-serif)',

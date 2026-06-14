@@ -385,7 +385,7 @@ function PlanMetaRow({ label, value }) {
         textTransform: 'uppercase',
         letterSpacing: '0.08em',
         fontWeight: 500,
-        paddingTop: '2px',
+        paddingTop: 'var(--sh-space-half)',
       }}>
         {label}
       </span>
@@ -442,7 +442,7 @@ function SessionCard({ session, first }) {
       <p style={{
         fontSize: 'var(--sh-text-xs)',
         color: 'var(--sh-text-muted)',
-        marginBottom: '2px',
+        marginBottom: 'var(--sh-space-half)',
         letterSpacing: '0.02em',
       }}>
         {formatDate(session.date)}
@@ -524,7 +524,8 @@ function PrivateNotesPanel({ initialNotes }) {
       }}>
         <SectionLabel>Private notes</SectionLabel>
         <span style={{
-          fontSize: '10px',
+          // ADV-006 F1 ruling: was '10px' — nearest token (+1px nudge).
+          fontSize: 'var(--sh-text-xs)',
           color: 'var(--sh-text-muted)',
           fontStyle: 'italic',
           marginBottom: 'var(--sh-space-3)',
@@ -544,7 +545,7 @@ function PrivateNotesPanel({ initialNotes }) {
             boxSizing: 'border-box',
             padding: 'var(--sh-space-3)',
             border: 'var(--sh-border-thin)',
-            borderRadius: '6px',
+            borderRadius: 'var(--sh-radius-md)',
             fontFamily: 'inherit',
             fontSize: 'var(--sh-text-sm)',
             color: 'var(--sh-text-body)',
@@ -577,7 +578,7 @@ function PrivateNotesPanel({ initialNotes }) {
               color: 'var(--sh-text-on-accent)',
               border: 'none',
               padding: 'var(--sh-space-2) var(--sh-space-4)',
-              borderRadius: '4px',
+              borderRadius: 'var(--sh-radius-sm)',
               fontSize: 'var(--sh-text-sm)',
               fontWeight: 500,
               cursor: canSubmit ? 'pointer' : 'not-allowed',
@@ -667,8 +668,8 @@ function MicroLabel({ children }) {
 const chipStyle = {
   background: 'var(--sh-bronze-tint)',
   color: 'var(--sh-bronze-deep)',
-  padding: '2px 8px',
-  borderRadius: '4px',
+  padding: 'var(--sh-space-half) var(--sh-space-2)',
+  borderRadius: 'var(--sh-radius-sm)',
   fontSize: 'var(--sh-text-xs)',
   letterSpacing: '0.02em',
   fontWeight: 500,

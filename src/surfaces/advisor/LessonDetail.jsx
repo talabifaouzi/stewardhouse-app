@@ -329,7 +329,7 @@ function MaterialRow({ material, first }) {
         fontSize: 'var(--sh-text-base)',
         color: 'var(--sh-text-primary)',
         margin: 0,
-        marginBottom: '2px',
+        marginBottom: 'var(--sh-space-half)',
       }}>
         {material.title}
       </p>
@@ -379,7 +379,7 @@ const addMaterialInputStyle = {
   boxSizing: 'border-box',
   padding: 'var(--sh-space-3)',
   border: 'var(--sh-border-thin)',
-  borderRadius: '6px',
+  borderRadius: 'var(--sh-radius-md)',
   fontFamily: 'inherit',
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-body)',

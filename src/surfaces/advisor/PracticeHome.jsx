@@ -91,7 +91,7 @@ export default function PracticeHome() {
                     fontSize: 'var(--sh-text-base)',
                     color: 'var(--sh-text-primary)',
                     fontWeight: 500,
-                    marginBottom: '2px',
+                    marginBottom: 'var(--sh-space-half)',
                   }}>
                     {client.name}
                   </p>

@@ -14,7 +14,9 @@ export default function StateBadge({ state }) {
   const c = COLORS[state] || COLORS.Active;
   return (
     <span style={{
-      fontSize: '10px',
+      // ADV-006 F1 ruling: was '10px' — swapped to nearest token (11px),
+      // +1px nudge per Operations QA-031 precedent.
+      fontSize: 'var(--sh-text-xs)',
       padding: '3px 9px',
       borderRadius: 'var(--sh-radius-full)',
       background: c.bg,

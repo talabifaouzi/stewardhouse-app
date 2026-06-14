@@ -142,7 +142,8 @@ export default function Documentation() {
                     border: '1px solid var(--sh-bronze-border)',
                     background: 'transparent',
                     color: 'var(--sh-text-muted)',
-                    fontSize: '9px',
+                    // ADV-006 F1 ruling: was '9px' — nearest token is 11px (+2px nudge).
+                    fontSize: 'var(--sh-text-xs)',
                     lineHeight: 1,
                     cursor: 'help',
                     display: 'inline-flex',
@@ -203,7 +204,7 @@ export default function Documentation() {
                       fontFamily: 'var(--sh-font-serif)',
                       fontSize: 'var(--sh-text-base)',
                       color: 'var(--sh-text-primary)',
-                      marginBottom: '2px',
+                      marginBottom: 'var(--sh-space-half)',
                     }}>
                       {doc.title}
                     </p>
@@ -280,7 +281,7 @@ const inputStyle = {
   boxSizing: 'border-box',
   padding: 'var(--sh-space-3)',
   border: 'var(--sh-border-thin)',
-  borderRadius: '6px',
+  borderRadius: 'var(--sh-radius-md)',
   fontFamily: 'inherit',
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-body)',
