@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
+import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { advisorPracticeProfile, clients, stages } from '../../data/clients.js';
 
@@ -161,11 +162,16 @@ export default function PracticeHome() {
           }}>
             <SectionLabel>Between-session pipeline</SectionLabel>
             <Link to="/advisor/pipeline" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 'var(--sh-space-1)',
               fontSize: 'var(--sh-text-sm)',
               color: 'var(--sh-bronze)',
               fontWeight: 500,
+              textDecoration: 'none',
             }}>
-              Configure →
+              Configure
+              <Icon name="chevron-right" />
             </Link>
           </div>
           <p style={{

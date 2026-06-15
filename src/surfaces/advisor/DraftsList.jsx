@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
+import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { usePracticeContent } from '../../contexts/PracticeContentContext.jsx';
@@ -101,12 +102,16 @@ export default function DraftsList() {
       {/* Back link */}
       <div style={{ marginTop: 'var(--sh-space-6)' }}>
         <Link to="/advisor/curriculum" style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 'var(--sh-space-1)',
           fontSize: 'var(--sh-text-sm)',
           color: 'var(--sh-bronze)',
           fontWeight: 500,
           textDecoration: 'none',
         }}>
-          ← Back to library
+          <Icon name="chevron-left" />
+          Back to library
         </Link>
       </div>
     </main>

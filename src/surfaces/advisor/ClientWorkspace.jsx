@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
+import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { clients } from '../../data/clients.js';
 import { cohorts } from '../../data/cohorts.js';
@@ -267,12 +268,16 @@ function PreSessionPrep({ nextSession, agenda, activeContent, firstName }) {
             borderTop: 'var(--sh-border-divider)',
           }}>
             <Link to="/advisor/pipeline" style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 'var(--sh-space-1)',
               fontSize: 'var(--sh-text-sm)',
               color: 'var(--sh-bronze)',
               fontWeight: 500,
               textDecoration: 'none',
             }}>
-              {activeContent} {activeContent === 1 ? 'item' : 'items'} surfacing to {firstName} between sessions →
+              <span>{activeContent} {activeContent === 1 ? 'item' : 'items'} surfacing to {firstName} between sessions</span>
+              <Icon name="chevron-right" />
             </Link>
           </div>
         )}

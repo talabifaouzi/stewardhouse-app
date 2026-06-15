@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
+import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useDocumentation } from '../../contexts/DocumentationContext.jsx';
 
@@ -70,13 +71,17 @@ export default function Documentation() {
             <Link
               to="/advisor/docs/new"
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'var(--sh-space-1)',
                 color: 'var(--sh-bronze)',
                 fontSize: 'var(--sh-text-sm)',
                 textDecoration: 'none',
                 whiteSpace: 'nowrap',
               }}
             >
-              + New document
+              <Icon name="plus" />
+              New document
             </Link>
             <button
               type="button"
@@ -85,6 +90,9 @@ export default function Documentation() {
                 setIsAddingSection(true);
               }}
               style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'var(--sh-space-1)',
                 background: 'transparent',
                 border: 'none',
                 padding: 0,
@@ -95,7 +103,8 @@ export default function Documentation() {
                 whiteSpace: 'nowrap',
               }}
             >
-              + New section
+              <Icon name="plus" />
+              New section
             </button>
           </div>
         </div>
@@ -180,7 +189,7 @@ export default function Documentation() {
                 lineHeight: 1.6,
                 marginTop: 'var(--sh-space-3)',
               }}>
-                No documents yet — use + New document to add one.
+                No documents yet — use New document to add one.
               </p>
             ) : (
             <div style={{ display: 'flex', flexDirection: 'column' }}>

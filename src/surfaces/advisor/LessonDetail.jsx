@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
+import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { findLesson, getLessonById } from '../../data/content.js';
 import { usePracticeContent } from '../../contexts/PracticeContentContext.jsx';
@@ -304,12 +305,16 @@ export default function LessonDetail() {
       {/* Back link */}
       <div style={{ marginTop: 'var(--sh-space-6)' }}>
         <Link to="/advisor/curriculum" style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: 'var(--sh-space-1)',
           fontSize: 'var(--sh-text-sm)',
           color: 'var(--sh-bronze)',
           fontWeight: 500,
           textDecoration: 'none',
         }}>
-          ← Back to library
+          <Icon name="chevron-left" />
+          Back to library
         </Link>
       </div>
     </main>
