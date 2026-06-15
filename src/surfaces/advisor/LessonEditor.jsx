@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { Children, cloneElement, isValidElement, useId, useMemo, useState } from 'react';
 import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
@@ -55,6 +55,10 @@ export default function LessonEditor({ mode }) {
   const [scope, setScope] = useState(sourceLesson?.scope ?? 'all');
   const [category, setCategory] = useState(sourceLesson?.category ?? 'primer');
   const [summary, setSummary] = useState(sourceLesson?.summary ?? '');
+  // Shared label-id wiring for the two SegmentedControl fields. FormField's
+  // cloneElement guard skips wrapped controls, so we plumb labelledby manually.
+  const scopeLabelId = useId();
+  const categoryLabelId = useId();
 
   // Redirect if a source was required but missing.
   if ((mode === 'fork' || mode === 'edit') && !sourceLesson) {
@@ -233,12 +237,22 @@ export default function LessonEditor({ mode }) {
             />
           </FormField>
 
-          <FormField label="Scope">
-            <SegmentedControl options={SCOPE_OPTIONS} value={scope} onChange={setScope} />
+          <FormField label="Scope" labelId={scopeLabelId}>
+            <SegmentedControl
+              options={SCOPE_OPTIONS}
+              value={scope}
+              onChange={setScope}
+              ariaLabelledBy={scopeLabelId}
+            />
           </FormField>
 
-          <FormField label="Category">
-            <SegmentedControl options={CATEGORY_OPTIONS} value={category} onChange={setCategory} />
+          <FormField label="Category" labelId={categoryLabelId}>
+            <SegmentedControl
+              options={CATEGORY_OPTIONS}
+              value={category}
+              onChange={setCategory}
+              ariaLabelledBy={categoryLabelId}
+            />
           </FormField>
 
           <FormField label="Summary">
@@ -289,10 +303,29 @@ export default function LessonEditor({ mode }) {
 // Local form helpers — duplication of Pipeline.jsx's inline controls, conscious
 // per the plan. If a third consumer appears, extract then; not before.
 
-function FormField({ label, required, children }) {
+// Mirrors DocCreate.jsx's FormField. Same guard semantics — clone aria onto
+// the first native input/textarea/select child; pass everything else through.
+// Scope/Category here render <SegmentedControl> which is intentionally NOT
+// auto-wired (not a native form control); see HOLD report for the proposed
+// labelledby pattern for SegmentedControl.
+const NATIVE_FORM_TAGS = new Set(['input', 'textarea', 'select']);
+
+function FormField({ label, required, children, labelId: labelIdProp }) {
+  const generatedId = useId();
+  const labelId = labelIdProp ?? generatedId;
+  let enhanced = false;
+  const wired = Children.map(children, (child) => {
+    if (enhanced || !isValidElement(child)) return child;
+    if (typeof child.type !== 'string' || !NATIVE_FORM_TAGS.has(child.type)) return child;
+    enhanced = true;
+    return cloneElement(child, {
+      'aria-labelledby': labelId,
+      ...(required ? { 'aria-required': true } : {}),
+    });
+  });
   return (
     <div>
-      <p style={{
+      <p id={labelId} style={{
         fontSize: 'var(--sh-text-xs)',
         color: 'var(--sh-text-muted)',
         textTransform: 'uppercase',
@@ -303,14 +336,22 @@ function FormField({ label, required, children }) {
         {label}
         {required && <span style={{ color: 'var(--sh-bronze)', marginLeft: 'var(--sh-space-1)' }} aria-hidden="true">·</span>}
       </p>
-      {children}
+      {wired}
     </div>
   );
 }
 
-function SegmentedControl({ options, value, onChange }) {
+// ariaLabelledBy threads the visible <FormField> label into a programmatic
+// group name on the segmented buttons. Behavior is single-select (pick-one),
+// but we intentionally keep aria-pressed for now — converting to radiogroup
+// semantics would change SR keyboard nav (a separate finding; see commit body).
+function SegmentedControl({ options, value, onChange, ariaLabelledBy }) {
   return (
-    <div style={{ display: 'inline-flex', gap: 'var(--sh-space-1)' }}>
+    <div
+      role={ariaLabelledBy ? 'group' : undefined}
+      aria-labelledby={ariaLabelledBy}
+      style={{ display: 'inline-flex', gap: 'var(--sh-space-1)' }}
+    >
       {options.map((opt) => {
         const selected = opt.value === value;
         return (

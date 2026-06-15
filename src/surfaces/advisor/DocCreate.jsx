@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { Children, cloneElement, isValidElement, useId, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
@@ -164,10 +164,28 @@ export default function DocCreate() {
   );
 }
 
+// Native form-control tags that get auto-wired with aria-labelledby +
+// aria-required from FormField. Wrapped controls (custom components like
+// SegmentedControl) are passed through unchanged — their root div is not
+// the interactive element, so cloning aria onto them would mislead AT.
+// Those need their own labelledby plumbing (see LessonEditor scope/category).
+const NATIVE_FORM_TAGS = new Set(['input', 'textarea', 'select']);
+
 function FormField({ label, required, children }) {
+  const labelId = useId();
+  let enhanced = false;
+  const wired = Children.map(children, (child) => {
+    if (enhanced || !isValidElement(child)) return child;
+    if (typeof child.type !== 'string' || !NATIVE_FORM_TAGS.has(child.type)) return child;
+    enhanced = true;
+    return cloneElement(child, {
+      'aria-labelledby': labelId,
+      ...(required ? { 'aria-required': true } : {}),
+    });
+  });
   return (
     <div>
-      <p style={{
+      <p id={labelId} style={{
         fontSize: 'var(--sh-text-xs)',
         color: 'var(--sh-text-muted)',
         textTransform: 'uppercase',
@@ -178,7 +196,7 @@ function FormField({ label, required, children }) {
         {label}
         {required && <span style={{ color: 'var(--sh-bronze)', marginLeft: 'var(--sh-space-1)' }} aria-hidden="true">·</span>}
       </p>
-      {children}
+      {wired}
     </div>
   );
 }

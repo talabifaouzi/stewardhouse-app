@@ -283,6 +283,7 @@ export default function CohortDetail() {
                         </div>
                         <button
                           onClick={() => toggleFlag(s.id)}
+                          aria-pressed={isFlagged}
                           style={{
                             background: isFlagged ? 'var(--sh-bronze-tint)' : 'none',
                             color: isFlagged ? 'var(--sh-bronze-deep)' : 'var(--sh-text-muted)',

@@ -260,7 +260,7 @@ export default function Documentation() {
                 style={inputStyle}
               />
               {sectionError && (
-                <p style={{
+                <p role="alert" style={{
                   fontSize: 'var(--sh-text-xs)',
                   color: 'var(--sh-text-muted)',
                   fontStyle: 'italic',

@@ -59,6 +59,7 @@ export default function ClientRoster() {
           <input
             type="text"
             placeholder="Search by name"
+            aria-label="Search clients by name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{

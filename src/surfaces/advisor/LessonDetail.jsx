@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
@@ -22,6 +22,9 @@ export default function LessonDetail() {
   const [openForm, setOpenForm] = useState(null); // 'reading' | 'task' | null
   const [formTitle, setFormTitle] = useState('');
   const [formFilename, setFormFilename] = useState('');
+  const readingFileLabelId = useId();
+  const readingTitleLabelId = useId();
+  const taskTitleLabelId = useId();
 
   const lesson = findLesson(lessonId, practiceLessons);
 
@@ -215,9 +218,10 @@ export default function LessonDetail() {
                 )}
                 {openForm === 'reading' && (
                   <div>
-                    <FieldLabel>File</FieldLabel>
+                    <FieldLabel id={readingFileLabelId}>File</FieldLabel>
                     <input
                       type="file"
+                      aria-labelledby={readingFileLabelId}
                       onChange={(e) => setFormFilename(e.target.files?.[0]?.name || '')}
                       style={{
                         fontSize: 'var(--sh-text-sm)',
@@ -226,9 +230,10 @@ export default function LessonDetail() {
                         marginBottom: 'var(--sh-space-4)',
                       }}
                     />
-                    <FieldLabel>Title</FieldLabel>
+                    <FieldLabel id={readingTitleLabelId}>Title</FieldLabel>
                     <input
                       type="text"
+                      aria-labelledby={readingTitleLabelId}
                       value={formTitle}
                       onChange={(e) => setFormTitle(e.target.value)}
                       placeholder="A short, descriptive title"
@@ -243,9 +248,10 @@ export default function LessonDetail() {
                 )}
                 {openForm === 'task' && (
                   <div>
-                    <FieldLabel>Title</FieldLabel>
+                    <FieldLabel id={taskTitleLabelId}>Title</FieldLabel>
                     <input
                       type="text"
+                      aria-labelledby={taskTitleLabelId}
                       value={formTitle}
                       onChange={(e) => setFormTitle(e.target.value)}
                       placeholder="A short, descriptive title"
@@ -350,9 +356,9 @@ function MaterialRow({ material, first }) {
 }
 
 // Local form helpers — kept in-file to honor the "one-file" constraint.
-function FieldLabel({ children }) {
+function FieldLabel({ id, children }) {
   return (
-    <p style={{
+    <p id={id} style={{
       fontSize: 'var(--sh-text-xs)',
       color: 'var(--sh-text-muted)',
       textTransform: 'uppercase',
