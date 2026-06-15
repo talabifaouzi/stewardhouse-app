@@ -8,6 +8,7 @@ const ICONS = {
   'chevron-right': { vb: '0 0 8 12', d: 'M2 1 L7 6 L2 11', w: 8, h: 12 },
   'chevron-left':  { vb: '0 0 8 12', d: 'M6 1 L1 6 L6 11', w: 8, h: 12 },
   'plus':          { vb: '0 0 10 10', d: 'M5 1 V9 M1 5 H9', w: 10, h: 10 },
+  'close':         { vb: '0 0 10 10', d: 'M1 1 L9 9 M9 1 L1 9', w: 10, h: 10 },
 };
 
 export function Icon({ name, width, height }) {

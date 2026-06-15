@@ -112,4 +112,13 @@
   /* Effects */
   --sh-overlay-bg: rgba(0, 0, 0, 0.5);
   --sh-shadow-modal: 0 4px 24px rgba(0, 0, 0, 0.12);
+
+  /* Effects — side-drawer variants (ADV-026 bundle 6). Distinct from
+     --sh-overlay-bg / --sh-shadow-modal (full-screen centered modal).
+     A side drawer partially occludes — warm-brown at 32% reads softer than
+     pure black at 50%, which suits "adjust a single setting" UX. Shadow
+     casts left from the right-edge panel, geometry different from a
+     center-modal drop-down. */
+  --sh-overlay-drawer: rgba(40, 32, 20, 0.32);
+  --sh-shadow-drawer: -12px 0 30px rgba(40, 32, 20, 0.08);
 }

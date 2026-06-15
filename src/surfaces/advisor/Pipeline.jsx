@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useId, useRef, useState } from 'react';
 import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { HelpIcon } from '../../components/HelpIcon.jsx';
+import { Icon } from '../../components/Icon.jsx';
+import { useDialogA11y } from '../../components/useDialogA11y.jsx';
 import { contentTypes, pipelineDefaults } from '../../data/content.js';
 import { advisorPracticeProfile } from '../../data/clients.js';
 import StateBadge from './StateBadge.jsx';
@@ -221,11 +223,16 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
     return presets.includes(current.cadence) ? presets : [current.cadence, ...presets];
   })();
 
-  useEffect(() => {
-    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [onClose]);
+  // ADV-025 a11y wiring. useDialogA11y handles trigger capture/restore, initial
+  // focus to the close button, Escape close, and Tab focus trap — all gated
+  // on top-of-stack so coexisting Modal instances stay coordinated.
+  const panelRef = useRef(null);
+  const closeButtonRef = useRef(null);
+  useDialogA11y({ isOpen: true, onClose, panelRef, initialFocusRef: closeButtonRef });
+
+  const headingId = useId();
+  const stateLabelId = useId();
+  const cadenceLabelId = useId();
 
   const overridesLabel = current.overrides === 1 ? 'override' : 'overrides';
 
@@ -244,15 +251,17 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
         style={{
           position: 'fixed',
           inset: 0,
-          background: 'rgba(40, 32, 20, 0.32)',
+          background: 'var(--sh-overlay-drawer)',
           zIndex: 40,
           animation: 'sh-drawer-fade-in 180ms ease forwards',
         }}
       />
 
       <aside
+        ref={panelRef}
         role="dialog"
-        aria-label={`Configure ${contentType.label}`}
+        aria-modal="true"
+        aria-labelledby={headingId}
         style={{
           position: 'fixed',
           top: 0,
@@ -262,7 +271,7 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
           maxWidth: '100vw',
           background: 'var(--sh-card)',
           borderLeft: 'var(--sh-border-thin)',
-          boxShadow: '-12px 0 30px rgba(40, 32, 20, 0.08)',
+          boxShadow: 'var(--sh-shadow-drawer)',
           zIndex: 41,
           display: 'flex',
           flexDirection: 'column',
@@ -287,7 +296,7 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
             }}>
               Practice-wide default
             </p>
-            <h2 style={{
+            <h2 id={headingId} style={{
               fontFamily: 'var(--sh-font-serif)',
               fontSize: 'var(--sh-text-xl)',
               color: 'var(--sh-text-primary)',
@@ -304,13 +313,13 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
             </p>
           </div>
           <button
+            ref={closeButtonRef}
             type="button"
             onClick={onClose}
             aria-label="Close"
             style={{
               background: 'transparent',
               border: 'none',
-              fontSize: 'var(--sh-text-xl)',
               cursor: 'pointer',
               color: 'var(--sh-text-muted)',
               padding: '0 var(--sh-space-2)',
@@ -318,7 +327,7 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
               fontFamily: 'inherit',
             }}
           >
-            ×
+            <Icon name="close" />
           </button>
         </div>
 
@@ -334,6 +343,7 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
           {/* State field */}
           <div>
             <FieldLabel
+              id={stateLabelId}
               text="State"
               help="Active surfaces this content on its cadence. Mute stops it without losing the configuration. Pause holds it temporarily."
             />
@@ -341,12 +351,14 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
               value={workingState}
               options={STATE_OPTIONS}
               onChange={setWorkingState}
+              ariaLabelledBy={stateLabelId}
             />
           </div>
 
           {/* Cadence field */}
           <div>
             <FieldLabel
+              id={cadenceLabelId}
               text="Cadence"
               help="How often this content type surfaces to clients on the practice default."
             />
@@ -354,6 +366,7 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
               value={workingCadence}
               options={cadenceOptions}
               onChange={setWorkingCadence}
+              ariaLabelledBy={cadenceLabelId}
             />
           </div>
 
@@ -412,7 +425,7 @@ function ConfigDrawer({ contentType, current, onSave, onClose }) {
   );
 }
 
-function FieldLabel({ text, help }) {
+function FieldLabel({ id, text, help }) {
   return (
     <div style={{
       display: 'flex',
@@ -420,7 +433,7 @@ function FieldLabel({ text, help }) {
       gap: 'var(--sh-space-2)',
       marginBottom: 'var(--sh-space-3)',
     }}>
-      <span style={{
+      <span id={id} style={{
         fontSize: 'var(--sh-text-xs)',
         textTransform: 'uppercase',
         letterSpacing: '0.08em',
@@ -434,15 +447,25 @@ function FieldLabel({ text, help }) {
   );
 }
 
-function SegmentedControl({ value, options, onChange }) {
+// ariaLabelledBy threads the visible FieldLabel into a programmatic group
+// name for AT. aria-pressed is added per ADV-044 coordination (was missing
+// entirely on this copy — strict a11y improvement, not a behavior change).
+// Behavior is single-select (pick-one); the aria-pressed-vs-radio mismatch
+// is ADV-044's deferred disposition — full radiogroup conversion is a future
+// micro-slice spanning all three controls (LessonEditor SC + this SC + RadioList).
+function SegmentedControl({ value, options, onChange, ariaLabelledBy }) {
   return (
-    <div style={{
-      display: 'inline-flex',
-      border: 'var(--sh-border-thin)',
-      borderRadius: 'var(--sh-radius-md)',
-      overflow: 'hidden',
-      background: 'var(--sh-card)',
-    }}>
+    <div
+      role={ariaLabelledBy ? 'group' : undefined}
+      aria-labelledby={ariaLabelledBy}
+      style={{
+        display: 'inline-flex',
+        border: 'var(--sh-border-thin)',
+        borderRadius: 'var(--sh-radius-md)',
+        overflow: 'hidden',
+        background: 'var(--sh-card)',
+      }}
+    >
       {options.map((opt, i) => {
         const selected = opt === value;
         return (
@@ -450,6 +473,7 @@ function SegmentedControl({ value, options, onChange }) {
             key={opt}
             type="button"
             onClick={() => onChange(opt)}
+            aria-pressed={selected}
             style={{
               padding: 'var(--sh-space-2) var(--sh-space-4)',
               fontSize: 'var(--sh-text-sm)',
@@ -460,7 +484,9 @@ function SegmentedControl({ value, options, onChange }) {
               cursor: 'pointer',
               fontFamily: 'inherit',
               fontWeight: selected ? 500 : 400,
-              transition: 'all 150ms ease',
+              // ADV-028 F28-A: was 'all 150ms ease' — nearest token is
+              // --sh-transition-fast (120ms, -30ms speedup; F1 precedent).
+              transition: `all var(--sh-transition-fast)`,
             }}
           >
             {opt}
@@ -471,9 +497,16 @@ function SegmentedControl({ value, options, onChange }) {
   );
 }
 
-function RadioList({ value, options, onChange }) {
+// RadioList: same SC-α treatment as SegmentedControl above. aria-pressed
+// added as strict improvement (was absent); ADV-044 deferral covers this
+// control too.
+function RadioList({ value, options, onChange, ariaLabelledBy }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-2)' }}>
+    <div
+      role={ariaLabelledBy ? 'group' : undefined}
+      aria-labelledby={ariaLabelledBy}
+      style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-2)' }}
+    >
       {options.map(opt => {
         const selected = opt === value;
         return (
@@ -481,6 +514,7 @@ function RadioList({ value, options, onChange }) {
             key={opt}
             type="button"
             onClick={() => onChange(opt)}
+            aria-pressed={selected}
             style={{
               padding: '10px 14px',
               fontSize: 'var(--sh-text-sm)',
@@ -492,7 +526,9 @@ function RadioList({ value, options, onChange }) {
               fontFamily: 'inherit',
               fontWeight: selected ? 500 : 400,
               textAlign: 'left',
-              transition: 'all 150ms ease',
+              // ADV-028 F28-A: was 'all 150ms ease' — nearest token is
+              // --sh-transition-fast (120ms, -30ms speedup; F1 precedent).
+              transition: `all var(--sh-transition-fast)`,
             }}
           >
             {opt}
