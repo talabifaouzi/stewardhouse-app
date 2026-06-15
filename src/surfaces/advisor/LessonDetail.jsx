@@ -3,6 +3,7 @@ import { useParams, Link, Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
 import { Icon } from '../../components/Icon.jsx';
+import { Modal } from '../../components/Modal.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { findLesson, getLessonById } from '../../data/content.js';
 import { usePracticeContent } from '../../contexts/PracticeContentContext.jsx';
@@ -25,6 +26,11 @@ export default function LessonDetail() {
   const readingFileLabelId = useId();
   const readingTitleLabelId = useId();
   const taskTitleLabelId = useId();
+
+  // ADV-020 — discard confirm flow via Modal (replaces window.confirm).
+  // Modal handles focus trap, Escape, backdrop-click, and trigger-restore
+  // via its proven 8-consumer pattern.
+  const [discardModalOpen, setDiscardModalOpen] = useState(false);
 
   const lesson = findLesson(lessonId, practiceLessons);
 
@@ -58,14 +64,17 @@ export default function LessonDetail() {
     resetForm();
   };
 
-  const handleDiscard = () => {
-    const message = lesson.kind === 'fork'
-      ? 'Discard this tailored version? Your edits to it will be lost.'
-      : 'Discard this authored lesson? It will be removed from your library.';
-    if (window.confirm(message)) {
-      remove(lesson.id);
-      navigate('/advisor/curriculum');
-    }
+  const discardTitle = lesson?.kind === 'fork'
+    ? 'Discard tailored version'
+    : 'Discard authored lesson';
+  const discardMessage = lesson?.kind === 'fork'
+    ? 'Discard this tailored version? Your edits to it will be lost.'
+    : 'Discard this authored lesson? It will be removed from your library.';
+
+  const handleConfirmDiscard = () => {
+    setDiscardModalOpen(false);
+    remove(lesson.id);
+    navigate('/advisor/curriculum');
   };
 
   return (
@@ -288,7 +297,7 @@ export default function LessonDetail() {
             >
               Edit
             </Button>
-            <Button variant="ghost" onClick={handleDiscard}>
+            <Button variant="ghost" onClick={() => setDiscardModalOpen(true)}>
               Discard tailored version
             </Button>
           </>
@@ -301,7 +310,7 @@ export default function LessonDetail() {
             >
               Edit
             </Button>
-            <Button variant="ghost" onClick={handleDiscard}>
+            <Button variant="ghost" onClick={() => setDiscardModalOpen(true)}>
               Discard
             </Button>
           </>
@@ -323,6 +332,30 @@ export default function LessonDetail() {
           Back to library
         </Link>
       </div>
+
+      {/* Discard confirm modal (ADV-020 — replaces window.confirm). */}
+      <Modal
+        isOpen={discardModalOpen}
+        onClose={() => setDiscardModalOpen(false)}
+        title={discardTitle}
+      >
+        <p style={{
+          fontSize: 'var(--sh-text-sm)',
+          color: 'var(--sh-text-secondary)',
+          lineHeight: 1.6,
+          marginBottom: 'var(--sh-space-5)',
+        }}>
+          {discardMessage}
+        </p>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'flex-end',
+          gap: 'var(--sh-space-2)',
+        }}>
+          <Button variant="ghost" onClick={() => setDiscardModalOpen(false)}>Cancel</Button>
+          <Button variant="primary" onClick={handleConfirmDiscard}>Discard</Button>
+        </div>
+      </Modal>
     </main>
   );
 }
