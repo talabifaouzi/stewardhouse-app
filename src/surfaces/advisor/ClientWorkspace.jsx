@@ -3,7 +3,7 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { clients } from '../../data/clients.js';
+import { clients, formatSessionDate } from '../../data/clients.js';
 import { cohorts } from '../../data/cohorts.js';
 import { contentTypes, getLessonById } from '../../data/content.js';
 import StateBadge from './StateBadge.jsx';
@@ -205,7 +205,7 @@ function PreSessionPrep({ nextSession, agenda, activeContent, firstName }) {
           color: 'var(--sh-text-primary)',
           marginBottom: 'var(--sh-space-1)',
         }}>
-          Next session — {nextSession}
+          Next session — {formatSessionDate(nextSession)}
         </p>
         <p style={{
           fontSize: 'var(--sh-text-xs)',
@@ -324,7 +324,7 @@ function GivingPlanCard({ plan, nextSession }) {
           fontStyle: 'italic',
           lineHeight: 1.6,
         }}>
-          Giving Studio in progress — first Studio session {nextSession}.
+          Giving Studio in progress — first Studio session {formatSessionDate(nextSession)}.
         </p>
       </Card>
     );

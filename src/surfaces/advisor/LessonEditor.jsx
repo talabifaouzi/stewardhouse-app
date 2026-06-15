@@ -59,6 +59,11 @@ export default function LessonEditor({ mode }) {
   // cloneElement guard skips wrapped controls, so we plumb labelledby manually.
   const scopeLabelId = useId();
   const categoryLabelId = useId();
+  // ADV-041 — id for the field-level minutes error, used for aria-describedby
+  // on the input. Mirrors bundle 5's Documentation section-error a11y pattern
+  // (role="alert" + muted-italic typography). canSave/disabled logic is
+  // unchanged — this is purely additive feedback.
+  const minutesErrorId = useId();
 
   // Redirect if a source was required but missing.
   if ((mode === 'fork' || mode === 'edit') && !sourceLesson) {
@@ -233,8 +238,20 @@ export default function LessonEditor({ mode }) {
               min={1}
               value={minutes}
               onChange={(e) => setMinutes(e.target.value)}
+              aria-invalid={!minutesValid}
+              aria-describedby={!minutesValid ? minutesErrorId : undefined}
               style={{ ...inputStyle, width: '120px' }}
             />
+            {!minutesValid && (
+              <p id={minutesErrorId} role="alert" style={{
+                fontSize: 'var(--sh-text-xs)',
+                color: 'var(--sh-text-muted)',
+                fontStyle: 'italic',
+                marginTop: 'var(--sh-space-2)',
+              }}>
+                Length must be one minute or more.
+              </p>
+            )}
           </FormField>
 
           <FormField label="Scope" labelId={scopeLabelId}>

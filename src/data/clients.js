@@ -22,7 +22,7 @@ export const clients = [
     stage: 'Active',
     relationshipStartedYear: 2024,
     summary: 'Junior college basketball; first NIL contract in fall 2024. Family-rooted giving interest, particularly youth sports access in northeast Ohio.',
-    nextSession: 'May 14, 2026',
+    nextSession: '2026-05-14',
     activeContent: 3,
     givingPlan: {
       statement: `Direct support to youth basketball programs in the Cleveland area where I grew up. Multi-year, unrestricted where possible. Quiet about it — no public attribution unless the organization specifically asks.`,
@@ -150,7 +150,7 @@ export const clients = [
     stage: 'New',
     relationshipStartedYear: 2026,
     summary: 'D1 women\'s soccer; signed first endorsement deal three weeks ago. Onboarding in progress.',
-    nextSession: 'May 9, 2026',
+    nextSession: '2026-05-09',
     activeContent: 0,
     givingPlan: null,
     sessions: [
@@ -206,7 +206,7 @@ export const clients = [
     stage: 'Active',
     relationshipStartedYear: 2023,
     summary: 'Professional track athlete; recent sponsorship growth post-World Championships. Interested in pan-African educational nonprofits.',
-    nextSession: 'May 15, 2026',
+    nextSession: '2026-05-15',
     activeContent: 3,
     givingPlan: {
       statement: `My work has always pulled me between two countries. I want my giving to live in that same space — secondary school programs in Ghana, with smaller anchors at U.S. organizations that send athletes back across the Atlantic on educational exchange. I'd rather fund one or two well than spread across many.`,
@@ -309,7 +309,7 @@ export const clients = [
     stage: 'Mature',
     relationshipStartedYear: 2021,
     summary: 'Retired NFL defensive back; transitioning to long-term endowment planning. Multiple existing relationships with grantees in his hometown.',
-    nextSession: 'June 3, 2026',
+    nextSession: '2026-06-03',
     activeContent: 1,
     givingPlan: {
       statement: `Five years in, I've stopped chasing new directions. The three organizations I've been working with — a mentorship program for boys outside Savannah, an after-school literacy effort, and a community legal services group I came to through my own family's experience — these are the relationships I want to deepen, not replace. The work now is building an endowment so this continues past me.`,
@@ -452,7 +452,7 @@ export const clients = [
     stage: 'Active',
     relationshipStartedYear: 2024,
     summary: 'D1 college quarterback; significant NIL collective income. Considering structured giving toward HBCU athletics programs.',
-    nextSession: 'May 12, 2026',
+    nextSession: '2026-05-12',
     activeContent: 2,
     givingPlan: {
       statement: `I came up in a school system where the football program was the loudest, best-funded thing in the building. The schools I want to give to had it the other way. The plan, for now, is HBCU athletic programs — equipment, travel, the unglamorous infrastructure. I'm okay being public about it. It's part of why I want to do it.`,
@@ -552,7 +552,7 @@ export const clients = [
     stage: 'New',
     relationshipStartedYear: 2026,
     summary: 'Top-ranked high school recruit in Georgia; NIL income via collective. Just beginning to think about giving structure with family.',
-    nextSession: 'May 11, 2026',
+    nextSession: '2026-05-11',
     activeContent: 0,
     givingPlan: null,
     sessions: [
@@ -607,7 +607,7 @@ export const clients = [
     stage: 'New',
     relationshipStartedYear: 2026,
     summary: 'D1 women\'s basketball; NIL deals from athletic apparel brand. Onboarding sessions in progress.',
-    nextSession: 'May 16, 2026',
+    nextSession: '2026-05-16',
     activeContent: 1,
     givingPlan: null,
     sessions: [
@@ -662,7 +662,7 @@ export const clients = [
     stage: 'Active',
     relationshipStartedYear: 2024,
     summary: 'Olympic prospect in 400m hurdles; multiple sponsorship streams. Focused on access programs for youth track in underfunded districts.',
-    nextSession: 'May 19, 2026',
+    nextSession: '2026-05-19',
     activeContent: 2,
     givingPlan: {
       statement: `I ran on county tracks that were measured wrong. Programs in districts that lost their meet on a Monday because the bus didn't come. The plan is youth track in places where the conditions are stacked. Mostly project funding — I want to know exactly what each gift moves — with one unrestricted anchor in a program I trust to use the room well.`,
@@ -765,7 +765,7 @@ export const clients = [
     stage: 'Sunset',
     relationshipStartedYear: 2019,
     summary: 'Retired NFL veteran; established giving practice. Transitioning to direct foundation governance.',
-    nextSession: 'July 7, 2026',
+    nextSession: '2026-07-07',
     activeContent: 0,
     givingPlan: {
       statement: `My foundation has been running on its own legs for seven years now. The advisory work was always meant to be a bridge to direct governance, and the bridge has done its work. What stays steady is the three cause anchors: veterans' housing in the Pacific Northwest, college access programs at two universities I owe my career to, and a small civics program for kids in my old district. The foundation board will carry it from here.`,
@@ -859,4 +859,22 @@ export const sectors = ['Athletics', 'Other'];
 
 export function clientsByStage(stage) {
   return clients.filter(c => c.stage === stage);
+}
+
+// ADV-012 — format an ISO 'YYYY-MM-DD' session date into the display string
+// the advisor surface renders (e.g. '2026-05-14' → 'May 14, 2026'). Fixture
+// dates moved to ISO so Date parsing is ECMAScript-guaranteed; display sites
+// wrap with this helper so user-facing output is byte-identical to the
+// previous "Month DD, YYYY" literals. UTC time-zone keeps the day stable
+// regardless of the user's local clock.
+export function formatSessionDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return iso;
+  return d.toLocaleDateString('en-US', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
 }

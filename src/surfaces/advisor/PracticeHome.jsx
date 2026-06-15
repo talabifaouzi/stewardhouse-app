@@ -2,11 +2,14 @@ import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { advisorPracticeProfile, clients, stages } from '../../data/clients.js';
+import { advisorPracticeProfile, clients, formatSessionDate, stages } from '../../data/clients.js';
 
 export default function PracticeHome() {
-  const today = new Date();
-  const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  // ADV-011 — static demo date aligned with the seed timeline (journal entry
+  // April 28, upcoming sessions May 9-July 7). Live new Date() made
+  // screenshots non-deterministic and depended on the user's local clock.
+  // Verified: 2026-05-04 is a Monday.
+  const dateStr = 'Monday, May 4';
 
   // Client counts by stage
   const stageCounts = stages.reduce((acc, stage) => {
@@ -108,7 +111,7 @@ export default function PracticeHome() {
                     fontSize: 'var(--sh-text-sm)',
                     color: 'var(--sh-text-secondary)',
                   }}>
-                    {client.nextSession}
+                    {formatSessionDate(client.nextSession)}
                   </p>
                 </div>
               </Link>

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
-import { clients, stages } from '../../data/clients.js';
+import { clients, formatSessionDate, stages } from '../../data/clients.js';
 
 // Phase 1 scope: athletes only. We filter by sport instead of sector.
 const sports = ['All', 'Basketball', 'Football', 'Soccer', 'Track and Field'];
@@ -295,7 +295,7 @@ function ClientRow({ client }) {
           fontSize: 'var(--sh-text-sm)',
           color: 'var(--sh-text-primary)',
         }}>
-          {client.nextSession}
+          {formatSessionDate(client.nextSession)}
         </p>
       </div>
     </Link>
