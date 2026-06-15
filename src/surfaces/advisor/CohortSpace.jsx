@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
-import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { cohorts } from '../../data/cohorts.js';
 
 export default function CohortSpace() {
@@ -60,7 +59,20 @@ export default function CohortSpace() {
 function CohortCard({ cohort }) {
   return (
     <Card style={{ cursor: 'pointer' }}>
-      <SectionLabel>{cohort.focus}</SectionLabel>
+      {/* ADV-002 — cohort.focus is a decorative kicker for the cohort name,
+          not a section heading. Was <SectionLabel> (rendered <h2>) above the
+          <h3> below — semantic-hierarchy inversion. Now a plain <p> eyebrow
+          carrying the same kicker styles so the visible look is unchanged. */}
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        fontWeight: 500,
+        color: 'var(--sh-text-muted)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.08em',
+        marginBottom: 'var(--sh-space-3)',
+      }}>
+        {cohort.focus}
+      </p>
       <h3 style={{
         fontFamily: 'var(--sh-font-serif)',
         fontSize: 'var(--sh-text-xl)',

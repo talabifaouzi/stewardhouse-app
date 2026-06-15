@@ -110,7 +110,7 @@ export default function CurriculumLibrary() {
             maxWidth: '640px',
             lineHeight: 1.6,
           }}>
-            Base lessons, your forks, and your own authored content. Structure for the conversations you have with clients — not scripts.
+            Base lessons, your tailored lessons, and your own authored content. Structure for the conversations you have with clients — not scripts.
           </p>
         </div>
         <div style={{ display: 'flex', gap: 'var(--sh-space-2)', flexShrink: 0 }}>
@@ -133,9 +133,9 @@ export default function CurriculumLibrary() {
         gap: 'var(--sh-space-4)',
         marginBottom: 'var(--sh-space-8)',
       }}>
-        <LibraryStat label="Base lessons" value={lessons.length} sub="StewardHouse foundations" />
-        <LibraryStat label="Your tailored lessons" value={publishedForks.length} sub="Tailored from base" />
-        <LibraryStat label="Your authored" value={publishedAuthored.length} sub="Created by your practice" />
+        <LibraryStat label="Base" value={lessons.length} sub="StewardHouse foundations" />
+        <LibraryStat label="Tailored" value={publishedForks.length} sub="Tailored from base" />
+        <LibraryStat label="Authored" value={publishedAuthored.length} sub="Created by your practice" />
       </div>
 
       {/* Filters */}
