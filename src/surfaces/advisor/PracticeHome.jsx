@@ -57,7 +57,7 @@ export default function PracticeHome() {
         marginBottom: 'var(--sh-space-10)',
       }}>
         {stages.map((stage) => (
-          <Stat key={stage} label={stage} value={stageCounts[stage]} link={`/advisor/clients?stage=${stage.toLowerCase()}`} />
+          <Stat key={stage} label={stage} value={stageCounts[stage]} link={`/advisor/clients?stage=${stage}`} />
         ))}
       </div>
 

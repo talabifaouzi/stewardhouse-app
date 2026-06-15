@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { clients, stages } from '../../data/clients.js';
@@ -6,19 +6,71 @@ import { clients, stages } from '../../data/clients.js';
 // Phase 1 scope: athletes only. We filter by sport instead of sector.
 const sports = ['All', 'Basketball', 'Football', 'Soccer', 'Track and Field'];
 
+// URL is the source of truth for filter state (ADV-015, ports Operations
+// slice 5's pattern — see IndividualsDirectory for the original):
+//   ?q=text         search-input value (debounced URL writes)
+//   ?stage=Active   one-of stages list (case-sensitive literal label, C-α)
+//   ?sport=Soccer   one-of sports list (case-sensitive literal label, C-α)
+// Default values ("All" / "") are omitted from the URL so a clean default
+// roster reads as /advisor/clients (no param cruft). Unknown values are
+// silently dropped — shareable URLs shouldn't shout at typos.
+const Q_DEBOUNCE_MS = 250;
+const STAGE_OPTIONS = ['All', ...stages];
+
+function parseSingleSelect(raw, validValues, defaultValue) {
+  if (raw === null) return defaultValue;
+  return validValues.includes(raw) ? raw : defaultValue;
+}
+
 export default function ClientRoster() {
-  const [searchParams] = useSearchParams();
-  const initialStage = searchParams.get('stage');
-  const [activeStage, setActiveStage] = useState(
-    initialStage ? initialStage.charAt(0).toUpperCase() + initialStage.slice(1) : 'All'
-  );
-  const [activeSport, setActiveSport] = useState('All');
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // URL-derived state — re-read on every render so back/forward + direct
+  // paste both flow through naturally.
+  const qFromUrl = searchParams.get('q') ?? '';
+  const activeStage = parseSingleSelect(searchParams.get('stage'), STAGE_OPTIONS, 'All');
+  const activeSport = parseSingleSelect(searchParams.get('sport'), sports, 'All');
+
+  // Local input shadows the URL q so typing stays responsive while we
+  // debounce the URL writes. URL changes (back/forward, direct paste)
+  // sync down via this effect.
+  const [qInput, setQInput] = useState(qFromUrl);
+  useEffect(() => { setQInput(qFromUrl); }, [qFromUrl]);
+
+  const debounceRef = useRef(null);
+  useEffect(() => () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+  }, []);
+
+  function writeParam(name, value, isDefault) {
+    setSearchParams((prev) => {
+      const np = new URLSearchParams(prev);
+      if (isDefault) np.delete(name);
+      else np.set(name, value);
+      return np;
+    }, { replace: true });
+  }
+
+  function onQueryChange(next) {
+    setQInput(next);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      writeParam('q', next, next === '');
+    }, Q_DEBOUNCE_MS);
+  }
+
+  function onStageChange(next) {
+    writeParam('stage', next, next === 'All');
+  }
+
+  function onSportChange(next) {
+    writeParam('sport', next, next === 'All');
+  }
 
   const filtered = clients.filter(c => {
     if (activeStage !== 'All' && c.stage !== activeStage) return false;
     if (activeSport !== 'All' && c.sport !== activeSport) return false;
-    if (searchTerm && !c.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+    if (qFromUrl && !c.name.toLowerCase().includes(qFromUrl.toLowerCase())) return false;
     return true;
   });
 
@@ -60,8 +112,8 @@ export default function ClientRoster() {
             type="text"
             placeholder="Search by name"
             aria-label="Search clients by name"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={qInput}
+            onChange={(e) => onQueryChange(e.target.value)}
             style={{
               padding: 'var(--sh-space-2) var(--sh-space-3)',
               border: 'var(--sh-border-thin)',
@@ -74,15 +126,15 @@ export default function ClientRoster() {
           />
           <FilterGroup
             label="Stage"
-            options={['All', ...stages]}
+            options={STAGE_OPTIONS}
             value={activeStage}
-            onChange={setActiveStage}
+            onChange={onStageChange}
           />
           <FilterGroup
             label="Sport"
             options={sports}
             value={activeSport}
-            onChange={setActiveSport}
+            onChange={onSportChange}
           />
         </div>
       </Card>
