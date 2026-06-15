@@ -65,8 +65,6 @@ export default function CohortDetail() {
     .filter(Boolean);
   const externalCount = cohort.externalMembers || 0;
   const memberCount = cohort.memberIds.length + externalCount;
-  const assignedLessons = cohort.assignedLessons || [];
-  const sessions = cohort.sessions || [];
 
   const themeMembership = {};
   rosterMembers.forEach(m => {
@@ -334,7 +332,7 @@ export default function CohortDetail() {
       </div>
 
       {/* Updates — composer + published list */}
-      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
+      <div>
         <Card>
           <SectionLabel>Updates</SectionLabel>
 
@@ -427,29 +425,6 @@ export default function CohortDetail() {
         </Card>
       </div>
 
-      {/* Curriculum track */}
-      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
-        <Card>
-          <SectionLabel>Curriculum track</SectionLabel>
-          {assignedLessons.length === 0 && (
-            <p style={emptyTextStyle}>
-              No curriculum assigned to this cohort yet.
-            </p>
-          )}
-        </Card>
-      </div>
-
-      {/* Sessions */}
-      <div>
-        <Card>
-          <SectionLabel>Sessions</SectionLabel>
-          {sessions.length === 0 && (
-            <p style={emptyTextStyle}>
-              No sessions logged yet.
-            </p>
-          )}
-        </Card>
-      </div>
     </main>
   );
 }

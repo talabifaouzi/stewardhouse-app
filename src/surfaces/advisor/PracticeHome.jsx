@@ -132,7 +132,7 @@ export default function PracticeHome() {
             fontSize: 'var(--sh-text-xs)',
             color: 'var(--sh-text-muted)',
           }}>
-            April 28, 2026 · 4 entries this month
+            April 28, 2026
           </p>
         </Card>
       </div>
