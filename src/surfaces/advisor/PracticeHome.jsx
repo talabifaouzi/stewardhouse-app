@@ -131,23 +131,9 @@ export default function PracticeHome() {
           <p style={{
             fontSize: 'var(--sh-text-xs)',
             color: 'var(--sh-text-muted)',
-            marginBottom: 'var(--sh-space-4)',
           }}>
             April 28, 2026 · 4 entries this month
           </p>
-          <button
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--sh-bronze)',
-              fontSize: 'var(--sh-text-sm)',
-              fontWeight: 500,
-              padding: 0,
-              cursor: 'pointer',
-            }}
-          >
-            New entry →
-          </button>
         </Card>
       </div>
 

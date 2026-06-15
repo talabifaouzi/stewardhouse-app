@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
-import { Button } from '../../components/Button.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { cohorts } from '../../data/cohorts.js';
 
@@ -11,41 +10,32 @@ export default function CohortSpace() {
       margin: '0 auto',
       padding: 'var(--sh-space-10) var(--sh-space-8) var(--sh-space-16)',
     }}>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        gap: 'var(--sh-space-6)',
-        marginBottom: 'var(--sh-space-8)',
-      }}>
-        <div>
-          <p style={{
-            fontSize: 'var(--sh-text-xs)',
-            color: 'var(--sh-text-muted)',
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            marginBottom: 'var(--sh-space-2)',
-          }}>
-            Cohorts
-          </p>
-          <h1 style={{
-            fontFamily: 'var(--sh-font-serif)',
-            fontSize: 'var(--sh-text-2xl)',
-            color: 'var(--sh-text-primary)',
-            marginBottom: 'var(--sh-space-2)',
-          }}>
-            Cohorts and workshops
-          </h1>
-          <p style={{
-            fontSize: 'var(--sh-text-md)',
-            color: 'var(--sh-text-secondary)',
-            maxWidth: '640px',
-            lineHeight: 1.6,
-          }}>
-            Group-based learning across clients with shared circumstances or stage. Curricula travel as a unit; cohort updates surface to all members.
-          </p>
-        </div>
-        <Button variant="primary">Start a cohort</Button>
+      <div style={{ marginBottom: 'var(--sh-space-8)' }}>
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.08em',
+          marginBottom: 'var(--sh-space-2)',
+        }}>
+          Cohorts
+        </p>
+        <h1 style={{
+          fontFamily: 'var(--sh-font-serif)',
+          fontSize: 'var(--sh-text-2xl)',
+          color: 'var(--sh-text-primary)',
+          marginBottom: 'var(--sh-space-2)',
+        }}>
+          Cohorts and workshops
+        </h1>
+        <p style={{
+          fontSize: 'var(--sh-text-md)',
+          color: 'var(--sh-text-secondary)',
+          maxWidth: '640px',
+          lineHeight: 1.6,
+        }}>
+          Group-based learning across clients with shared circumstances or stage. Curricula travel as a unit; cohort updates surface to all members.
+        </p>
       </div>
 
       <div style={{

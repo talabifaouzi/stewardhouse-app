@@ -62,9 +62,9 @@ export default function PracticeSettings() {
 
         <Card>
           <SectionLabel>Working preferences</SectionLabel>
-          <SettingRow label="Default session length" value="45 minutes" action={<Button variant="ghost" size="sm">Change</Button>} />
-          <SettingRow label="Time zone" value="America/New_York" action={<Button variant="ghost" size="sm">Change</Button>} />
-          <SettingRow label="Notification preferences" value="Quiet by default" last action={<Button variant="ghost" size="sm">Configure</Button>} />
+          <SettingRow label="Default session length" value="45 minutes" />
+          <SettingRow label="Time zone" value="America/New_York" />
+          <SettingRow label="Notification preferences" value="Quiet by default" last />
         </Card>
 
         <Card tint>
