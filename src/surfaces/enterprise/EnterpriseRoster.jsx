@@ -71,7 +71,19 @@ export default function EnterpriseRoster() {
                 return (
                   <tr
                     key={a.id}
+                    tabIndex={0}
+                    aria-label={`View ${a.name}'s profile`}
                     onClick={() => setActiveAthlete(a)}
+                    onKeyDown={(e) => {
+                      // ENT #15 — keyboard activation for clickable table row.
+                      // Preserves <tr>'s row semantics (no role override) per
+                      // WAI-ARIA tabular-data practice. Space preventDefault
+                      // suppresses page-scroll.
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        setActiveAthlete(a);
+                      }
+                    }}
                     onMouseEnter={() => setHoveredRowId(a.id)}
                     onMouseLeave={() => setHoveredRowId(null)}
                     style={{

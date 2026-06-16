@@ -1,7 +1,18 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 
+// ENT #16 known limitations recorded during the additive a11y sweep:
+//   • onBlur-closes is correct ONLY while `definition` is a plain text node
+//     (current usage: 2 Advisor Pipeline call sites pass strings). If a future
+//     consumer passes JSX with focusable children inside the popup, focus
+//     moving INTO the popup will fire blur on the trigger and close it. At
+//     that point switch from onBlur-closes to outside-click + Escape close.
+//   • role="tooltip" is preserved for additive-only scope. A future
+//     refinement should reshape this widget as a proper disclosure
+//     (role="region" + the button as a true disclosure trigger), since the
+//     interaction is click-toggled rather than hover/focus.
 export function HelpIcon({ definition, position = 'bottom' }) {
   const [open, setOpen] = useState(false);
+  const popupId = useId();
 
   const popupPositions = {
     bottom: { top: '22px', left: '0' },
@@ -15,7 +26,14 @@ export function HelpIcon({ definition, position = 'bottom' }) {
         type="button"
         onClick={() => setOpen(!open)}
         onBlur={() => setOpen(false)}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape' && open) {
+            setOpen(false);
+          }
+        }}
         aria-label="What is this?"
+        aria-expanded={open}
+        aria-controls={popupId}
         style={{
           width: '14px',
           height: '14px',
@@ -43,6 +61,7 @@ export function HelpIcon({ definition, position = 'bottom' }) {
       </button>
       {open && (
         <span
+          id={popupId}
           role="tooltip"
           style={{
             position: 'absolute',
