@@ -494,77 +494,6 @@ function DateField({ label, value, onChange }) {
   );
 }
 
-function SelectField({ label, value, onChange, options }) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <div style={fieldStyle}>
-      <label style={fieldLabelStyle}>{label}</label>
-      <select
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={{
-          ...inputStyle,
-          outline: focused ? '2px solid var(--sh-bronze)' : 'none',
-          outlineOffset: '2px',
-        }}
-      >
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value} disabled={opt.disabled}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
-    </div>
-  );
-}
-
-function RadioGroup({ label, name, value, onChange, options }) {
-  return (
-    <fieldset style={radioFieldsetStyle}>
-      <legend style={fieldLabelStyle}>{label}</legend>
-      <div style={radioStackStyle}>
-        {options.map((opt) => (
-          <Radio
-            key={opt.value}
-            name={name}
-            value={opt.value}
-            label={opt.label}
-            checked={value === opt.value}
-            onChange={() => onChange(opt.value)}
-          />
-        ))}
-      </div>
-    </fieldset>
-  );
-}
-
-function Radio({ name, value, label, checked, onChange }) {
-  const [focused, setFocused] = useState(false);
-  return (
-    <label
-      style={{
-        ...radioLabelStyle,
-        outline: focused ? '2px solid var(--sh-bronze)' : 'none',
-        outlineOffset: '2px',
-      }}
-    >
-      <input
-        type="radio"
-        name={name}
-        value={value}
-        checked={checked}
-        onChange={onChange}
-        onFocus={() => setFocused(true)}
-        onBlur={() => setFocused(false)}
-        style={radioInputStyle}
-      />
-      <span>{label}</span>
-    </label>
-  );
-}
-
 function CheckboxField({ label, checked, onChange }) {
   const [focused, setFocused] = useState(false);
   return (
@@ -733,36 +662,6 @@ const inputStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-body)',
   background: 'var(--sh-card)',
-};
-
-const radioFieldsetStyle = {
-  border: 'none',
-  padding: 0,
-  margin: 0,
-};
-
-const radioStackStyle = {
-  display: 'flex',
-  flexDirection: 'column',
-  gap: 'var(--sh-space-2)',
-  marginTop: 'var(--sh-space-2)',
-};
-
-const radioLabelStyle = {
-  display: 'flex',
-  alignItems: 'center',
-  gap: 'var(--sh-space-2)',
-  fontSize: 'var(--sh-text-sm)',
-  color: 'var(--sh-text-body)',
-  cursor: 'pointer',
-  padding: 'var(--sh-space-2)',
-  borderRadius: 'var(--sh-radius-sm)',
-  outlineOffset: '2px',
-};
-
-const radioInputStyle = {
-  margin: 0,
-  cursor: 'pointer',
 };
 
 const checkboxLabelStyle = {

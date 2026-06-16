@@ -6,7 +6,9 @@ import { athletes } from '../../../data/enterpriseFixtures.js';
 export const tot = athletes.length;
 export const gpsD = athletes.filter((a) => a.gpsCompleted).length;
 export const certD = athletes.filter((a) => a.certified).length;
-export const inProg = athletes.filter((a) => a.lessons > 0 && !a.certified).length;
+// ENT #54 — private const (was exported, but no external consumer; only used
+// internally by onTrack below). Visibility tightening per Sweep 3 audit.
+const inProg = athletes.filter((a) => a.lessons > 0 && !a.certified).length;
 export const stalled = athletes.filter((a) => a.lessons > 0 && !a.gpsCompleted).length;
 export const onTrack = inProg - stalled;
 export const notStarted = athletes.filter((a) => a.lessons === 0).length;

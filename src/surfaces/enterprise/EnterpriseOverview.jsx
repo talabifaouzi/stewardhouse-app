@@ -21,7 +21,6 @@ import {
   gpsRate,
   activelyProgressingPct,
 } from './shared/enterpriseStats.js';
-import { statusFor } from './shared/athleteStatus.js';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 
 export default function EnterpriseOverview() {

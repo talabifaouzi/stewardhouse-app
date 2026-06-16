@@ -6,7 +6,6 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
  * @property {(id: string) => void} pop        Unregister a modal ID from the stack
  * @property {(id: string) => boolean} isTop   Whether this modal ID is the top of the stack
  * @property {(id: string) => number} indexOf  Position of this modal ID in the stack (0-based)
- * @property {number} depth                    Current stack size
  */
 
 const ModalStackContext = createContext({
@@ -14,7 +13,6 @@ const ModalStackContext = createContext({
   pop: () => {},
   isTop: () => false,
   indexOf: () => -1,
-  depth: 0,
 });
 
 export function ModalStackProvider({ children }) {
@@ -45,10 +43,9 @@ export function ModalStackProvider({ children }) {
     };
   }, [stack.length]);
 
-  const depth = stack.length;
   const value = useMemo(
-    () => ({ push, pop, isTop, indexOf, depth }),
-    [push, pop, isTop, indexOf, depth],
+    () => ({ push, pop, isTop, indexOf }),
+    [push, pop, isTop, indexOf],
   );
 
   return (
