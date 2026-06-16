@@ -263,6 +263,9 @@ function UserIdentity({ userName, userRole, accent, onClick, hideRole }) {
 
 function Avatar({ name, accent }) {
   const initials = name.split(' ').map(s => s[0]).slice(0, 2).join('').toUpperCase();
+  // ENT #65: 34px avatar is a contained primitive — no matching token (between
+  // space-8/32px and space-10/40px); single-consumer, document rather than
+  // introduce a one-off --sh-avatar-size token.
   return (
     <div style={{
       width: '34px',

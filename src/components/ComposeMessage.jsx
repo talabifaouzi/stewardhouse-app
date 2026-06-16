@@ -155,7 +155,7 @@ const fromValueStyle = {
   padding: 'var(--sh-space-3)',
   background: 'var(--sh-bg-tint)',
   border: 'var(--sh-border-thin)',
-  borderRadius: '6px',
+  borderRadius: 'var(--sh-radius-md)',
   margin: 0,
 };
 
@@ -164,7 +164,7 @@ const inputStyle = {
   boxSizing: 'border-box',
   padding: 'var(--sh-space-3)',
   border: 'var(--sh-border-thin)',
-  borderRadius: '6px',
+  borderRadius: 'var(--sh-radius-md)',
   fontFamily: 'inherit',
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-body)',
@@ -176,7 +176,7 @@ const textareaStyle = {
   boxSizing: 'border-box',
   padding: 'var(--sh-space-3)',
   border: 'var(--sh-border-thin)',
-  borderRadius: '6px',
+  borderRadius: 'var(--sh-radius-md)',
   fontFamily: 'inherit',
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-body)',

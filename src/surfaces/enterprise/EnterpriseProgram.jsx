@@ -206,7 +206,7 @@ const curriculumNumberStyle = {
   fontSize: 'var(--sh-text-xs)',
   color: 'var(--sh-text-muted)',
   letterSpacing: '0.06em',
-  minWidth: '32px',
+  minWidth: 'var(--sh-space-8)',
   flexShrink: 0,
 };
 

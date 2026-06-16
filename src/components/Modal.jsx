@@ -159,7 +159,7 @@ const titleStyle = {
 const closeButtonStyle = {
   background: 'transparent',
   border: 'none',
-  padding: '4px 8px',
+  padding: 'var(--sh-space-1) var(--sh-space-2)',
   fontSize: 'var(--sh-text-lg)',
   fontFamily: 'inherit',
   cursor: 'pointer',

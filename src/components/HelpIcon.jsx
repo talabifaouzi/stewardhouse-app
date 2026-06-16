@@ -20,10 +20,16 @@ export function HelpIcon({ definition, position = 'bottom' }) {
           width: '14px',
           height: '14px',
           borderRadius: '50%',
-          border: '0.5px solid #B8AE9E',
+          // ENT #10: was hardcoded #B8AE9E — swapped to --sh-bronze-border
+          // (#D9C9B0); slight visual shift to warmer/lighter accepted per
+          // founder ruling R4 (visible color change, dev-server verified).
+          border: '0.5px solid var(--sh-bronze-border)',
           background: 'transparent',
           color: 'var(--sh-text-muted)',
-          fontSize: '9px',
+          // ENT #66 F1-nudge precedent (advisor bundle 3 ADV-006): was '9px' —
+          // nearest token is --sh-text-xs (11px, +2px nudge). Shared component
+          // — affects both Enterprise consumers AND Advisor's Pipeline.
+          fontSize: 'var(--sh-text-xs)',
           lineHeight: 1,
           cursor: 'help',
           display: 'inline-flex',

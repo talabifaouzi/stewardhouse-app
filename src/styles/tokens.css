@@ -98,6 +98,10 @@
   /* QA-033 — bronze accent stripe used as borderLeft on expand panels and
      the SuiteRow errors block. Shorthand encodes width + style + color. */
   --sh-border-accent: 3px solid var(--sh-bronze);
+  /* ENT #68 — deeper-bronze 4px accent stripe used as borderLeft on
+     enterprise report-stage indicators (PhilanthropicReadiness). Same shape
+     as --sh-border-accent but heavier (4px vs 3px) and darker bronze. */
+  --sh-border-accent-deep: 4px solid var(--sh-bronze-deep);
 
   /* Layout */
   --sh-content-max: 1200px;

@@ -205,7 +205,7 @@ const contextLineStyle = {
 
 const stageCardStyle = {
   marginBottom: 'var(--sh-space-4)',
-  borderLeft: '4px solid var(--sh-bronze-deep)',
+  borderLeft: 'var(--sh-border-accent-deep)',
 };
 
 const stageHeaderStyle = {

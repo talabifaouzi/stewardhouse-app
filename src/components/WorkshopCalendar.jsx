@@ -267,11 +267,13 @@ const dayLabelStyle = {
 };
 
 const dayCellStyle = {
+  // ENT #67: 72px is a contained primitive — no matching token (between
+  // space-8/32px and space-10/40px, not a multiple of either).
   minHeight: '72px',
   padding: 'var(--sh-space-2)',
   display: 'flex',
   flexDirection: 'column',
-  gap: '2px',
+  gap: 'var(--sh-space-half)',
 };
 
 const dateNumberStyle = {
@@ -297,6 +299,8 @@ const workshopEntryStyle = {
 };
 
 const workshopDotStyle = {
+  // ENT #67: 6px dot is a contained primitive — between space-1/4px and
+  // space-2/8px, no matching token (smaller than typical token granularity).
   width: '6px',
   height: '6px',
   borderRadius: '50%',

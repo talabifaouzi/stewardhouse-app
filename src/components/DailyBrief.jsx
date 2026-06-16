@@ -166,7 +166,7 @@ const bulletStyle = {
   height: '8px',
   borderRadius: '50%',
   flexShrink: 0,
-  marginTop: '8px',
+  marginTop: 'var(--sh-space-2)',
   display: 'inline-block',
 };
 

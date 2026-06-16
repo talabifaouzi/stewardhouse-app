@@ -8,7 +8,7 @@ export function Button({ children, variant = 'secondary', size = 'normal', onCli
     primary: {
       base: {
         background: 'var(--sh-bronze)',
-        color: '#FFFFFF',
+        color: 'var(--sh-text-on-accent)',
         border: '1px solid var(--sh-bronze)',
       },
       hover: {

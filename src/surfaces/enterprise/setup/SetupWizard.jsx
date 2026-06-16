@@ -645,19 +645,19 @@ function connectorStyle(reached) {
     flex: 1,
     height: '1px',
     background: reached ? 'var(--sh-bronze)' : 'var(--sh-card-border)',
-    marginTop: '16px',
+    marginTop: 'var(--sh-space-4)',
     transition: 'background 150ms ease',
   };
 }
 
 function indicatorStyle(isCurrent, isCompleted, canClick) {
   return {
-    width: '32px',
-    height: '32px',
+    width: 'var(--sh-space-8)',
+    height: 'var(--sh-space-8)',
     borderRadius: '50%',
     border: `1px solid ${isCurrent || isCompleted ? 'var(--sh-bronze)' : 'var(--sh-card-border)'}`,
     background: isCurrent ? 'var(--sh-bronze)' : 'transparent',
-    color: isCurrent ? '#FFFFFF' : isCompleted ? 'var(--sh-bronze)' : 'var(--sh-text-muted)',
+    color: isCurrent ? 'var(--sh-text-on-accent)' : isCompleted ? 'var(--sh-bronze)' : 'var(--sh-text-muted)',
     fontSize: 'var(--sh-text-sm)',
     fontFamily: 'inherit',
     fontWeight: 500,
@@ -728,7 +728,7 @@ const inputStyle = {
   boxSizing: 'border-box',
   padding: 'var(--sh-space-3)',
   border: 'var(--sh-border-thin)',
-  borderRadius: '6px',
+  borderRadius: 'var(--sh-radius-md)',
   fontFamily: 'inherit',
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-body)',
@@ -756,7 +756,7 @@ const radioLabelStyle = {
   color: 'var(--sh-text-body)',
   cursor: 'pointer',
   padding: 'var(--sh-space-2)',
-  borderRadius: '4px',
+  borderRadius: 'var(--sh-radius-sm)',
   outlineOffset: '2px',
 };
 
@@ -773,7 +773,7 @@ const checkboxLabelStyle = {
   color: 'var(--sh-text-body)',
   cursor: 'pointer',
   padding: 'var(--sh-space-2)',
-  borderRadius: '4px',
+  borderRadius: 'var(--sh-radius-sm)',
   lineHeight: 1.55,
 };
 
