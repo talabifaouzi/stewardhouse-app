@@ -8,10 +8,10 @@ import ProgramOutputs from './reports/ProgramOutputs.jsx';
 import Endowment from './reports/Endowment.jsx';
 
 const REPORT_CARDS = [
-  { slug: 'summary',   title: 'Program Summary',         desc: 'Cohort snapshot, status breakdown, engagement, workshops to date.' },
-  { slug: 'cohort',    title: 'Cohort Comparison',       desc: 'Year-over-year and sport-level comparisons.' },
-  { slug: 'readiness', title: 'Philanthropic Readiness', desc: 'Per-athlete structural progress against program gates.' },
-  { slug: 'program-outputs', title: 'Program Outputs',   desc: 'Activity summary: dollars moved, certifications, gifts. Outputs reporting, not return calculation.' },
+  { slug: 'summary',   title: 'Program summary',         desc: 'Cohort snapshot, status breakdown, engagement, workshops to date.' },
+  { slug: 'cohort',    title: 'Cohort comparison',       desc: 'Year-over-year and sport-level comparisons.' },
+  { slug: 'readiness', title: 'Philanthropic readiness', desc: 'Per-athlete structural progress against program gates.' },
+  { slug: 'program-outputs', title: 'Program outputs',   desc: 'Activity summary: dollars moved, certifications, gifts. Outputs reporting, not return calculation.' },
   { slug: 'endowment', title: 'Endowment',               desc: '$8.5K/yr endowment snapshot and projections.' },
 ];
 

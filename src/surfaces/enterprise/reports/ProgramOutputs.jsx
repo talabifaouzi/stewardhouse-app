@@ -63,7 +63,7 @@ export default function ProgramOutputs() {
     <main style={mainStyle}>
       <BackLink to="/enterprise/reports" label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
-      <h1 style={titleStyle}>Program Outputs</h1>
+      <h1 style={titleStyle}>Program outputs</h1>
       <p style={subtitleStyle}>
         Activity summary across the program — dollars moved, athletes certified, gifts made, workshops held. Outputs reporting, not return calculation.
       </p>

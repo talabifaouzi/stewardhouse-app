@@ -54,7 +54,7 @@ export default function PhilanthropicReadiness() {
     <main style={mainStyle}>
       <BackLink to="/enterprise/reports" label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
-      <h1 style={titleStyle}>Philanthropic Readiness</h1>
+      <h1 style={titleStyle}>Philanthropic readiness</h1>
       <p style={subtitleStyle}>
         Cohort progression through structural milestones. Stage-based view of where athletes are in their giving journey — outputs reporting, not numeric readiness score.
       </p>

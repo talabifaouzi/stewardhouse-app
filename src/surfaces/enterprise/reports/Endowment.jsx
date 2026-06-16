@@ -70,7 +70,7 @@ export default function Endowment() {
 
       {/* Modeling section header */}
       <div style={modelingHeaderStyle}>
-        <h2 style={modelingTitleStyle}>How this might grow — interactive modeling</h2>
+        <h2 style={modelingTitleStyle}>How this might grow — projection model</h2>
         <p style={modelingDescStyle}>
           Adjust the assumptions below to project how the endowment may grow under different scenarios. All figures are illustrative.
         </p>

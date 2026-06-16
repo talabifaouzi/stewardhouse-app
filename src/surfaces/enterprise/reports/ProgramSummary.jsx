@@ -53,7 +53,7 @@ export default function ProgramSummary() {
     <main style={mainStyle}>
       <BackLink to="/enterprise/reports" label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
-      <h1 style={titleStyle}>Program Summary</h1>
+      <h1 style={titleStyle}>Program summary</h1>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-5)' }}>
         {/* Cohort snapshot */}

@@ -57,7 +57,7 @@ export default function EnterpriseCompliance() {
         <Card>
           <SectionLabel>Excluded organizations</SectionLabel>
           <p style={explainerStyle}>
-            Organizations flagged by the department. Athletes still see these in the Give Screen with a contextual note explaining the flag — disclosure model, not blocking.
+            Organizations flagged by the department. Athletes still see these when choosing a gift target, with a contextual note explaining the flag — disclosure model, not blocking.
           </p>
           <ul style={listResetStyle}>
             {displayedExclusions.map((org, i) => {
@@ -103,7 +103,7 @@ export default function EnterpriseCompliance() {
             })}
           </ul>
           <p style={auditFootnoteStyle}>
-            Production deployment captures every exclusion edit, review, and policy change. This audit log is read-only and tamper-resistant in production.
+            Production deployment captures every exclusion edit, review, and policy change. This audit log is read-only in production.
           </p>
         </Card>
 

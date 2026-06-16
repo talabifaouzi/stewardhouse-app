@@ -52,7 +52,7 @@ export default function CohortComparison() {
     <main style={mainStyle}>
       <BackLink to="/enterprise/reports" label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
-      <h1 style={titleStyle}>Cohort Comparison</h1>
+      <h1 style={titleStyle}>Cohort comparison</h1>
       <p style={subtitleStyle}>
         Year-over-year and sport-level comparison of structural milestones across cohorts. Outputs reporting, not performance comparison.
       </p>
@@ -139,7 +139,7 @@ export default function CohortComparison() {
       <Card tint>
         <SectionLabel>About this report</SectionLabel>
         <p style={aboutBodyStyle}>
-          This report presents structural milestones across cohorts and sport groupings. It is not designed for performance ranking, scoring, or evaluation. Athletes, sports, and cohorts have different starting points, contexts, and goals — comparisons are for understanding outputs, not measuring achievement.
+          This report presents structural milestones across cohorts and sport groupings. It is not designed for performance ranking, scoring, or evaluation. Athletes, sports, and cohorts have different starting points, contexts, and goals — comparisons are for understanding outputs, not ranking athletes.
         </p>
       </Card>
     </main>

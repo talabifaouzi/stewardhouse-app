@@ -36,7 +36,7 @@ export default function EnterpriseProgram() {
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Program</h1>
       <p style={subtitleStyle}>
-        {athletes.length} athletes participating · {termPart} · {dateRangePart}
+        {athletes.length} athletes · {termPart} · {dateRangePart}
       </p>
 
       <div style={cardStackStyle}>
@@ -71,7 +71,7 @@ export default function EnterpriseProgram() {
         <Card>
           <SectionLabel>Module curriculum reference</SectionLabel>
           <p style={curriculumIntroStyle}>
-            16-lesson v1 curriculum. Sequence is flexible — facilitator may adjust pacing per cohort.
+            16-lesson curriculum. Sequence is flexible — facilitator may adjust pacing per cohort.
           </p>
           <ol style={curriculumListStyle}>
             {DEFAULT_CURRICULUM.map((title, i) => {

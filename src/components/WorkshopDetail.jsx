@@ -76,7 +76,7 @@ export default function WorkshopDetail({ isOpen, onClose, workshop, athletesById
 
         {/* Follow-ups */}
         <Card>
-          <SectionLabel>Follow-ups · {workshop.followUps.length}</SectionLabel>
+          <SectionLabel>Follow-ups ({workshop.followUps.length})</SectionLabel>
           {workshop.followUps.length === 0 ? (
             <p style={emptyFollowUpsStyle}>No follow-ups recorded for this workshop.</p>
           ) : (

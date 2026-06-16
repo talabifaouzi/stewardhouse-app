@@ -442,7 +442,7 @@ export const workshops = [
   {
     id: 2, date: "2026-04-11", title: "Giving Vehicles & Tax Strategy",
     status: "completed", attendees: 12,
-    notes: "2 absent (scheduling conflict). Recording shared.",
+    notes: "Two absent — scheduling conflict. Recording shared.",
     facilitator: "Morgan Walker",
     module: "Modules 5 & 6: Giving Vehicles + Tax Strategy",
     summary: "Deep-dive on giving vehicles (DAFs, family foundations, direct giving) and tax considerations. Recording shared with absent participants.",
@@ -659,8 +659,8 @@ export const currentCohortSnapshot = {
 export const dailyBriefItems = {
   notionalDate: '2026-05-04',
   attention: [
-    { id: 'stalled-tyler', text: 'Tyler Brooks uncontacted 11 days', meta: 'Last note: Apr 23, 2026 — check-in scheduled', link: '/enterprise/roster' },
-    { id: 'stalled-andre', text: 'Andre Mitchell uncontacted 18 days', meta: 'Outreach paused pending end-of-semester check-in', link: '/enterprise/roster' },
+    { id: 'stalled-tyler', text: 'Tyler Brooks — no contact in 11 days', meta: 'Last note: Apr 23, 2026 — check-in scheduled', link: '/enterprise/roster' },
+    { id: 'stalled-andre', text: 'Andre Mitchell — no contact in 18 days', meta: 'Outreach paused pending end-of-semester check-in', link: '/enterprise/roster' },
     { id: 'stalled-ava', text: 'Ava Petrova GPS follow-up no reply', meta: 'Last note: Apr 24, 2026', link: '/enterprise/roster' },
   ],
   priorities: [

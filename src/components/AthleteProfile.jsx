@@ -90,7 +90,7 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
           <Card>
             <SectionLabel>Reflections</SectionLabel>
             <p style={reflectionsContextStyle}>
-              Athlete's own words on their philanthropic practice. First-person reflections shared during program activities.
+              Their own words on their philanthropic practice. First-person reflections shared during program activities.
             </p>
             <ul style={listResetStyle}>
               {[...reflections].reverse().map((r, i, arr) => (
