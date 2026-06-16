@@ -25,6 +25,8 @@ import {
   certD,
   stalled,
   notStarted,
+  engagementMin,
+  engagementMax,
 } from '../shared/enterpriseStats.js';
 
 const athletesById = Object.fromEntries(athletes.map((a) => [a.id, a]));
@@ -83,7 +85,7 @@ export default function ProgramSummary() {
             data={engagementTimeline}
             labels={engagementWeekDates.map((d) => formatDate(d, { omitYear: true }))}
             onBarClick={(_, i) => setActiveWeek(i)}
-            ariaLabel={`Weekly engagement rate over 12 weeks ending ${formatDate(engagementWeekDates[engagementWeekDates.length - 1])}, ranging from ${Math.min(...engagementTimeline)}% to ${Math.max(...engagementTimeline)}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
+            ariaLabel={`Weekly engagement rate over 12 weeks ending ${formatDate(engagementWeekDates[engagementWeekDates.length - 1])}, ranging from ${engagementMin}% to ${engagementMax}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
           />
           <p style={engagementCaptionStyle}>
             Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.

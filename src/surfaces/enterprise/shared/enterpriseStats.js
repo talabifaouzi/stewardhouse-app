@@ -1,4 +1,4 @@
-import { athletes } from '../../../data/enterpriseFixtures.js';
+import { athletes, engagementTimeline } from '../../../data/enterpriseFixtures.js';
 
 // Module-level computed exports — single source of truth for the
 // enterprise-surface metric block. Tree-shakable per import.
@@ -17,3 +17,10 @@ export const athletesWithGifts = athletes.filter((a) => a.gifts > 0).length;
 export const gpsRate = Math.round((gpsD / tot) * 100);
 export const activelyProgressingPct = Math.round(((certD + onTrack) / tot) * 100);
 export const certRate = Math.round((certD / tot) * 100);
+
+// ENT #56 — module-level min/max of engagementTimeline. Consumed by
+// EnterpriseOverview + ProgramSummary BarChart ariaLabels; was computed
+// inline per render via Math.min(...spread) / Math.max(...spread). Static
+// fixture data — compute once at module load, not per render.
+export const engagementMin = Math.min(...engagementTimeline);
+export const engagementMax = Math.max(...engagementTimeline);

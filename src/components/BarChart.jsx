@@ -52,7 +52,7 @@ export default function BarChart({ data, labels, ariaLabel, tooltipFormatter, on
             <div style={barsRowStyle}>
               {data.map((value, i) => (
                 <BarSlot
-                  key={i}
+                  key={labels?.[i] ?? i}
                   value={value}
                   isActive={activeIndex === i}
                   tooltip={fmt(value, i)}
@@ -69,7 +69,7 @@ export default function BarChart({ data, labels, ariaLabel, tooltipFormatter, on
           {/* X-axis labels */}
           <div style={xAxisStyle}>
             {data.map((_, i) => (
-              <span key={i} style={xLabelStyle}>
+              <span key={labels?.[i] ?? i} style={xLabelStyle}>
                 {labels?.[i] || i + 1}
               </span>
             ))}

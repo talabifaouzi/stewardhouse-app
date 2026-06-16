@@ -197,8 +197,11 @@ function ContactsButton({ onClick }) {
   );
 }
 
+// ENT #73 — UserIdentity no longer allocates hover state when not clickable.
+// The clickable variant lives in ClickableUserIdentity (below), which owns
+// the hover state only on the branch that consumes it. Rendered DOM for both
+// branches is unchanged from the prior inline form.
 function UserIdentity({ userName, userRole, accent, onClick, hideRole }) {
-  const [hovered, setHovered] = useState(false);
   const inner = (
     <>
       <div style={{
@@ -227,28 +230,7 @@ function UserIdentity({ userName, userRole, accent, onClick, hideRole }) {
     </>
   );
   if (onClick) {
-    return (
-      <button
-        type="button"
-        onClick={onClick}
-        onMouseEnter={() => setHovered(true)}
-        onMouseLeave={() => setHovered(false)}
-        style={{
-          background: hovered ? 'var(--sh-bg-tint)' : 'transparent',
-          border: 'none',
-          padding: 'var(--sh-space-1) var(--sh-space-2)',
-          borderRadius: 'var(--sh-radius-md)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 'var(--sh-space-3)',
-          cursor: 'pointer',
-          fontFamily: 'inherit',
-          transition: 'background 150ms ease',
-        }}
-      >
-        {inner}
-      </button>
-    );
+    return <ClickableUserIdentity onClick={onClick}>{inner}</ClickableUserIdentity>;
   }
   return (
     <div style={{
@@ -258,6 +240,32 @@ function UserIdentity({ userName, userRole, accent, onClick, hideRole }) {
     }}>
       {inner}
     </div>
+  );
+}
+
+function ClickableUserIdentity({ onClick, children }) {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered ? 'var(--sh-bg-tint)' : 'transparent',
+        border: 'none',
+        padding: 'var(--sh-space-1) var(--sh-space-2)',
+        borderRadius: 'var(--sh-radius-md)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--sh-space-3)',
+        cursor: 'pointer',
+        fontFamily: 'inherit',
+        transition: 'background 150ms ease',
+      }}
+    >
+      {children}
+    </button>
   );
 }
 

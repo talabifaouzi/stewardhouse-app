@@ -77,7 +77,7 @@ export default function EnterpriseProgram() {
             {DEFAULT_CURRICULUM.map((title, i) => {
               const isLast = i === DEFAULT_CURRICULUM.length - 1;
               return (
-                <li key={i} style={curriculumRowStyle(isLast)}>
+                <li key={title} style={curriculumRowStyle(isLast)}>
                   <span style={curriculumNumberStyle}>{String(i + 1).padStart(2, '0')}</span>
                   <span style={curriculumTitleStyle}>{title}</span>
                 </li>

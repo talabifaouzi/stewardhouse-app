@@ -328,8 +328,8 @@ function Step5Modules({ data }) {
     <>
       <SectionLabel>Default curriculum (9 lessons)</SectionLabel>
       <ul style={moduleListStyle}>
-        {data.defaultCurriculum.map((lesson, i) => (
-          <li key={i} style={moduleItemStyle}>{lesson}</li>
+        {data.defaultCurriculum.map((lesson) => (
+          <li key={lesson} style={moduleItemStyle}>{lesson}</li>
         ))}
       </ul>
       <div style={addOnSectionStyle}>

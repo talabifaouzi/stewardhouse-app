@@ -131,13 +131,13 @@ export default function WorkshopCalendar({ workshops, onWorkshopClick }) {
         {DAY_LABELS.map((d) => (
           <div key={d} style={dayLabelStyle}>{d}</div>
         ))}
-        {cells.map((cell, i) => {
+        {cells.map((cell) => {
           const key = dateKey(cell.year, cell.month, cell.date);
           const cellWorkshops = workshopsByDate[key] || [];
           const todayCell = isToday(cell);
           return (
             <div
-              key={i}
+              key={key}
               style={{
                 ...dayCellStyle,
                 background: todayCell ? 'var(--sh-bronze-tint)' : 'var(--sh-card)',

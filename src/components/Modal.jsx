@@ -8,7 +8,14 @@ export function Modal({ isOpen, onClose, title, children }) {
   const triggerRef = useRef(null);
   const closeButtonRef = useRef(null);
   const panelRef = useRef(null);
-  const titleIdRef = useRef(`modal-title-${Math.random().toString(36).slice(2, 9)}`);
+  // ENT #72 — null-guard pattern (matches idRef below). The previous
+  // `useRef(\`modal-title-${Math.random()...}\`)` form evaluated the
+  // template literal every render; useRef ignored all but the first value,
+  // so the rendered id was stable but the per-render re-evaluation was waste.
+  const titleIdRef = useRef(null);
+  if (titleIdRef.current === null) {
+    titleIdRef.current = `modal-title-${Math.random().toString(36).slice(2, 9)}`;
+  }
   const idRef = useRef(null);
   if (idRef.current === null) {
     idRef.current = `modal-${Math.random().toString(36).slice(2, 9)}`;
