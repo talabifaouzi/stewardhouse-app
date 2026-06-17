@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { INST_PROFILES, workshops, athletes } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
+import { Tag } from '../../components/Tag.jsx';
 
 const DEFAULT_CURRICULUM = [
   'Building Your GPS',
@@ -52,7 +53,7 @@ export default function EnterpriseProgram() {
               value={(
                 <>
                   {profile.endowment}
-                  <span style={pendingPillStyle}>Pending review</span>
+                  <Tag color="bronze" tracking="loose" style={{ marginLeft: 'var(--sh-space-2)' }}>Pending review</Tag>
                 </>
               )}
               last
@@ -216,14 +217,3 @@ const curriculumTitleStyle = {
   lineHeight: 1.5,
 };
 
-const pendingPillStyle = {
-  display: 'inline-block',
-  padding: '2px 8px',
-  background: 'var(--sh-bronze-tint)',
-  color: 'var(--sh-bronze-deep)',
-  borderRadius: 'var(--sh-radius-full)',
-  fontSize: 'var(--sh-text-xs)',
-  fontWeight: 500,
-  letterSpacing: '0.06em',
-  marginLeft: 'var(--sh-space-2)',
-};

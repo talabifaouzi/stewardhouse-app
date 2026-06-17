@@ -2,6 +2,7 @@ import { Card } from './Card.jsx';
 import { SectionLabel } from './SectionLabel.jsx';
 import { Button } from './Button.jsx';
 import { Modal } from './Modal.jsx';
+import { Tag } from './Tag.jsx';
 import { useComms } from '../contexts/CommsContext.jsx';
 import MessageHistoryCard from './MessageHistoryCard.jsx';
 
@@ -29,9 +30,9 @@ export default function UserProfile({ isOpen, onClose, contact, onSendMessage })
         <p style={metaStyle}>
           {contact.title} · {contact.organization}
         </p>
-        <span style={rolePillStyle}>
+        <Tag color="bronze" tracking="loose">
           {ROLE_LABEL[contact.role] || contact.role}
-        </span>
+        </Tag>
       </div>
 
       <div style={sectionsStyle}>
@@ -93,18 +94,6 @@ const metaStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-secondary)',
   lineHeight: 1.5,
-};
-
-const rolePillStyle = {
-  display: 'inline-block',
-  padding: 'var(--sh-space-1) var(--sh-space-3)',
-  background: 'var(--sh-bronze-tint)',
-  color: 'var(--sh-bronze-deep)',
-  borderRadius: 'var(--sh-radius-full)',
-  fontSize: 'var(--sh-text-xs)',
-  fontWeight: 500,
-  letterSpacing: '0.04em',
-  whiteSpace: 'nowrap',
 };
 
 const sectionsStyle = {

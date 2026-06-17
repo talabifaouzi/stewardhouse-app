@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { exclusions, complianceAuditLog, CURRENT_USER } from '../../data/enterpriseFixtures.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
+import { Tag } from '../../components/Tag.jsx';
 import ExclusionDetail from '../../components/ExclusionDetail.jsx';
 import { formatDateTime } from '../../utils/formatDate.js';
 
@@ -124,7 +125,7 @@ function AuditEntry({ entry, isLast }) {
       <div style={auditTopRowStyle}>
         <div style={auditTimestampGroupStyle}>
           <span style={auditTimestampStyle}>{formatDateTime(entry.timestamp)}</span>
-          {entry.isSession && <span style={sessionPillStyle}>SESSION</span>}
+          {entry.isSession && <Tag color="bronze" tracking="loose">SESSION</Tag>}
         </div>
         <span style={auditUserStyle}>
           {entry.user} <span style={auditRoleStyle}>({entry.userRole})</span>
@@ -295,18 +296,6 @@ const auditTimestampStyle = {
   fontSize: 'var(--sh-text-xs)',
   color: 'var(--sh-text-muted)',
   letterSpacing: '0.02em',
-};
-
-const sessionPillStyle = {
-  display: 'inline-block',
-  padding: '2px 8px',
-  background: 'var(--sh-bronze-tint)',
-  color: 'var(--sh-bronze-deep)',
-  borderRadius: 'var(--sh-radius-full)',
-  fontSize: 'var(--sh-text-xs)',
-  fontWeight: 500,
-  letterSpacing: '0.08em',
-  whiteSpace: 'nowrap',
 };
 
 const auditUserStyle = {

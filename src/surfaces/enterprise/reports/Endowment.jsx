@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
+import { Tag } from '../../../components/Tag.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
 import { endowmentSnapshot } from '../../../data/enterpriseFixtures.js';
@@ -183,7 +184,7 @@ export default function Endowment() {
       <Card tint>
         <div style={noticeHeaderStyle}>
           <SectionLabel>Important notice</SectionLabel>
-          <span style={reviewPillStyle}>REVIEW PENDING</span>
+          <Tag color="bronze" tracking="loose">REVIEW PENDING</Tag>
         </div>
         <p style={noticeBodyStyle}>
           Illustrative projections only. Not investment advice. Actual outcomes may vary based on market conditions and economic factors. Endowment structure — including tax treatment, distribution mechanism, and governance — is subject to legal review prior to partnership finalization. Consult your financial advisor and legal counsel before relying on these projections for planning purposes.
@@ -406,17 +407,6 @@ const noticeHeaderStyle = {
   marginBottom: 'var(--sh-space-3)',
 };
 
-const reviewPillStyle = {
-  display: 'inline-block',
-  padding: '2px 10px',
-  background: 'var(--sh-bronze-tint)',
-  color: 'var(--sh-bronze-deep)',
-  borderRadius: 'var(--sh-radius-full)',
-  fontSize: 'var(--sh-text-xs)',
-  fontWeight: 500,
-  letterSpacing: '0.08em',
-  whiteSpace: 'nowrap',
-};
 
 const noticeBodyStyle = {
   fontSize: 'var(--sh-text-sm)',

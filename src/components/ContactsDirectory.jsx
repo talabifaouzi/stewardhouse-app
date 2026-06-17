@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Modal } from './Modal.jsx';
+import { Tag } from './Tag.jsx';
 import { ROLE_LABEL } from './UserProfile.jsx';
 
 // Contacts directory list modal. Each row is a button that opens the
@@ -45,9 +46,9 @@ function ContactRow({ contact, isLast, onClick }) {
         <p style={nameStyle}>{contact.name}</p>
         <p style={metaStyle}>{contact.title} · {contact.organization}</p>
       </div>
-      <span style={rolePillStyle}>
+      <Tag color="bronze" tracking="loose" style={{ flexShrink: 0 }}>
         {ROLE_LABEL[contact.role] || contact.role}
-      </span>
+      </Tag>
     </button>
   );
 }
@@ -93,15 +94,3 @@ const metaStyle = {
   lineHeight: 1.4,
 };
 
-const rolePillStyle = {
-  display: 'inline-block',
-  padding: '2px 8px',
-  background: 'var(--sh-bronze-tint)',
-  color: 'var(--sh-bronze-deep)',
-  borderRadius: 'var(--sh-radius-full)',
-  fontSize: 'var(--sh-text-xs)',
-  fontWeight: 500,
-  letterSpacing: '0.04em',
-  whiteSpace: 'nowrap',
-  flexShrink: 0,
-};

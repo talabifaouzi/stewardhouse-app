@@ -3,6 +3,7 @@ import { Card } from '../../../components/Card.jsx';
 import { Button } from '../../../components/Button.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import { Modal } from '../../../components/Modal.jsx';
+import { Tag } from '../../../components/Tag.jsx';
 import { formatDate } from '../../../utils/formatDate.js';
 import { CURRENT_USER } from '../../../data/enterpriseFixtures.js';
 
@@ -223,7 +224,7 @@ function PendingStepPlaceholder({ title, message }) {
   return (
     <div style={placeholderStyle}>
       <SectionLabel>{title}</SectionLabel>
-      <span style={pendingPillStyle}>PENDING</span>
+      <Tag color="bronze" tracking="loose">PENDING</Tag>
       <p style={placeholderMessageStyle}>{message}</p>
     </div>
   );
@@ -870,17 +871,6 @@ const placeholderStyle = {
   flexDirection: 'column',
   alignItems: 'center',
   gap: 'var(--sh-space-3)',
-};
-
-const pendingPillStyle = {
-  display: 'inline-block',
-  padding: '4px 12px',
-  background: 'var(--sh-bronze-tint)',
-  color: 'var(--sh-bronze-deep)',
-  borderRadius: 'var(--sh-radius-full)',
-  fontSize: 'var(--sh-text-xs)',
-  fontWeight: 500,
-  letterSpacing: '0.08em',
 };
 
 const placeholderMessageStyle = {
