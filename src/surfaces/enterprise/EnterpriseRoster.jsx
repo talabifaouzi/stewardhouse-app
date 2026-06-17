@@ -4,6 +4,7 @@ import { Card } from '../../components/Card.jsx';
 import StatTile from '../../components/StatTile.jsx';
 import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
+import DataTable from '../../components/DataTable.jsx';
 import { useComms } from '../../contexts/CommsContext.jsx';
 import { formatDate } from '../../utils/formatDate.js';
 import {
@@ -23,11 +24,22 @@ const sortedAthletes = [...athletes].sort((a, b) => {
   return a.name.localeCompare(b.name);
 });
 
+const ROSTER_COLUMNS = [
+  { key: 'name',       label: 'Name',        render: (a) => a.name },
+  { key: 'sport',      label: 'Sport',       render: (a) => a.sport },
+  { key: 'year',       label: 'Year',        render: (a) => a.year },
+  { key: 'status',     label: 'Status',      render: (a) => statusFor(a) },
+  { key: 'gps',        label: 'GPS',         render: (a) => (a.gpsCompleted ? formatDate(a.gpsDate) : '—') },
+  { key: 'lessons',    label: 'Lessons',     render: (a) => a.lessons },
+  { key: 'gifts',      label: 'Gifts',       render: (a) => a.gifts },
+  { key: 'lastActive', label: 'Last Active', render: (a) => a.lastActive },
+  { key: 'certified',  label: 'Certified',   render: (a) => (a.certified ? formatDate(a.certDate) : '—') },
+];
+
 export default function EnterpriseRoster() {
   const { openCompose } = useComms();
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
-  const [hoveredRowId, setHoveredRowId] = useState(null);
 
   const config = activeCategory ? CATEGORY_CONFIG[activeCategory] : null;
   const filteredAthletes = config ? athletes.filter(config.filter) : [];
@@ -49,64 +61,14 @@ export default function EnterpriseRoster() {
 
       {/* Roster table — rows clickable, opens profile directly */}
       <Card>
-        <div style={tableWrapperStyle}>
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Name</th>
-                <th style={thStyle}>Sport</th>
-                <th style={thStyle}>Year</th>
-                <th style={thStyle}>Status</th>
-                <th style={thStyle}>GPS</th>
-                <th style={thStyle}>Lessons</th>
-                <th style={thStyle}>Gifts</th>
-                <th style={thStyle}>Last Active</th>
-                <th style={thStyle}>Certified</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedAthletes.map((a, i) => {
-                const isLast = i === sortedAthletes.length - 1;
-                const isHovered = hoveredRowId === a.id;
-                return (
-                  <tr
-                    key={a.id}
-                    tabIndex={0}
-                    aria-label={`View ${a.name}'s profile`}
-                    onClick={() => setActiveAthlete(a)}
-                    onKeyDown={(e) => {
-                      // ENT #15 — keyboard activation for clickable table row.
-                      // Preserves <tr>'s row semantics (no role override) per
-                      // WAI-ARIA tabular-data practice. Space preventDefault
-                      // suppresses page-scroll.
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        setActiveAthlete(a);
-                      }
-                    }}
-                    onMouseEnter={() => setHoveredRowId(a.id)}
-                    onMouseLeave={() => setHoveredRowId(null)}
-                    style={{
-                      cursor: 'pointer',
-                      background: isHovered ? 'var(--sh-bg-tint)' : 'transparent',
-                      transition: 'background 150ms ease',
-                    }}
-                  >
-                    <td style={tdStyle(isLast)}>{a.name}</td>
-                    <td style={tdStyle(isLast)}>{a.sport}</td>
-                    <td style={tdStyle(isLast)}>{a.year}</td>
-                    <td style={tdStyle(isLast)}>{statusFor(a)}</td>
-                    <td style={tdStyle(isLast)}>{a.gpsCompleted ? formatDate(a.gpsDate) : '—'}</td>
-                    <td style={tdStyle(isLast)}>{a.lessons}</td>
-                    <td style={tdStyle(isLast)}>{a.gifts}</td>
-                    <td style={tdStyle(isLast)}>{a.lastActive}</td>
-                    <td style={tdStyle(isLast)}>{a.certified ? formatDate(a.certDate) : '—'}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          columns={ROSTER_COLUMNS}
+          data={sortedAthletes}
+          rowKey={(a) => a.id}
+          minWidth="880px"
+          onRowClick={setActiveAthlete}
+          rowAriaLabel={(a) => `View ${a.name}'s profile`}
+        />
       </Card>
 
       {/* Drill-down: stat tile → filtered list → profile (stacks) */}
@@ -157,37 +119,3 @@ const statGridStyle = {
   marginBottom: 'var(--sh-space-6)',
 };
 
-const tableWrapperStyle = {
-  overflowX: 'auto',
-  width: '100%',
-};
-
-const tableStyle = {
-  width: '100%',
-  minWidth: '880px',
-  borderCollapse: 'collapse',
-};
-
-const thStyle = {
-  textAlign: 'left',
-  fontSize: 'var(--sh-text-xs)',
-  color: 'var(--sh-text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-  fontWeight: 500,
-  padding: 'var(--sh-space-3) var(--sh-space-3)',
-  borderBottom: 'var(--sh-border-thin)',
-  whiteSpace: 'nowrap',
-};
-
-function tdStyle(isLast) {
-  return {
-    fontSize: 'var(--sh-text-sm)',
-    color: 'var(--sh-text-body)',
-    padding: 'var(--sh-space-3) var(--sh-space-3)',
-    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
-    lineHeight: 1.5,
-    verticalAlign: 'top',
-    whiteSpace: 'nowrap',
-  };
-}

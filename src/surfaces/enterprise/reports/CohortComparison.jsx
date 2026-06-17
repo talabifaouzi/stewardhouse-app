@@ -1,6 +1,7 @@
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
+import DataTable from '../../../components/DataTable.jsx';
 import useMediaQuery, { MOBILE_QUERY } from '../../../hooks/useMediaQuery.js';
 import { athletes, priorCohortSnapshot, currentCohortSnapshot } from '../../../data/enterpriseFixtures.js';
 
@@ -26,6 +27,14 @@ const sportRows = Object.entries(bySport)
     giftCount: data.giftCount,
   }))
   .sort((a, b) => b.athleteCount - a.athleteCount);
+
+const SPORT_COLUMNS = [
+  { key: 'sport',        label: 'Sport',     lead: true, nowrap: true, render: (r) => r.sport },
+  { key: 'athleteCount', label: 'Athletes',  render: (r) => r.athleteCount },
+  { key: 'gpsCount',     label: 'GPS',       render: (r) => `${r.gpsCount} of ${r.athleteCount}` },
+  { key: 'certCount',    label: 'Certified', render: (r) => `${r.certCount} of ${r.athleteCount}` },
+  { key: 'giftCount',    label: 'Gifts',     render: (r) => r.giftCount },
+];
 
 // Year-over-year rows — values from snapshots
 const yoyRows = [
@@ -106,33 +115,11 @@ export default function CohortComparison() {
         <p style={contextLineStyle}>
           Current cohort by sport. Some sports have a single representative — context for interpretation, not comparison.
         </p>
-        <div style={tableWrapperStyle}>
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Sport</th>
-                <th style={thStyle}>Athletes</th>
-                <th style={thStyle}>GPS</th>
-                <th style={thStyle}>Certified</th>
-                <th style={thStyle}>Gifts</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sportRows.map((r, i) => {
-                const isLast = i === sportRows.length - 1;
-                return (
-                  <tr key={r.sport}>
-                    <td style={tdSportStyle(isLast)}>{r.sport}</td>
-                    <td style={tdStyle(isLast)}>{r.athleteCount}</td>
-                    <td style={tdStyle(isLast)}>{r.gpsCount} of {r.athleteCount}</td>
-                    <td style={tdStyle(isLast)}>{r.certCount} of {r.athleteCount}</td>
-                    <td style={tdStyle(isLast)}>{r.giftCount}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          columns={SPORT_COLUMNS}
+          data={sportRows}
+          rowKey={(r) => r.sport}
+        />
       </Card>
 
       {/* Section 3 — About this report */}
@@ -247,53 +234,6 @@ function yoyCurrentStyle(isLast) {
     borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
     display: 'flex',
     alignItems: 'center',
-  };
-}
-
-const tableWrapperStyle = {
-  overflowX: 'auto',
-  width: '100%',
-};
-
-const tableStyle = {
-  width: '100%',
-  minWidth: '560px',
-  borderCollapse: 'collapse',
-};
-
-const thStyle = {
-  textAlign: 'left',
-  fontSize: 'var(--sh-text-xs)',
-  color: 'var(--sh-text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-  fontWeight: 500,
-  padding: 'var(--sh-space-3) var(--sh-space-3)',
-  borderBottom: 'var(--sh-border-thin)',
-  whiteSpace: 'nowrap',
-};
-
-function tdStyle(isLast) {
-  return {
-    fontSize: 'var(--sh-text-sm)',
-    color: 'var(--sh-text-body)',
-    padding: 'var(--sh-space-3) var(--sh-space-3)',
-    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
-    lineHeight: 1.5,
-    verticalAlign: 'top',
-    whiteSpace: 'nowrap',
-  };
-}
-
-function tdSportStyle(isLast) {
-  return {
-    fontFamily: 'var(--sh-font-serif)',
-    fontSize: 'var(--sh-text-base)',
-    color: 'var(--sh-text-primary)',
-    padding: 'var(--sh-space-3) var(--sh-space-3)',
-    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
-    verticalAlign: 'top',
-    whiteSpace: 'nowrap',
   };
 }
 

@@ -2,10 +2,17 @@ import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
+import DataTable from '../../../components/DataTable.jsx';
 import { athletes, workshops } from '../../../data/enterpriseFixtures.js';
 
 const fmtUSD = (n) => `$${n.toLocaleString('en-US')}`;
 const fmtCount = (n) => n.toLocaleString('en-US');
+
+const RECIPIENT_COLUMNS = [
+  { key: 'organization', label: 'Organization',     lead: true, render: (r) => r.organization },
+  { key: 'giftCount',    label: 'Athletes giving',  render: (r) => r.giftCount },
+  { key: 'totalAmount',  label: 'Total received',   render: (r) => fmtUSD(r.totalAmount) },
+];
 
 // Parse gift_made activity events from each athlete: "$500 to Org Name"
 const giftEvents = athletes.flatMap((a) =>
@@ -108,29 +115,11 @@ export default function ProgramOutputs() {
         <p style={contextLineStyle}>
           {recipientRows.length} organizations received gifts. Sorted by total dollars received.
         </p>
-        <div style={tableWrapperStyle}>
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th style={thStyle}>Organization</th>
-                <th style={thStyle}>Athletes giving</th>
-                <th style={thStyle}>Total received</th>
-              </tr>
-            </thead>
-            <tbody>
-              {recipientRows.map((r, i) => {
-                const isLast = i === recipientRows.length - 1;
-                return (
-                  <tr key={r.organization}>
-                    <td style={tdOrgStyle(isLast)}>{r.organization}</td>
-                    <td style={tdStyle(isLast)}>{r.giftCount}</td>
-                    <td style={tdStyle(isLast)}>{fmtUSD(r.totalAmount)}</td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
+        <DataTable
+          columns={RECIPIENT_COLUMNS}
+          data={recipientRows}
+          rowKey={(r) => r.organization}
+        />
       </Card>
 
       {/* Section 3 — Engagement Activity */}
@@ -220,52 +209,6 @@ const statGridStyle = {
   gap: 'var(--sh-space-4)',
   marginTop: 'var(--sh-space-3)',
 };
-
-const tableWrapperStyle = {
-  overflowX: 'auto',
-  width: '100%',
-};
-
-const tableStyle = {
-  width: '100%',
-  minWidth: '560px',
-  borderCollapse: 'collapse',
-};
-
-const thStyle = {
-  textAlign: 'left',
-  fontSize: 'var(--sh-text-xs)',
-  color: 'var(--sh-text-muted)',
-  textTransform: 'uppercase',
-  letterSpacing: '0.08em',
-  fontWeight: 500,
-  padding: 'var(--sh-space-3) var(--sh-space-3)',
-  borderBottom: 'var(--sh-border-thin)',
-  whiteSpace: 'nowrap',
-};
-
-function tdStyle(isLast) {
-  return {
-    fontSize: 'var(--sh-text-sm)',
-    color: 'var(--sh-text-body)',
-    padding: 'var(--sh-space-3) var(--sh-space-3)',
-    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
-    lineHeight: 1.5,
-    verticalAlign: 'top',
-    whiteSpace: 'nowrap',
-  };
-}
-
-function tdOrgStyle(isLast) {
-  return {
-    fontFamily: 'var(--sh-font-serif)',
-    fontSize: 'var(--sh-text-base)',
-    color: 'var(--sh-text-primary)',
-    padding: 'var(--sh-space-3) var(--sh-space-3)',
-    borderBottom: isLast ? 'none' : 'var(--sh-border-thin)',
-    verticalAlign: 'top',
-  };
-}
 
 const aboutBodyStyle = {
   fontSize: 'var(--sh-text-sm)',
