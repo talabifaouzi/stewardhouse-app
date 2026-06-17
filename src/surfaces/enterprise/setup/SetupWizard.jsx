@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import { Card } from '../../../components/Card.jsx';
 import { Button } from '../../../components/Button.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import { Modal } from '../../../components/Modal.jsx';
 import { Tag } from '../../../components/Tag.jsx';
+import SegmentedControl from '../../../components/SegmentedControl.jsx';
 import { formatDate } from '../../../utils/formatDate.js';
 import { CURRENT_USER } from '../../../data/enterpriseFixtures.js';
 
@@ -86,6 +87,7 @@ export default function SetupWizard() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   // Demo control: facilitator (default) gates Steps 5-6 as pending; in-house keeps them editable.
   const [partnershipType, setPartnershipType] = useState('facilitator');
+  const partnershipLabelId = useId();
 
   const goToStep = (idx) => {
     if (visitedSteps.has(idx)) setCurrentStep(idx);
@@ -123,23 +125,17 @@ export default function SetupWizard() {
           Illustrative full setup flow. In production, Steps 1–2 are completed by StewardHouse during partnership onboarding; Steps 3–4 by the athletic department; Steps 5–6 by the assigned philanthropic advisor or department admin; Step 7 requires sign-off from all parties.
         </p>
         <div style={toggleRowStyle}>
-          <span style={toggleLabelStyle}>Demo: toggle partnership type —</span>
-          <div style={segmentedControlStyle}>
-            <button
-              type="button"
-              onClick={() => setPartnershipType('facilitator')}
-              style={segmentButtonStyle(partnershipType === 'facilitator', 'left')}
-            >
-              Facilitator
-            </button>
-            <button
-              type="button"
-              onClick={() => setPartnershipType('in-house')}
-              style={segmentButtonStyle(partnershipType === 'in-house', 'right')}
-            >
-              In-house
-            </button>
-          </div>
+          <span id={partnershipLabelId} style={toggleLabelStyle}>Demo: toggle partnership type —</span>
+          <SegmentedControl
+            options={[
+              { value: 'facilitator', label: 'Facilitator' },
+              { value: 'in-house', label: 'In-house' },
+            ]}
+            value={partnershipType}
+            onChange={setPartnershipType}
+            ariaLabelledBy={partnershipLabelId}
+            size="sm"
+          />
         </div>
       </Card>
 
@@ -833,33 +829,6 @@ const toggleLabelStyle = {
   color: 'var(--sh-text-muted)',
   letterSpacing: '0.02em',
 };
-
-const segmentedControlStyle = {
-  display: 'inline-flex',
-  borderRadius: 'var(--sh-radius-md)',
-  overflow: 'hidden',
-};
-
-function segmentButtonStyle(isActive, side) {
-  const radius = 'var(--sh-radius-md)';
-  return {
-    background: isActive ? 'var(--sh-bronze)' : 'transparent',
-    color: isActive ? 'var(--sh-bg)' : 'var(--sh-bronze)',
-    border: '1px solid var(--sh-bronze)',
-    padding: '4px 12px',
-    fontSize: 'var(--sh-text-xs)',
-    fontFamily: 'inherit',
-    fontWeight: 500,
-    letterSpacing: '0.04em',
-    cursor: 'pointer',
-    borderTopLeftRadius: side === 'left' ? radius : 0,
-    borderBottomLeftRadius: side === 'left' ? radius : 0,
-    borderTopRightRadius: side === 'right' ? radius : 0,
-    borderBottomRightRadius: side === 'right' ? radius : 0,
-    borderRight: side === 'left' ? 'none' : '1px solid var(--sh-bronze)',
-    transition: 'background 150ms ease, color 150ms ease',
-  };
-}
 
 const placeholderStyle = {
   background: 'var(--sh-card)',

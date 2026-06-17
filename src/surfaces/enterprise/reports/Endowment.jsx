@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useId } from 'react';
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import { Tag } from '../../../components/Tag.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
+import SegmentedControl from '../../../components/SegmentedControl.jsx';
 import { endowmentSnapshot } from '../../../data/enterpriseFixtures.js';
 import { formatDate } from '../../../utils/formatDate.js';
 
@@ -16,6 +17,7 @@ export default function Endowment() {
   const [growthRate, setGrowthRate] = useState(6);
   const [termYears, setTermYears] = useState(10);
   const [showFormula, setShowFormula] = useState(false);
+  const termHorizonLabelId = useId();
 
   // Projection math — compounded starting balance + annuity contributions
   const g = growthRate / 100;
@@ -112,24 +114,19 @@ export default function Endowment() {
           {/* Term horizon segmented control */}
           <div>
             <div style={sliderLabelRowStyle}>
-              <span style={sliderLabelStyle}>Term horizon</span>
+              <span id={termHorizonLabelId} style={sliderLabelStyle}>Term horizon</span>
               <span style={sliderValueStyle}>{termYears} years</span>
             </div>
-            <div style={segmentedControlStyle}>
-              {[5, 10, 20].map((yr, idx, arr) => {
-                const side = idx === 0 ? 'left' : idx === arr.length - 1 ? 'right' : 'middle';
-                return (
-                  <button
-                    key={yr}
-                    type="button"
-                    onClick={() => setTermYears(yr)}
-                    style={segmentButtonStyle(termYears === yr, side)}
-                  >
-                    {yr} years
-                  </button>
-                );
-              })}
-            </div>
+            <SegmentedControl
+              options={[
+                { value: 5, label: '5 years' },
+                { value: 10, label: '10 years' },
+                { value: 20, label: '20 years' },
+              ]}
+              value={termYears}
+              onChange={setTermYears}
+              ariaLabelledBy={termHorizonLabelId}
+            />
           </div>
         </div>
       </Card>
@@ -332,31 +329,6 @@ const sliderInputStyle = {
   accentColor: 'var(--sh-bronze)',
   cursor: 'pointer',
 };
-
-const segmentedControlStyle = {
-  display: 'inline-flex',
-};
-
-function segmentButtonStyle(isActive, side) {
-  const radius = 'var(--sh-radius-md)';
-  return {
-    background: isActive ? 'var(--sh-bronze)' : 'transparent',
-    color: isActive ? 'var(--sh-bg)' : 'var(--sh-bronze)',
-    border: '1px solid var(--sh-bronze)',
-    padding: '6px 14px',
-    fontSize: 'var(--sh-text-xs)',
-    fontFamily: 'inherit',
-    fontWeight: 500,
-    letterSpacing: '0.04em',
-    cursor: 'pointer',
-    borderTopLeftRadius: side === 'left' ? radius : 0,
-    borderBottomLeftRadius: side === 'left' ? radius : 0,
-    borderTopRightRadius: side === 'right' ? radius : 0,
-    borderBottomRightRadius: side === 'right' ? radius : 0,
-    borderRight: side === 'right' ? '1px solid var(--sh-bronze)' : 'none',
-    transition: 'background 150ms ease, color 150ms ease',
-  };
-}
 
 const calcExpanderStyle = {
   marginTop: 'var(--sh-space-4)',
