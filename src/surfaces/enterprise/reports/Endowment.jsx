@@ -17,7 +17,7 @@ export default function Endowment() {
   const [growthRate, setGrowthRate] = useState(6);
   const [termYears, setTermYears] = useState(10);
   const [showFormula, setShowFormula] = useState(false);
-  const termHorizonLabelId = useId();
+  const commitmentTermLabelId = useId();
 
   // Projection math — compounded starting balance + annuity contributions
   const g = growthRate / 100;
@@ -111,10 +111,10 @@ export default function Endowment() {
             onChange={setGrowthRate}
           />
 
-          {/* Term horizon segmented control */}
+          {/* Commitment term segmented control */}
           <div>
             <div style={sliderLabelRowStyle}>
-              <span id={termHorizonLabelId} style={sliderLabelStyle}>Term horizon</span>
+              <span id={commitmentTermLabelId} style={sliderLabelStyle}>Commitment term</span>
               <span style={sliderValueStyle}>{termYears} years</span>
             </div>
             <SegmentedControl
@@ -125,7 +125,7 @@ export default function Endowment() {
               ]}
               value={termYears}
               onChange={setTermYears}
-              ariaLabelledBy={termHorizonLabelId}
+              ariaLabelledBy={commitmentTermLabelId}
             />
           </div>
         </div>
