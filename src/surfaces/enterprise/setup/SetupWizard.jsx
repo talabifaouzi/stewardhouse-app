@@ -280,7 +280,7 @@ function Step3Roster({ data }) {
         <p style={rosterCountStyle}>{data.athleteCount} athletes</p>
         <p style={rosterNoteStyle}>{data.note}</p>
       </div>
-      <Button variant="secondary" onClick={() => {}} disabled>
+      <Button variant="secondary" disabled>
         Upload CSV (pending integration)
       </Button>
     </>

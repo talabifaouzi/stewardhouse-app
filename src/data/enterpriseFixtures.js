@@ -557,6 +557,24 @@ export const exclusions = [
     connection: "Cooper State Athletics Booster Association",
     connectionDetail: "Affiliated with Cooper State Athletics Booster Association via shared board members and overlapping fundraising operations. Same NIL compliance rationale as Booster Club Foundation — donations could be construed as benefiting the athletic program. Exclusion preserves structural separation.",
   },
+  {
+    id: 4, name: "Quick Cash Sports Loans LLC", ein: "04-3367892",
+    reason: "Predatory lending", flagged: "Apr 19, 2026",
+    connection: "Markets short-term loans to student-athletes",
+    connectionDetail: "Quick Cash Sports Loans LLC markets short-term loan products directly to collegiate athletes. The athletic department has flagged the organization following consumer-protection concerns raised by state regulators. Athletes still see the org in their giving view with the flag and this context — disclosure model, not blocking.",
+  },
+  {
+    id: 5, name: "TigerBet Online Sportsbook", ein: "04-2294516",
+    reason: "Sports betting", flagged: "Mar 7, 2026",
+    connection: "Sports-betting operator",
+    connectionDetail: "TigerBet Online Sportsbook operates licensed sports-wagering products. NIL framework §4.2 directs the department to surface sports-betting operators as exclusions, aligning with NCAA guidance on athlete affiliations with the betting industry. Athletes still see the org in their giving view with the framework citation — disclosure model, not blocking.",
+  },
+  {
+    id: 6, name: "Premier Athletic Apparel Co", ein: "04-1145037",
+    reason: "Pending NIL review", flagged: "Feb 19, 2026",
+    connection: "Athletic-apparel manufacturer under temporary NIL review",
+    connectionDetail: "Premier Athletic Apparel Co is under temporary review pending the department's NIL-conflict assessment. The flag is procedural and will be removed when the review concludes; this is a temporary exclusion, not a long-term concern. Athletes still see the org in their giving view with the pending-review note — disclosure model, not blocking.",
+  },
 ];
 
 /** @type {Array<Contact>} */
@@ -620,7 +638,7 @@ export const endowmentSnapshot = {
   growthToDate: 128,
   asOfDate: '2026-05-09',
   annualContribution: 8500,
-  programTerm: 'Season Residency · Aug 2025 to May 2026',
+  programTerm: 'Season Residency — Aug 2025 to May 2026',
 };
 
 /** @type {{cohortLabel: string, athletes: number, gpsCompleted: number, gpsRate: number, certified: number, certRate: number, totalGifts: number, totalDollarsMoved: number, workshopAttendanceRate: number, avgWeeklyEngagement: number, asOfNote: string}} */

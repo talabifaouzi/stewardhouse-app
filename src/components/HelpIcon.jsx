@@ -49,7 +49,7 @@ export function HelpIcon({ definition, position = 'bottom' }) {
           // — affects both Enterprise consumers AND Advisor's Pipeline.
           fontSize: 'var(--sh-text-xs)',
           lineHeight: 1,
-          cursor: 'help',
+          cursor: 'pointer',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',

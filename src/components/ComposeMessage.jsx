@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { Button } from './Button.jsx';
 import { Modal } from './Modal.jsx';
 
@@ -23,6 +23,7 @@ export default function ComposeMessage({
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [sent, setSent] = useState(false);
+  const recipientsListId = useId();
 
   // Initialize on open — recipient pre-fills To; context pre-fills Subject.
   useEffect(() => {
@@ -87,10 +88,10 @@ export default function ComposeMessage({
               value={toEmail}
               onChange={(e) => setToEmail(e.target.value)}
               placeholder="Email address"
-              list="compose-recipients-options"
+              list={recipientsListId}
               style={inputStyle}
             />
-            <datalist id="compose-recipients-options">
+            <datalist id={recipientsListId}>
               {(recipients || []).map((r) => (
                 <option key={r.email} value={r.email}>
                   {r.name}

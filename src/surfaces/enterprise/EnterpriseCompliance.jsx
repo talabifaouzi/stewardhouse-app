@@ -17,7 +17,7 @@ export default function EnterpriseCompliance() {
     setExclusionOverrides((prev) => ({ ...prev, [updated.id]: updated }));
     setSessionAuditEntries((prev) => [
       {
-        id: `session-${Date.now()}`,
+        id: `session-${crypto.randomUUID()}`,
         timestamp: 'Just now',
         user: CURRENT_USER.name,
         userRole: CURRENT_USER.title,
@@ -86,26 +86,26 @@ export default function EnterpriseCompliance() {
         </Card>
       </div>
 
-        {/* Audit trail */}
-        <Card style={{ marginTop: 'var(--sh-space-6)' }}>
-          <SectionLabel>Audit trail</SectionLabel>
-          <p style={auditContextStyle}>
-            Compliance actions logged with timestamp and reviewer. Production maintains tamper-resistant audit log; prototype shows pre-seeded entries and any in-session edits.
-          </p>
-          <ul style={auditListStyle}>
-            {auditEntries.map((entry, i) => {
-              const isLast = i === auditEntries.length - 1;
-              return (
-                <li key={entry.id}>
-                  <AuditEntry entry={entry} isLast={isLast} />
-                </li>
-              );
-            })}
-          </ul>
-          <p style={auditFootnoteStyle}>
-            Production deployment captures every exclusion edit, review, and policy change. This audit log is read-only in production.
-          </p>
-        </Card>
+      {/* Audit trail */}
+      <Card style={{ marginTop: 'var(--sh-space-6)' }}>
+        <SectionLabel>Audit trail</SectionLabel>
+        <p style={auditContextStyle}>
+          Compliance actions logged with timestamp and reviewer. Production maintains tamper-resistant audit log; prototype shows pre-seeded entries and any in-session edits.
+        </p>
+        <ul style={auditListStyle}>
+          {auditEntries.map((entry, i) => {
+            const isLast = i === auditEntries.length - 1;
+            return (
+              <li key={entry.id}>
+                <AuditEntry entry={entry} isLast={isLast} />
+              </li>
+            );
+          })}
+        </ul>
+        <p style={auditFootnoteStyle}>
+          Production deployment captures every exclusion edit, review, and policy change. This audit log is read-only in production.
+        </p>
+      </Card>
 
       <ExclusionDetail
         isOpen={activeExclusion !== null}

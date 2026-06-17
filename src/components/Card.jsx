@@ -1,6 +1,9 @@
 import { useState } from 'react';
 
 export function Card({ children, padding = 'normal', tint = false, interactive = false, accent = null, style = {}, onClick, as = 'div', 'aria-labelledby': ariaLabelledBy, ...props }) {
+  // ENT #116 — `hovered` is always allocated but only consumed when isClickable
+  // (see :24 below). Tiny per-mount cost; flagged as a Cluster I InteractiveCard
+  // extraction candidate following the #73 ClickableUserIdentity precedent.
   const [hovered, setHovered] = useState(false);
 
   const padMap = {

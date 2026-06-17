@@ -21,7 +21,6 @@ export function Modal({ isOpen, onClose, title, children }) {
     idRef.current = `modal-${Math.random().toString(36).slice(2, 9)}`;
   }
   const [closeHovered, setCloseHovered] = useState(false);
-  const [closeFocused, setCloseFocused] = useState(false);
   const { push, pop, isTop, indexOf } = useModalStack();
 
   // Register on stack when open; pop when closed/unmounted.
@@ -105,14 +104,10 @@ export function Modal({ isOpen, onClose, title, children }) {
             onClick={onClose}
             onMouseEnter={() => setCloseHovered(true)}
             onMouseLeave={() => setCloseHovered(false)}
-            onFocus={() => setCloseFocused(true)}
-            onBlur={() => setCloseFocused(false)}
             aria-label="Close"
             style={{
               ...closeButtonStyle,
               color: closeHovered ? 'var(--sh-text-primary)' : 'var(--sh-text-muted)',
-              outline: closeFocused ? '2px solid var(--sh-bronze)' : 'none',
-              outlineOffset: '2px',
             }}
           >
             ×
