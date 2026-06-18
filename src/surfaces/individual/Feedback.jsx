@@ -4,13 +4,12 @@ import { Button } from '../../components/Button.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 
 const MAX_FIELD_LEN = 5000;
-const FORM_ENDPOINT = 'https://formsubmit.co/ajax/talabifaouzi@gmail.com';
+const FORM_ENDPOINT = import.meta.env.VITE_FEEDBACK_ENDPOINT ?? 'https://formsubmit.co/ajax/talabifaouzi@gmail.com';
 
-// 12 questions ported from the HTML prototype, athletics-phase-1 adjusted.
+// 11 questions ported from the HTML prototype, athletics-phase-1 adjusted.
 const QUESTIONS = [
   { id: 'name', q: 'Your name', type: 'text', placeholder: 'First and last name' },
   { id: 'contact', q: 'Best way to reach you', type: 'text', placeholder: 'Email or phone number' },
-  { id: 'world', q: 'What world are you in?', type: 'choice', options: ['Sports', 'Music', 'Entertainment', 'Creator', 'Other'] },
   { id: 'gps_feel', q: 'After completing the Giving Studio, how did your Giving Plan feel?', type: 'choice', options: ['It captured who I am', 'Close but something was missing', "It didn't feel like me", "I haven't completed it yet"] },
   { id: 'most_valuable', q: 'What was the most valuable part of the experience?', type: 'text', placeholder: 'What stood out to you?' },
   { id: 'confused', q: 'What confused you or felt unnecessary?', type: 'text', placeholder: 'Be honest — this helps us' },
@@ -46,11 +45,10 @@ export default function Feedback() {
   const buildExport = () => {
     let txt = 'STEWARDHOUSE FEEDBACK\n' + new Date().toLocaleDateString() + '\n';
     txt += 'Name: ' + (responses.name || 'Anonymous') + '\n';
-    txt += 'Contact: ' + (responses.contact || 'Not provided') + '\n';
-    txt += 'World: ' + (responses.world || 'not set') + '\n\n';
+    txt += 'Contact: ' + (responses.contact || 'Not provided') + '\n\n';
     txt += '--- RESPONSES ---\n';
     QUESTIONS
-      .filter(q => !['name', 'contact', 'world'].includes(q.id))
+      .filter(q => !['name', 'contact'].includes(q.id))
       .forEach(q => {
         txt += q.q + '\n' + (responses[q.id] || '(no response)') + '\n\n';
       });
@@ -79,7 +77,6 @@ export default function Feedback() {
           _subject: 'StewardHouse Feedback — ' + (responses.name || 'Anonymous'),
           name: (responses.name || 'Anonymous').slice(0, 200),
           contact: (responses.contact || 'Not provided').slice(0, 200),
-          world: (responses.world || '').slice(0, 200),
           feedback: txt.slice(0, 50000),
         }),
       });

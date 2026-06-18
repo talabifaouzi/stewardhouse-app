@@ -7,7 +7,7 @@ import { SHLogoStacked } from '../../components/SHLogo.jsx';
 const CARDS = [
   {
     label: 'Who this is for',
-    body: 'Athletes, musicians, entertainers, creators — people whose careers gave them a platform and who want to use it intentionally.',
+    body: 'Athletes — people whose careers gave them a platform and who want to use it intentionally.',
   },
   {
     label: 'What it does',
