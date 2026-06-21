@@ -201,7 +201,7 @@ export default function GiveScreen() {
             <div style={{
               width: '22px',
               height: '22px',
-              borderRadius: '6px',
+              borderRadius: 'var(--sh-radius-md)',
               border: `2px solid ${recurring ? 'var(--sh-bronze)' : 'var(--sh-card-border)'}`,
               background: recurring ? 'var(--sh-bronze-tint)' : 'var(--sh-card)',
               display: 'flex',

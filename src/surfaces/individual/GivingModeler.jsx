@@ -287,7 +287,7 @@ export default function GivingModeler({ budget }) {
         <div style={{
           width: '22px',
           height: '22px',
-          borderRadius: '6px',
+          borderRadius: 'var(--sh-radius-md)',
           border: `2px solid ${careerOn ? 'var(--sh-bronze)' : 'var(--sh-card-border)'}`,
           background: careerOn ? 'var(--sh-bronze-tint)' : 'var(--sh-card)',
           display: 'flex',
