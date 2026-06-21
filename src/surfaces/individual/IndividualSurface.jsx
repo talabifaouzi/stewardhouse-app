@@ -6,6 +6,7 @@ import { Tag } from '../../components/Tag.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import {
+  individualProfile,
   getFundingSpotlight,
   getMicroLearning,
   visibilityInsights,
@@ -72,8 +73,8 @@ function DashboardLayout() {
     }}>
       <Chrome
         surface="individual"
-        userName="Marcus Thompson"
-        userRole="Member · Athletics"
+        userName={individualProfile.name}
+        userRole={`Member · ${individualProfile.worldLabel}`}
         navItems={NAV_ITEMS}
         activeNav={activeNav}
       />
