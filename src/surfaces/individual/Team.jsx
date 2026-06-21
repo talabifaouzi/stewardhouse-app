@@ -122,8 +122,8 @@ export default function Team() {
             {t.count > 0 && (
               <span style={{
                 background: activeTab === t.id ? 'rgba(255,255,255,0.3)' :
-                            t.pastDue > 0 ? '#F8D7CC' : 'var(--sh-bronze-tint)',
-                color: t.pastDue > 0 ? '#A03C18' : 'var(--sh-bronze-deep)',
+                            t.pastDue > 0 ? 'var(--sh-warning-bg)' : 'var(--sh-bronze-tint)',
+                color: t.pastDue > 0 ? 'var(--sh-warning-text)' : 'var(--sh-bronze-deep)',
                 borderRadius: 'var(--sh-radius-full)',
                 padding: '2px 7px',
                 fontSize: '10px',
@@ -190,7 +190,7 @@ function Overview({ pendingReports, pendingPayments, pendingAcks, pendingAgreeme
             <p style={{
               fontFamily: 'var(--sh-font-serif)',
               fontSize: 'var(--sh-text-2xl)',
-              color: item.alert && item.accent ? '#A03C18' :
+              color: item.alert && item.accent ? 'var(--sh-warning-text)' :
                      item.accent ? 'var(--sh-bronze-deep)' :
                      'var(--sh-text-primary)',
               lineHeight: 1,
@@ -208,7 +208,7 @@ function Overview({ pendingReports, pendingPayments, pendingAcks, pendingAgreeme
               <p style={{
                 fontSize: '10px',
                 fontWeight: 600,
-                color: '#A03C18',
+                color: 'var(--sh-warning-text)',
                 marginTop: '4px',
               }}>
                 {item.pd} past due
@@ -274,7 +274,7 @@ function ItemRow({ children, isPastDue }) {
       background: 'var(--sh-card)',
       borderRadius: 'var(--sh-radius-md)',
       padding: 'var(--sh-space-3) var(--sh-space-3)',
-      border: `1px solid ${isPastDue ? '#E8B6A1' : 'var(--sh-card-border)'}`,
+      border: `1px solid ${isPastDue ? 'var(--sh-warning-border)' : 'var(--sh-card-border)'}`,
       marginBottom: 'var(--sh-space-2)',
     }}>
       {children}
@@ -317,7 +317,7 @@ function ReportsTab({ pending, reminded, remind, today }) {
             <p style={{ fontSize: 'var(--sh-text-sm)', fontWeight: 600, color: 'var(--sh-text-primary)' }}>{gr.org}</p>
             <p style={{
               fontSize: 'var(--sh-text-xs)',
-              color: isPastDue ? '#A03C18' : 'var(--sh-text-muted)',
+              color: isPastDue ? 'var(--sh-warning-text)' : 'var(--sh-text-muted)',
               fontWeight: isPastDue ? 600 : 400,
               marginTop: '4px',
             }}>
@@ -358,7 +358,7 @@ function PaymentsTab({ pending, reminded, remind, today }) {
             <p style={{ fontSize: 'var(--sh-text-sm)', fontWeight: 600, color: 'var(--sh-text-primary)' }}>{gr.org}</p>
             <p style={{
               fontSize: 'var(--sh-text-xs)',
-              color: isPastDue ? '#A03C18' : 'var(--sh-text-muted)',
+              color: isPastDue ? 'var(--sh-warning-text)' : 'var(--sh-text-muted)',
               fontWeight: isPastDue ? 600 : 400,
               marginTop: '4px',
             }}>
@@ -397,7 +397,7 @@ function AcksTab({ pending, reminded, remind }) {
           <p style={{ fontSize: 'var(--sh-text-sm)', fontWeight: 600, color: 'var(--sh-text-primary)' }}>{gr.org}</p>
           <p style={{
             fontSize: 'var(--sh-text-xs)',
-            color: '#A03C18',
+            color: 'var(--sh-warning-text)',
             fontWeight: 600,
             marginTop: '4px',
           }}>

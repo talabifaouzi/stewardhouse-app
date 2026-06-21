@@ -31,6 +31,16 @@
   --sh-state-active-bg:   #E8F0E5; /* pale green tint — Active state */
   --sh-state-active-text: #3E5A3F; /* deep green text on the pale tint */
 
+  /* Color — semantic signals: warning (#12, Individual rework Tier 3). Previously
+     hex literals living inside Tag.jsx colorSchemes.warning + a hand-rolled site
+     at Team.jsx:127 (tab-count badge past-due state). Token values = Tag.jsx's
+     canonical warning hex, so the 3 existing <Tag tone="warning"> consumers
+     render byte-identical post-swap. Team:127 converges onto --sh-warning-bg
+     (was #F8D7CC, now #FCEAE0 — minor pale-pink shift, intended). */
+  --sh-warning-bg:     #FCEAE0; /* pale orange-pink — warning tint */
+  --sh-warning-text:   #A03C18; /* deep rust text on the warning tint */
+  --sh-warning-border: #E8B6A1; /* warning hairline (Tag consumers; hand-rolled badge has none) */
+
   /* Color — text on accent (ADV-008 bundle 2). White text on a bronze button
      background. Distinct token from --sh-card (which is "card surface white")
      so the semantic intent is clear. */
