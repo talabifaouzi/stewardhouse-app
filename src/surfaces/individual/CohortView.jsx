@@ -1,12 +1,23 @@
 import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { cohorts } from '../../data/cohorts.js';
-import { clients } from '../../data/clients.js';
+import unified from '../../data/unified/index.js';
 import { individualProfile } from '../../data/individualProfile.js';
 import { THEMES } from '../../data/themes.js';
 import { simulatedMemberSignals } from '../../data/cohortSignals.js';
 import { useCohortMember } from '../../contexts/CohortMemberContext.jsx';
+
+// CohortView rewire (Tier 3): first Individual file to read from the unified
+// data layer. Replaces raw cohorts.js + clients.js reads with
+// unified.cohorts + unified.programParticipations + unified.persons. THEMES
+// (a taxonomy, not a record entity) and simulatedMemberSignals (a raw
+// advisor-namespaced demo fixture) stay raw per the rewire rulings (D2 a).
+//
+// 5.7 DEFERRED: CohortMemberContext (useCohortMember) stays Individual-local
+// for now. It holds pure session state (optedIn + signaledThemeIds) with no
+// fixture dependencies, so the unified rewire doesn't touch it. Moving it
+// into unified as a "MemberCohortParticipation" entity is gated on the
+// broader "unified as live store?" / persistence-pilot question.
 
 // Plural-safe English list joiner: ["A"] → "A", ["A","B"] → "A and B",
 // ["A","B","C"] → "A, B, and C".
@@ -19,7 +30,18 @@ function joinNames(names) {
 
 export default function CohortView() {
   const { optedIn, optIn, optOut, signaledThemeIds, toggleSignal } = useCohortMember();
-  const cohort = cohorts.find((c) => c.memberIds.includes(individualProfile.id));
+
+  // D1 identity bridge — the current Individual user (individualProfile.id =
+  // 'c-001') is represented in the unified layer as TWO Person records:
+  // 'p-individual-c-001' (this surface's source-of-truth persona) and
+  // 'p-advisor-c-001' (the same human as a client of Walker Advisory).
+  // Same-person dedup is deferred per CLAUDE.md §4 — the two unified personas
+  // are NOT joined. The cohort + giving-plan data lives under the advisor
+  // namespace, so this call-site bridge crosses the known gap deliberately.
+  // When dedup lands, this is the line to revisit.
+  const currentMemberId = `p-advisor-${individualProfile.id}`;
+
+  const cohort = unified.cohorts.find((c) => c.memberPersonIds.includes(currentMemberId));
 
   if (!cohort) {
     return (
@@ -35,19 +57,32 @@ export default function CohortView() {
   // Member-side overlap, read from the same source the advisor C-1 view uses.
   // Anonymized: we count how many OTHER members carry each of the member's
   // themes; we never resolve the others' names here.
-  const memberRecord = clients.find((c) => c.id === individualProfile.id);
-  const memberThemes = memberRecord?.givingPlan?.themes || [];
+  // Themes live on ProgramParticipation.extensions.advisor.givingPlan.themes
+  // (per the advisor adapter's entity-boundary placement, decision A).
+  const memberPp = unified.programParticipations.find((pp) => pp.personId === currentMemberId);
+  const memberThemes = memberPp?.extensions?.advisor?.givingPlan?.themes || [];
   const themeLabelById = Object.fromEntries(THEMES.map((t) => [t.id, t.label]));
-  const otherMembers = cohort.memberIds
-    .filter((id) => id !== individualProfile.id)
-    .map((id) => clients.find((c) => c.id === id))
+
+  // Project each cohort-mate into a flat { id, name, themes } shape. The id
+  // stays the unified Person id (e.g. 'p-advisor-c-005'); name comes from
+  // unified.persons; themes come from the cohort-mate's ProgramParticipation.
+  const otherMembers = cohort.memberPersonIds
+    .filter((id) => id !== currentMemberId)
+    .map((id) => {
+      const person = unified.byId('persons', id);
+      const pp = unified.programParticipations.find((p) => p.personId === id);
+      if (!person) return null;
+      return {
+        id,
+        name: person.name,
+        themes: pp?.extensions?.advisor?.givingPlan?.themes || [],
+      };
+    })
     .filter(Boolean);
+
   const sharedInterests = memberThemes
     .map((themeId) => {
-      const otherCount = otherMembers.filter((om) => {
-        const themes = om.givingPlan?.themes || [];
-        return themes.includes(themeId);
-      }).length;
+      const otherCount = otherMembers.filter((om) => om.themes.includes(themeId)).length;
       return {
         themeId,
         label: themeLabelById[themeId] || themeId,
@@ -112,9 +147,13 @@ export default function CohortView() {
                     // Names resolve ONLY when the current member has signaled
                     // this theme AND a cohort-mate has signaled the same.
                     // Until that mutual condition holds, identity stays hidden.
+                    // D2 (a) — simulatedMemberSignals is a raw advisor-namespaced
+                    // demo fixture (kept raw per the rewire ruling). Strip the
+                    // 'p-advisor-' prefix to bridge unified IDs back to the
+                    // fixture's raw keys.
                     const matchedMembers = isSignaled
                       ? otherMembers.filter((om) =>
-                          (simulatedMemberSignals[om.id] || []).includes(s.themeId),
+                          (simulatedMemberSignals[om.id.replace('p-advisor-', '')] || []).includes(s.themeId),
                         )
                       : [];
                     const isMatched = isSignaled && matchedMembers.length > 0;
