@@ -7,8 +7,11 @@ Inherits `docs/5.8-giving-flow-scoping.md` section 5 (canonical Gift /
 Scenario / entity sketch) + `docs/persistence-scoping-pass.md` (3 strands).
 Sequence: scope → rule → build; this is the **rule** artifact.
 
-**FINALIZED EXCEPT ruling E** (deletion / retention — Derek-gated). Nothing
-built yet; build does not proceed until E returns AND FT authorizes.
+**FULLY FINALIZED.** Ruling E (deletion / retention) RESOLVED — accepted
+on research synthesis this session; full record at
+`docs/ruling-e-deletion-retention.md`. Two counsel-gated seams remain
+isolated (charitable-retention-floor confirmation; subpoena posture) —
+they do NOT block the build.
 
 HEAD at draft: `d7bfe70`.
 
@@ -31,12 +34,17 @@ HEAD at draft: `d7bfe70`.
   build-time projection). `gift.recipient_org_id` is a real hard FK with
   referential integrity. The 17 seed orgs migrate into the D1 `org` table
   as real rows (same seam as Marcus's gifts).
-- **E — deletion / retention: PARKED FOR DEREK.** Has a legal dimension
-  (what "delete" must mean, compelled-retention) — rides with Derek's L2
-  questions, not ruled blind. Schema cannot finalize deletion-cascade
-  behavior until E returns. Parker constraint stands: whatever returns must
-  NOT reintroduce a lifecycle field by the back door (no `deleted_at`-as-
-  status drift).
+- **E — deletion / retention: RESOLVED.** Accepted on research synthesis
+  this session — full record `docs/ruling-e-deletion-retention.md`.
+  Two-phase soft-then-hard deletion enacted at the **`person` boundary**
+  (NOT a per-Gift status column — Parker no-`deleted_at`-as-status
+  invariant intact); anonymize-not-orphan for any structurally-retained
+  fact; minimal justified retention window; backup / restore re-applies
+  pending deletions; deletion ledger keyed by opaque marker; subpoena
+  posture = keep identity separable, who-gave-to-whom view stays
+  **UNBUILT** until posture set. Two counsel-gated seams remain
+  (Clause 3 charitable-floor, Clause 6 subpoena posture) — isolated, do
+  NOT block build.
 - **F — Marcus seed-migration: CONFIRMED.** Marcus = first real account
   through real auth. The demo "load Marcus" path IS the account path,
   exercising the real identity model. Marcus gets a real `auth_user` +
@@ -77,16 +85,21 @@ HEAD at draft: `d7bfe70`.
 
 ---
 
-## 4. Deletion / retention — DEREK-GATED (ruling E, not finalized)
+## 4. Deletion / retention — RESOLVED (ruling E)
 
-**Open:** hard-delete vs soft-delete vs other; account-deletion cascade
-(`auth_user` delete → `person` → `gift` / `scenario`); D1 Time Travel
-(30-day restore) means "deleted" has a disclosure asterisk regardless.
-Legal dimension routes to Derek with the L2 questions.
+**Resolved:** accepted on research synthesis this session — full record at
+`docs/ruling-e-deletion-retention.md`. Two-phase soft-then-hard deletion
+at the **`person` boundary** cascading to `gift` / `scenario`;
+anonymize-not-orphan exception; minimal justified retention window;
+backup / restore re-applies pending deletions (D1 Time Travel 30-day lag
+disclosed in policy); deletion ledger keyed by opaque marker; subpoena
+posture keeps identity separable + who-gave-to-whom view UNBUILT until
+posture set. Two counsel-gated seams remain isolated (Clause 3
+charitable-floor; Clause 6 subpoena posture) and do NOT block build.
 
-**Parker hard constraint on whatever returns:** no lifecycle-field
-back-door (a deletable Gift must not gain a status sibling via
-`deleted_at`).
+**Parker hard constraint honored:** no lifecycle-field back-door — a
+deletable Gift never gains a status sibling via `deleted_at`. Deletion is
+a `person`-level state that cascades, not a per-Gift column.
 
 ---
 
@@ -113,6 +126,8 @@ unindexed full-table scans cause surprise bills.
 
 ## 7. Next
 
-Derek returns E → schema finalizes → FT authorizes build. Build sequence
-(from the pass): schema / migrations → auth → wire surfaces. Until E + FT
-authorization, NO build proceeds.
+Schema **IS finalized** (E resolved); FT has authorized build. Two
+counsel-gated seams (Clause 3 charitable-floor; Clause 6 subpoena
+who-gave-to-whom capability) are confirmed by counsel in parallel and do
+NOT gate the rest of the build. Build sequence (from the pass):
+schema / migrations → auth → wire surfaces.
