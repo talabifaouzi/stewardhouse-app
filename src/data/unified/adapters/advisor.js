@@ -139,6 +139,7 @@ export function adaptAdvisor() {
       sourceSurface: SOURCE,
       extensions: {
         advisor: {
+          // ISO 'YYYY-MM-DD' post-(a)-migration; consumers wrap with formatSessionDate.
           nextSession: co.nextSession,
           externalMembers: co.externalMembers,
           assignedLessons: co.assignedLessons,

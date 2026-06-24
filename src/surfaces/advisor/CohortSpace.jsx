@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { cohorts } from '../../data/cohorts.js';
+import { formatSessionDate } from '../../data/clients.js';
 
 export default function CohortSpace() {
   return (
@@ -97,7 +98,7 @@ function CohortCard({ cohort }) {
       }}>
         <Meta label="Members" value={cohort.memberIds.length + (cohort.externalMembers || 0)} />
         <Meta label="Started" value={cohort.started} />
-        <Meta label="Next" value={cohort.nextSession} />
+        <Meta label="Next" value={formatSessionDate(cohort.nextSession)} />
       </div>
     </Card>
   );

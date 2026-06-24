@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { cohorts } from '../../data/cohorts.js';
-import { clients } from '../../data/clients.js';
+import { clients, formatSessionDate } from '../../data/clients.js';
 import { THEMES } from '../../data/themes.js';
 
 const MONTH_NAMES = [
@@ -159,7 +159,7 @@ export default function CohortDetail() {
         }}>
           <Meta label="Members" value={memberCount} />
           <Meta label="Started" value={cohort.started} />
-          <Meta label="Next session" value={cohort.nextSession} />
+          <Meta label="Next session" value={formatSessionDate(cohort.nextSession)} />
         </div>
         <p style={{
           fontSize: 'var(--sh-text-md)',
