@@ -4,7 +4,8 @@ import { Button } from '../../components/Button.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import { CAUSES } from '../../data/intakeData.js';
-import { ORGS, CAT_META } from '../../data/orgsData.js';
+import unified from '../../data/unified/index.js';
+import { CAT_META } from '../../data/orgsData.js';
 
 export default function Discover() {
   const { answers: a } = useIntake();
@@ -24,8 +25,13 @@ export default function Discover() {
     );
   };
 
+  // Org catalog — read from the unified data layer (CohortView precedent).
+  // Filter explicitly to sourceSurface 'individual' for correctness even
+  // though only the individual adapter emits orgs today (future-proofing).
+  const individualOrgs = unified.orgs.filter(o => o.sourceSurface === 'individual');
+
   // Score and filter orgs
-  const scoredOrgs = hasFilters ? ORGS.map(org => {
+  const scoredOrgs = hasFilters ? individualOrgs.map(org => {
     let score = 0;
     const causeOverlap = org.causes.filter(c => activeCauses.includes(c));
     score += causeOverlap.length * 3;
@@ -271,7 +277,7 @@ export default function Discover() {
             Saved ({saved.length})
           </p>
           {saved.map(id => {
-            const org = ORGS.find(o => o.id === id);
+            const org = individualOrgs.find(o => o.id === id);
             return org ? (
               <div key={id} style={{
                 background: 'var(--sh-bronze-tint)',
@@ -390,12 +396,12 @@ function OrgCard({ org, expanded, onToggle, isSaved, onSave, wantsDetail }) {
           paddingTop: 'var(--sh-space-3)',
           marginTop: 'var(--sh-space-2)',
         }}>
-          <InfoRow label="Executive Director" value={org.ed} />
-          <InfoRow label="Leadership" value={org.led} />
-          <InfoRow label="Operating" value={`${org.years} years`} />
-          <InfoRow label="Who they serve" value={org.demo} />
+          <InfoRow label="Executive Director" value={org.extensions.individual.ed} />
+          <InfoRow label="Leadership" value={org.extensions.individual.led} />
+          <InfoRow label="Operating" value={`${org.extensions.individual.years} years`} />
+          <InfoRow label="Who they serve" value={org.extensions.individual.demo} />
 
-          {org.programs && org.programs.length > 0 && (
+          {org.extensions.individual.programs && org.extensions.individual.programs.length > 0 && (
             <div style={{ margin: 'var(--sh-space-2) 0' }}>
               <p style={{
                 fontSize: 'var(--sh-text-xs)',
@@ -412,16 +418,16 @@ function OrgCard({ org, expanded, onToggle, isSaved, onSave, wantsDetail }) {
                 flexWrap: 'wrap',
                 gap: '4px',
               }}>
-                {org.programs.map(p => <Tag key={p}>{p}</Tag>)}
+                {org.extensions.individual.programs.map(p => <Tag key={p}>{p}</Tag>)}
               </div>
             </div>
           )}
 
           {wantsDetail && (
             <>
-              <InfoRow label="Annual budget" value={org.budget} />
-              <InfoRow label="Board size" value={org.boardSize ? `${org.boardSize} members` : null} />
-              {org.topFunders && org.topFunders.length > 0 && (
+              <InfoRow label="Annual budget" value={org.extensions.individual.budget} />
+              <InfoRow label="Board size" value={org.extensions.individual.boardSize ? `${org.extensions.individual.boardSize} members` : null} />
+              {org.extensions.individual.topFunders && org.extensions.individual.topFunders.length > 0 && (
                 <div style={{ margin: 'var(--sh-space-2) 0' }}>
                   <p style={{
                     fontSize: 'var(--sh-text-xs)',
@@ -438,7 +444,7 @@ function OrgCard({ org, expanded, onToggle, isSaved, onSave, wantsDetail }) {
                     color: 'var(--sh-text-body)',
                     lineHeight: 1.5,
                   }}>
-                    {org.topFunders.join(' · ')}
+                    {org.extensions.individual.topFunders.join(' · ')}
                   </p>
                 </div>
               )}
