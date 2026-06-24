@@ -64,6 +64,7 @@ export default function LessonEditor({ mode }) {
   // (role="alert" + muted-italic typography). canSave/disabled logic is
   // unchanged — this is purely additive feedback.
   const minutesErrorId = useId();
+  const titleErrorId = useId(); // Title-field error id — mirrors the ADV-041 minutes pattern.
 
   // Redirect if a source was required but missing.
   if ((mode === 'fork' || mode === 'edit') && !sourceLesson) {
@@ -228,8 +229,20 @@ export default function LessonEditor({ mode }) {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="A short, declarative title"
+              aria-invalid={!titleValid}
+              aria-describedby={!titleValid ? titleErrorId : undefined}
               style={inputStyle}
             />
+            {!titleValid && (
+              <p id={titleErrorId} role="alert" style={{
+                fontSize: 'var(--sh-text-xs)',
+                color: 'var(--sh-text-muted)',
+                fontStyle: 'italic',
+                marginTop: 'var(--sh-space-2)',
+              }}>
+                Title is required.
+              </p>
+            )}
           </FormField>
 
           <FormField label="Length (minutes)">
