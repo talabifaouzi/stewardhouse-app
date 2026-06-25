@@ -1,13 +1,14 @@
 name = "stewardhouse-pilot"
 compatibility_date = "2025-09-01"
+compatibility_flags = ["nodejs_compat"]   # required by better-auth runtime
 
-# D1 binding — `env.DB` inside CF Pages Functions (no functions exist yet;
-# this slice is schema-only).
-#
-# database_id below is a deliberate placeholder. The real id is returned by
-# `wrangler d1 create stewardhouse-pilot` — an FT-run cloud step NOT
-# performed in this slice. Local `wrangler d1 ... --local` commands operate
-# on the SQLite mirror under .wrangler/state/ and do not use this id.
+pages_build_output_dir = "dist"            # Vite SPA build target; Pages Functions auto-bundle from ./functions
+
+# D1 binding — surfaces inside CF Pages Functions as `context.env.DB`.
+# Live database `stewardhouse-pilot` on Cloudflare (region ENAM); the id
+# was returned by `wrangler d1 create stewardhouse-pilot` (FT-run cloud
+# step). `--local` commands operate on the SQLite mirror under
+# `.wrangler/state/` and do not need the live id.
 [[d1_databases]]
 binding = "DB"
 database_name = "stewardhouse-pilot"

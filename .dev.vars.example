@@ -1,0 +1,14 @@
+# Local dev secrets for `wrangler pages dev` — copy to .dev.vars (gitignored)
+# and fill in real values. NEVER commit .dev.vars.
+
+# Sign-tokens secret. Generate with: openssl rand -base64 32
+# Same value must persist across environments where the SAME user signs in
+# (or sessions break across env). Stored separately in CF Pages env vars
+# (Production + Preview) for non-local deploys.
+BETTER_AUTH_SECRET=<32+byte-secret>
+
+# Canonical app origin — better-auth uses this to construct magic-link URLs
+# and to validate the request origin. Local dev: http://localhost:8788 is
+# the default `wrangler pages dev` port. Production: the pages.dev URL or
+# the custom domain when configured.
+BETTER_AUTH_URL=http://localhost:8788
