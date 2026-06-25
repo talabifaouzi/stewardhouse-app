@@ -9,3 +9,6 @@ dist-ssr
 .env.local
 .env.production
 .claude/
+.dev.vars
+.wrangler/
+.mf/
