@@ -1,0 +1,36 @@
+-- Migration 0003 — add `name` and `image` columns to auth_user.
+--
+-- Background:
+--   Migration 0001 deliberately OMITTED `name` and `image` from auth_user
+--   per schema-draft §3 (display identity lives on `person.display_name`
+--   per ruling B; magic-link signup does not require name/image at account
+--   creation). That call held for the persistence schema + seed phase.
+--
+--   Sub-slice-(a) auth-build pre-verification (FT-ruled this session)
+--   surfaced that better-auth 1.6.20's default user model still writes
+--   the `name` column on every signup — including magic-link flows where
+--   no name input exists (it commonly defaults to email-prefix or empty
+--   string). Without these columns the first auth_user INSERT fails with
+--   "no such column: name" at runtime.
+--
+-- Decision (FT option i — additive, reversible, schema-flexibility-first):
+--   Add both columns NULLABLE. Better-auth's INSERT succeeds; the columns
+--   stay empty for users we don't surface a name/image UI to. Display
+--   identity continues to live on `person.display_name` per ruling B —
+--   `auth_user.name` is a write-through for better-auth's own internals,
+--   NOT a display source.
+--
+-- Why nullable (no DEFAULT, no NOT NULL):
+--   - Better-auth populates `name` itself when the user provides one;
+--     when it doesn't, it writes NULL or empty depending on flow. A
+--     NOT NULL constraint would force a workaround. NULLABLE is the
+--     safest fit.
+--   - `image` is always NULL at pilot — no avatar UI exists.
+--
+-- Scope: this migration touches ONLY auth_user. The 0002 seed (17 orgs +
+-- 1 person + 3 gifts) is unaffected — auth_user has zero rows at apply
+-- time per option B (Marcus binds to a real auth_user on first magic-
+-- link sign-in, claim-hook is sub-slice c, not yet built).
+
+ALTER TABLE auth_user ADD COLUMN name TEXT;
+ALTER TABLE auth_user ADD COLUMN image TEXT;
