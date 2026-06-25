@@ -11,5 +11,5 @@ compatibility_date = "2025-09-01"
 [[d1_databases]]
 binding = "DB"
 database_name = "stewardhouse-pilot"
-database_id = "PLACEHOLDER_LOCAL_ONLY_replace_after_d1_create"
+database_id = "8600684c-25dd-4cfe-a41d-f3f6e53779c7"
 migrations_dir = "migrations"
