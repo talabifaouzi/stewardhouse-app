@@ -23,10 +23,20 @@
 // cookieCache: explicitly disabled. Default in 1.6.20 is already false,
 // but we set it for clarity and as a defense against future default flips
 // (the scoping-pass strand 2 caveat about bug #4203).
+//
+// Plugins (added in sub-slice b):
+//   - magicLink — email-only magic-link sign-in. Token stored HASHED (not
+//     plaintext) at rest per the locked ruling. Auto-creates auth_user on
+//     first verify (disableSignUp:false) so the claim-on-first-sign-in
+//     hook in sub-slice (c) can attach the pre-seeded `person` row. The
+//     sender is the per-request factory in ./sender.js, keyed on
+//     env.SENDER_PROVIDER.
 
 import { betterAuth } from 'better-auth';
+import { magicLink } from 'better-auth/plugins/magic-link';
 import { Kysely } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
+import { createSender } from './sender.js';
 
 export function makeAuth(env) {
   const db = new Kysely({
@@ -87,7 +97,39 @@ export function makeAuth(env) {
       },
     },
 
-    // No plugins yet (magic-link lands in sub-slice b).
+    plugins: [
+      magicLink({
+        expiresIn: 300,             // 5 minutes (better-auth default; explicit for clarity)
+        disableSignUp: false,       // auto-create auth_user on first verify
+        storeToken: 'hashed',       // never store the plaintext token at rest
+        rateLimit: { window: 60, max: 5 },
+        sendMagicLink: async ({ email, url }) => {
+          const sender = createSender(env);
+          // Minimal `&`-only escape for the visible URL — magic-link URLs
+          // can contain raw `&` between query params, which would otherwise
+          // start an entity in both HTML attribute and text contexts.
+          const linkSafe = url.replace(/&/g, '&amp;');
+          const subject = 'Sign in to StewardHouse';
+          const text = [
+            'Sign in to StewardHouse using the link below.',
+            '',
+            url,
+            '',
+            'This link expires in five minutes and can be used once.',
+            '',
+            'If you did not request this, you can disregard this message.',
+          ].join('\n');
+          const html = [
+            '<p>Sign in to StewardHouse using the link below.</p>',
+            `<p><a href="${linkSafe}">${linkSafe}</a></p>`,
+            '<p>This link expires in five minutes and can be used once.</p>',
+            '<p>If you did not request this, you can disregard this message.</p>',
+          ].join('\n');
+          await sender.send({ to: email, subject, text, html });
+        },
+      }),
+    ],
+
     // No emailAndPassword (disabled by default).
     // No socialProviders (none configured).
   });

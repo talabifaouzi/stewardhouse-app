@@ -12,3 +12,19 @@ BETTER_AUTH_SECRET=<32+byte-secret>
 # the default `wrangler pages dev` port. Production: the pages.dev URL or
 # the custom domain when configured.
 BETTER_AUTH_URL=http://localhost:8788
+
+# Email sender provider for magic-link. Pilot default: 'resend' (REST direct
+# via api.resend.com). 'cf-email' is deferred to sub-slice (d) when the
+# Cloudflare Email Service exits BETA. See functions/_lib/sender.js.
+SENDER_PROVIDER=resend
+
+# Resend REST API key. Bearer token for POST https://api.resend.com/emails.
+# Provision in the Resend dashboard. Pilot uses Resend's shared
+# onboarding@resend.dev sender (see FROM_EMAIL below), which is restricted
+# to sending to the Resend account-owner's email until a domain is verified.
+RESEND_API_KEY=<resend-api-key>
+
+# Sender address used in the `from` field of outbound magic-link emails.
+# Pilot default: onboarding@resend.dev — Resend's documented public test
+# sender (non-secret). Swap to a verified-domain address before broad pilot.
+FROM_EMAIL=onboarding@resend.dev
