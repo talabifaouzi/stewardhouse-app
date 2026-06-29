@@ -31,10 +31,20 @@
 //     hook in sub-slice (c) can attach the pre-seeded `person` row. The
 //     sender is the per-request factory in ./sender.js, keyed on
 //     env.SENDER_PROVIDER.
+//
+// databaseHooks (added in sub-slice c):
+//   - user.create.after — claim-or-create person on first sign-in.
+//     Tries to claim Marcus's seed person row (matching extensions.
+//     legacy_individual_id = 'c-001'); on no match, inserts a fresh
+//     person row with type='individual' (organic self-signups are
+//     always individual; enterprise/advisor person rows are PRE-SEEDED
+//     by FT/staff before invite, so their first sign-in is a CLAIM of
+//     an existing typed row, never a fresh insert). Errors are logged
+//     + SWALLOWED — the hook MUST NOT block sign-in completion.
 
 import { betterAuth } from 'better-auth';
 import { magicLink } from 'better-auth/plugins/magic-link';
-import { Kysely } from 'kysely';
+import { Kysely, sql } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import { createSender } from './sender.js';
 
@@ -94,6 +104,86 @@ export function makeAuth(env) {
         expiresAt: 'expires_at',
         createdAt: 'created_at',
         updatedAt: 'updated_at',
+      },
+    },
+
+    databaseHooks: {
+      user: {
+        create: {
+          // Claim-or-create person on first sign-in.
+          //
+          // POST-COMMIT: better-auth queues `create.after` after the
+          // adapter's INSERT returns; with D1+Kysely (no transaction
+          // wrapper) the queue resolves to immediate execution, so the
+          // auth_user row IS durable when this body runs.
+          //
+          // ONCE-PER-EMAIL: magic-link's verify calls `createUser` only
+          // when `findUserByEmail` returns nothing. Re-sign-ins skip
+          // `createUser` and this hook does NOT re-fire. The SQL's
+          // `WHERE auth_user_id IS NULL` is belt-and-braces idempotency.
+          //
+          // BESPOKE-TYPE GUARD: organic self-signups always reach the
+          // fresh-person branch with type='individual'. Enterprise and
+          // Advisor person rows are PRE-SEEDED by FT/staff (typed at
+          // insert) BEFORE invite, so their first sign-in is a CLAIM
+          // of an existing row, never a fresh insert. The hook never
+          // creates a privileged type.
+          //
+          // CLAIM MATCH KEY: extensions.legacy_individual_id = 'c-001'
+          // is the seed-specific claim for Marcus. Future bespoke
+          // claims will EXTEND THIS LOOKUP HERE (additional legacy_*
+          // ids, or invite-token fields stored on the pre-seeded row's
+          // extensions). The structure of this UPDATE is the
+          // extension point — do NOT broaden to arbitrary matching.
+          after: async (user) => {
+            try {
+              const claim = await db
+                .updateTable('person')
+                .set({ auth_user_id: user.id })
+                .where('auth_user_id', 'is', null)
+                .where(
+                  sql`json_extract(extensions, '$.legacy_individual_id')`,
+                  '=',
+                  'c-001',
+                )
+                .executeTakeFirst();
+
+              const claimed = Number(claim?.numUpdatedRows ?? 0n);
+
+              if (claimed === 1) {
+                console.log(`[auth/claim] claimed seed person for auth_user=${user.id}`);
+                return;
+              }
+              if (claimed > 1) {
+                console.warn(`[auth/claim] WARN multi-match (n=${claimed}) for auth_user=${user.id}; treated as claimed`);
+                return;
+              }
+
+              // Fresh-person path: no seed row matched. Organic signups
+              // always get type='individual' per the bespoke-type guard.
+              // Supplies every NOT-NULL column from migration 0001:
+              // id, display_name, type, source_surface (plus auth_user_id
+              // which is nullable but set here for the linkage).
+              const personId = crypto.randomUUID();
+              await db.insertInto('person').values({
+                id: personId,
+                auth_user_id: user.id,
+                display_name: 'New user',
+                type: 'individual',
+                source_surface: 'individual',
+              }).execute();
+
+              console.log(`[auth/claim] created fresh person ${personId} for auth_user=${user.id}`);
+            } catch (err) {
+              // Log + SWALLOW. Sign-in already succeeded upstream
+              // (auth_user + session minted before this hook ran). A
+              // claim/insert hiccup must NOT 500 the verify response;
+              // the unlinked person row can be recovered manually.
+              const msg = err instanceof Error ? err.message : String(err);
+              console.log(`[auth/claim] ERROR ${msg} for auth_user=${user.id}`);
+            }
+          },
+        },
       },
     },
 
