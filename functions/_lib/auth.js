@@ -44,7 +44,7 @@
 
 import { betterAuth } from 'better-auth';
 import { magicLink } from 'better-auth/plugins/magic-link';
-import { Kysely, sql } from 'kysely';
+import { Kysely } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import { createSender } from './sender.js';
 
@@ -137,24 +137,26 @@ export function makeAuth(env) {
           // extension point — do NOT broaden to arbitrary matching.
           after: async (user) => {
             try {
-              const claim = await db
-                .updateTable('person')
-                .set({ auth_user_id: user.id })
-                .where('auth_user_id', 'is', null)
-                .where(
-                  sql`json_extract(extensions, '$.legacy_individual_id')`,
-                  '=',
-                  'c-001',
-                )
-                .executeTakeFirst();
+              let claimed = 0;
 
-              const claimed = Number(claim?.numUpdatedRows ?? 0n);
+              if (user.email) {
+                const claim = await db
+                  .updateTable('person')
+                  .set({ auth_user_id: user.id })
+                  .where('auth_user_id', 'is', null)
+                  .where('invite_email', '=', user.email)
+                  .executeTakeFirst();
+
+                claimed = Number(claim?.numUpdatedRows ?? 0n);
+              }
 
               if (claimed === 1) {
                 console.log(`[auth/claim] claimed seed person for auth_user=${user.id}`);
                 return;
               }
               if (claimed > 1) {
+                // Should be structurally unreachable given the UNIQUE index on
+                // invite_email — kept as a defensive trip-wire, not a control path.
                 console.warn(`[auth/claim] WARN multi-match (n=${claimed}) for auth_user=${user.id}; treated as claimed`);
                 return;
               }
