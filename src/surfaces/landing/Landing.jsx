@@ -127,6 +127,19 @@ export default function Landing() {
           All clients, organizations, conversations, and figures shown in this demo are fictional.
           The platform does not provide financial, legal, or compliance advice.
         </p>
+
+        <Link
+          to="/signin"
+          style={{
+            display: 'inline-block',
+            marginTop: 'var(--sh-space-4)',
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            textDecoration: 'none',
+          }}
+        >
+          Pilot access
+        </Link>
       </section>
     </main>
   );
