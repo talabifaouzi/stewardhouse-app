@@ -1,0 +1,12 @@
+[
+  {
+    "email": "example@yourdomain.org",
+    "type": "advisor",
+    "display_name": "Example Person",
+    "source_surface": "advisor",
+    "extra": {
+      "title": "Principal Advisor",
+      "organization": "Example Practice"
+    }
+  }
+]
