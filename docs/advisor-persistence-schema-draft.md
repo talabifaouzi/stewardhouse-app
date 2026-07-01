@@ -268,14 +268,31 @@ CREATE INDEX idx_doc_category_owner_advisor_person_id ON doc_category(owner_advi
 
 ```sql
 CREATE TABLE doc (
-  id            TEXT NOT NULL PRIMARY KEY,                       -- slug-based, unique via category+id combo
+  id            TEXT NOT NULL PRIMARY KEY,                       -- opaque UUID
   category_id   TEXT NOT NULL REFERENCES doc_category(id) ON DELETE CASCADE,
   title         TEXT NOT NULL,
-  updated       TEXT NOT NULL,                                    -- display timestamp string (as in fixture)
+  updated       TEXT NOT NULL,                                    -- ISO 8601
   notes         TEXT,                                             -- one-line description
   body          TEXT NOT NULL,                                    -- JSON string[] paragraphs
   created_at    TEXT NOT NULL                                     -- ISO 8601
 );
+
+-- doc.id ruling (amended in review): opaque UUID, matching every other
+-- table's identity discipline. The fixture's slug ids (e.g.
+-- 'onboarding-script', '990-reading-guide', '990-reading-guide-2') were
+-- per-advisor-unique only — DocumentationContext.uniqueId
+-- (src/contexts/DocumentationContext.jsx:38-43) scopes the duplicate
+-- check to a single advisor's category set, so slug ids would collide
+-- as a global PK across practices once real advisor accounts land.
+-- Slug retained only as seed-data provenance in application logic if
+-- needed, never as identity.
+
+-- doc.updated ruling (amended in review): stored as ISO 8601 (e.g.
+-- '2026-04-12'), not the fixture's display string ('April 12, 2026').
+-- Display formatting happens at render via the formatSessionDate
+-- precedent (src/data/clients.js — 3 advisor consumers already:
+-- CohortSpace, CohortDetail, ClientWorkspace). Same date-format-
+-- unification lesson as the 5.8 pass (canonical Gift date carried debt).
 
 -- Q9 guardrail: NO rank / score / priority column.
 -- Parker no-lifecycle: NO status column. Docs are authored artifacts;
@@ -296,7 +313,7 @@ CREATE TABLE cohort (
 
   name                      TEXT NOT NULL,
   focus                     TEXT,                                 -- e.g. 'Issue-area cohort', 'Team cohort'
-  started                   TEXT,                                 -- display month string (as in fixture)
+  started                   TEXT,                                 -- ISO YYYY-MM-DD, nullable
   next_session_date         TEXT,                                 -- ISO YYYY-MM-DD, nullable
   summary                   TEXT,
 
@@ -310,6 +327,16 @@ CREATE TABLE cohort (
   created_at                TEXT NOT NULL,                        -- ISO 8601
   updated_at                TEXT NOT NULL                         -- ISO 8601
 );
+
+-- cohort.started ruling (amended in review): stored as ISO 8601 (e.g.
+-- '2026-02-01' for a February 2026 start), not the fixture's display
+-- string ('February 2026'). Display formatting happens at render via
+-- the formatSessionDate precedent (src/data/clients.js — 3 advisor
+-- consumers already: CohortSpace, CohortDetail, ClientWorkspace).
+-- cohort.next_session_date was already ISO in the fixture; this ruling
+-- brings cohort.started to the same convention. Same date-format-
+-- unification lesson as the 5.8 pass. Fixture month-only strings
+-- normalize to first-of-month ISO at seed time (documented convention).
 
 -- Q9 guardrail: NO rank / score / priority / success_score column may EVER
 -- be added — even one cached or derived.
@@ -336,6 +363,16 @@ CREATE TABLE cohort_member (
 -- covers cohort-scoped membership reads. Explicit index on client_id
 -- alone (below) covers the reverse-lookup "which cohorts is this client
 -- in?" read used in ClientWorkspace.jsx.
+
+-- Q9 platform-wide guardrail: NO rank / score / priority / suggestion /
+-- ordering / member_rank / member_order column may EVER be added to this
+-- junction table — even one cached or derived. Junction tables are
+-- exactly where a "priority member" or "member ordering" column would
+-- sneak in through a feature request framed as UX polish; forbid it
+-- explicitly. Parker invariant (docs/advisor-persistence-scoping.md
+-- §5.3), inline on this table for 8/8 coverage across the draft.
+-- Parker no-lifecycle: NO status / joined_state / removed_at column
+-- beyond the joined_at timestamp already present.
 ```
 
 Index:
@@ -443,14 +480,19 @@ to-whom UNBUILT.**
   data.
 - **Write endpoints for `client` / `client_session` / `client_note`**:
   build, ship, and gate — write paths land in code but reject real-people
-  input pending Q7 confirmation. Options for the gate:
-  (a) feature-flag: `ADVISOR_CLIENT_WRITES_ENABLED` env-var checked in
-      the endpoint before accepting non-demo payloads;
-  (b) role gate: writes accepted only for demo/staff advisor accounts
-      until FT flips the switch after Derek confirms;
-  (c) row gate: `client.owner_advisor_person_id` allowlist against a
-      curated set of pilot practices with confirmed processor DPA.
-  FT to pick the gate mechanism as part of the build slice.
+  input pending Q7 confirmation. **RULED (amended in review): option (b)
+  — role gate.** Writes accepted only for designated demo/staff advisor
+  `person` rows, checked per-request in the endpoint against the owning
+  `person` row (e.g. `person.type='staff'` OR a
+  `person.extensions.advisor.demo_gate=true` marker on Morgan's
+  demo-roster row; exact marker chosen in the build slice). Upgrades to
+  a per-practice allowlist (option (c) — row gate against a curated set
+  of pilot practices with confirmed processor DPA) when the Q7 counsel
+  answer lands. Option (a) — env-var feature flag
+  (`ADVISOR_CLIENT_WRITES_ENABLED`) — considered but rejected: less
+  targeted than the role gate, harder to observe from the endpoint
+  layer, and can't distinguish demo-payload writes from real-payload
+  writes at the same endpoint.
 - **Read endpoints for `client` / `client_session` / `client_note`**:
   land at the same time; reading FROM a table with only seed rows is
   fine. Reading real-client rows is inert until writes are enabled.
@@ -503,6 +545,25 @@ Reese Donovan `type='ops'` — all pending, `demo-*@example.invalid`).
   inserted under Morgan's ownership.
 - 2 `cohort` rows (coh-001, coh-002) from `src/data/cohorts.js` — but
   their `cohort_member` rows are GATED (see below).
+
+**Display-string normalization at seed time** (per FIX 3 amendment):
+
+- Fixture strings with display formatting normalize to ISO 8601 at
+  seed time — same normalization discipline as migration 0002's gift
+  dates. Specifically: `doc.updated` "April 12, 2026" → `'2026-04-12'`;
+  `cohort.started` "February 2026" → `'2026-02-01'` (first-of-month
+  convention when only month+year is available). `cohort.next_session_date`
+  was already ISO in the fixture (`'2026-05-18'`, `'2026-05-27'`), no
+  change. Display formatting happens at render via `formatSessionDate`
+  (`src/data/clients.js` — already used by CohortSpace, CohortDetail,
+  ClientWorkspace).
+- `doc.id` normalization at seed time (per FIX 2 amendment): fixture
+  slugs (`'onboarding-script'`, `'first-session-checklist'`, etc.) become
+  fresh opaque UUIDs at seed insert. Slug can be preserved in application
+  logic (e.g. a `slug` column added later if breadcrumb URLs need to
+  survive migrations) but not as PK identity. For the initial seed,
+  fresh UUIDs are sufficient — the four doc rows are seed demo content,
+  not URL-critical anchors.
 
 **Client seed** (gated by Q7, per §6):
 
@@ -565,9 +626,6 @@ The 12 rulings resolve the design surface. A handful of narrow items
 remain — flagged here for the build slice or a future micro-ruling
 rather than reopened:
 
-- **Q4 gate mechanism**: FT to pick between (a) env-var feature flag,
-  (b) role gate on demo/staff advisor rows, (c) row-level allowlist.
-  Per §6. Not a schema decision; a deploy-side control.
 - **`client.giving_plan` shape versioning**: the JSON blob's inner
   shape (statement, causes, themes, geography, etc.) evolves as the
   advisor uses it. No versioning column drafted here; if the shape
