@@ -36,6 +36,7 @@ export default function App() {
             </AuthenticatedIntakeProvider>
           }
         />
+        <Route path="advisor/*" element={<AdvisorSurface />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

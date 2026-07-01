@@ -37,6 +37,10 @@ export default function AppDispatcher() {
     return <Navigate to="/app/individual" replace />;
   }
 
+  if (identity.type === 'advisor') {
+    return <Navigate to="/app/advisor" replace />;
+  }
+
   return (
     <PlaceholderPanel
       title="You're signed in"
