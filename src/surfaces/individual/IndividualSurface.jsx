@@ -80,6 +80,11 @@ function DashboardLayout() {
   const basePath = useBasePath();
   const navItems = getNavItems(basePath);
   const appIdentity = useOptionalAppIdentity();
+  const { intakeComplete } = useIntake();
+
+  if (!intakeComplete) {
+    return <Navigate to={`${basePath}/welcome`} replace />;
+  }
 
   return (
     <div style={{
@@ -116,6 +121,7 @@ function DashboardLayout() {
 function IndividualHome() {
   const navigate = useNavigate();
   const basePath = useBasePath();
+  const appIdentity = useOptionalAppIdentity();
   const [showAllGifts, setShowAllGifts] = useState(false);
   const { answers, gifts, givingStyle, worldLabel, resetIntake, loadDemo, intakeComplete } = useIntake();
 
@@ -229,16 +235,6 @@ function IndividualHome() {
 
       {/* Identity anchor */}
       <Card style={{ marginBottom: 'var(--sh-space-3)' }}>
-        <p style={{
-          fontSize: '10px',
-          color: 'var(--sh-bronze)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.1em',
-          fontWeight: 600,
-          marginBottom: 'var(--sh-space-2)',
-        }}>
-          {worldLabel}
-        </p>
         <div style={{
           display: 'inline-block',
           padding: '5px 14px',
@@ -523,7 +519,7 @@ function IndividualHome() {
         >
           See the new-user onboarding flow →
         </button>
-        {gifts.length === 0 && (
+        {gifts.length === 0 && !appIdentity && (
           <button
             onClick={loadDemo}
             style={{
