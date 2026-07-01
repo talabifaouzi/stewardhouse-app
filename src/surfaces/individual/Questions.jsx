@@ -19,8 +19,6 @@ export default function Questions() {
   const navigate = useNavigate();
   const basePath = useBasePath();
   const { answers, updateAnswer, toggleAnswer, completeIntake } = useIntake();
-  const [step, setStep] = useState(0);
-  const [showBreak, setShowBreak] = useState(null);
 
   const a = answers;
 
@@ -491,6 +489,18 @@ export default function Questions() {
       ),
     },
   ];
+
+  // Resume at the first step whose answer is still empty. Each step's .valid
+  // field is the authoritative "is this answered" check (e.g. Q3 encodes the
+  // geo + geoDetail compound rule). If every step is already answered — a
+  // returning user who completed intake and then browser-backed here — land
+  // at the last step so they can advance out via next() → GPSReveal rather
+  // than being forced through all 12 questions again.
+  const [step, setStep] = useState(() => {
+    const firstInvalid = steps.findIndex((s) => !s.valid);
+    return firstInvalid === -1 ? steps.length - 1 : firstInvalid;
+  });
+  const [showBreak, setShowBreak] = useState(null);
 
   const cur = steps[step];
 

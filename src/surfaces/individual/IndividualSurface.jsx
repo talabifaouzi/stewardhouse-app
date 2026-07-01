@@ -503,22 +503,24 @@ function IndividualHome() {
         gap: 'var(--sh-space-4)',
         flexWrap: 'wrap',
       }}>
-        <button
-          onClick={restartOnboarding}
-          style={{
-            background: 'transparent',
-            border: 'none',
-            color: 'var(--sh-text-muted)',
-            fontSize: 'var(--sh-text-xs)',
-            fontStyle: 'italic',
-            cursor: 'pointer',
-            textDecoration: 'underline',
-            fontFamily: 'inherit',
-            padding: 0,
-          }}
-        >
-          See the new-user onboarding flow →
-        </button>
+        {!intakeComplete && (
+          <button
+            onClick={restartOnboarding}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--sh-text-muted)',
+              fontSize: 'var(--sh-text-xs)',
+              fontStyle: 'italic',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              fontFamily: 'inherit',
+              padding: 0,
+            }}
+          >
+            See the new-user onboarding flow →
+          </button>
+        )}
         {gifts.length === 0 && !appIdentity && (
           <button
             onClick={loadDemo}
