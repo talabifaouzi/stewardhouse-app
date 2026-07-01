@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useSearchParams, Link, Navigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { SHLogo } from '../../components/SHLogo.jsx';
 
@@ -27,11 +27,26 @@ export default function SignIn() {
   const [searchParams] = useSearchParams();
   const urlError = searchParams.get('error');
 
+  const [sessionStatus, setSessionStatus] = useState('checking');
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState('idle');
   const [errorMessage, setErrorMessage] = useState(
     urlError ? (ERROR_MESSAGES[urlError] || 'Something went wrong. Please try again.') : null
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/auth/get-session', { credentials: 'include' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        setSessionStatus(data && data.user ? 'authenticated' : 'unauthenticated');
+      })
+      .catch(() => {
+        if (!cancelled) setSessionStatus('unauthenticated');
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -77,6 +92,26 @@ export default function SignIn() {
       setStatus('error');
       setErrorMessage('Could not reach the server. Check your connection and try again.');
     }
+  }
+
+  if (sessionStatus === 'checking') {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--sh-bg)',
+        color: 'var(--sh-text-muted)',
+        fontSize: 'var(--sh-text-sm)',
+      }}>
+        Checking your session…
+      </div>
+    );
+  }
+
+  if (sessionStatus === 'authenticated') {
+    return <Navigate to="/app" replace />;
   }
 
   return (
