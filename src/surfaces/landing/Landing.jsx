@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { SHLogoStacked, SHLogo } from '../../components/SHLogo.jsx';
+import { Button } from '../../components/Button.jsx';
 
 const surfaces = [
   {
@@ -38,6 +39,7 @@ const surfaces = [
 ];
 
 export default function Landing() {
+  const navigate = useNavigate();
   return (
     <main style={{
       minHeight: '100vh',
@@ -102,25 +104,15 @@ export default function Landing() {
           Choose where to enter the demo.
         </p>
 
-        <p style={{
-          fontSize: 'var(--sh-text-sm)',
-          color: 'var(--sh-text-secondary)',
-          textAlign: 'center',
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
           marginBottom: 'var(--sh-space-8)',
         }}>
-          Already invited?{' '}
-          <Link
-            to="/signin"
-            style={{
-              color: 'var(--sh-bronze)',
-              fontWeight: 500,
-              textDecoration: 'underline',
-              textUnderlineOffset: '2px',
-            }}
-          >
-            Sign in
-          </Link>
-        </p>
+          <Button variant="secondary" type="button" onClick={() => navigate('/signin')}>
+            Already invited? Sign in
+          </Button>
+        </div>
 
         {/* Surface picker */}
         <div style={{
