@@ -244,6 +244,32 @@ Every substantive change runs as a **slice**. The rhythm:
     real magic-link signup against a remote `auth_user` table missing the
     `name` column. See the AUTH sub-slice (a) bank's 0003-gap audit
     annotation in §5 (Individual row).
+11. **Authenticated-surface path audit (full-directory rule).** When
+    wiring any existing public demo surface for reuse at an authenticated
+    route (e.g. IndividualSurface at both `/individual/*` and
+    `/app/individual/*`), the hardcoded-absolute-path audit must cover
+    EVERY file inside that surface's directory (e.g. all of
+    `src/surfaces/individual/*.jsx`), not just the top-level surface
+    file. Discovered 2026-07-01 during the Individual-wiring slice: piece
+    3's basePath refactor correctly fixed IndividualSurface.jsx's ~16
+    hardcoded paths, but a follow-up full-directory audit found 8
+    sub-screen files — Positioning, Letter, Privacy, Questions, GPSReveal
+    (the 5 onboarding screens), plus Plan, GiveScreen, and Feedback —
+    carrying 13 hardcoded `navigate('/individual/...')` call sites,
+    unaudited in that pass. (Learn, History, Team, GivingModeler,
+    Discover, and CohortView were confirmed clean.) The
+    failure mode: a signed-in pilot user clicking a "back" or navigation
+    action inside a sub-screen gets silently dropped into the PUBLIC demo
+    route — which mounts a SEPARATE IntakeProvider instance seeded with
+    Marcus's fixture data, so the authenticated user's own view is
+    replaced by the demo profile. This is a data-identity leak, not just
+    a broken link. Any future slice wiring Enterprise, Advisor, or
+    Operations for authenticated reuse must run the full-directory grep
+    (every file in that surface's directory, not just the entrypoint) as
+    a required step before considering the wiring complete, and should
+    extract a shared basePath-derivation helper once 2+ files need it
+    (per the standard #47/#57 threshold) rather than duplicating the
+    logic per file.
 
 Stop background shells (dev server, watch loops) at bank time. Use `TaskStop`,
 not `kill`.
