@@ -6,6 +6,7 @@ import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { lessons } from '../../data/content.js';
 import { usePracticeContent } from '../../contexts/PracticeContentContext.jsx';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 
 const SCOPE_FILTERS = [
   { key: 'any',       label: 'All' },
@@ -26,6 +27,7 @@ function capitalize(s) {
 
 export default function CurriculumLibrary() {
   const navigate = useNavigate();
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const { lessons: practiceLessons } = usePracticeContent();
   const [scopeKey, setScopeKey] = useState('any');
   const [query, setQuery] = useState('');
@@ -114,10 +116,10 @@ export default function CurriculumLibrary() {
           </p>
         </div>
         <div style={{ display: 'flex', gap: 'var(--sh-space-2)', flexShrink: 0 }}>
-          <Button variant="primary" onClick={() => navigate('/advisor/curriculum/new')}>
+          <Button variant="primary" onClick={() => navigate(`${basePath}/curriculum/new`)}>
             Author new
           </Button>
-          <Button variant="secondary" onClick={() => navigate('/advisor/curriculum/drafts')}>
+          <Button variant="secondary" onClick={() => navigate(`${basePath}/curriculum/drafts`)}>
             <span style={{ display: 'inline-flex', alignItems: 'center', gap: 'var(--sh-space-2)' }}>
               View drafts
               {draftsCount > 0 && <Tag color="bronze">{draftsCount}</Tag>}
@@ -297,10 +299,11 @@ function LibraryStat({ label, value, sub }) {
 }
 
 function LessonRow({ lesson, first }) {
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const scopeLabel = lesson.scope === 'all' ? 'General' : lesson.scope;
   return (
     <Link
-      to={`/advisor/curriculum/${lesson.id}`}
+      to={`${basePath}/curriculum/${lesson.id}`}
       style={{
         display: 'block',
         padding: 'var(--sh-space-3) 0',

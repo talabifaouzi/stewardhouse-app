@@ -7,6 +7,7 @@ import { Modal } from '../../components/Modal.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { findLesson, getLessonById } from '../../data/content.js';
 import { usePracticeContent } from '../../contexts/PracticeContentContext.jsx';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 
 function capitalize(s) {
   if (!s || typeof s !== 'string') return '';
@@ -16,6 +17,7 @@ function capitalize(s) {
 export default function LessonDetail() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const { lessons: practiceLessons, remove, update } = usePracticeContent();
 
   // Add-material form state — practice lessons only.
@@ -35,7 +37,7 @@ export default function LessonDetail() {
   const lesson = findLesson(lessonId, practiceLessons);
 
   if (!lesson) {
-    return <Navigate to="/advisor/curriculum" replace />;
+    return <Navigate to={`${basePath}/curriculum`} replace />;
   }
 
   const scopeLabel = lesson.scope === 'all' ? 'General' : lesson.scope;
@@ -74,7 +76,7 @@ export default function LessonDetail() {
   const handleConfirmDiscard = () => {
     setDiscardModalOpen(false);
     remove(lesson.id);
-    navigate('/advisor/curriculum');
+    navigate(`${basePath}/curriculum`);
   };
 
   return (
@@ -90,7 +92,7 @@ export default function LessonDetail() {
         marginBottom: 'var(--sh-space-4)',
         letterSpacing: '0.04em',
       }}>
-        <Link to="/advisor/curriculum" style={{
+        <Link to={`${basePath}/curriculum`} style={{
           color: 'var(--sh-text-muted)',
           textDecoration: 'none',
         }}>
@@ -284,7 +286,7 @@ export default function LessonDetail() {
         {!lesson.kind && (
           <Button
             variant="secondary"
-            onClick={() => navigate(`/advisor/curriculum/${lesson.id}/fork`)}
+            onClick={() => navigate(`${basePath}/curriculum/${lesson.id}/fork`)}
           >
             Tailor this lesson
           </Button>
@@ -293,7 +295,7 @@ export default function LessonDetail() {
           <>
             <Button
               variant="primary"
-              onClick={() => navigate(`/advisor/curriculum/${lesson.id}/edit`)}
+              onClick={() => navigate(`${basePath}/curriculum/${lesson.id}/edit`)}
             >
               Edit
             </Button>
@@ -306,7 +308,7 @@ export default function LessonDetail() {
           <>
             <Button
               variant="primary"
-              onClick={() => navigate(`/advisor/curriculum/${lesson.id}/edit`)}
+              onClick={() => navigate(`${basePath}/curriculum/${lesson.id}/edit`)}
             >
               Edit
             </Button>
@@ -319,7 +321,7 @@ export default function LessonDetail() {
 
       {/* Back link */}
       <div style={{ marginTop: 'var(--sh-space-6)' }}>
-        <Link to="/advisor/curriculum" style={{
+        <Link to={`${basePath}/curriculum`} style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: 'var(--sh-space-1)',

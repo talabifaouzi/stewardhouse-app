@@ -1,4 +1,5 @@
 import { createContext, useContext } from 'react';
+import { useLocation } from 'react-router-dom';
 
 // Identity context for the authenticated /app/* tree. Populated once by
 // AppShell (a single /api/me fetch) and read by any descendant that needs
@@ -37,4 +38,23 @@ export function useAppIdentity() {
 // extraction since the logic is byte-identical across both consumers.
 export function useOptionalAppIdentity() {
   return useContext(AppIdentityContext);
+}
+
+// Mount-aware base-path derivation. Surfaces mounted at both a public
+// demo route (e.g. /advisor/*) AND an authenticated route (e.g.
+// /app/advisor/*) can call this hook to get the right prefix for
+// navigate() / <Link to> without hardcoding either. Extracted here from
+// the Individual-scoped private hook at surfaces/individual/useBasePath.js
+// on the second-consumer threshold — Advisor's §6.11 path-fix slice adds
+// 48 call sites across 13 files, crossing the #47/#57 threshold.
+// Individual's original file remains as a thin no-arg delegate so its 10
+// consumers do not change. See CLAUDE.md's authenticated-surface path
+// audit rule.
+//
+// Usage:
+//   const basePath = useBasePath('/advisor', '/app/advisor');
+//   navigate(`${basePath}/clients`);
+export function useBasePath(demoBase, appBase) {
+  const location = useLocation();
+  return location.pathname.startsWith(appBase) ? appBase : demoBase;
 }

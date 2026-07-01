@@ -4,6 +4,7 @@ import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
 import { findLesson, getLessonById } from '../../data/content.js';
 import { usePracticeContent } from '../../contexts/PracticeContentContext.jsx';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 
 const SCOPE_OPTIONS = [
   { value: 'all',       label: 'General' },
@@ -31,6 +32,7 @@ function nextPracticeLessonId(practiceLessons) {
 export default function LessonEditor({ mode }) {
   const { lessonId } = useParams();
   const navigate = useNavigate();
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const { lessons: practiceLessons, add, update } = usePracticeContent();
 
   // Resolve the source lesson by mode.
@@ -68,7 +70,7 @@ export default function LessonEditor({ mode }) {
 
   // Redirect if a source was required but missing.
   if ((mode === 'fork' || mode === 'edit') && !sourceLesson) {
-    return <Navigate to="/advisor/curriculum" replace />;
+    return <Navigate to={`${basePath}/curriculum`} replace />;
   }
 
   const trimmedTitle = title.trim();
@@ -82,9 +84,9 @@ export default function LessonEditor({ mode }) {
     const today = todayIso();
     const afterSave = (publishedId) => {
       if (targetStatus === 'draft') {
-        navigate('/advisor/curriculum/drafts');
+        navigate(`${basePath}/curriculum/drafts`);
       } else {
-        navigate(`/advisor/curriculum/${publishedId}`);
+        navigate(`${basePath}/curriculum/${publishedId}`);
       }
     };
     if (mode === 'fork') {
@@ -134,9 +136,9 @@ export default function LessonEditor({ mode }) {
 
   const handleCancel = () => {
     if (sourceLesson) {
-      navigate(`/advisor/curriculum/${sourceLesson.id}`);
+      navigate(`${basePath}/curriculum/${sourceLesson.id}`);
     } else {
-      navigate('/advisor/curriculum');
+      navigate(`${basePath}/curriculum`);
     }
   };
 
@@ -174,13 +176,13 @@ export default function LessonEditor({ mode }) {
         marginBottom: 'var(--sh-space-4)',
         letterSpacing: '0.04em',
       }}>
-        <Link to="/advisor/curriculum" style={{ color: 'var(--sh-text-muted)', textDecoration: 'none' }}>
+        <Link to={`${basePath}/curriculum`} style={{ color: 'var(--sh-text-muted)', textDecoration: 'none' }}>
           Curriculum library
         </Link>
         {sourceLesson && (
           <>
             {' · '}
-            <Link to={`/advisor/curriculum/${sourceLesson.id}`} style={{ color: 'var(--sh-text-muted)', textDecoration: 'none' }}>
+            <Link to={`${basePath}/curriculum/${sourceLesson.id}`} style={{ color: 'var(--sh-text-muted)', textDecoration: 'none' }}>
               {sourceLesson.title}
             </Link>
           </>

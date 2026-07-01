@@ -4,6 +4,7 @@ import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { usePracticeContent } from '../../contexts/PracticeContentContext.jsx';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -21,6 +22,7 @@ function formatDate(iso) {
 
 export default function DraftsList() {
   const { lessons: practiceLessons } = usePracticeContent();
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const drafts = [...practiceLessons]
     .filter((l) => l.status === 'draft')
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -38,7 +40,7 @@ export default function DraftsList() {
         marginBottom: 'var(--sh-space-4)',
         letterSpacing: '0.04em',
       }}>
-        <Link to="/advisor/curriculum" style={{
+        <Link to={`${basePath}/curriculum`} style={{
           color: 'var(--sh-text-muted)',
           textDecoration: 'none',
         }}>
@@ -101,7 +103,7 @@ export default function DraftsList() {
 
       {/* Back link */}
       <div style={{ marginTop: 'var(--sh-space-6)' }}>
-        <Link to="/advisor/curriculum" style={{
+        <Link to={`${basePath}/curriculum`} style={{
           display: 'inline-flex',
           alignItems: 'center',
           gap: 'var(--sh-space-1)',
@@ -119,12 +121,13 @@ export default function DraftsList() {
 }
 
 function DraftRow({ draft, first }) {
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const kindLabel = draft.kind === 'fork' ? 'Tailored' : 'Authored';
   const kindColor = draft.kind === 'fork' ? 'bronze' : 'accent';
 
   return (
     <Link
-      to={`/advisor/curriculum/${draft.id}/edit`}
+      to={`${basePath}/curriculum/${draft.id}/edit`}
       style={{
         display: 'block',
         padding: 'var(--sh-space-3) 0',

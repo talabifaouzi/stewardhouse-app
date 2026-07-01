@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { clients, formatSessionDate, stages } from '../../data/clients.js';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 
 // Phase 1 scope: athletes only. We filter by sport instead of sector.
 const sports = ['All', 'Basketball', 'Football', 'Soccer', 'Track and Field'];
@@ -212,9 +213,10 @@ function FilterGroup({ label, options, value, onChange }) {
 }
 
 function ClientRow({ client }) {
+  const basePath = useBasePath('/advisor', '/app/advisor');
   return (
     <Link
-      to={`/advisor/clients/${client.id}`}
+      to={`${basePath}/clients/${client.id}`}
       style={{
         textDecoration: 'none',
         color: 'inherit',

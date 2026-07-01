@@ -2,6 +2,7 @@ import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Chrome from '../../components/Chrome.jsx';
 import { PracticeContentProvider } from '../../contexts/PracticeContentContext.jsx';
 import { DocumentationProvider } from '../../contexts/DocumentationContext.jsx';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 import { advisorPracticeProfile } from '../../data/clients.js';
 
 import PracticeHome from './PracticeHome.jsx';
@@ -19,18 +20,22 @@ import DocCreate from './DocCreate.jsx';
 import DocDetail from './DocDetail.jsx';
 import PracticeSettings from './PracticeSettings.jsx';
 
-const NAV_ITEMS = [
-  { key: 'home', label: 'Practice', path: '/advisor' },
-  { key: 'roster', label: 'Clients', path: '/advisor/clients' },
-  { key: 'curriculum', label: 'Curriculum', path: '/advisor/curriculum' },
-  { key: 'cohorts', label: 'Cohorts', path: '/advisor/cohorts' },
-  { key: 'pipeline', label: 'Pipeline', path: '/advisor/pipeline' },
-  { key: 'docs', label: 'Documentation', path: '/advisor/docs' },
-  { key: 'settings', label: 'Settings', path: '/advisor/settings' },
-];
+function getNavItems(basePath) {
+  return [
+    { key: 'home', label: 'Practice', path: basePath },
+    { key: 'roster', label: 'Clients', path: `${basePath}/clients` },
+    { key: 'curriculum', label: 'Curriculum', path: `${basePath}/curriculum` },
+    { key: 'cohorts', label: 'Cohorts', path: `${basePath}/cohorts` },
+    { key: 'pipeline', label: 'Pipeline', path: `${basePath}/pipeline` },
+    { key: 'docs', label: 'Documentation', path: `${basePath}/docs` },
+    { key: 'settings', label: 'Settings', path: `${basePath}/settings` },
+  ];
+}
 
 export default function AdvisorSurface() {
   const location = useLocation();
+  const basePath = useBasePath('/advisor', '/app/advisor');
+  const navItems = getNavItems(basePath);
   const path = location.pathname;
   const activeNav =
     path.includes('/clients') ? 'roster' :
@@ -54,7 +59,7 @@ export default function AdvisorSurface() {
             surface="advisor"
             userName={advisorPracticeProfile.advisorName}
             userRole={advisorPracticeProfile.advisorTitle}
-            navItems={NAV_ITEMS}
+            navItems={navItems}
             activeNav={activeNav}
           />
 
@@ -76,7 +81,7 @@ export default function AdvisorSurface() {
               <Route path="docs/new" element={<DocCreate />} />
               <Route path="docs/:docId" element={<DocDetail />} />
               <Route path="settings" element={<PracticeSettings />} />
-              <Route path="*" element={<Navigate to="/advisor" replace />} />
+              <Route path="*" element={<Navigate to={basePath} replace />} />
             </Routes>
           </div>
         </div>

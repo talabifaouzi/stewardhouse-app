@@ -6,6 +6,7 @@ import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { clients, formatSessionDate } from '../../data/clients.js';
 import { cohorts } from '../../data/cohorts.js';
 import { contentTypes, getLessonById } from '../../data/content.js';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 import StateBadge from './StateBadge.jsx';
 
 const MONTH_NAMES = [
@@ -37,9 +38,10 @@ function capitalize(s) {
 
 export default function ClientWorkspace() {
   const { clientId } = useParams();
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const client = clients.find(c => c.id === clientId);
 
-  if (!client) return <Navigate to="/advisor/clients" replace />;
+  if (!client) return <Navigate to={`${basePath}/clients`} replace />;
 
   const agenda = client.nextSessionAgenda || { topics: [], openThreads: [], curriculumLinks: [] };
   const sessions = client.sessions || [];
@@ -60,7 +62,7 @@ export default function ClientWorkspace() {
         marginBottom: 'var(--sh-space-4)',
         letterSpacing: '0.04em',
       }}>
-        <Link to="/advisor/clients" style={{
+        <Link to={`${basePath}/clients`} style={{
           color: 'var(--sh-text-muted)',
           textDecoration: 'none',
         }}>
@@ -133,7 +135,7 @@ export default function ClientWorkspace() {
                 <span key={c.id}>
                   {idx > 0 && ' · '}
                   <Link
-                    to={`/advisor/cohorts/${c.id}`}
+                    to={`${basePath}/cohorts/${c.id}`}
                     style={{
                       color: 'var(--sh-text-muted)',
                       fontStyle: 'italic',
@@ -191,6 +193,7 @@ export default function ClientWorkspace() {
 }
 
 function PreSessionPrep({ nextSession, agenda, activeContent, firstName }) {
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const hasTopics = agenda.topics && agenda.topics.length > 0;
   const hasOpenThreads = agenda.openThreads && agenda.openThreads.length > 0;
   const hasCurriculum = agenda.curriculumLinks && agenda.curriculumLinks.length > 0;
@@ -245,7 +248,7 @@ function PreSessionPrep({ nextSession, agenda, activeContent, firstName }) {
                       color: 'var(--sh-text-muted)',
                     }}>—</span>
                     <Link
-                      to={`/advisor/curriculum/${link.lessonId}`}
+                      to={`${basePath}/curriculum/${link.lessonId}`}
                       style={{
                         color: 'var(--sh-text-muted)',
                         fontStyle: 'italic',
@@ -267,7 +270,7 @@ function PreSessionPrep({ nextSession, agenda, activeContent, firstName }) {
             paddingTop: 'var(--sh-space-4)',
             borderTop: 'var(--sh-border-divider)',
           }}>
-            <Link to="/advisor/pipeline" style={{
+            <Link to={`${basePath}/pipeline`} style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: 'var(--sh-space-1)',

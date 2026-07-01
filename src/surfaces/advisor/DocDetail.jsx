@@ -1,17 +1,19 @@
 import { useParams, Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { useDocumentation } from '../../contexts/DocumentationContext.jsx';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 
 export default function DocDetail() {
   const { docId } = useParams();
   const { findDocById } = useDocumentation();
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const result = findDocById(docId);
 
   if (!result) {
     return (
       <main style={mainStyle}>
         <div style={breadcrumbStyle}>
-          <Link to="/advisor/docs" style={breadcrumbLinkStyle}>
+          <Link to={`${basePath}/docs`} style={breadcrumbLinkStyle}>
             Documentation
           </Link>
         </div>
@@ -27,7 +29,7 @@ export default function DocDetail() {
   return (
     <main style={mainStyle}>
       <div style={breadcrumbStyle}>
-        <Link to="/advisor/docs" style={breadcrumbLinkStyle}>
+        <Link to={`${basePath}/docs`} style={breadcrumbLinkStyle}>
           Documentation
         </Link>
         {' · '}

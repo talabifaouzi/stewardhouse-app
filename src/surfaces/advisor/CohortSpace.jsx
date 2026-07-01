@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { cohorts } from '../../data/cohorts.js';
 import { formatSessionDate } from '../../data/clients.js';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 
 export default function CohortSpace() {
+  const basePath = useBasePath('/advisor', '/app/advisor');
   return (
     <main style={{
       maxWidth: 'var(--sh-content-max)',
@@ -46,7 +48,7 @@ export default function CohortSpace() {
         {cohorts.map(cohort => (
           <Link
             key={cohort.id}
-            to={`/advisor/cohorts/${cohort.id}`}
+            to={`${basePath}/cohorts/${cohort.id}`}
             style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
           >
             <CohortCard cohort={cohort} />

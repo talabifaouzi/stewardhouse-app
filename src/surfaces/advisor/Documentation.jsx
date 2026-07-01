@@ -5,9 +5,11 @@ import { Card } from '../../components/Card.jsx';
 import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useDocumentation } from '../../contexts/DocumentationContext.jsx';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 
 export default function Documentation() {
   const { categories: docCategories, addSection } = useDocumentation();
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const [openHint, setOpenHint] = useState(null);
   const toggleHint = (label) =>
     setOpenHint((prev) => (prev === label ? null : label));
@@ -69,7 +71,7 @@ export default function Documentation() {
             gap: 'var(--sh-space-4)',
           }}>
             <Link
-              to="/advisor/docs/new"
+              to={`${basePath}/docs/new`}
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -196,7 +198,7 @@ export default function Documentation() {
               {cat.docs.map((doc, i) => (
                 <Link
                   key={doc.id}
-                  to={`/advisor/docs/${doc.id}`}
+                  to={`${basePath}/docs/${doc.id}`}
                   style={{
                     display: 'flex',
                     alignItems: 'center',

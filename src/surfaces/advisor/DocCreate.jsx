@@ -3,9 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
 import { useDocumentation } from '../../contexts/DocumentationContext.jsx';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 
 export default function DocCreate() {
   const navigate = useNavigate();
+  const basePath = useBasePath('/advisor', '/app/advisor');
   const { categories, addDoc } = useDocumentation();
 
   const [title, setTitle] = useState('');
@@ -37,18 +39,18 @@ export default function DocCreate() {
       notes,
       body: paragraphs,
     });
-    navigate(`/advisor/docs/${newId}`);
+    navigate(`${basePath}/docs/${newId}`);
   };
 
   const handleCancel = () => {
-    navigate('/advisor/docs');
+    navigate(`${basePath}/docs`);
   };
 
   return (
     <main style={mainStyle}>
       {/* Breadcrumb */}
       <div style={breadcrumbStyle}>
-        <Link to="/advisor/docs" style={breadcrumbLinkStyle}>
+        <Link to={`${basePath}/docs`} style={breadcrumbLinkStyle}>
           Documentation
         </Link>
         {' · '}

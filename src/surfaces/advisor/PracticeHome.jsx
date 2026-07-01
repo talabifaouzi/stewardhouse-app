@@ -3,8 +3,10 @@ import { Card } from '../../components/Card.jsx';
 import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { advisorPracticeProfile, clients, formatSessionDate, stages } from '../../data/clients.js';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 
 export default function PracticeHome() {
+  const basePath = useBasePath('/advisor', '/app/advisor');
   // ADV-011 — static demo date aligned with the seed timeline (journal entry
   // April 28, upcoming sessions May 9-July 7). Live new Date() made
   // screenshots non-deterministic and depended on the user's local clock.
@@ -60,7 +62,7 @@ export default function PracticeHome() {
         marginBottom: 'var(--sh-space-10)',
       }}>
         {stages.map((stage) => (
-          <Stat key={stage} label={stage} value={stageCounts[stage]} link={`/advisor/clients?stage=${stage}`} />
+          <Stat key={stage} label={stage} value={stageCounts[stage]} link={`${basePath}/clients?stage=${stage}`} />
         ))}
       </div>
 
@@ -78,7 +80,7 @@ export default function PracticeHome() {
             {upcoming.map((client, i) => (
               <Link
                 key={client.id}
-                to={`/advisor/clients/${client.id}`}
+                to={`${basePath}/clients/${client.id}`}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -150,7 +152,7 @@ export default function PracticeHome() {
             marginBottom: 'var(--sh-space-4)',
           }}>
             <SectionLabel>Between-session pipeline</SectionLabel>
-            <Link to="/advisor/pipeline" style={{
+            <Link to={`${basePath}/pipeline`} style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: 'var(--sh-space-1)',
