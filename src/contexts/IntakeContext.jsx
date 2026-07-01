@@ -31,6 +31,7 @@ export const DEFAULT_STATE = {
   givingStyle: defaultProfile.givingStyle,
   worldLabel: 'Athletics',
   gifts: defaultGifts,
+  scenarios: [],
   lessonsDone: [],
   assignmentsDone: [],
 };
@@ -47,6 +48,7 @@ export const AUTHENTICATED_EMPTY_STATE = {
   givingStyle: null,
   worldLabel: 'Athletics',
   gifts: [],
+  scenarios: [],
   lessonsDone: [],
   assignmentsDone: [],
 };
@@ -88,6 +90,10 @@ export function buildInitialStateFromServer(serverIntake) {
 // field-by-field merge. serverGifts defaults to [] for fresh users.
 export function buildInitialGiftsFromServer(serverGifts) {
   return Array.isArray(serverGifts) ? serverGifts : [];
+}
+
+export function buildInitialScenariosFromServer(serverScenarios) {
+  return Array.isArray(serverScenarios) ? serverScenarios : [];
 }
 
 export function IntakeProvider({ children, initialState = DEFAULT_STATE }) {
@@ -153,6 +159,7 @@ export function IntakeProvider({ children, initialState = DEFAULT_STATE }) {
       givingStyle: null,
       worldLabel: 'Athletics',
       gifts: [],
+      scenarios: [],
       lessonsDone: [],
       assignmentsDone: [],
     });
@@ -168,6 +175,13 @@ export function IntakeProvider({ children, initialState = DEFAULT_STATE }) {
     setState(prev => ({
       ...prev,
       gifts: [gift, ...prev.gifts],
+    }));
+  };
+
+  const addScenario = (scenario) => {
+    setState(prev => ({
+      ...prev,
+      scenarios: [scenario, ...prev.scenarios],
     }));
   };
 
@@ -200,6 +214,7 @@ export function IntakeProvider({ children, initialState = DEFAULT_STATE }) {
       resetIntake,
       loadDemo,
       addGift,
+      addScenario,
       markLessonDone,
       toggleAssignment,
     }}>

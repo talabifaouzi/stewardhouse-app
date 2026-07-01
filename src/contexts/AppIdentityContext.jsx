@@ -6,7 +6,7 @@ import { createContext, useContext } from 'react';
 // Chrome (for display), and any future type-specific surface.
 //
 // status: 'loading' | 'ready' | 'unauthenticated'
-// identity: { type, displayName, email, intake, gifts } | null — only non-null when status is 'ready'
+// identity: { type, displayName, email, intake, gifts, scenarios } | null — only non-null when status is 'ready'
 
 const AppIdentityContext = createContext(null);
 
@@ -24,4 +24,17 @@ export function useAppIdentity() {
     throw new Error('useAppIdentity must be used within AppIdentityProvider (i.e. inside the /app/* tree)');
   }
   return ctx;
+}
+
+// Safe variant of useAppIdentity for components that render on BOTH the
+// public demo tree (no AppIdentityProvider ancestor) and the authenticated
+// /app/* tree (has one). Returns null instead of throwing when used outside
+// a provider — useContext itself never throws; it returns createContext's
+// default (null) when there's no matching Provider ancestor, so no
+// try/catch is needed (unlike useAppIdentity's manual throw-on-missing
+// check). Second consumer of this exact pattern (after IndividualSurface.jsx's
+// local version, extracted here) — crosses the #47/#57 threshold for shared
+// extraction since the logic is byte-identical across both consumers.
+export function useOptionalAppIdentity() {
+  return useContext(AppIdentityContext);
 }

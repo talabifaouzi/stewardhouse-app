@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Card } from '../../components/Card.jsx';
+import { Button } from '../../components/Button.jsx';
+import { useIntake } from '../../contexts/IntakeContext.jsx';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 
 // Map intake budget bands to default modeler amount
 const BUDGET_TO_DEFAULT = {
@@ -27,6 +30,12 @@ export default function GivingModeler({ budget }) {
   const [grantPct, setGrantPct] = useState(60);
   const [careerOn, setCareerOn] = useState(false);
   const [careerRate, setCareerRate] = useState(4);
+  const { addScenario } = useIntake();
+  const appIdentity = useOptionalAppIdentity();
+  const [scenarioLabel, setScenarioLabel] = useState('My scenario');
+  const [savingScenario, setSavingScenario] = useState(false);
+  const [saveScenarioError, setSaveScenarioError] = useState(null);
+  const [scenarioSaved, setScenarioSaved] = useState(false);
 
   // Compute year-by-year fund trajectory
   let fund = 0;
@@ -46,6 +55,45 @@ export default function GivingModeler({ budget }) {
   }
   const finalFund = pts.length > 0 ? pts[pts.length - 1].fund : 0;
   const maxFund = Math.max(...pts.map((p) => p.fund), 1);
+
+  async function handleSaveScenario() {
+    const label = scenarioLabel.trim();
+    if (!label) return;
+    setSavingScenario(true);
+    setSaveScenarioError(null);
+    try {
+      const res = await fetch('/api/scenarios', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          label,
+          inputs: { annual, years, growth, grantPct, careerOn, careerRate },
+          derivedAtSnapshot: { finalFund, totalIn, totalOut },
+        }),
+      });
+      if (!res.ok) {
+        let errMsg = 'Could not save this scenario. Please try again.';
+        try {
+          const errBody = await res.json();
+          if (errBody && typeof errBody.error === 'string') errMsg = errBody.error;
+        } catch {
+          // response wasn't JSON — keep default message
+        }
+        setSaveScenarioError(errMsg);
+        setSavingScenario(false);
+        return;
+      }
+      const saved = await res.json();
+      addScenario(saved);
+      setSavingScenario(false);
+      setScenarioSaved(true);
+      setTimeout(() => setScenarioSaved(false), 2200);
+    } catch (err) {
+      setSaveScenarioError('Could not reach the server. Check your connection and try again.');
+      setSavingScenario(false);
+    }
+  }
 
   // Collapsed teaser
   if (!open) {
@@ -325,6 +373,70 @@ export default function GivingModeler({ budget }) {
       }}>
         These are projections, not predictions. The model assumes consistent contributions and grant rates. Real giving will look different — but seeing the math helps you plan.
       </p>
+
+      {appIdentity && (
+        <div style={{
+          marginTop: 'var(--sh-space-5)',
+          paddingTop: 'var(--sh-space-5)',
+          borderTop: 'var(--sh-border-thin)',
+        }}>
+          <label
+            htmlFor="scenario-label"
+            style={{
+              display: 'block',
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              fontWeight: 500,
+              marginBottom: 'var(--sh-space-2)',
+            }}
+          >
+            Save this projection as
+          </label>
+          <input
+            id="scenario-label"
+            type="text"
+            value={scenarioLabel}
+            onChange={(e) => setScenarioLabel(e.target.value)}
+            disabled={savingScenario}
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: 'var(--sh-space-3)',
+              border: 'var(--sh-border-thin)',
+              borderRadius: 'var(--sh-radius-md)',
+              fontFamily: 'inherit',
+              fontSize: 'var(--sh-text-sm)',
+              color: 'var(--sh-text-body)',
+              background: 'var(--sh-card)',
+              marginBottom: 'var(--sh-space-3)',
+            }}
+          />
+          {saveScenarioError && (
+            <p style={{
+              marginBottom: 'var(--sh-space-3)',
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-warning-text)',
+              background: 'var(--sh-warning-bg)',
+              border: '1px solid var(--sh-warning-border)',
+              borderRadius: 'var(--sh-radius-md)',
+              padding: 'var(--sh-space-2) var(--sh-space-3)',
+            }}>
+              {saveScenarioError}
+            </p>
+          )}
+          <Button
+            variant="secondary"
+            type="button"
+            onClick={handleSaveScenario}
+            disabled={savingScenario || !scenarioLabel.trim()}
+            style={{ width: '100%' }}
+          >
+            {savingScenario ? 'Saving…' : scenarioSaved ? 'Saved' : 'Save this scenario'}
+          </Button>
+        </div>
+      )}
     </Card>
   );
 }

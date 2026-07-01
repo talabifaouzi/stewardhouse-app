@@ -5,7 +5,7 @@
 // Response shapes:
 //   No session:                200, body null
 //   Session, no person match:  200, body { user: { email }, person: null }
-//   Session, matched:          200, body { user: { email }, person: { type, displayName, intake, gifts } }
+//   Session, matched:          200, body { user: { email }, person: { type, displayName, intake, gifts, scenarios } }
 //
 // person: null is defensive — the (c) hook always creates or claims a person row on
 // sign-in, so this shouldn't happen in practice, but callers must not assume person
@@ -73,9 +73,28 @@ export async function onRequest(context) {
     }));
   }
 
+  let scenarios = [];
+  if (person) {
+    const rows = await db
+      .selectFrom('scenario')
+      .select(['id', 'label', 'created_at', 'inputs', 'derived_at_snapshot'])
+      .where('owner_person_id', '=', person.id)
+      .orderBy('created_at', 'desc')
+      .execute();
+    scenarios = rows.map((row) => {
+      let inputs = {};
+      try { inputs = JSON.parse(row.inputs); } catch { inputs = {}; }
+      let derivedAtSnapshot = null;
+      if (row.derived_at_snapshot) {
+        try { derivedAtSnapshot = JSON.parse(row.derived_at_snapshot); } catch { derivedAtSnapshot = null; }
+      }
+      return { id: row.id, label: row.label, createdAt: row.created_at, inputs, derivedAtSnapshot };
+    });
+  }
+
   const body = {
     user: { email: session.user.email },
-    person: person ? { type: person.type, displayName: person.display_name, intake, gifts } : null,
+    person: person ? { type: person.type, displayName: person.display_name, intake, gifts, scenarios } : null,
   };
 
   return new Response(JSON.stringify(body), {

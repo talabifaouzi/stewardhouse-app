@@ -5,7 +5,7 @@ import { Card } from '../../components/Card.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
-import { useAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { useBasePath } from './useBasePath.js';
 import {
   individualProfile,
@@ -28,15 +28,6 @@ import Team from './Team.jsx';
 import GiveScreen from './GiveScreen.jsx';
 import Feedback from './Feedback.jsx';
 import CohortView from './CohortView.jsx';
-
-function useOptionalAppIdentity() {
-  try {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return useAppIdentity();
-  } catch {
-    return null;
-  }
-}
 
 function getNavItems(basePath) {
   return [
