@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
@@ -14,6 +14,27 @@ import {
   deriveGivingStyle,
 } from '../../data/intakeData.js';
 import { useBasePath } from './useBasePath.js';
+
+const INTAKE_DEBOUNCE_MS = 250;
+
+async function saveIntake(payload) {
+  const res = await fetch('/api/intake', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) {
+    let errMsg = 'Could not save your answer. Please try again.';
+    try {
+      const errBody = await res.json();
+      if (errBody && typeof errBody.error === 'string') errMsg = errBody.error;
+    } catch {
+      // response wasn't JSON — keep default message
+    }
+    throw new Error(errMsg);
+  }
+}
 
 export default function Questions() {
   const navigate = useNavigate();
@@ -168,7 +189,7 @@ export default function Questions() {
           {a.geo.some(id => ['hometown', 'current', 'state'].includes(id)) && (
             <input
               value={a.geoDetail}
-              onChange={e => updateAnswer('geoDetail', e.target.value)}
+              onChange={e => { updateAnswer('geoDetail', e.target.value); debouncedSaveField('geoDetail', e.target.value); }}
               placeholder="City, State (e.g., Cleveland, OH)"
               style={{
                 width: '100%',
@@ -200,7 +221,7 @@ export default function Questions() {
           />
           <textarea
             value={a.lived}
-            onChange={e => updateAnswer('lived', e.target.value)}
+            onChange={e => { updateAnswer('lived', e.target.value); debouncedSaveField('lived', e.target.value); }}
             placeholder="Even one sentence..."
             style={{
               width: '100%',
@@ -246,7 +267,7 @@ export default function Questions() {
           />
           <textarea
             value={a.influence}
-            onChange={e => updateAnswer('influence', e.target.value)}
+            onChange={e => { updateAnswer('influence', e.target.value); debouncedSaveField('influence', e.target.value); }}
             placeholder="Tell us about them — or the absence..."
             style={{
               width: '100%',
@@ -410,7 +431,7 @@ export default function Questions() {
             {!isFB && (
               <textarea
                 value={a.existingOrgs}
-                onChange={e => updateAnswer('existingOrgs', e.target.value)}
+                onChange={e => { updateAnswer('existingOrgs', e.target.value); debouncedSaveField('existingOrgs', e.target.value); }}
                 placeholder="e.g., My local food bank — $200"
                 style={{
                   width: '100%',
@@ -467,7 +488,7 @@ export default function Questions() {
           />
           <textarea
             value={a.legacy}
-            onChange={e => updateAnswer('legacy', e.target.value)}
+            onChange={e => { updateAnswer('legacy', e.target.value); debouncedSaveField('legacy', e.target.value); }}
             placeholder="Even one sentence..."
             style={{
               width: '100%',
@@ -501,6 +522,25 @@ export default function Questions() {
     return firstInvalid === -1 ? steps.length - 1 : firstInvalid;
   });
   const [showBreak, setShowBreak] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+  const debounceRef = useRef(null);
+
+  useEffect(() => () => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+  }, []);
+
+  function debouncedSaveField(key, value) {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      saveIntake({ [key]: value }).catch(() => {
+        // Debounced safety-net write failed silently — the next step-advance
+        // sends the FULL answers object and will re-persist this field's
+        // current value, so a dropped debounce write self-heals rather than
+        // being a permanent loss. No user-facing error needed here.
+      });
+    }, INTAKE_DEBOUNCE_MS);
+  }
 
   const cur = steps[step];
 
@@ -510,7 +550,26 @@ export default function Questions() {
     8: { text: "Almost there. The last few are about where you're headed.", btn: "Let's finish this" },
   };
 
-  const next = () => {
+  const next = async () => {
+    setSaving(true);
+    setSaveError(null);
+
+    const isLastStep = step === steps.length - 1;
+    const style = isLastStep ? deriveGivingStyle(a) : null;
+    const payload = isLastStep
+      ? { ...a, intakeComplete: true, givingStyle: style }
+      : { ...a };
+
+    try {
+      await saveIntake(payload);
+    } catch (err) {
+      setSaveError(err.message || 'Could not save your answer. Please try again.');
+      setSaving(false);
+      return;
+    }
+
+    setSaving(false);
+
     if (step < steps.length - 1) {
       const breakTo = groupBreaks[step + 1];
       if (breakTo) {
@@ -519,8 +578,6 @@ export default function Questions() {
         setStep(step + 1);
       }
     } else {
-      // Last step — derive style and finish
-      const style = deriveGivingStyle(a);
       completeIntake(style);
       navigate(`${basePath}/reveal`, { replace: true });
     }
@@ -628,15 +685,30 @@ export default function Questions() {
           {cur.render()}
         </div>
 
+        {saveError && (
+          <p style={{
+            marginTop: 'var(--sh-space-3)',
+            marginBottom: 'var(--sh-space-3)',
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-warning-text)',
+            background: 'var(--sh-warning-bg)',
+            border: '1px solid var(--sh-warning-border)',
+            borderRadius: 'var(--sh-radius-md)',
+            padding: 'var(--sh-space-2) var(--sh-space-3)',
+          }}>
+            {saveError}
+          </p>
+        )}
+
         {/* Action button */}
         <Button
           variant="primary"
           size="lg"
           onClick={next}
-          disabled={!cur.valid}
+          disabled={!cur.valid || saving}
           style={{ width: '100%' }}
         >
-          {cur.btnText || 'Continue'}
+          {saving ? 'Saving…' : (cur.btnText || 'Continue')}
         </Button>
       </div>
     </main>
