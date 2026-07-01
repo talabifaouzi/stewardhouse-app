@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { SHLogoStacked } from '../../components/SHLogo.jsx';
+import { useBasePath } from './useBasePath.js';
 
 export default function Letter() {
   const navigate = useNavigate();
+  const basePath = useBasePath();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -106,7 +108,7 @@ export default function Letter() {
         <Button
           variant="primary"
           size="lg"
-          onClick={() => navigate('/individual/privacy')}
+          onClick={() => navigate(`${basePath}/privacy`)}
           style={{ width: '100%' }}
         >
           Begin
@@ -118,7 +120,7 @@ export default function Letter() {
           marginTop: 'var(--sh-space-6)',
         }}>
           <button
-            onClick={() => navigate('/individual')}
+            onClick={() => navigate(basePath)}
             style={{
               background: 'transparent',
               border: 'none',

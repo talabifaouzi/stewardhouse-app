@@ -13,9 +13,11 @@ import {
   GEO_OPTIONS,
   deriveGivingStyle,
 } from '../../data/intakeData.js';
+import { useBasePath } from './useBasePath.js';
 
 export default function Questions() {
   const navigate = useNavigate();
+  const basePath = useBasePath();
   const { answers, updateAnswer, toggleAnswer, completeIntake } = useIntake();
   const [step, setStep] = useState(0);
   const [showBreak, setShowBreak] = useState(null);
@@ -510,7 +512,7 @@ export default function Questions() {
       // Last step — derive style and finish
       const style = deriveGivingStyle(a);
       completeIntake(style);
-      navigate('/individual/reveal');
+      navigate(`${basePath}/reveal`);
     }
   };
 

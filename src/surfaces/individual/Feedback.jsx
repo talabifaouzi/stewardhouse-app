@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
+import { useBasePath } from './useBasePath.js';
 
 const MAX_FIELD_LEN = 5000;
 const FORM_ENDPOINT = import.meta.env.VITE_FEEDBACK_ENDPOINT ?? 'https://formsubmit.co/ajax/talabifaouzi@gmail.com';
@@ -23,6 +24,7 @@ const QUESTIONS = [
 
 export default function Feedback() {
   const navigate = useNavigate();
+  const basePath = useBasePath();
   const { answers: a, gifts, lessonsDone } = useIntake();
   const [responses, setResponses] = useState({});
   const [submitted, setSubmitted] = useState(false);
@@ -126,7 +128,7 @@ export default function Feedback() {
         }}>
           Your feedback shapes what StewardHouse becomes. Every response matters.
         </p>
-        <Button variant="primary" onClick={() => navigate('/individual')}>
+        <Button variant="primary" onClick={() => navigate(basePath)}>
           Back to home
         </Button>
       </main>
@@ -140,7 +142,7 @@ export default function Feedback() {
       padding: 'var(--sh-space-8) var(--sh-space-8) var(--sh-space-16)',
     }}>
       <button
-        onClick={() => navigate('/individual')}
+        onClick={() => navigate(basePath)}
         style={{
           fontSize: 'var(--sh-text-sm)',
           color: 'var(--sh-text-muted)',

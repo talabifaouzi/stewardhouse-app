@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import { CAUSES, deriveCelebration } from '../../data/intakeData.js';
+import { useBasePath } from './useBasePath.js';
 
 export default function GPSReveal() {
   const navigate = useNavigate();
+  const basePath = useBasePath();
   const { answers, givingStyle } = useIntake();
   const [phase, setPhase] = useState(0);
 
@@ -147,7 +149,7 @@ export default function GPSReveal() {
           <Button
             variant="primary"
             size="lg"
-            onClick={() => navigate('/individual')}
+            onClick={() => navigate(basePath)}
             style={{ width: '100%', maxWidth: '320px' }}
           >
             See what we built for you

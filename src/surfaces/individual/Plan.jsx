@@ -6,14 +6,16 @@ import { Tag } from '../../components/Tag.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import { CAUSES, VIS, TRUST, DEPTH, BUDGETS } from '../../data/intakeData.js';
 import GivingModeler from './GivingModeler.jsx';
+import { useBasePath } from './useBasePath.js';
 
 export default function Plan() {
   const navigate = useNavigate();
+  const basePath = useBasePath();
   const { answers: a, givingStyle, worldLabel, resetIntake } = useIntake();
   const [copied, setCopied] = useState(false);
 
   if (!a || !a.causes || a.causes.length === 0) {
-    return <PlanEmpty navigate={navigate} resetIntake={resetIntake} />;
+    return <PlanEmpty navigate={navigate} resetIntake={resetIntake} basePath={basePath} />;
   }
 
   const causeLabels = a.causes
@@ -230,7 +232,7 @@ Where I'm Headed
         variant="ghost"
         onClick={() => {
           resetIntake();
-          navigate('/individual/welcome');
+          navigate(`${basePath}/welcome`);
         }}
         style={{ width: '100%' }}
       >
@@ -284,7 +286,7 @@ function Quote({ text }) {
   );
 }
 
-function PlanEmpty({ navigate, resetIntake }) {
+function PlanEmpty({ navigate, resetIntake, basePath }) {
   return (
     <main style={{
       maxWidth: '600px',
@@ -313,7 +315,7 @@ function PlanEmpty({ navigate, resetIntake }) {
         size="lg"
         onClick={() => {
           resetIntake();
-          navigate('/individual/welcome');
+          navigate(`${basePath}/welcome`);
         }}
       >
         Start the Giving Studio

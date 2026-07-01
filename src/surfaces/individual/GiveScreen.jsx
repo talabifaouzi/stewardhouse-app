@@ -2,9 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
+import { useBasePath } from './useBasePath.js';
 
 export default function GiveScreen() {
   const navigate = useNavigate();
+  const basePath = useBasePath();
   const { addGift } = useIntake();
   const [org, setOrg] = useState('');
   const [amt, setAmt] = useState('');
@@ -80,7 +82,7 @@ export default function GiveScreen() {
       setNotes('');
       setRecurring(false);
       setShowMore(false);
-      navigate('/individual');
+      navigate(basePath);
     }, 2200);
   };
 
@@ -107,7 +109,7 @@ export default function GiveScreen() {
           Log a gift
         </p>
         <button
-          onClick={() => navigate('/individual')}
+          onClick={() => navigate(basePath)}
           style={{
             background: 'transparent',
             border: 'none',

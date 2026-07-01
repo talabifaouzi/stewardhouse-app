@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SHLogoStacked } from '../../components/SHLogo.jsx';
+import { useBasePath } from './useBasePath.js';
 
 const CARDS = [
   {
@@ -25,6 +26,7 @@ const CARDS = [
 
 export default function Positioning() {
   const navigate = useNavigate();
+  const basePath = useBasePath();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -111,7 +113,7 @@ export default function Positioning() {
         <Button
           variant="primary"
           size="lg"
-          onClick={() => navigate('/individual/letter')}
+          onClick={() => navigate(`${basePath}/letter`)}
           style={{ width: '100%' }}
         >
           See how it works
@@ -123,7 +125,7 @@ export default function Positioning() {
           marginTop: 'var(--sh-space-5)',
         }}>
           <button
-            onClick={() => navigate('/individual')}
+            onClick={() => navigate(basePath)}
             style={{
               background: 'transparent',
               border: 'none',

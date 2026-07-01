@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
+import { useBasePath } from './useBasePath.js';
 
 const PROMISES = [
   {
@@ -23,6 +24,7 @@ const PROMISES = [
 
 export default function Privacy() {
   const navigate = useNavigate();
+  const basePath = useBasePath();
 
   return (
     <main style={{
@@ -89,7 +91,7 @@ export default function Privacy() {
         <Button
           variant="primary"
           size="lg"
-          onClick={() => navigate('/individual/questions')}
+          onClick={() => navigate(`${basePath}/questions`)}
           style={{ width: '100%' }}
         >
           I'm in

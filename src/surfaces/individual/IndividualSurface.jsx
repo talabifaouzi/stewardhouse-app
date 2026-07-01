@@ -6,6 +6,7 @@ import { Tag } from '../../components/Tag.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import { useAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { useBasePath } from './useBasePath.js';
 import {
   individualProfile,
   getFundingSpotlight,
@@ -35,10 +36,6 @@ function useOptionalAppIdentity() {
   } catch {
     return null;
   }
-}
-
-function getBasePath(pathname) {
-  return pathname.startsWith('/app/individual') ? '/app/individual' : '/individual';
 }
 
 function getNavItems(basePath) {
@@ -80,7 +77,7 @@ function DashboardLayout() {
     path.includes('/team') ? 'team' :
     'home';
 
-  const basePath = getBasePath(location.pathname);
+  const basePath = useBasePath();
   const navItems = getNavItems(basePath);
   const appIdentity = useOptionalAppIdentity();
 
@@ -118,8 +115,7 @@ function DashboardLayout() {
 
 function IndividualHome() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const basePath = getBasePath(location.pathname);
+  const basePath = useBasePath();
   const [showAllGifts, setShowAllGifts] = useState(false);
   const { answers, gifts, givingStyle, worldLabel, resetIntake, loadDemo, intakeComplete } = useIntake();
 
