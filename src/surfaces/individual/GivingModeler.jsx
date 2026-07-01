@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useId } from 'react';
 import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
+import SegmentedControl from '../../components/SegmentedControl.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 
@@ -30,12 +31,36 @@ export default function GivingModeler({ budget }) {
   const [grantPct, setGrantPct] = useState(60);
   const [careerOn, setCareerOn] = useState(false);
   const [careerRate, setCareerRate] = useState(4);
-  const { addScenario } = useIntake();
+  const [incomeMode, setIncomeMode] = useState('flat'); // 'flat' | 'percentage'
+  const [incomeBase, setIncomeBase] = useState(100000);
+  const [givePct, setGivePct] = useState(5);
+  const { addScenario, scenarios } = useIntake();
   const appIdentity = useOptionalAppIdentity();
+  const incomeModeLabelId = useId();
   const [scenarioLabel, setScenarioLabel] = useState('My scenario');
   const [savingScenario, setSavingScenario] = useState(false);
   const [saveScenarioError, setSaveScenarioError] = useState(null);
   const [scenarioSaved, setScenarioSaved] = useState(false);
+
+  useEffect(() => {
+    if (incomeMode === 'percentage') {
+      setAnnual(Math.round((incomeBase * givePct) / 100));
+    }
+  }, [incomeMode, incomeBase, givePct]);
+
+  function handleLoadScenario(scenarioId) {
+    const found = scenarios.find((s) => s.id === scenarioId);
+    if (!found) return;
+    setAnnual(found.inputs.annual);
+    setYears(found.inputs.years);
+    setGrowth(found.inputs.growth);
+    setGrantPct(found.inputs.grantPct);
+    setCareerOn(found.inputs.careerOn);
+    setCareerRate(found.inputs.careerRate);
+    setIncomeMode('flat'); // loaded scenarios always resume in flat mode showing the saved
+                            // annual figure directly — income/percentage are input-UI
+                            // convenience only, never part of a saved scenario's stored shape
+  }
 
   // Compute year-by-year fund trajectory
   let fund = 0;
@@ -270,6 +295,49 @@ export default function GivingModeler({ budget }) {
           />
         ))}
       </div>
+
+      {appIdentity && scenarios.length > 0 && (
+        <div style={{ marginBottom: 'var(--sh-space-4)' }}>
+          <label
+            htmlFor="load-scenario"
+            style={{
+              display: 'block',
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em',
+              fontWeight: 500,
+              marginBottom: 'var(--sh-space-2)',
+            }}
+          >
+            Load a saved scenario
+          </label>
+          <select
+            id="load-scenario"
+            defaultValue=""
+            onChange={(e) => {
+              if (e.target.value) handleLoadScenario(e.target.value);
+              e.target.value = '';
+            }}
+            style={{
+              width: '100%',
+              boxSizing: 'border-box',
+              padding: 'var(--sh-space-3)',
+              border: 'var(--sh-border-thin)',
+              borderRadius: 'var(--sh-radius-md)',
+              fontFamily: 'inherit',
+              fontSize: 'var(--sh-text-sm)',
+              color: 'var(--sh-text-body)',
+              background: 'var(--sh-card)',
+            }}
+          >
+            <option value="" disabled>Choose a saved scenario…</option>
+            {scenarios.map((s) => (
+              <option key={s.id} value={s.id}>{s.label}</option>
+            ))}
+          </select>
+        </div>
+      )}
       <div style={{
         display: 'flex',
         justifyContent: 'space-between',
@@ -283,15 +351,71 @@ export default function GivingModeler({ budget }) {
       </div>
 
       {/* Sliders */}
-      <Slider
-        label="Annual giving"
-        value={fmt(annual)}
-        min={500}
-        max={500000}
-        step={500}
-        rawValue={annual}
-        onChange={setAnnual}
-      />
+      <div style={{ marginBottom: 'var(--sh-space-3)' }}>
+        <p id={incomeModeLabelId} style={{
+          fontSize: 'var(--sh-text-xs)',
+          fontWeight: 600,
+          color: 'var(--sh-text-primary)',
+          letterSpacing: '0.02em',
+          marginBottom: '6px',
+        }}>
+          Annual giving
+        </p>
+        <SegmentedControl
+          options={[
+            { value: 'flat', label: 'Flat amount' },
+            { value: 'percentage', label: '% of income' },
+          ]}
+          value={incomeMode}
+          onChange={setIncomeMode}
+          ariaLabelledBy={incomeModeLabelId}
+          size="sm"
+        />
+        {incomeMode === 'flat' ? (
+          <div style={{ marginTop: 'var(--sh-space-3)' }}>
+            <Slider
+              label="Amount"
+              value={fmt(annual)}
+              min={500}
+              max={500000}
+              step={500}
+              rawValue={annual}
+              onChange={setAnnual}
+              prefix="$"
+            />
+          </div>
+        ) : (
+          <div style={{ marginTop: 'var(--sh-space-3)' }}>
+            <Slider
+              label="Annual income"
+              value={fmt(incomeBase)}
+              min={20000}
+              max={2000000}
+              step={5000}
+              rawValue={incomeBase}
+              onChange={setIncomeBase}
+              prefix="$"
+            />
+            <Slider
+              label="Percent given"
+              value={`${givePct}%`}
+              min={0}
+              max={50}
+              step={1}
+              rawValue={givePct}
+              onChange={setGivePct}
+              suffix="%"
+            />
+            <p style={{
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-text-muted)',
+              marginTop: 'var(--sh-space-2)',
+            }}>
+              = {fmt(annual)} per year
+            </p>
+          </div>
+        )}
+      </div>
       <Slider
         label="Time horizon"
         value={`${years} years`}
@@ -300,6 +424,7 @@ export default function GivingModeler({ budget }) {
         step={1}
         rawValue={years}
         onChange={setYears}
+        suffix=" years"
       />
       <Slider
         label="Fund growth rate"
@@ -309,6 +434,7 @@ export default function GivingModeler({ budget }) {
         step={1}
         rawValue={growth}
         onChange={setGrowth}
+        suffix="%"
       />
       <Slider
         label="Granted out each year"
@@ -318,6 +444,7 @@ export default function GivingModeler({ budget }) {
         step={5}
         rawValue={grantPct}
         onChange={setGrantPct}
+        suffix="%"
       />
 
       {/* Career growth toggle */}
@@ -361,6 +488,7 @@ export default function GivingModeler({ budget }) {
           step={1}
           rawValue={careerRate}
           onChange={setCareerRate}
+          suffix="%"
         />
       )}
 
@@ -441,7 +569,25 @@ export default function GivingModeler({ budget }) {
   );
 }
 
-function Slider({ label, value, min, max, step, rawValue, onChange }) {
+function Slider({ label, value, min, max, step, rawValue, onChange, prefix, suffix }) {
+  const [textValue, setTextValue] = useState(String(rawValue));
+
+  useEffect(() => {
+    setTextValue(String(rawValue));
+  }, [rawValue]);
+
+  function commitTextValue() {
+    let n = Number(textValue);
+    if (!Number.isFinite(n)) {
+      setTextValue(String(rawValue));
+      return;
+    }
+    n = Math.min(max, Math.max(min, n));
+    n = Math.round(n / step) * step;
+    onChange(n);
+    setTextValue(String(n));
+  }
+
   return (
     <div style={{ marginBottom: 'var(--sh-space-3)' }}>
       <div style={{
@@ -485,6 +631,42 @@ function Slider({ label, value, min, max, step, rawValue, onChange }) {
           accentColor: 'var(--sh-bronze)',
         }}
       />
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: 'var(--sh-space-2)',
+        marginTop: '6px',
+      }}>
+        {prefix && (
+          <span style={{ fontSize: 'var(--sh-text-xs)', color: 'var(--sh-text-muted)' }}>
+            {prefix}
+          </span>
+        )}
+        <input
+          type="text"
+          inputMode="numeric"
+          value={textValue}
+          onChange={(e) => setTextValue(e.target.value.replace(/[^0-9]/g, ''))}
+          onBlur={commitTextValue}
+          onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); }}
+          style={{
+            width: '90px',
+            boxSizing: 'border-box',
+            padding: '6px 8px',
+            border: 'var(--sh-border-thin)',
+            borderRadius: 'var(--sh-radius-md)',
+            fontFamily: 'inherit',
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-body)',
+            background: 'var(--sh-card)',
+          }}
+        />
+        {suffix && (
+          <span style={{ fontSize: 'var(--sh-text-xs)', color: 'var(--sh-text-muted)' }}>
+            {suffix}
+          </span>
+        )}
+      </div>
     </div>
   );
 }
