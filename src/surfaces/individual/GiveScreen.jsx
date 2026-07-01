@@ -16,6 +16,8 @@ export default function GiveScreen() {
   const [notes, setNotes] = useState('');
   const [recurring, setRecurring] = useState(false);
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
 
   // Celebration screen after a successful log
   if (done) {
@@ -57,21 +59,56 @@ export default function GiveScreen() {
     );
   }
 
-  const submit = () => {
+  const submit = async () => {
     const cleaned = amt.replace(/[^0-9.]/g, '');
     const amount = parseFloat(cleaned);
     if (!org.trim() || isNaN(amount) || amount <= 0) return;
-    const gift = {
-      id: `g-${Date.now()}`,
-      org: org.trim(),
-      amount,
-      type,
-      vehicle,
-      recurring,
-      notes,
-      date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
-    };
-    addGift(gift);
+
+    const date = new Date().toISOString().slice(0, 10);
+
+    setSubmitting(true);
+    setError(null);
+
+    let res;
+    try {
+      res = await fetch('/api/gifts', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          org: org.trim(),
+          amount,
+          type,
+          vehicle,
+          recurring,
+          notes,
+          date,
+        }),
+      });
+    } catch (err) {
+      setError('Could not reach the server. Check your connection and try again.');
+      setSubmitting(false);
+      return;
+    }
+
+    if (!res.ok) {
+      let errMsg = 'Could not save the gift. Please try again.';
+      try {
+        const errBody = await res.json();
+        if (errBody && typeof errBody.error === 'string') {
+          errMsg = errBody.error;
+        }
+      } catch {
+        // response wasn't JSON — keep default message
+      }
+      setError(errMsg);
+      setSubmitting(false);
+      return;
+    }
+
+    const saved = await res.json();
+    addGift(saved);
+    setSubmitting(false);
     setDone(true);
     setTimeout(() => {
       setDone(false);
@@ -81,6 +118,7 @@ export default function GiveScreen() {
       setVehicle('personal');
       setNotes('');
       setRecurring(false);
+      setError(null);
       setShowMore(false);
       navigate(basePath);
     }, 2200);
@@ -237,14 +275,28 @@ export default function GiveScreen() {
         </>
       )}
 
+      {error && (
+        <p style={{
+          marginTop: 'var(--sh-space-3)',
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-warning-text)',
+          background: 'var(--sh-warning-bg)',
+          border: '1px solid var(--sh-warning-border)',
+          borderRadius: 'var(--sh-radius-md)',
+          padding: 'var(--sh-space-2) var(--sh-space-3)',
+        }}>
+          {error}
+        </p>
+      )}
+
       <Button
         variant="primary"
         size="lg"
-        disabled={!org.trim() || !amt.trim()}
+        disabled={!org.trim() || !amt.trim() || submitting}
         onClick={submit}
         style={{ width: '100%' }}
       >
-        Log this gift
+        {submitting ? 'Saving…' : 'Log this gift'}
       </Button>
 
       <p style={{
