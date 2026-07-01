@@ -195,7 +195,7 @@ function IndividualHome() {
 
   const restartOnboarding = () => {
     resetIntake();
-    navigate(`${basePath}/welcome`);
+    navigate(`${basePath}/welcome`, { replace: true });
   };
 
   return (

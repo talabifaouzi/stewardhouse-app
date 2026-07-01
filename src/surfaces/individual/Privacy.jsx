@@ -91,7 +91,7 @@ export default function Privacy() {
         <Button
           variant="primary"
           size="lg"
-          onClick={() => navigate(`${basePath}/questions`)}
+          onClick={() => navigate(`${basePath}/questions`, { replace: true })}
           style={{ width: '100%' }}
         >
           I'm in

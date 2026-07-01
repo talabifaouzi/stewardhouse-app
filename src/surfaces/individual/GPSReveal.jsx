@@ -149,7 +149,7 @@ export default function GPSReveal() {
           <Button
             variant="primary"
             size="lg"
-            onClick={() => navigate(basePath)}
+            onClick={() => navigate(basePath, { replace: true })}
             style={{ width: '100%', maxWidth: '320px' }}
           >
             See what we built for you

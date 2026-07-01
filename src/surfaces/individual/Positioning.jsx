@@ -113,7 +113,7 @@ export default function Positioning() {
         <Button
           variant="primary"
           size="lg"
-          onClick={() => navigate(`${basePath}/letter`)}
+          onClick={() => navigate(`${basePath}/letter`, { replace: true })}
           style={{ width: '100%' }}
         >
           See how it works
@@ -125,7 +125,7 @@ export default function Positioning() {
           marginTop: 'var(--sh-space-5)',
         }}>
           <button
-            onClick={() => navigate(basePath)}
+            onClick={() => navigate(basePath, { replace: true })}
             style={{
               background: 'transparent',
               border: 'none',

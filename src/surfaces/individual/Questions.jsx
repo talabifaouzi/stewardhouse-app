@@ -522,7 +522,7 @@ export default function Questions() {
       // Last step — derive style and finish
       const style = deriveGivingStyle(a);
       completeIntake(style);
-      navigate(`${basePath}/reveal`);
+      navigate(`${basePath}/reveal`, { replace: true });
     }
   };
 

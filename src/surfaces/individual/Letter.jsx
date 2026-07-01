@@ -108,7 +108,7 @@ export default function Letter() {
         <Button
           variant="primary"
           size="lg"
-          onClick={() => navigate(`${basePath}/privacy`)}
+          onClick={() => navigate(`${basePath}/privacy`, { replace: true })}
           style={{ width: '100%' }}
         >
           Begin
@@ -120,7 +120,7 @@ export default function Letter() {
           marginTop: 'var(--sh-space-6)',
         }}>
           <button
-            onClick={() => navigate(basePath)}
+            onClick={() => navigate(basePath, { replace: true })}
             style={{
               background: 'transparent',
               border: 'none',

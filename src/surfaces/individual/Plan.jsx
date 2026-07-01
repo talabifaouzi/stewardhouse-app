@@ -232,7 +232,7 @@ Where I'm Headed
         variant="ghost"
         onClick={() => {
           resetIntake();
-          navigate(`${basePath}/welcome`);
+          navigate(`${basePath}/welcome`, { replace: true });
         }}
         style={{ width: '100%' }}
       >
@@ -315,7 +315,7 @@ function PlanEmpty({ navigate, resetIntake, basePath }) {
         size="lg"
         onClick={() => {
           resetIntake();
-          navigate(`${basePath}/welcome`);
+          navigate(`${basePath}/welcome`, { replace: true });
         }}
       >
         Start the Giving Studio
