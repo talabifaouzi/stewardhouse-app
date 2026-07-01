@@ -7,7 +7,8 @@ import OperationsSurface from './surfaces/operations/OperationsSurface.jsx';
 import SignIn from './surfaces/auth/SignIn.jsx';
 import AppShell from './surfaces/auth/AppShell.jsx';
 import AppDispatcher from './surfaces/auth/AppDispatcher.jsx';
-import { IntakeProvider, AUTHENTICATED_EMPTY_STATE } from './contexts/IntakeContext.jsx';
+import AuthenticatedIntakeProvider from './surfaces/auth/AuthenticatedIntakeProvider.jsx';
+import { IntakeProvider } from './contexts/IntakeContext.jsx';
 
 export default function App() {
   return (
@@ -30,9 +31,9 @@ export default function App() {
         <Route
           path="individual/*"
           element={
-            <IntakeProvider initialState={AUTHENTICATED_EMPTY_STATE}>
+            <AuthenticatedIntakeProvider>
               <IndividualSurface />
-            </IntakeProvider>
+            </AuthenticatedIntakeProvider>
           }
         />
       </Route>

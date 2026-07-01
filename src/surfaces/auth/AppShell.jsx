@@ -7,6 +7,10 @@ import { AppIdentityProvider } from '../../contexts/AppIdentityContext.jsx';
 // AppIdentityContext — so a redirect from the dispatcher to a type-specific
 // surface (e.g. /app/individual) doesn't require a second fetch, and Chrome
 // can read real identity instead of a hardcoded fixture.
+//
+// identity shape: { type, displayName, email, intake } | null — intake is
+// the user's persisted intake answers from person.extensions.individual,
+// null for fresh users who haven't answered anything yet.
 
 export default function AppShell() {
   const [status, setStatus] = useState('loading');
@@ -23,6 +27,7 @@ export default function AppShell() {
             type: data.person?.type ?? null,
             displayName: data.person?.displayName ?? null,
             email: data.user.email,
+            intake: data.person?.intake ?? null,
           });
           setStatus('ready');
         } else {

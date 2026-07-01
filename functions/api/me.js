@@ -33,13 +33,23 @@ export async function onRequest(context) {
 
   const person = await db
     .selectFrom('person')
-    .select(['type', 'display_name'])
+    .select(['type', 'display_name', 'extensions'])
     .where('auth_user_id', '=', session.user.id)
     .executeTakeFirst();
 
+  let intake = null;
+  if (person && person.extensions) {
+    try {
+      const parsed = JSON.parse(person.extensions);
+      intake = parsed.individual ?? null;
+    } catch {
+      intake = null;
+    }
+  }
+
   const body = {
     user: { email: session.user.email },
-    person: person ? { type: person.type, displayName: person.display_name } : null,
+    person: person ? { type: person.type, displayName: person.display_name, intake } : null,
   };
 
   return new Response(JSON.stringify(body), {

@@ -51,6 +51,37 @@ export const AUTHENTICATED_EMPTY_STATE = {
   assignmentsDone: [],
 };
 
+const ANSWER_FIELDS = [
+  'stage', 'authority', 'causes', 'geo', 'geoDetail',
+  'lived', 'influence', 'visibility', 'trust', 'budget',
+  'depth', 'existingOrgs', 'legacy',
+];
+
+// Merges server-persisted intake.individual.* data (from /api/me) over
+// AUTHENTICATED_EMPTY_STATE. serverIntake may be null (fresh user, nothing
+// saved yet) or a partial object (some fields present, others never
+// written). Any field NOT present in serverIntake keeps its empty default —
+// this is a merge, not a replace, so a user who's only answered 3 of 13
+// questions gets those 3 restored and the rest still blank, not an error.
+export function buildInitialStateFromServer(serverIntake) {
+  if (!serverIntake) return AUTHENTICATED_EMPTY_STATE;
+
+  const answers = { ...AUTHENTICATED_EMPTY_STATE.answers };
+  for (const field of ANSWER_FIELDS) {
+    if (serverIntake[field] !== undefined) {
+      answers[field] = serverIntake[field];
+    }
+  }
+
+  return {
+    ...AUTHENTICATED_EMPTY_STATE,
+    answers,
+    intakeComplete: serverIntake.intakeComplete ?? AUTHENTICATED_EMPTY_STATE.intakeComplete,
+    givingStyle: serverIntake.givingStyle ?? AUTHENTICATED_EMPTY_STATE.givingStyle,
+    worldLabel: serverIntake.worldLabel ?? AUTHENTICATED_EMPTY_STATE.worldLabel,
+  };
+}
+
 export function IntakeProvider({ children, initialState = DEFAULT_STATE }) {
   // Initializes from initialState (defaults to DEFAULT_STATE — Marcus's
   // demo fixture — for backward compatibility with existing mounts).
