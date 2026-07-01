@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SHLogoStacked, SHLogo } from '../../components/SHLogo.jsx';
 import { Button } from '../../components/Button.jsx';
 
@@ -40,6 +40,22 @@ const surfaces = [
 
 export default function Landing() {
   const navigate = useNavigate();
+  const [sessionStatus, setSessionStatus] = useState('checking');
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/api/auth/get-session', { credentials: 'include' })
+      .then((res) => res.json())
+      .then((data) => {
+        if (cancelled) return;
+        setSessionStatus(data && data.user ? 'authenticated' : 'unauthenticated');
+      })
+      .catch(() => {
+        if (!cancelled) setSessionStatus('unauthenticated');
+      });
+    return () => { cancelled = true; };
+  }, []);
+
   return (
     <main style={{
       minHeight: '100vh',
@@ -107,11 +123,18 @@ export default function Landing() {
         <div style={{
           display: 'flex',
           justifyContent: 'center',
+          minHeight: '37px',
           marginBottom: 'var(--sh-space-8)',
         }}>
-          <Button variant="secondary" type="button" onClick={() => navigate('/signin')}>
-            Already invited? Sign in
-          </Button>
+          {sessionStatus === 'authenticated' ? (
+            <Button variant="secondary" type="button" onClick={() => navigate('/app')}>
+              Continue to your account
+            </Button>
+          ) : sessionStatus === 'unauthenticated' ? (
+            <Button variant="secondary" type="button" onClick={() => navigate('/signin')}>
+              Already invited? Sign in
+            </Button>
+          ) : null}
         </div>
 
         {/* Surface picker */}
