@@ -524,11 +524,16 @@ Beyond the Individual pass's three questions, advisor persistence adds:
 
 ---
 
-## 7. Open rulings — 12 questions
+## 7. RULED — 12 questions (all resolved; see the schema draft)
 
-Collected across sections 2-6. All rulings pending; nothing built yet.
-Grouped into (a) 6 FT-required rulings and (b) 6 team-default rulings
-awaiting bless-or-override.
+Collected across sections 2-6. **All 12 rulings resolved by FT this
+session.** Applied verbatim in `docs/advisor-persistence-schema-draft.md`
+§2, which is the authoritative record. The write-ups below are preserved
+as the historical framing that produced the rulings; the draft doc is
+where downstream design lives.
+
+Grouping preserved for the record: (a) 6 FT-required rulings and (b) 6
+team-default rulings that received explicit FT bless.
 
 ### 7.1 FT-required rulings
 
