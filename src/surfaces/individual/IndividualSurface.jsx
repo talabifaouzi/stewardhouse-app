@@ -5,6 +5,7 @@ import { Card } from '../../components/Card.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
+import { useAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import {
   individualProfile,
   getFundingSpotlight,
@@ -27,14 +28,29 @@ import GiveScreen from './GiveScreen.jsx';
 import Feedback from './Feedback.jsx';
 import CohortView from './CohortView.jsx';
 
-const NAV_ITEMS = [
-  { key: 'home', label: 'Home', path: '/individual' },
-  { key: 'plan', label: 'Giving plan', path: '/individual/plan' },
-  { key: 'discover', label: 'Discover', path: '/individual/discover' },
-  { key: 'learn', label: 'Learn', path: '/individual/learn' },
-  { key: 'history', label: 'History', path: '/individual/history' },
-  { key: 'team', label: 'Team', path: '/individual/team' },
-];
+function useOptionalAppIdentity() {
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    return useAppIdentity();
+  } catch {
+    return null;
+  }
+}
+
+function getBasePath(pathname) {
+  return pathname.startsWith('/app/individual') ? '/app/individual' : '/individual';
+}
+
+function getNavItems(basePath) {
+  return [
+    { key: 'home', label: 'Home', path: basePath },
+    { key: 'plan', label: 'Giving plan', path: `${basePath}/plan` },
+    { key: 'discover', label: 'Discover', path: `${basePath}/discover` },
+    { key: 'learn', label: 'Learn', path: `${basePath}/learn` },
+    { key: 'history', label: 'History', path: `${basePath}/history` },
+    { key: 'team', label: 'Team', path: `${basePath}/team` },
+  ];
+}
 
 export default function IndividualSurface() {
   return (
@@ -64,6 +80,10 @@ function DashboardLayout() {
     path.includes('/team') ? 'team' :
     'home';
 
+  const basePath = getBasePath(location.pathname);
+  const navItems = getNavItems(basePath);
+  const appIdentity = useOptionalAppIdentity();
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -73,9 +93,9 @@ function DashboardLayout() {
     }}>
       <Chrome
         surface="individual"
-        userName={individualProfile.name}
-        userRole={`Member · ${individualProfile.worldLabel}`}
-        navItems={NAV_ITEMS}
+        userName={appIdentity?.status === 'ready' && appIdentity.identity?.displayName ? appIdentity.identity.displayName : individualProfile.name}
+        userRole={appIdentity?.status === 'ready' ? 'Member' : `Member · ${individualProfile.worldLabel}`}
+        navItems={navItems}
         activeNav={activeNav}
       />
       <div style={{ flex: 1 }}>
@@ -89,7 +109,7 @@ function DashboardLayout() {
           <Route path="give" element={<GiveScreen />} />
           <Route path="feedback" element={<Feedback />} />
           <Route path="cohort" element={<CohortView />} />
-          <Route path="*" element={<Navigate to="/individual" replace />} />
+          <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
       </div>
     </div>
@@ -98,6 +118,8 @@ function DashboardLayout() {
 
 function IndividualHome() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const basePath = getBasePath(location.pathname);
   const [showAllGifts, setShowAllGifts] = useState(false);
   const { answers, gifts, givingStyle, worldLabel, resetIntake, loadDemo, intakeComplete } = useIntake();
 
@@ -127,14 +149,14 @@ function IndividualHome() {
     paths.push({
       title: 'See your giving picture',
       desc: `$${total.toLocaleString()} given to ${orgCount} ${orgCount === 1 ? 'organization' : 'organizations'}. Here's where you are.`,
-      action: () => navigate('/individual/history'),
+      action: () => navigate(`${basePath}/history`),
       tone: 'reflect',
     });
   } else {
     paths.push({
       title: 'Sit with your giving plan',
       desc: 'You built your compass. Read it, share it, or just let it settle.',
-      action: () => navigate('/individual/plan'),
+      action: () => navigate(`${basePath}/plan`),
       tone: 'reflect',
     });
   }
@@ -142,14 +164,14 @@ function IndividualHome() {
   paths.push({
     title: 'Learn something new',
     desc: 'A short lesson on giving smarter. 2–3 minutes, no homework.',
-    action: () => navigate('/individual/learn'),
+    action: () => navigate(`${basePath}/learn`),
     tone: 'learn',
   });
 
   paths.push({
     title: 'Explore organizations',
     desc: `See what's out there — matched to ${causeLabels[0]?.label?.toLowerCase() || 'what you care about'}.`,
-    action: () => navigate('/individual/discover'),
+    action: () => navigate(`${basePath}/discover`),
     tone: 'act',
   });
 
@@ -157,21 +179,21 @@ function IndividualHome() {
     paths.push({
       title: 'Log another gift',
       desc: '10 seconds. Keep your giving record growing.',
-      action: () => navigate('/individual/give'),
+      action: () => navigate(`${basePath}/give`),
       tone: 'act',
     });
   } else {
     paths.push({
       title: 'Log a gift',
       desc: 'Add any giving you\'ve already made — even small ones count.',
-      action: () => navigate('/individual/give'),
+      action: () => navigate(`${basePath}/give`),
       tone: 'act',
     });
   }
 
   const restartOnboarding = () => {
     resetIntake();
-    navigate('/individual/welcome');
+    navigate(`${basePath}/welcome`);
   };
 
   return (
@@ -257,7 +279,7 @@ function IndividualHome() {
       {/* Cohort callout — quiet entry into the member-side cohort view */}
       <Card
         interactive
-        onClick={() => navigate('/individual/cohort')}
+        onClick={() => navigate(`${basePath}/cohort`)}
         style={{
           marginBottom: 'var(--sh-space-3)',
           cursor: 'pointer',
@@ -446,7 +468,7 @@ function IndividualHome() {
       {/* Share feedback */}
       <Card
         interactive
-        onClick={() => navigate('/individual/feedback')}
+        onClick={() => navigate(`${basePath}/feedback`)}
         style={{
           marginTop: 'var(--sh-space-3)',
           marginBottom: 'var(--sh-space-3)',

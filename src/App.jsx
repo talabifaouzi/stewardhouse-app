@@ -5,7 +5,8 @@ import EnterpriseSurface from './surfaces/enterprise/EnterpriseSurface.jsx';
 import AdvisorSurface from './surfaces/advisor/AdvisorSurface.jsx';
 import OperationsSurface from './surfaces/operations/OperationsSurface.jsx';
 import SignIn from './surfaces/auth/SignIn.jsx';
-import AppEntry from './surfaces/auth/AppEntry.jsx';
+import AppShell from './surfaces/auth/AppShell.jsx';
+import AppDispatcher from './surfaces/auth/AppDispatcher.jsx';
 import { IntakeProvider, AUTHENTICATED_EMPTY_STATE } from './contexts/IntakeContext.jsx';
 
 export default function App() {
@@ -24,14 +25,17 @@ export default function App() {
       <Route path="/advisor/*" element={<AdvisorSurface />} />
       <Route path="/operations/*" element={<OperationsSurface />} />
       <Route path="/signin" element={<SignIn />} />
-      <Route
-        path="/app/*"
-        element={
-          <IntakeProvider initialState={AUTHENTICATED_EMPTY_STATE}>
-            <AppEntry />
-          </IntakeProvider>
-        }
-      />
+      <Route path="/app" element={<AppShell />}>
+        <Route index element={<AppDispatcher />} />
+        <Route
+          path="individual/*"
+          element={
+            <IntakeProvider initialState={AUTHENTICATED_EMPTY_STATE}>
+              <IndividualSurface />
+            </IntakeProvider>
+          }
+        />
+      </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
