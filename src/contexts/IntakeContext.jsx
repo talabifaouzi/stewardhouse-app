@@ -9,7 +9,7 @@ import {
 // Onboarding modifies state in-memory during the session; a refresh restores
 // this default. The user can also explicitly restore via the "Restore demo"
 // link on Home.
-const DEFAULT_STATE = {
+export const DEFAULT_STATE = {
   intakeComplete: true,
 
   answers: {
@@ -37,10 +37,27 @@ const DEFAULT_STATE = {
 
 const IntakeContext = createContext(null);
 
-export function IntakeProvider({ children }) {
-  // Always initialize from DEFAULT_STATE — no localStorage persistence in
-  // the demo. State changes are session-only.
-  const [state, setState] = useState(DEFAULT_STATE);
+export const AUTHENTICATED_EMPTY_STATE = {
+  intakeComplete: false,
+  answers: {
+    stage: '', authority: '', causes: [], geo: [], geoDetail: '',
+    lived: '', influence: '', visibility: '', trust: '', budget: '',
+    depth: '', existingOrgs: '', legacy: '',
+  },
+  givingStyle: null,
+  worldLabel: 'Athletics',
+  gifts: [],
+  lessonsDone: [],
+  assignmentsDone: [],
+};
+
+export function IntakeProvider({ children, initialState = DEFAULT_STATE }) {
+  // Initializes from initialState (defaults to DEFAULT_STATE — Marcus's
+  // demo fixture — for backward compatibility with existing mounts).
+  // The authenticated tree passes AUTHENTICATED_EMPTY_STATE explicitly so
+  // demo and authenticated state can never leak into each other — see
+  // App.jsx for the two separate IntakeProvider mounts.
+  const [state, setState] = useState(initialState);
 
   // Update intake answers (during onboarding)
   const updateAnswer = (key, value) => {
