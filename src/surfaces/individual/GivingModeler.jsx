@@ -46,7 +46,7 @@ export default function GivingModeler({ budget }) {
   const [incomeMode, setIncomeMode] = useState('flat'); // 'flat' | 'percentage'
   const [incomeBase, setIncomeBase] = useState(100000);
   const [givePct, setGivePct] = useState(5);
-  const { addScenario, scenarios } = useIntake();
+  const { addScenario, scenarios, removeScenario } = useIntake();
   const appIdentity = useOptionalAppIdentity();
   const incomeModeLabelId = useId();
   const [scenarioLabel, setScenarioLabel] = useState('My scenario');
@@ -54,6 +54,8 @@ export default function GivingModeler({ budget }) {
   const [saveScenarioError, setSaveScenarioError] = useState(null);
   const [scenarioSaved, setScenarioSaved] = useState(false);
   const [hoveredYear, setHoveredYear] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
 
   useEffect(() => {
     if (incomeMode === 'percentage') {
@@ -73,6 +75,34 @@ export default function GivingModeler({ budget }) {
     setIncomeMode('flat'); // loaded scenarios always resume in flat mode showing the saved
                             // annual figure directly — income/percentage are input-UI
                             // convenience only, never part of a saved scenario's stored shape
+  }
+
+  async function handleDeleteScenario(scenarioId) {
+    setDeletingId(scenarioId);
+    setDeleteError(null);
+    try {
+      const res = await fetch(`/api/scenarios/${scenarioId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      if (!res.ok) {
+        let errMsg = 'Could not delete this scenario. Please try again.';
+        try {
+          const errBody = await res.json();
+          if (errBody && typeof errBody.error === 'string') errMsg = errBody.error;
+        } catch {
+          // response wasn't JSON — keep default message
+        }
+        setDeleteError(errMsg);
+        setDeletingId(null);
+        return;
+      }
+      removeScenario(scenarioId);
+      setDeletingId(null);
+    } catch (err) {
+      setDeleteError('Could not reach the server. Check your connection and try again.');
+      setDeletingId(null);
+    }
   }
 
   // Compute year-by-year fund trajectory
@@ -288,9 +318,9 @@ export default function GivingModeler({ budget }) {
         display: 'flex',
         alignItems: 'flex-end',
         gap: '3px',
-        height: '140px',
+        height: '156px',
         marginBottom: 'var(--sh-space-4)',
-        paddingTop: 'var(--sh-space-6)',
+        paddingTop: 'var(--sh-space-10)',
         paddingRight: 'var(--sh-space-3)',
         paddingBottom: 'var(--sh-space-3)',
         paddingLeft: 'var(--sh-space-3)',
@@ -302,6 +332,8 @@ export default function GivingModeler({ budget }) {
         {pts.map((p, i) => {
           const isFirst = i === 0;
           const isLast = i === pts.length - 1;
+          const isSecondBar = i === 1;
+          const isSecondToLastBar = i === pts.length - 2;
           const isHovered = hoveredYear === p.y;
           const pct = (p.fund / maxFund) * 100;
           // Mobile-overflow guard: a centered label over a narrow bar (many
@@ -330,7 +362,9 @@ export default function GivingModeler({ budget }) {
               {showLabel && (
                 <div style={{
                   position: 'absolute',
-                  bottom: `calc(${pct}% + 6px)`,
+                  bottom: (isHovered && (isSecondBar || isSecondToLastBar))
+                    ? `calc(${pct}% + 22px)`
+                    : `calc(${pct}% + 6px)`,
                   left: labelAlign === 'left' ? '0' : labelAlign === 'center' ? '50%' : 'auto',
                   right: labelAlign === 'right' ? '0' : 'auto',
                   transform: labelAlign === 'center' ? 'translateX(-50%)' : 'none',
@@ -412,6 +446,58 @@ export default function GivingModeler({ budget }) {
               <option key={s.id} value={s.id}>{s.label}</option>
             ))}
           </select>
+          {deleteError && (
+            <p style={{
+              marginTop: 'var(--sh-space-2)',
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-warning-text)',
+              background: 'var(--sh-warning-bg)',
+              border: '1px solid var(--sh-warning-border)',
+              borderRadius: 'var(--sh-radius-md)',
+              padding: 'var(--sh-space-2) var(--sh-space-3)',
+            }}>
+              {deleteError}
+            </p>
+          )}
+          <div style={{ marginTop: 'var(--sh-space-3)' }}>
+            {scenarios.map((s) => (
+              <div
+                key={s.id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: 'var(--sh-space-2) 0',
+                  borderBottom: 'var(--sh-border-thin)',
+                }}
+              >
+                <span style={{
+                  fontSize: 'var(--sh-text-xs)',
+                  color: 'var(--sh-text-muted)',
+                }}>
+                  {s.label}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteScenario(s.id)}
+                  disabled={deletingId === s.id}
+                  style={{
+                    background: 'transparent',
+                    border: 'none',
+                    color: 'var(--sh-warning-text)',
+                    fontSize: 'var(--sh-text-xs)',
+                    cursor: deletingId === s.id ? 'default' : 'pointer',
+                    fontFamily: 'inherit',
+                    padding: 0,
+                    textDecoration: 'underline',
+                    opacity: deletingId === s.id ? 0.5 : 1,
+                  }}
+                >
+                  {deletingId === s.id ? 'Removing…' : 'Remove'}
+                </button>
+              </div>
+            ))}
+          </div>
         </div>
       )}
 

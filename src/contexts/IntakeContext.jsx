@@ -185,6 +185,13 @@ export function IntakeProvider({ children, initialState = DEFAULT_STATE }) {
     }));
   };
 
+  const removeScenario = (scenarioId) => {
+    setState(prev => ({
+      ...prev,
+      scenarios: prev.scenarios.filter(s => s.id !== scenarioId),
+    }));
+  };
+
   // Mark a lesson done
   const markLessonDone = (lessonId) => {
     setState(prev => ({
@@ -215,6 +222,7 @@ export function IntakeProvider({ children, initialState = DEFAULT_STATE }) {
       loadDemo,
       addGift,
       addScenario,
+      removeScenario,
       markLessonDone,
       toggleAssignment,
     }}>
