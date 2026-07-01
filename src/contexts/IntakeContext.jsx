@@ -82,6 +82,14 @@ export function buildInitialStateFromServer(serverIntake) {
   };
 }
 
+// Merges server-persisted gifts (from /api/me) into AUTHENTICATED_EMPTY_STATE's
+// starting shape. Unlike intake answers, gifts are append-only records with no
+// local draft state to preserve — so this is a straight replace, not a
+// field-by-field merge. serverGifts defaults to [] for fresh users.
+export function buildInitialGiftsFromServer(serverGifts) {
+  return Array.isArray(serverGifts) ? serverGifts : [];
+}
+
 export function IntakeProvider({ children, initialState = DEFAULT_STATE }) {
   // Initializes from initialState (defaults to DEFAULT_STATE — Marcus's
   // demo fixture — for backward compatibility with existing mounts).

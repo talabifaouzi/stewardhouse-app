@@ -6,7 +6,7 @@ import { createContext, useContext } from 'react';
 // Chrome (for display), and any future type-specific surface.
 //
 // status: 'loading' | 'ready' | 'unauthenticated'
-// identity: { type, displayName, email } | null — only non-null when status is 'ready'
+// identity: { type, displayName, email, intake, gifts } | null — only non-null when status is 'ready'
 
 const AppIdentityContext = createContext(null);
 

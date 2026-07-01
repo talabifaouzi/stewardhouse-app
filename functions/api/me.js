@@ -5,7 +5,7 @@
 // Response shapes:
 //   No session:                200, body null
 //   Session, no person match:  200, body { user: { email }, person: null }
-//   Session, matched:          200, body { user: { email }, person: { type, displayName } }
+//   Session, matched:          200, body { user: { email }, person: { type, displayName, intake, gifts } }
 //
 // person: null is defensive — the (c) hook always creates or claims a person row on
 // sign-in, so this shouldn't happen in practice, but callers must not assume person
@@ -33,7 +33,7 @@ export async function onRequest(context) {
 
   const person = await db
     .selectFrom('person')
-    .select(['type', 'display_name', 'extensions'])
+    .select(['id', 'type', 'display_name', 'extensions'])
     .where('auth_user_id', '=', session.user.id)
     .executeTakeFirst();
 
@@ -47,9 +47,35 @@ export async function onRequest(context) {
     }
   }
 
+  let gifts = [];
+  if (person) {
+    const rows = await db
+      .selectFrom('gift')
+      .select([
+        'id', 'recipient_org_name', 'amount', 'date', 'type', 'vehicle',
+        'recurring', 'recurring_years', 'notes', 'purpose', 'exported_to_cpa',
+      ])
+      .where('giver_person_id', '=', person.id)
+      .orderBy('date', 'desc')
+      .execute();
+    gifts = rows.map((row) => ({
+      id: row.id,
+      org: row.recipient_org_name,
+      amount: row.amount,
+      date: row.date,
+      type: row.type,
+      vehicle: row.vehicle,
+      recurring: !!row.recurring,
+      recurringYears: row.recurring_years,
+      notes: row.notes,
+      purpose: row.purpose,
+      exportedToCpa: !!row.exported_to_cpa,
+    }));
+  }
+
   const body = {
     user: { email: session.user.email },
-    person: person ? { type: person.type, displayName: person.display_name, intake } : null,
+    person: person ? { type: person.type, displayName: person.display_name, intake, gifts } : null,
   };
 
   return new Response(JSON.stringify(body), {

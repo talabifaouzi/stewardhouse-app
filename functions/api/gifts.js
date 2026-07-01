@@ -1,3 +1,7 @@
+// /api/gifts — POST creates a gift; GET lists the signed-in user's gifts.
+// Both endpoints return the same 11-field response shape so gifts arriving
+// via write vs. via read are indistinguishable to any consumer.
+//
 // POST /api/gifts — records a gift for the signed-in user.
 // First write endpoint in the wire-surfaces phase; mirrors the (c) hook's
 // INSERT pattern (functions/_lib/auth.js) and me.js's session+person lookup
@@ -143,8 +147,64 @@ export async function onRequestPost(context) {
 
   return new Response(JSON.stringify({
     id: giftId, org, amount, date, type, vehicle, recurring, recurringYears, notes, purpose,
+    exportedToCpa: false,
   }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },
+  });
+}
+
+export async function onRequestGet(context) {
+  const auth = makeAuth(context.env);
+  const session = await auth.api.getSession({ headers: context.request.headers });
+
+  if (!session || !session.user) {
+    return new Response(JSON.stringify({ error: 'Not signed in' }), {
+      status: 401, headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const db = new Kysely({
+    dialect: new D1Dialect({ database: context.env.DB }),
+  });
+
+  const person = await db
+    .selectFrom('person')
+    .select(['id'])
+    .where('auth_user_id', '=', session.user.id)
+    .executeTakeFirst();
+
+  if (!person) {
+    return new Response(JSON.stringify({ error: 'No account found for session' }), {
+      status: 403, headers: { 'Content-Type': 'application/json' },
+    });
+  }
+
+  const rows = await db
+    .selectFrom('gift')
+    .select([
+      'id', 'recipient_org_name', 'amount', 'date', 'type', 'vehicle',
+      'recurring', 'recurring_years', 'notes', 'purpose', 'exported_to_cpa',
+    ])
+    .where('giver_person_id', '=', person.id)
+    .orderBy('date', 'desc')
+    .execute();
+
+  const gifts = rows.map((row) => ({
+    id: row.id,
+    org: row.recipient_org_name,
+    amount: row.amount,
+    date: row.date,
+    type: row.type,
+    vehicle: row.vehicle,
+    recurring: !!row.recurring,
+    recurringYears: row.recurring_years,
+    notes: row.notes,
+    purpose: row.purpose,
+    exportedToCpa: !!row.exported_to_cpa,
+  }));
+
+  return new Response(JSON.stringify({ gifts }), {
+    status: 200, headers: { 'Content-Type': 'application/json' },
   });
 }

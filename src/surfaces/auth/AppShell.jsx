@@ -8,9 +8,10 @@ import { AppIdentityProvider } from '../../contexts/AppIdentityContext.jsx';
 // surface (e.g. /app/individual) doesn't require a second fetch, and Chrome
 // can read real identity instead of a hardcoded fixture.
 //
-// identity shape: { type, displayName, email, intake } | null — intake is
-// the user's persisted intake answers from person.extensions.individual,
-// null for fresh users who haven't answered anything yet.
+// identity shape: { type, displayName, email, intake, gifts } | null — intake
+// is the user's persisted intake answers from person.extensions.individual
+// (null for fresh users); gifts is the array of the user's gift records
+// (empty [] for fresh users who haven't logged any).
 
 export default function AppShell() {
   const [status, setStatus] = useState('loading');
@@ -28,6 +29,7 @@ export default function AppShell() {
             displayName: data.person?.displayName ?? null,
             email: data.user.email,
             intake: data.person?.intake ?? null,
+            gifts: data.person?.gifts ?? [],
           });
           setStatus('ready');
         } else {
