@@ -35,7 +35,7 @@ import { Kysely } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import { makeAuth } from '../_lib/auth.js';
 
-const ALLOWED_TYPES = new Set(['unrestricted', 'directed']);
+const ALLOWED_TYPES = new Set(['unrestricted', 'program', 'capital', 'capacity-building', 'endowment']);
 const ALLOWED_VEHICLES = new Set(['personal', 'daf', 'community']);
 
 export async function onRequestPost(context) {
@@ -83,6 +83,21 @@ export async function onRequestPost(context) {
   const recurring = !!body.recurring;
   const notes = typeof body.notes === 'string' && body.notes.trim() ? body.notes.trim() : null;
   const date = typeof body.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(body.date) ? body.date : null;
+  const purpose = typeof body.purpose === 'string' && body.purpose.trim() ? body.purpose.trim() : null;
+  const recurringYearsRaw = body.recurringYears;
+  let recurringYears = null;
+  if (recurring && recurringYearsRaw !== undefined && recurringYearsRaw !== null && recurringYearsRaw !== '') {
+    const n = Number(recurringYearsRaw);
+    if (!Number.isInteger(n) || n <= 0) {
+      return new Response(JSON.stringify({ error: 'Years must be a positive whole number' }), {
+        status: 400, headers: { 'Content-Type': 'application/json' },
+      });
+    }
+    recurringYears = n;
+  }
+  // recurringYears stays null whenever recurring is false, regardless of what the client sent —
+  // defensive: the UI hides this field when recurring is unchecked, but the server doesn't trust
+  // client state alone.
 
   if (!org) {
     return new Response(JSON.stringify({ error: 'Organization name is required' }), {
@@ -114,7 +129,9 @@ export async function onRequestPost(context) {
       type,
       vehicle,
       recurring: recurring ? 1 : 0,
+      recurring_years: recurringYears,
       notes,
+      purpose,
       source_surface: 'individual',
       exported_to_cpa: 0,
     }).execute();
@@ -125,7 +142,7 @@ export async function onRequestPost(context) {
   }
 
   return new Response(JSON.stringify({
-    id: giftId, org, amount, date, type, vehicle, recurring, notes,
+    id: giftId, org, amount, date, type, vehicle, recurring, recurringYears, notes, purpose,
   }), {
     status: 200,
     headers: { 'Content-Type': 'application/json' },

@@ -4,6 +4,14 @@ import { Button } from '../../components/Button.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import { useBasePath } from './useBasePath.js';
 
+const GIFT_TYPES = [
+  { value: 'unrestricted', label: 'Unrestricted' },
+  { value: 'program', label: 'Program' },
+  { value: 'capital', label: 'Capital' },
+  { value: 'capacity-building', label: 'Capacity-building' },
+  { value: 'endowment', label: 'Endowment' },
+];
+
 export default function GiveScreen() {
   const navigate = useNavigate();
   const basePath = useBasePath();
@@ -14,7 +22,9 @@ export default function GiveScreen() {
   const [type, setType] = useState('unrestricted');
   const [vehicle, setVehicle] = useState('personal');
   const [notes, setNotes] = useState('');
+  const [purpose, setPurpose] = useState('');
   const [recurring, setRecurring] = useState(false);
+  const [recurringYears, setRecurringYears] = useState('');
   const [done, setDone] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
@@ -81,7 +91,9 @@ export default function GiveScreen() {
           type,
           vehicle,
           recurring,
+          recurringYears: recurring && recurringYears ? Number(recurringYears) : null,
           notes,
+          purpose,
           date,
         }),
       });
@@ -117,7 +129,9 @@ export default function GiveScreen() {
       setType('unrestricted');
       setVehicle('personal');
       setNotes('');
+      setPurpose('');
       setRecurring(false);
+      setRecurringYears('');
       setError(null);
       setShowMore(false);
       navigate(basePath);
@@ -175,9 +189,9 @@ export default function GiveScreen() {
       {/* Amount */}
       <FieldLabel style={{ marginTop: 'var(--sh-space-4)' }}>How much?</FieldLabel>
       <input
-        value={amt}
-        onChange={e => setAmt(e.target.value)}
-        placeholder="$"
+        value={amt ? `$${amt}` : ''}
+        onChange={e => setAmt(formatCurrencyInput(e.target.value))}
+        placeholder="$0"
         inputMode="decimal"
         style={inputStyle}
       />
@@ -205,10 +219,19 @@ export default function GiveScreen() {
       {showMore && (
         <>
           <FieldLabel style={{ marginTop: 'var(--sh-space-4)' }}>Type</FieldLabel>
-          <div style={{ display: 'flex', gap: '6px', marginBottom: 'var(--sh-space-4)' }}>
-            <Chip selected={type === 'unrestricted'} onClick={() => setType('unrestricted')} label="Unrestricted" />
-            <Chip selected={type === 'directed'} onClick={() => setType('directed')} label="Directed" />
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: 'var(--sh-space-4)' }}>
+            {GIFT_TYPES.map(t => (
+              <Chip key={t.value} selected={type === t.value} onClick={() => setType(t.value)} label={t.label} />
+            ))}
           </div>
+
+          <FieldLabel style={{ marginTop: 'var(--sh-space-4)' }}>Purpose (optional)</FieldLabel>
+          <textarea
+            value={purpose}
+            onChange={e => setPurpose(e.target.value)}
+            placeholder="What was this gift for? Useful for your own records — e.g. IRS or Candid reporting."
+            style={{ ...inputStyle, minHeight: '60px', resize: 'vertical', fontFamily: 'inherit', marginBottom: 'var(--sh-space-4)' }}
+          />
 
           <FieldLabel>Vehicle</FieldLabel>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: 'var(--sh-space-4)' }}>
@@ -257,6 +280,19 @@ export default function GiveScreen() {
               This is a recurring gift
             </span>
           </div>
+
+          {recurring && (
+            <div style={{ marginBottom: 'var(--sh-space-4)' }}>
+              <FieldLabel>Over how many years? (optional)</FieldLabel>
+              <input
+                value={recurringYears}
+                onChange={e => setRecurringYears(e.target.value.replace(/[^0-9]/g, ''))}
+                placeholder="e.g. 3"
+                inputMode="numeric"
+                style={inputStyle}
+              />
+            </div>
+          )}
 
           {/* Notes */}
           <FieldLabel>Notes (optional)</FieldLabel>
@@ -358,4 +394,15 @@ function Chip({ selected, onClick, label }) {
       {label}
     </button>
   );
+}
+
+function formatCurrencyInput(raw) {
+  let cleaned = raw.replace(/[^0-9.]/g, '');
+  const firstDot = cleaned.indexOf('.');
+  if (firstDot !== -1) {
+    cleaned = cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, '');
+  }
+  const [intPart, decPart] = cleaned.split('.');
+  const withCommas = intPart ? Number(intPart).toLocaleString('en-US') : '';
+  return decPart !== undefined ? `${withCommas}.${decPart}` : withCommas;
 }
