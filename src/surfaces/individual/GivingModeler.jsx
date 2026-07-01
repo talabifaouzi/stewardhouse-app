@@ -22,6 +22,18 @@ const fmt = (n) => {
   return '$' + Math.round(n).toLocaleString();
 };
 
+function formatWithCommas(value, allowDecimal) {
+  if (value === '' || value === '.') return value;
+  const num = Number(value);
+  if (!Number.isFinite(num)) return value;
+  if (allowDecimal) {
+    const parts = value.split('.');
+    const intPart = Number(parts[0] || 0).toLocaleString('en-US');
+    return parts.length > 1 ? `${intPart}.${parts[1]}` : intPart;
+  }
+  return num.toLocaleString('en-US');
+}
+
 export default function GivingModeler({ budget }) {
   const defaultAmt = BUDGET_TO_DEFAULT[budget] || 5000;
   const [open, setOpen] = useState(false);
@@ -41,6 +53,7 @@ export default function GivingModeler({ budget }) {
   const [savingScenario, setSavingScenario] = useState(false);
   const [saveScenarioError, setSaveScenarioError] = useState(null);
   const [scenarioSaved, setScenarioSaved] = useState(false);
+  const [hoveredYear, setHoveredYear] = useState(null);
 
   useEffect(() => {
     if (incomeMode === 'percentage') {
@@ -274,26 +287,86 @@ export default function GivingModeler({ budget }) {
       <div style={{
         display: 'flex',
         alignItems: 'flex-end',
-        gap: '2px',
-        height: '60px',
+        gap: '3px',
+        height: '110px',
         marginBottom: 'var(--sh-space-4)',
-        padding: 'var(--sh-space-2)',
-        background: 'var(--sh-bg-tint)',
+        padding: 'var(--sh-space-3)',
+        background: 'var(--sh-card)',
+        border: 'var(--sh-border-thin)',
+        borderBottom: '2px solid var(--sh-bronze-border)',
         borderRadius: 'var(--sh-radius-md)',
       }}>
-        {pts.map((p) => (
-          <div
-            key={p.y}
-            style={{
-              flex: 1,
-              height: `${(p.fund / maxFund) * 100}%`,
-              minHeight: '2px',
-              background: 'var(--sh-bronze)',
-              borderRadius: '1px',
-              opacity: 0.7,
-            }}
-          />
-        ))}
+        {pts.map((p, i) => {
+          const isFirst = i === 0;
+          const isLast = i === pts.length - 1;
+          const isHovered = hoveredYear === p.y;
+          const pct = (p.fund / maxFund) * 100;
+          // Mobile-overflow guard: a centered label over a narrow bar (many
+          // years compressed into a small viewport) can spill past the
+          // chart's own left/right edge. First/last bars anchor their label
+          // INWARD (left-aligned for the first bar, right-aligned for the
+          // last) so the label grows away from the container edge instead
+          // of spilling past it. Middle-bar hover labels stay centered —
+          // they have room on both sides by construction.
+          const labelAlign = isFirst ? 'left' : isLast ? 'right' : 'center';
+          const showLabel = isFirst || isLast || isHovered;
+          return (
+            <div
+              key={p.y}
+              onMouseEnter={() => setHoveredYear(p.y)}
+              onMouseLeave={() => setHoveredYear(null)}
+              style={{
+                position: 'relative',
+                flex: 1,
+                minWidth: '3px',
+                height: '100%',
+                display: 'flex',
+                alignItems: 'flex-end',
+              }}
+            >
+              {showLabel && (
+                <div style={{
+                  position: 'absolute',
+                  bottom: `calc(${pct}% + 6px)`,
+                  left: labelAlign === 'left' ? '0' : labelAlign === 'center' ? '50%' : 'auto',
+                  right: labelAlign === 'right' ? '0' : 'auto',
+                  transform: labelAlign === 'center' ? 'translateX(-50%)' : 'none',
+                  whiteSpace: 'nowrap',
+                  fontFamily: 'var(--sh-font-serif)',
+                  fontSize: 'var(--sh-text-xs)',
+                  color: 'var(--sh-bronze-deep)',
+                  fontWeight: 500,
+                  pointerEvents: 'none',
+                }}>
+                  {fmt(p.fund)}
+                </div>
+              )}
+              <div
+                aria-label={`Year ${p.y}: ${fmt(p.fund)}`}
+                style={{
+                  width: '100%',
+                  height: `${pct}%`,
+                  minHeight: '2px',
+                  background: isHovered ? 'var(--sh-bronze-deep)' : 'var(--sh-bronze)',
+                  borderRadius: '3px 3px 0 0',
+                  transition: 'background 120ms ease',
+                }}
+              />
+            </div>
+          );
+        })}
+      </div>
+
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        marginBottom: 'var(--sh-space-5)',
+        marginTop: '-8px',
+      }}>
+        <span>Year 1</span>
+        <span>Year {years}</span>
       </div>
 
       {appIdentity && scenarios.length > 0 && (
@@ -338,17 +411,6 @@ export default function GivingModeler({ budget }) {
           </select>
         </div>
       )}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        fontSize: '10px',
-        color: 'var(--sh-text-muted)',
-        marginBottom: 'var(--sh-space-5)',
-        marginTop: '-8px',
-      }}>
-        <span>Year 1</span>
-        <span>Year {years}</span>
-      </div>
 
       {/* Sliders */}
       <div style={{ marginBottom: 'var(--sh-space-3)' }}>
@@ -401,10 +463,11 @@ export default function GivingModeler({ budget }) {
               value={`${givePct}%`}
               min={0}
               max={50}
-              step={1}
+              step={0.1}
               rawValue={givePct}
               onChange={setGivePct}
               suffix="%"
+              allowDecimal
             />
             <p style={{
               fontSize: 'var(--sh-text-xs)',
@@ -431,20 +494,22 @@ export default function GivingModeler({ budget }) {
         value={`${growth}%`}
         min={0}
         max={10}
-        step={1}
+        step={0.1}
         rawValue={growth}
         onChange={setGrowth}
         suffix="%"
+        allowDecimal
       />
       <Slider
         label="Granted out each year"
         value={`${grantPct}%`}
         min={0}
         max={100}
-        step={5}
+        step={0.1}
         rawValue={grantPct}
         onChange={setGrantPct}
         suffix="%"
+        allowDecimal
       />
 
       {/* Career growth toggle */}
@@ -485,10 +550,11 @@ export default function GivingModeler({ budget }) {
           value={`${careerRate}%`}
           min={0}
           max={15}
-          step={1}
+          step={0.1}
           rawValue={careerRate}
           onChange={setCareerRate}
           suffix="%"
+          allowDecimal
         />
       )}
 
@@ -569,8 +635,9 @@ export default function GivingModeler({ budget }) {
   );
 }
 
-function Slider({ label, value, min, max, step, rawValue, onChange, prefix, suffix }) {
+function Slider({ label, value, min, max, step, rawValue, onChange, prefix, suffix, allowDecimal = false }) {
   const [textValue, setTextValue] = useState(String(rawValue));
+  const [focused, setFocused] = useState(false);
 
   useEffect(() => {
     setTextValue(String(rawValue));
@@ -583,7 +650,9 @@ function Slider({ label, value, min, max, step, rawValue, onChange, prefix, suff
       return;
     }
     n = Math.min(max, Math.max(min, n));
-    n = Math.round(n / step) * step;
+    n = step < 1
+      ? Math.round(n * 10) / 10
+      : Math.round(n / step) * step;
     onChange(n);
     setTextValue(String(n));
   }
@@ -645,19 +714,26 @@ function Slider({ label, value, min, max, step, rawValue, onChange, prefix, suff
         <input
           type="text"
           inputMode="numeric"
-          value={textValue}
-          onChange={(e) => setTextValue(e.target.value.replace(/[^0-9]/g, ''))}
-          onBlur={commitTextValue}
+          value={focused ? textValue : formatWithCommas(textValue, allowDecimal)}
+          onChange={(e) => {
+            const raw = e.target.value;
+            const filtered = allowDecimal
+              ? raw.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1')
+              : raw.replace(/[^0-9]/g, '');
+            setTextValue(filtered);
+          }}
+          onFocus={() => setFocused(true)}
+          onBlur={() => { setFocused(false); commitTextValue(); }}
           onKeyDown={(e) => { if (e.key === 'Enter') e.target.blur(); }}
           style={{
-            width: '90px',
+            width: '100px',
             boxSizing: 'border-box',
             padding: '6px 8px',
             border: 'var(--sh-border-thin)',
             borderRadius: 'var(--sh-radius-md)',
             fontFamily: 'inherit',
-            fontSize: 'var(--sh-text-xs)',
-            color: 'var(--sh-text-body)',
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-primary)',
             background: 'var(--sh-card)',
           }}
         />
