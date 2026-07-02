@@ -519,6 +519,41 @@ rest of the build.
 
 ## 7. Seed story
 
+**AMENDED POST-BUILD (FT ruling, migration 0008 as landed):** FT ruled a
+slim-scope seed. Migration 0008 seeded ONLY Morgan's practice profile
+(**Practice profile seed** section) + Morgan's authored content
+(**Practice-authored content seed** + **Display-string normalization**
+sections). The originally drafted **Client seed** section below
+(c-001..c-009 fictional demo-roster clients + their `cohort_member`
+rows) is **SUPERSEDED**. Retained below for the historical record but
+NOT built.
+
+Rationale on the record for the slim-scope ruling:
+
+1. **Real-path gate testing.** Clients enter D1 exclusively through the
+   gated write endpoints when the wire-surfaces slice lands. Seeding
+   demo clients now would bypass the Q4/Q7 role gate at the endpoint
+   layer and skip the real integration path the gate is designed to
+   test.
+2. **No fixture-to-D1 drift surface.** The fictional roster in
+   `src/data/clients.js` (9 clients c-001..c-009 with rich per-client
+   giving-plans, sessions, private notes) continues to power the
+   public `/advisor/*` demo mount unchanged. Duplicating that roster
+   into D1 would create two authorities for the same demo state and a
+   maintenance surface where fixture edits could silently drift from
+   D1 rows.
+3. **Sensitive-reading fixture content stays in fixture.** The
+   `clients.js` fixture contains detailed session summaries,
+   decisions, private notes tagged 'relational' with family context
+   (e.g. Marcus's mother-passing note), and giving-plan narratives
+   about fictional athletes. Keeping this content OUT of D1 means the
+   sensitive-reading payload never enters the production data store at
+   all — even as fictional seed data. Consistent with the §6 posture
+   that treats client records as the sensitive payload; conservative
+   interpretation.
+
+---
+
 Advisor seed sits atop the Individual pilot seed (migration 0002:
 17 orgs + Marcus + 3 gifts) and the demo-roster migration (migration
 0005: Jordan Avery `type='staff'`, Morgan Walker `type='advisor'`,
@@ -565,7 +600,11 @@ Reese Donovan `type='ops'` — all pending, `demo-*@example.invalid`).
   fresh UUIDs are sufficient — the four doc rows are seed demo content,
   not URL-critical anchors.
 
-**Client seed** (gated by Q7, per §6):
+> **⚠ SUPERSEDED** by the slim-scope ruling recorded at the top of §7.
+> Migration 0008 as landed does NOT seed any of the client-side rows
+> described below. Retained for historical record only.
+
+**Client seed** (gated by Q7, per §6) — SUPERSEDED:
 
 - **Fictional demo-roster clients (c-001..c-009 from `clients.js`):
   seedable NOW**, before Q7 confirms. These are fictional per the
