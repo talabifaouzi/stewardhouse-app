@@ -2,7 +2,7 @@ import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Chrome from '../../components/Chrome.jsx';
 import { PracticeContentProvider } from '../../contexts/PracticeContentContext.jsx';
 import { DocumentationProvider } from '../../contexts/DocumentationContext.jsx';
-import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
+import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { advisorPracticeProfile } from '../../data/clients.js';
 
 import PracticeHome from './PracticeHome.jsx';
@@ -46,9 +46,34 @@ export default function AdvisorSurface() {
     path.includes('/settings') ? 'settings' :
     'home';
 
+  // Chrome identity + provider seeding both derive from appIdentity here.
+  // Public demo tree: appIdentity is null (no AppIdentityProvider
+  // ancestor), so advisorData is null, initialState resolves to undefined,
+  // and the two providers seed from their own fixture defaults
+  // (practiceContentSeed + structuredClone(seedCategories)).
+  // Authenticated tree (/app/advisor/*): appIdentity carries Morgan's
+  // real identity + advisor payload from AppShell's single /api/me fetch,
+  // and the same providers below get initialState arrays so consumers via
+  // usePracticeContent() / useDocumentation() see the server data.
+  //
+  // The `?? undefined` is deliberate: a null initialState would still fall
+  // through to the fixture default via each provider's own `?? seed`
+  // guard, but undefined keeps the "prop not passed" semantics clean and
+  // matches how the demo tree renders identically to before.
+  //
+  // Chrome identity swap mirrors IndividualSurface's pattern:
+  // AppIdentityContext.identity.displayName + extensions.advisor.advisorTitle,
+  // falling back to the fixture advisorPracticeProfile.
+  const appIdentity = useOptionalAppIdentity();
+  const advisorData = appIdentity?.identity?.advisor ?? null;
+  const authenticatedName = appIdentity?.identity?.displayName ?? null;
+  const authenticatedTitle = advisorData?.practiceProfile?.advisorTitle ?? null;
+  const userName = authenticatedName ?? advisorPracticeProfile.advisorName;
+  const userRole = authenticatedTitle ?? advisorPracticeProfile.advisorTitle;
+
   return (
-    <PracticeContentProvider>
-      <DocumentationProvider>
+    <PracticeContentProvider initialState={advisorData?.practiceLessons ?? undefined}>
+      <DocumentationProvider initialState={advisorData?.docCategories ?? undefined}>
         <div style={{
           minHeight: '100vh',
           background: 'var(--sh-bg)',
@@ -57,8 +82,8 @@ export default function AdvisorSurface() {
         }}>
           <Chrome
             surface="advisor"
-            userName={advisorPracticeProfile.advisorName}
-            userRole={advisorPracticeProfile.advisorTitle}
+            userName={userName}
+            userRole={userRole}
             navItems={navItems}
             activeNav={activeNav}
           />

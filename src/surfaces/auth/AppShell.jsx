@@ -8,11 +8,18 @@ import { AppIdentityProvider } from '../../contexts/AppIdentityContext.jsx';
 // surface (e.g. /app/individual) doesn't require a second fetch, and Chrome
 // can read real identity instead of a hardcoded fixture.
 //
-// identity shape: { type, displayName, email, intake, gifts, scenarios } | null
+// identity shape: { type, displayName, email, intake, gifts, scenarios, advisor? } | null
 // — intake is the user's persisted intake answers from
 // person.extensions.individual (null for fresh users); gifts and scenarios
 // are the arrays of the user's gift records and saved GivingModeler
 // scenarios (each empty [] for fresh users who haven't logged/saved any).
+// advisor is present ONLY for type='advisor' users, carrying
+// { practiceProfile, practiceLessons, docCategories, cohorts } from the
+// slim-scope /api/me widening. AdvisorSurface folds practiceLessons +
+// docCategories directly into its own PracticeContentProvider +
+// DocumentationProvider as initialState (fold-in shape — no wrapping
+// authenticated provider). Chrome identity swap also reads from here
+// (displayName + advisor.practiceProfile.advisorTitle).
 
 export default function AppShell() {
   const [status, setStatus] = useState('loading');
@@ -32,6 +39,7 @@ export default function AppShell() {
             intake: data.person?.intake ?? null,
             gifts: data.person?.gifts ?? [],
             scenarios: data.person?.scenarios ?? [],
+            advisor: data.person?.advisor ?? null,
           });
           setStatus('ready');
         } else {

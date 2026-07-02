@@ -1,9 +1,18 @@
 import { createContext, useCallback, useContext, useState } from 'react';
 import { docCategories as seedCategories } from '../data/documentation.js';
 
-// Session-only state for the documentation hub. Seeded from a DEEP COPY of
-// the fixture so we never mutate the imported module. State resets on refresh
-// — no persistence, no localStorage.
+// Session-only state for the documentation hub. AdvisorSurface mounts
+// this provider directly on BOTH trees; on the authenticated tree it
+// passes initialState derived from
+// AppIdentityContext.identity.advisor.docCategories (fold-in shape —
+// no wrapping provider), so consumers via useDocumentation() see
+// Morgan's real doc categories + docs via nearest-ancestor resolution.
+// On the public demo tree initialState is undefined and we seed from
+// a DEEP COPY of the fixture (so we never mutate the imported module).
+// State resets on refresh either way — no persistence, no localStorage.
+// Writes on the authenticated tree DO NOT sync back to the server yet;
+// the write path lands in a follow-up slice (per Q11 per-entity
+// endpoint pattern).
 
 const DocumentationContext = createContext(null);
 
@@ -42,9 +51,9 @@ function uniqueId(base, existing) {
   return `${base}-${n}`;
 }
 
-export function DocumentationProvider({ children }) {
+export function DocumentationProvider({ children, initialState }) {
   const [categories, setCategories] = useState(() =>
-    structuredClone(seedCategories),
+    initialState ?? structuredClone(seedCategories),
   );
 
   const addDoc = useCallback(

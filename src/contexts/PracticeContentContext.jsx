@@ -2,9 +2,14 @@ import { createContext, useCallback, useContext, useState } from 'react';
 import { practiceContentSeed } from '../data/practiceContent.js';
 
 // Holds the advisor's practice-owned curriculum content (forks, authored,
-// drafts). Initialized from the seed on every mount — in this prototype there
-// is no persistence, matching IntakeContext's "session-only" model. Mutations
-// made via add / update / remove live only as long as this provider is mounted.
+// drafts). AdvisorSurface mounts this provider directly on BOTH trees;
+// on the authenticated tree it passes initialState derived from
+// AppIdentityContext.identity.advisor.practiceLessons (fold-in shape —
+// no wrapping provider), so consumers via usePracticeContent() see
+// Morgan's real data via the nearest-ancestor resolution. On the public
+// demo tree initialState is undefined and we seed from
+// practiceContentSeed. Session-only mutations on both trees via
+// add / update / remove.
 
 const PracticeContentContext = createContext(null);
 
@@ -16,8 +21,8 @@ function todayIso() {
   return `${yyyy}-${mm}-${dd}`;
 }
 
-export function PracticeContentProvider({ children }) {
-  const [lessons, setLessons] = useState(practiceContentSeed);
+export function PracticeContentProvider({ children, initialState }) {
+  const [lessons, setLessons] = useState(initialState ?? practiceContentSeed);
 
   const add = useCallback((lesson) => {
     setLessons((prev) => [...prev, lesson]);

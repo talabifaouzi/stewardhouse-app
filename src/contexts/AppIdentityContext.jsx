@@ -7,7 +7,7 @@ import { useLocation } from 'react-router-dom';
 // Chrome (for display), and any future type-specific surface.
 //
 // status: 'loading' | 'ready' | 'unauthenticated'
-// identity: { type, displayName, email, intake, gifts, scenarios } | null — only non-null when status is 'ready'
+// identity: { type, displayName, email, intake, gifts, scenarios, advisor? } | null — only non-null when status is 'ready'; advisor sub-block present only when type='advisor'
 
 const AppIdentityContext = createContext(null);
 
