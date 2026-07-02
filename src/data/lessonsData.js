@@ -1,5 +1,5 @@
 // Lessons content — ported faithfully from the HTML prototype.
-// Phase 1 scope: athletics-only (3 universal + 3 visibility + 3 sports = 9 lessons).
+// Athletics-only scope (3 universal + 3 visibility + 3 sports = 9 lessons).
 // Each lesson has 5-7 cards of deep content.
 
 export const UNIVERSAL_LESSONS = [

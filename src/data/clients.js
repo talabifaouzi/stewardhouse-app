@@ -1,8 +1,8 @@
 // All names, organizations, and figures in this file are fictional.
 // Used for demo purposes only.
 //
-// Phase 1 scope: athletes only. Music, entertainment, and creator
-// segments are deferred to phase 2.
+// Athletes-only scope (FT-ruled 7/2/26). No multi-sector fixtures;
+// broader verticals are a future question, not a deferred phase.
 
 export const advisorPracticeProfile = {
   practiceName: "Walker Philanthropic Advisory",
@@ -852,9 +852,9 @@ advisorPracticeProfile.clientCount = clients.length;
 
 export const stages = ['New', 'Active', 'Mature', 'Sunset'];
 
-// Phase 1 scope: athletics is the only sector. The roster includes a single
-// non-categorized "Other" bucket for non-standard cases (e.g., athletes
-// with cross-discipline situations).
+// Athletics is the only sector. The roster includes a single non-categorized
+// "Other" bucket for non-standard cases (e.g., athletes with cross-discipline
+// situations).
 export const sectors = ['Athletics', 'Other'];
 
 export function clientsByStage(stage) {

@@ -11,7 +11,7 @@
 //   baseId   string (l-XX) if kind === 'fork', null otherwise
 //   status   'published' | 'draft'
 //
-// Phase 1 scope: athletes only.
+// Athletes-only scope.
 
 export const practiceContentSeed = [
   {
