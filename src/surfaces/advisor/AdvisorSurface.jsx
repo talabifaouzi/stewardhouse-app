@@ -2,6 +2,8 @@ import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import Chrome from '../../components/Chrome.jsx';
 import { PracticeContentProvider } from '../../contexts/PracticeContentContext.jsx';
 import { DocumentationProvider } from '../../contexts/DocumentationContext.jsx';
+import { CohortsProvider } from '../../contexts/CohortsContext.jsx';
+import { ClientsProvider } from '../../contexts/ClientsContext.jsx';
 import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { advisorPracticeProfile } from '../../data/clients.js';
 
@@ -71,9 +73,19 @@ export default function AdvisorSurface() {
   const userName = authenticatedName ?? advisorPracticeProfile.advisorName;
   const userRole = authenticatedTitle ?? advisorPracticeProfile.advisorTitle;
 
+  // Cohorts + clients providers land on this surface too (slice 2 fold-in):
+  //  - Cohorts: seed from identity.advisor.cohorts on auth (Morgan's 2
+  //    cohorts w/ memberIds:[] per Q7 gate), fixture on demo. Same shape
+  //    as the other two providers above.
+  //  - Clients: Q7-gated — authenticated initialState is ALWAYS []
+  //    (no server client rows until write endpoints open). Demo tree
+  //    falls through to fixture via `?? undefined`. Distinguishes trees
+  //    by presence-of-advisorData rather than a specific field.
   return (
     <PracticeContentProvider initialState={advisorData?.practiceLessons ?? undefined}>
       <DocumentationProvider initialState={advisorData?.docCategories ?? undefined}>
+       <CohortsProvider initialState={advisorData?.cohorts ?? undefined}>
+        <ClientsProvider initialState={advisorData ? [] : undefined}>
         <div style={{
           minHeight: '100vh',
           background: 'var(--sh-bg)',
@@ -110,6 +122,8 @@ export default function AdvisorSurface() {
             </Routes>
           </div>
         </div>
+        </ClientsProvider>
+       </CohortsProvider>
       </DocumentationProvider>
     </PracticeContentProvider>
   );

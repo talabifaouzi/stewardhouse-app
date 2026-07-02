@@ -1,8 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
-import { clients, formatSessionDate, stages } from '../../data/clients.js';
+import { formatSessionDate, stages } from '../../data/clients.js';
 import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
+import { useClients } from '../../contexts/ClientsContext.jsx';
 
 // Phase 1 scope: athletes only. We filter by sport instead of sector.
 const sports = ['All', 'Basketball', 'Football', 'Soccer', 'Track and Field'];
@@ -24,6 +25,7 @@ function parseSingleSelect(raw, validValues, defaultValue) {
 }
 
 export default function ClientRoster() {
+  const { clients } = useClients();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // URL-derived state — re-read on every render so back/forward + direct
@@ -153,10 +155,19 @@ export default function ClientRoster() {
         flexDirection: 'column',
         gap: 'var(--sh-space-2)',
       }}>
-        {filtered.map(client => (
-          <ClientRow key={client.id} client={client} />
-        ))}
-        {filtered.length === 0 && (
+        {clients.length === 0 ? (
+          <Card tint>
+            <p style={{
+              fontSize: 'var(--sh-text-sm)',
+              color: 'var(--sh-text-muted)',
+              textAlign: 'center',
+              padding: 'var(--sh-space-6)',
+              fontStyle: 'italic',
+            }}>
+              Your clients will appear here.
+            </p>
+          </Card>
+        ) : filtered.length === 0 ? (
           <Card tint>
             <p style={{
               fontSize: 'var(--sh-text-sm)',
@@ -167,6 +178,10 @@ export default function ClientRoster() {
               No clients match the current filters.
             </p>
           </Card>
+        ) : (
+          filtered.map(client => (
+            <ClientRow key={client.id} client={client} />
+          ))
         )}
       </div>
     </main>

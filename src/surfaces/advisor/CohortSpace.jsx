@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
-import { cohorts } from '../../data/cohorts.js';
 import { formatSessionDate } from '../../data/clients.js';
 import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
+import { useCohorts } from '../../contexts/CohortsContext.jsx';
 
 export default function CohortSpace() {
   const basePath = useBasePath('/advisor', '/app/advisor');
+  const { cohorts } = useCohorts();
   return (
     <main style={{
       maxWidth: 'var(--sh-content-max)',

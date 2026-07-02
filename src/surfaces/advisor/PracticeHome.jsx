@@ -2,11 +2,16 @@ import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { advisorPracticeProfile, clients, formatSessionDate, stages } from '../../data/clients.js';
-import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
+import { advisorPracticeProfile, formatSessionDate, stages } from '../../data/clients.js';
+import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { useClients } from '../../contexts/ClientsContext.jsx';
 
 export default function PracticeHome() {
   const basePath = useBasePath('/advisor', '/app/advisor');
+  const appIdentity = useOptionalAppIdentity();
+  const practiceProfile = appIdentity?.identity?.advisor?.practiceProfile ?? null;
+  const practiceName = practiceProfile?.practiceName ?? advisorPracticeProfile.practiceName;
+  const { clients } = useClients();
   // ADV-011 — static demo date aligned with the seed timeline (journal entry
   // April 28, upcoming sessions May 9-July 7). Live new Date() made
   // screenshots non-deterministic and depended on the user's local clock.
@@ -50,7 +55,7 @@ export default function PracticeHome() {
           color: 'var(--sh-text-primary)',
           marginBottom: 'var(--sh-space-3)',
         }}>
-          {advisorPracticeProfile.practiceName}
+          {practiceName}
         </h1>
       </div>
 
@@ -76,6 +81,16 @@ export default function PracticeHome() {
         {/* Upcoming sessions */}
         <Card>
           <SectionLabel>Upcoming sessions</SectionLabel>
+          {upcoming.length === 0 ? (
+            <p style={{
+              fontSize: 'var(--sh-text-sm)',
+              color: 'var(--sh-text-muted)',
+              padding: 'var(--sh-space-3) 0',
+              fontStyle: 'italic',
+            }}>
+              Your clients will appear here.
+            </p>
+          ) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {upcoming.map((client, i) => (
               <Link
@@ -119,6 +134,7 @@ export default function PracticeHome() {
               </Link>
             ))}
           </div>
+          )}
         </Card>
 
         {/* Practice journal — the advisor's own private reflection space */}
@@ -170,7 +186,7 @@ export default function PracticeHome() {
             color: 'var(--sh-text-secondary)',
             marginBottom: 'var(--sh-space-3)',
           }}>
-            {totalActiveContent} content items active across {advisorPracticeProfile.clientCount} clients · 5 content types in rotation
+            {totalActiveContent} content items active across {clients.length} clients · 5 content types in rotation
           </p>
         </Card>
       </div>

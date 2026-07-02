@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { cohorts } from '../../data/cohorts.js';
-import { clients, formatSessionDate } from '../../data/clients.js';
+import { formatSessionDate } from '../../data/clients.js';
 import { THEMES } from '../../data/themes.js';
 import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
+import { useClients } from '../../contexts/ClientsContext.jsx';
+import { useCohorts } from '../../contexts/CohortsContext.jsx';
 
 const MONTH_NAMES = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -39,6 +40,8 @@ function formatNames(names) {
 export default function CohortDetail() {
   const { cohortId } = useParams();
   const basePath = useBasePath('/advisor', '/app/advisor');
+  const { cohorts } = useCohorts();
+  const { clients } = useClients();
   const cohort = cohorts.find(c => c.id === cohortId);
   const [updates, setUpdates] = useState(cohort?.updates || []);
   const [titleDraft, setTitleDraft] = useState('');

@@ -6,7 +6,7 @@ import { HelpIcon } from '../../components/HelpIcon.jsx';
 import { Icon } from '../../components/Icon.jsx';
 import { useDialogA11y } from '../../components/useDialogA11y.jsx';
 import { contentTypes, pipelineDefaults } from '../../data/content.js';
-import { advisorPracticeProfile } from '../../data/clients.js';
+import { useClients } from '../../contexts/ClientsContext.jsx';
 import StateBadge from './StateBadge.jsx';
 
 // Prototype cadence presets per content type. Real product would resolve these
@@ -23,7 +23,20 @@ const cadencePresets = {
 const STATE_OPTIONS = ['Active', 'Mute', 'Pause'];
 
 export default function Pipeline() {
-  const [defaults, setDefaults] = useState(pipelineDefaults);
+  const { clients } = useClients();
+  const clientCount = clients.length;
+  // pipelineDefaults ships with clientsOnDefault + overrides counts hard-
+  // coded from the fixture's 9-client roster. On the authenticated tree
+  // with zero clients (Q7 gate) those counts are false statements — zero
+  // them out. Real derivation from per-client pipeline overrides is a
+  // FOLLOW-UP once the client write path opens (Q7); at that point the
+  // counts should re-derive from clients[].pipeline[type].source ===
+  // 'override' vs 'default'. Not doing that derivation here because with
+  // zero clients + slice-1's slim seed there's nothing to derive from.
+  const initialDefaults = clientCount === 0
+    ? Object.fromEntries(Object.entries(pipelineDefaults).map(([k, v]) => [k, { ...v, clientsOnDefault: 0, overrides: 0 }]))
+    : pipelineDefaults;
+  const [defaults, setDefaults] = useState(initialDefaults);
   const [editingKey, setEditingKey] = useState(null);
 
   const overrideTotal = Object.values(defaults).reduce((sum, d) => sum + d.overrides, 0);
@@ -121,7 +134,7 @@ export default function Pipeline() {
             fontSize: 'var(--sh-text-xs)',
             color: 'var(--sh-text-muted)',
           }}>
-            {advisorPracticeProfile.clientCount} clients receiving content · {overrideTotal} active per-client overrides across all content types
+            {clientCount} clients receiving content · {overrideTotal} active per-client overrides across all content types
           </p>
         </Card>
       </div>

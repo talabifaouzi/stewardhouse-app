@@ -2,8 +2,20 @@ import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { advisorPracticeProfile, stages } from '../../data/clients.js';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 
 export default function PracticeSettings() {
+  // Fold-in Chrome-pattern: read from AppIdentityContext on the
+  // authenticated tree, fixture fallback on public demo. `advisorName`
+  // resolves to identity.displayName (person's real name); the four
+  // extensions.advisor fields resolve to their server-stored values.
+  const appIdentity = useOptionalAppIdentity();
+  const identity = appIdentity?.identity ?? null;
+  const practiceProfile = identity?.advisor?.practiceProfile ?? null;
+  const practiceName = practiceProfile?.practiceName ?? advisorPracticeProfile.practiceName;
+  const advisorName = identity?.displayName ?? advisorPracticeProfile.advisorName;
+  const advisorTitle = practiceProfile?.advisorTitle ?? advisorPracticeProfile.advisorTitle;
+  const practiceFocus = practiceProfile?.practiceFocus ?? advisorPracticeProfile.practiceFocus;
   return (
     <main style={{
       maxWidth: '880px',
@@ -32,10 +44,10 @@ export default function PracticeSettings() {
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-5)' }}>
         <Card>
           <SectionLabel>Practice identity</SectionLabel>
-          <SettingRow label="Practice name" value={advisorPracticeProfile.practiceName} />
-          <SettingRow label="Principal advisor" value={advisorPracticeProfile.advisorName} />
-          <SettingRow label="Title" value={advisorPracticeProfile.advisorTitle} />
-          <SettingRow label="Practice focus" value={advisorPracticeProfile.practiceFocus} last />
+          <SettingRow label="Practice name" value={practiceName} />
+          <SettingRow label="Principal advisor" value={advisorName} />
+          <SettingRow label="Title" value={advisorTitle} />
+          <SettingRow label="Practice focus" value={practiceFocus} last />
         </Card>
 
         <Card>

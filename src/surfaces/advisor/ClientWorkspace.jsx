@@ -3,10 +3,11 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { clients, formatSessionDate } from '../../data/clients.js';
-import { cohorts } from '../../data/cohorts.js';
+import { formatSessionDate } from '../../data/clients.js';
 import { contentTypes, getLessonById } from '../../data/content.js';
 import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
+import { useClients } from '../../contexts/ClientsContext.jsx';
+import { useCohorts } from '../../contexts/CohortsContext.jsx';
 import StateBadge from './StateBadge.jsx';
 
 const MONTH_NAMES = [
@@ -39,6 +40,8 @@ function capitalize(s) {
 export default function ClientWorkspace() {
   const { clientId } = useParams();
   const basePath = useBasePath('/advisor', '/app/advisor');
+  const { clients } = useClients();
+  const { cohorts } = useCohorts();
   const client = clients.find(c => c.id === clientId);
 
   if (!client) return <Navigate to={`${basePath}/clients`} replace />;
