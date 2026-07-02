@@ -32,13 +32,14 @@ export default function DocCreate() {
       ? 'Body is required.'
       : '';
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!canSave) return;
-    const newId = addDoc(section, {
+    const newId = await addDoc(section, {
       title: trimmedTitle,
       notes,
       body: paragraphs,
     });
+    if (!newId) return;
     navigate(`${basePath}/docs/${newId}`);
   };
 

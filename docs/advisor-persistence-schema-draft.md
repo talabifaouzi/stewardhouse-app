@@ -515,6 +515,17 @@ until Q7 (processor-vs-joint-controller) is set. Same pattern; different
 counsel question; both isolate cleanly to one seam without blocking the
 rest of the build.
 
+**Implementation note (write slice 1, banked 7/2/26, FT-ruled):**
+requireGatedAdvisor gates ALL advisor write endpoints, including
+practice content / docs / cohorts, which this section originally left
+ungated. Deliberate broadening — single gate posture for the
+Morgan-only pilot; production writes are dark until a person row is
+designated (remote Morgan carries no demo_gate flag, so all write
+endpoints 403 in production as deployed). Revisit alongside the
+per-practice allowlist upgrade at Q7 resolution. Live-invite
+consequence: invited advisors require demo_gate designation before any
+authoring.
+
 ---
 
 ## 7. Seed story

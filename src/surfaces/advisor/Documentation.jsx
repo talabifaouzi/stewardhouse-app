@@ -26,8 +26,8 @@ export default function Documentation() {
     setIsAddingSection(false);
   };
 
-  const handleSaveSection = () => {
-    const ok = addSection(newSectionLabel, newSectionHint);
+  const handleSaveSection = async () => {
+    const ok = await addSection(newSectionLabel, newSectionHint);
     if (!ok) {
       setSectionError('A section with that name already exists, or the name is empty.');
       return;
