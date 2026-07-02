@@ -1,5 +1,5 @@
 import { createContext, useContext } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 
 // Identity context for the authenticated /app/* tree. Populated once by
 // AppShell (a single /api/me fetch) and read by any descendant that needs
@@ -38,6 +38,54 @@ export function useAppIdentity() {
 // extraction since the logic is byte-identical across both consumers.
 export function useOptionalAppIdentity() {
   return useContext(AppIdentityContext);
+}
+
+// Route-level type guard for /app/individual and /app/advisor. Closes the
+// parked defect where an authenticated wrong-type visitor (e.g. an
+// individual signed in and navigating directly to /app/advisor) would see
+// the fixture-seeded surface instead of being bounced to their own. Wraps
+// each type-specific /app/* route element in App.jsx symmetrically.
+//
+// GUARD, NOT A PROVIDER. This wrapper reads AppIdentityContext (which
+// AppShell already provides one level up) and passes children through
+// verbatim — it does NOT mount its own AppIdentityProvider. The slice-1
+// fold-in lesson (nearest-ancestor context resolution silently shadowing
+// an outer seed) is therefore not in play here: no parallel provider
+// exists to shadow anything, and children read the same context AppShell
+// established.
+//
+// Loading branch is defensive-only. AppShell's own gate does not render
+// <Outlet /> while status is 'loading' — it renders "Checking your
+// session…" and blocks all descendants — so this branch is unreachable
+// today. It stays as a documented safety net in case AppShell's gating
+// logic ever changes; a premature Navigate on an in-flight /api/me
+// would bounce valid users.
+//
+// Unauthenticated case is already handled upstream by AppShell (redirects
+// to /signin before children mount), so we only need to distinguish the
+// wrong-type case here (Navigate to /app so AppDispatcher re-routes to
+// the correct surface).
+export function RequireType({ type, children }) {
+  const { status, identity } = useAppIdentity();
+  if (status !== 'ready') {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'var(--sh-bg)',
+        color: 'var(--sh-text-muted)',
+        fontSize: 'var(--sh-text-sm)',
+      }}>
+        Checking your session…
+      </div>
+    );
+  }
+  if (identity?.type !== type) {
+    return <Navigate to="/app" replace />;
+  }
+  return children;
 }
 
 // Mount-aware base-path derivation. Surfaces mounted at both a public

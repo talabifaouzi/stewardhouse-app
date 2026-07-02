@@ -9,6 +9,7 @@ import AppShell from './surfaces/auth/AppShell.jsx';
 import AppDispatcher from './surfaces/auth/AppDispatcher.jsx';
 import AuthenticatedIntakeProvider from './surfaces/auth/AuthenticatedIntakeProvider.jsx';
 import { IntakeProvider } from './contexts/IntakeContext.jsx';
+import { RequireType } from './contexts/AppIdentityContext.jsx';
 
 export default function App() {
   return (
@@ -31,12 +32,21 @@ export default function App() {
         <Route
           path="individual/*"
           element={
-            <AuthenticatedIntakeProvider>
-              <IndividualSurface />
-            </AuthenticatedIntakeProvider>
+            <RequireType type="individual">
+              <AuthenticatedIntakeProvider>
+                <IndividualSurface />
+              </AuthenticatedIntakeProvider>
+            </RequireType>
           }
         />
-        <Route path="advisor/*" element={<AdvisorSurface />} />
+        <Route
+          path="advisor/*"
+          element={
+            <RequireType type="advisor">
+              <AdvisorSurface />
+            </RequireType>
+          }
+        />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
