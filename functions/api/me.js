@@ -191,6 +191,26 @@ export async function onRequest(context) {
       if (!s) return fallback;
       try { return JSON.parse(s); } catch { return fallback; }
     };
+
+    // cohort_member: single scoped read across all this advisor's cohorts.
+    // If there are zero cohorts we skip the query — .where('in', []) is a
+    // syntactically dubious edge case worth avoiding.
+    let memberRowsByCohort = new Map();
+    if (cohortRows.length > 0) {
+      const cohortIds = cohortRows.map((c) => c.id);
+      const memberRows = await db
+        .selectFrom('cohort_member')
+        .select(['cohort_id', 'client_id', 'joined_at'])
+        .where('cohort_id', 'in', cohortIds)
+        .execute();
+      for (const m of memberRows) {
+        if (!memberRowsByCohort.has(m.cohort_id)) {
+          memberRowsByCohort.set(m.cohort_id, []);
+        }
+        memberRowsByCohort.get(m.cohort_id).push(m.client_id);
+      }
+    }
+
     const cohorts = cohortRows.map((row) => ({
       id: row.id,
       name: row.name,
@@ -202,14 +222,87 @@ export async function onRequest(context) {
       assignedLessons: parseJsonOr(row.assigned_lessons, []),
       updates: parseJsonOr(row.updates, []),
       sessions: parseJsonOr(row.sessions, []),
-      // Q7 gate: cohort_member is empty (no client rows yet). memberIds
-      // will populate when the gated write path enables client + cohort_member
-      // writes. Emit as [] here so surface consumers reading
-      // cohort.memberIds.length degrade gracefully.
-      memberIds: [],
+      // Populated from cohort_member where cohort_id matches; always [] if
+      // no members. Preserves the every-array-key-present invariant that the
+      // fold-in signal relies on (initialState !== undefined ↔ authenticated).
+      memberIds: memberRowsByCohort.get(row.id) ?? [],
     }));
 
-    advisor = { practiceProfile, practiceLessons, docCategories, cohorts };
+    // Clients + nested sessions + notes. Payload note: this is the first
+    // /api/me block that grows per-client and per-session over time rather
+    // than staying roughly fixed. Pagination / split-fetch is documented
+    // debt — revisit when a real practice's payload gets heavy. Same #116
+    // "close as documented debt at current scale, revisit when consumer set
+    // changes" precedent.
+    const clientRows = await db
+      .selectFrom('client')
+      .select([
+        'id', 'name', 'initials', 'sport', 'level', 'stage',
+        'relationship_started_year', 'summary', 'next_session_date',
+        'giving_plan', 'next_session_agenda', 'pipeline_state',
+        'created_at', 'updated_at',
+      ])
+      .where('owner_advisor_person_id', '=', person.id)
+      .orderBy('created_at', 'desc')
+      .execute();
+
+    let clients = [];
+    if (clientRows.length > 0) {
+      const clientIds = clientRows.map((c) => c.id);
+      const sessionRows = await db
+        .selectFrom('client_session')
+        .select([
+          'id', 'client_id', 'date', 'title', 'summary',
+          'decisions', 'action_items', 'created_at',
+        ])
+        .where('client_id', 'in', clientIds)
+        .orderBy('date', 'desc')
+        .execute();
+      const noteRows = await db
+        .selectFrom('client_note')
+        .select(['id', 'client_id', 'date', 'content', 'tags', 'created_at'])
+        .where('client_id', 'in', clientIds)
+        .orderBy('date', 'desc')
+        .execute();
+      clients = clientRows.map((row) => ({
+        id: row.id,
+        name: row.name,
+        initials: row.initials,
+        sport: row.sport,
+        level: row.level,
+        stage: row.stage,
+        relationshipStartedYear: row.relationship_started_year,
+        summary: row.summary,
+        nextSession: row.next_session_date,
+        givingPlan: parseJsonOr(row.giving_plan, null),
+        nextSessionAgenda: parseJsonOr(row.next_session_agenda, null),
+        pipeline: parseJsonOr(row.pipeline_state, null),
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+        clientSessions: sessionRows
+          .filter((s) => s.client_id === row.id)
+          .map((s) => ({
+            id: s.id,
+            date: s.date,
+            title: s.title,
+            summary: s.summary,
+            decisions: parseJsonOr(s.decisions, []),
+            actionItems: parseJsonOr(s.action_items, []),
+            createdAt: s.created_at,
+          })),
+        clientNotes: noteRows
+          .filter((n) => n.client_id === row.id)
+          .map((n) => ({
+            id: n.id,
+            date: n.date,
+            content: n.content,
+            tags: parseJsonOr(n.tags, []),
+            createdAt: n.created_at,
+          })),
+      }));
+    }
+
+    advisor = { practiceProfile, practiceLessons, docCategories, cohorts, clients };
   }
 
   const body = {

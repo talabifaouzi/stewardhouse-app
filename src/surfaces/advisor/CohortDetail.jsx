@@ -40,10 +40,10 @@ function formatNames(names) {
 export default function CohortDetail() {
   const { cohortId } = useParams();
   const basePath = useBasePath('/advisor', '/app/advisor');
-  const { cohorts } = useCohorts();
+  const { cohorts, update: updateCohort } = useCohorts();
   const { clients } = useClients();
   const cohort = cohorts.find(c => c.id === cohortId);
-  const [updates, setUpdates] = useState(cohort?.updates || []);
+  const updates = cohort?.updates || [];
   const [titleDraft, setTitleDraft] = useState('');
   const [bodyDraft, setBodyDraft] = useState('');
   const [flags, setFlags] = useState({});
@@ -109,7 +109,7 @@ export default function CohortDetail() {
 
   const canPublish = titleDraft.trim().length > 0 && bodyDraft.trim().length > 0;
 
-  const publish = () => {
+  const publish = async () => {
     if (!canPublish) return;
     const newUpdate = {
       id: `u-local-${Date.now()}`,
@@ -117,7 +117,14 @@ export default function CohortDetail() {
       title: titleDraft.trim(),
       body: bodyDraft.trim(),
     };
-    setUpdates(prev => [newUpdate, ...prev]);
+    // Route through CohortsProvider.update — on demo it sync-updates the
+    // provider's cohorts state (component re-renders and reads cohort.updates),
+    // on auth it PUTs /api/cohorts/:id then updates state on success. Provider
+    // is the single source of truth for updates now; no local shadow copy.
+    const result = await updateCohort(cohort.id, {
+      updates: [newUpdate, ...updates],
+    });
+    if (!result) return;
     setTitleDraft('');
     setBodyDraft('');
   };

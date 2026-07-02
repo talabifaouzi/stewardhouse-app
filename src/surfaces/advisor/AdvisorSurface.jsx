@@ -75,17 +75,18 @@ export default function AdvisorSurface() {
 
   // Cohorts + clients providers land on this surface too (slice 2 fold-in):
   //  - Cohorts: seed from identity.advisor.cohorts on auth (Morgan's 2
-  //    cohorts w/ memberIds:[] per Q7 gate), fixture on demo. Same shape
-  //    as the other two providers above.
-  //  - Clients: Q7-gated — authenticated initialState is ALWAYS []
-  //    (no server client rows until write endpoints open). Demo tree
-  //    falls through to fixture via `?? undefined`. Distinguishes trees
-  //    by presence-of-advisorData rather than a specific field.
+  //    cohorts w/ memberIds populated from cohort_member per write slice 2a),
+  //    fixture on demo. Same shape as the other two providers above.
+  //  - Clients: /api/me now always emits `advisor.clients` as an array for
+  //    advisor persons (empty [] included), per write slice 2a. So
+  //    `advisorData?.clients` is array-on-auth, undefined-on-demo — the
+  //    standard fold-in signal, no special-case sentinel needed. Q7 gate
+  //    now lives at the write endpoints, not at provider seeding.
   return (
     <PracticeContentProvider initialState={advisorData?.practiceLessons ?? undefined}>
       <DocumentationProvider initialState={advisorData?.docCategories ?? undefined}>
        <CohortsProvider initialState={advisorData?.cohorts ?? undefined}>
-        <ClientsProvider initialState={advisorData ? [] : undefined}>
+        <ClientsProvider initialState={advisorData?.clients}>
         <div style={{
           minHeight: '100vh',
           background: 'var(--sh-bg)',
