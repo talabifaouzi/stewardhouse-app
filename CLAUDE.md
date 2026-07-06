@@ -455,6 +455,18 @@ Organizations directory is the operator view of those records.
 
 ---
 
+## 9. Browser screening runbook — lessons (2026-07-02)
+
+Five hard-earned lessons from a night of failed browser screening attempts. Any future FT-facing browser screen of an auth-gated surface must respect these:
+
+- **`localhost` vs `127.0.0.1` origin stranding.** `BETTER_AUTH_URL` in `.dev.vars` is `http://localhost:8788`. Better-auth's magic-link verify sets the session cookie on whichever origin served the verify request, then 302-redirects to `BETTER_AUTH_URL`. If FT clicked a link at `127.0.0.1:8788`, the cookie stuck to `127.0.0.1` but the redirect sent her to `localhost:8788` — different origin, no cookie carried, AppShell's `/api/me` returned null, bounce to `/signin`. **Always hand FT URLs on the SAME host as `BETTER_AUTH_URL`.** For local screening: use `localhost:8788` everywhere, never `127.0.0.1:8788`.
+- **Resend test sender (`onboarding@resend.dev`) delivers only to the registered address.** Plus-alias variants of the account owner's email (e.g. `talabifaouzi+morgan@gmail.com`) are treated as different addresses and rejected — `POST /api/auth/sign-in/magic-link` returns 500 because the sender throws. **Production invites REQUIRE a verified domain sender** — Resend's test sender is not a viable path for onboarding real pilot users. Verified domain needs to land before the first real invite goes out.
+- **Hand-forged cookies fail in the browser even when curl accepts them.** Better-auth sets `HttpOnly` + `SameSite=Lax` + secure-when-https attributes. DevTools cookie paste bypasses those attributes; more commonly, DevTools re-encodes `%2F`/`%3D` in the pasted value (turning `%2F` into `%252F`), and the pasted-in domain (`localhost` vs `127.0.0.1`) rarely matches the origin FT actually browses. **Never hand FT raw cookie values. Use either the real magic-link flow (email) or code-path-minted verification-row URLs.** Cookie surgery is a curl-only tool.
+- **Single-type identity means FT's real email always lands as an individual.** Ruled 2026-07-02: one `auth_user` → one `person` → exactly one `type`. FT's real gmail (`talabifaouzi@gmail.com`) is bound to Marcus's `person` row with `type='individual'`. She cannot sign in as advisor/enterprise on her real account — the (c) hook does not re-fire on sign-in, and RequireType would bounce her from `/app/advisor` regardless. **Test identities for other types MUST use distinct emails**, and for local dev those are plus-addressed variants of FT's real address that route to the same inbox. Every advisor/enterprise/ops test identity is a separate `auth_user` row bound to the correct-typed `person` row.
+- **`person.display_name` must be set at invite/designation, not defaulted.** The Chrome header reads `identity.displayName`. On a fresh sign-in where the (c) hook fires the fresh-person branch, `display_name` defaults to the literal string `'New user'`. If a bespoke advisor is provisioned by inserting the `person` row without a real `display_name`, that string will render in the header for FT's screen, and every subsequent screenshot. **Every pre-seeded bespoke-type `person` row must carry a real `display_name` at insert time.** Never rely on the default.
+
+---
+
 ## When in doubt
 
 Ask. Don't assume. Path B violations, brand-token deviations, and Co-Authored-By
