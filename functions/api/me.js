@@ -171,6 +171,7 @@ export async function onRequest(context) {
         .where('category_id', 'in', categoryIds)
         .execute();
       docCategories = docCategoryRows.map((cat) => ({
+        id: cat.id,
         label: cat.label,
         hint: cat.hint,
         docs: docRows

@@ -5,11 +5,12 @@ import { Card } from '../../components/Card.jsx';
 import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useDocumentation } from '../../contexts/DocumentationContext.jsx';
-import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
+import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 
 export default function Documentation() {
   const { categories: docCategories, addSection } = useDocumentation();
   const basePath = useBasePath('/advisor', '/app/advisor');
+  const isAuthenticated = !!useOptionalAppIdentity();
   const [openHint, setOpenHint] = useState(null);
   const toggleHint = (label) =>
     setOpenHint((prev) => (prev === label ? null : label));
@@ -118,16 +119,18 @@ export default function Documentation() {
         }}>
           Your practice's own materials — the scripts, templates, and notes you decide to keep here. Private to your practice.
         </p>
-        <p style={{
-          fontSize: 'var(--sh-text-xs)',
-          color: 'var(--sh-text-muted)',
-          fontStyle: 'italic',
-          lineHeight: 1.55,
-          marginTop: 'var(--sh-space-2)',
-          maxWidth: '640px',
-        }}>
-          Anything you add here is session-only — it won't be saved across refreshes.
-        </p>
+        {!isAuthenticated && (
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            fontStyle: 'italic',
+            lineHeight: 1.55,
+            marginTop: 'var(--sh-space-2)',
+            maxWidth: '640px',
+          }}>
+            Anything you add here is session-only — it won't be saved across refreshes.
+          </p>
+        )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-5)' }}>

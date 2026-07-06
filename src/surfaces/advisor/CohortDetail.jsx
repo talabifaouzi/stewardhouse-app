@@ -4,7 +4,7 @@ import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { formatSessionDate } from '../../data/clients.js';
 import { THEMES } from '../../data/themes.js';
-import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
+import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { useClients } from '../../contexts/ClientsContext.jsx';
 import { useCohorts } from '../../contexts/CohortsContext.jsx';
 
@@ -42,6 +42,7 @@ export default function CohortDetail() {
   const basePath = useBasePath('/advisor', '/app/advisor');
   const { cohorts, update: updateCohort } = useCohorts();
   const { clients } = useClients();
+  const isAuthenticated = !!useOptionalAppIdentity();
   const cohort = cohorts.find(c => c.id === cohortId);
   const updates = cohort?.updates || [];
   const [titleDraft, setTitleDraft] = useState('');
@@ -392,15 +393,17 @@ export default function CohortDetail() {
             gap: 'var(--sh-space-3)',
             marginTop: 'var(--sh-space-2)',
           }}>
-            <p style={{
-              fontSize: 'var(--sh-text-xs)',
-              color: 'var(--sh-text-muted)',
-              fontStyle: 'italic',
-              lineHeight: 1.4,
-              flex: 1,
-            }}>
-              Updates published in this session are not yet persisted.
-            </p>
+            {!isAuthenticated && (
+              <p style={{
+                fontSize: 'var(--sh-text-xs)',
+                color: 'var(--sh-text-muted)',
+                fontStyle: 'italic',
+                lineHeight: 1.4,
+                flex: 1,
+              }}>
+                Updates published in this session are not yet persisted.
+              </p>
+            )}
             <button
               onClick={publish}
               disabled={!canPublish}
