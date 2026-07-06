@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { AppIdentityProvider } from '../../contexts/AppIdentityContext.jsx';
 
@@ -24,6 +24,24 @@ import { AppIdentityProvider } from '../../contexts/AppIdentityContext.jsx';
 export default function AppShell() {
   const [status, setStatus] = useState('loading');
   const [identity, setIdentity] = useState(null);
+
+  // Practice-profile write-through: PUT /api/practice-profile succeeds,
+  // caller passes the 3-field response into this updater, and PracticeHome
+  // + Chrome re-render off the same context state without a refetch.
+  // Called only from PracticeSettings.jsx save handler on the auth tree.
+  // Declared BEFORE early returns to satisfy Rules of Hooks.
+  const updatePracticeProfile = useCallback((profile) => {
+    setIdentity((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        advisor: {
+          ...(prev.advisor || {}),
+          practiceProfile: profile,
+        },
+      };
+    });
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -73,7 +91,7 @@ export default function AppShell() {
   }
 
   return (
-    <AppIdentityProvider status={status} identity={identity}>
+    <AppIdentityProvider status={status} identity={identity} updatePracticeProfile={updatePracticeProfile}>
       <Outlet />
     </AppIdentityProvider>
   );

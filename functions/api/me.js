@@ -102,15 +102,29 @@ export async function onRequest(context) {
 
   let advisor = null;
   if (person?.type === 'advisor') {
-    let practiceProfile = null;
-    if (person.extensions) {
+    // practiceProfile is an EXPLICIT ALLOWLIST pick from parsed.advisor —
+    // never the whole sub-blob. Same reasoning as the write-path allowlist:
+    // the wire contract declares its fields, never inherits the blob. Two
+    // reasons this matters: (1) `$.advisor.demo_gate` (role-gate marker per
+    // schema-draft §6 amended in write slice 1) also lives at this JSON
+    // path — passing the blob through would leak the gate flag to every
+    // authenticated client on every /api/me poll; (2) any future
+    // `$.advisor.*` key added for another server-only purpose (say a
+    // Q7-resolution allowlist marker) would silently ship to the client
+    // without explicit opt-in. Absent keys emit as null so the wire
+    // contract shape stays stable.
+    const parsedAdvisorExt = (() => {
+      if (!person.extensions) return null;
       try {
         const parsed = JSON.parse(person.extensions);
-        practiceProfile = parsed.advisor ?? null;
-      } catch {
-        practiceProfile = null;
-      }
-    }
+        return parsed && typeof parsed === 'object' ? parsed.advisor ?? null : null;
+      } catch { return null; }
+    })();
+    const practiceProfile = {
+      practiceName: parsedAdvisorExt?.practiceName ?? null,
+      advisorTitle: parsedAdvisorExt?.advisorTitle ?? null,
+      practiceFocus: parsedAdvisorExt?.practiceFocus ?? null,
+    };
 
     const practiceLessonRows = await db
       .selectFrom('practice_lesson')

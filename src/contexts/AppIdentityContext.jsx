@@ -11,9 +11,9 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 const AppIdentityContext = createContext(null);
 
-export function AppIdentityProvider({ status, identity, children }) {
+export function AppIdentityProvider({ status, identity, updatePracticeProfile, children }) {
   return (
-    <AppIdentityContext.Provider value={{ status, identity }}>
+    <AppIdentityContext.Provider value={{ status, identity, updatePracticeProfile }}>
       {children}
     </AppIdentityContext.Provider>
   );

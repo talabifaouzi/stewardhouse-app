@@ -67,11 +67,15 @@ export default function AdvisorSurface() {
   // AppIdentityContext.identity.displayName + extensions.advisor.advisorTitle,
   // falling back to the fixture advisorPracticeProfile.
   const appIdentity = useOptionalAppIdentity();
+  const isAuthenticated = !!appIdentity;
   const advisorData = appIdentity?.identity?.advisor ?? null;
   const authenticatedName = appIdentity?.identity?.displayName ?? null;
   const authenticatedTitle = advisorData?.practiceProfile?.advisorTitle ?? null;
-  const userName = authenticatedName ?? advisorPracticeProfile.advisorName;
-  const userRole = authenticatedTitle ?? advisorPracticeProfile.advisorTitle;
+  // Fixture fallback ONLY on the public demo tree. On the authenticated
+  // tree an absent authenticatedTitle renders as null (Chrome hides the
+  // role slot when falsy) — never Morgan's fixture "Principal Advisor".
+  const userName = authenticatedName ?? (isAuthenticated ? '' : advisorPracticeProfile.advisorName);
+  const userRole = authenticatedTitle ?? (isAuthenticated ? null : advisorPracticeProfile.advisorTitle);
 
   // Cohorts + clients providers land on this surface too (slice 2 fold-in):
   //  - Cohorts: seed from identity.advisor.cohorts on auth (Morgan's 2

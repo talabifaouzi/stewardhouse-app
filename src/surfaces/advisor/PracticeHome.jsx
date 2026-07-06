@@ -9,8 +9,12 @@ import { useClients } from '../../contexts/ClientsContext.jsx';
 export default function PracticeHome() {
   const basePath = useBasePath('/advisor', '/app/advisor');
   const appIdentity = useOptionalAppIdentity();
+  const isAuthenticated = !!appIdentity;
   const practiceProfile = appIdentity?.identity?.advisor?.practiceProfile ?? null;
-  const practiceName = practiceProfile?.practiceName ?? advisorPracticeProfile.practiceName;
+  // Fixture fallback ONLY on the public demo tree. On auth with no
+  // practiceName set, we render a neutral heading — never Morgan's fixture.
+  const practiceName = practiceProfile?.practiceName
+    ?? (isAuthenticated ? 'Your practice' : advisorPracticeProfile.practiceName);
   const { clients } = useClients();
   // ADV-011 — static demo date aligned with the seed timeline (journal entry
   // April 28, upcoming sessions May 9-July 7). Live new Date() made
