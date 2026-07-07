@@ -7,11 +7,12 @@ the completion of the Advisor arc (through `597cbd6` — 2b-ii-b sessions,
 notes, membership). No `src/`, `functions/`, or `migrations/` changes in
 this pass. Output is THIS doc.
 
-**Status**: rulings CLOSED. FT ruled on E1–E12 per §11; three counsel-gated
-seams (E3, E6, E8) marked `pending` and isolated at the endpoint gate. NEXT
-deliverable = the schema draft at `docs/enterprise-persistence-schema-
-draft.md`, mirroring the shape of `docs/advisor-persistence-schema-
-draft.md` and written against the rulings below.
+**Status**: rulings CLOSED (E3 overridden, E8 amended). FT ruled on E1–E12
+per §11; three counsel-gated seams (E3, E6, E8) marked `pending` and
+isolated at the endpoint gate. NEXT deliverable = the schema draft at
+`docs/enterprise-persistence-schema-draft.md`, mirroring the shape of
+`docs/advisor-persistence-schema-draft.md` and written against the rulings
+below.
 
 HEAD at pass open: `597cbd6`. Inherits the persistence precedents banked
 during the Individual and Advisor arcs: gift writes/reads, intake
@@ -383,6 +384,22 @@ multi-tenancy?
   non-signing party. Same class as advisor Q7 — parked; the schema
   lands, the endpoint gate can hold until counsel confirms.
 
+- **FT RULING — OVERRIDE (retention inverted)**: agrees with structure
+  (b) — separate `athlete` table with nullable `person_id` linkage —
+  but INVERTS the retention posture drafted above. Athlete data belongs
+  to the athlete. When an athlete departs or is deleted, the cascade
+  removes ALL athlete-related data across the institution: contact
+  (email/phone), activity timeline, staff-authored notes about the
+  athlete, and reflections. Institutional residual on the `athlete`
+  row = **stub of name, class, sport ONLY** — "almost useless by
+  design." This is anonymize-to-stub, a sibling of the individual
+  schema's ruling E "anonymize-not-orphan" (per docs/ruling-e-deletion-
+  retention.md). Institutional PII does NOT survive the athlete-side
+  deletion; the historical cohort snapshot (E9) captures the aggregate
+  numeric trace only. Under-18 roster escalation flagged in the schema
+  docblock as a future case that may need a second cascade layer when
+  the athlete is a minor and the guardian holds deletion authority.
+
 **E4 — Advisor cross-role identity.** Morgan Walker is both an advisor
 person AND enterprise workshop facilitator. Single `person`, or two?
 
@@ -585,18 +602,18 @@ carry an EXPLICIT counsel-status flag: `pending`, `confirmed`, or
 
 | Ruling | FT decision | Counsel status | Notes |
 |---|---|---|---|
-| **E1** — Institution-scoping model | **(c)** institution owned via `institution_contact` with `is_default_operator` tie-break | — | |
-| **E2** — person.type for staff | **(a)** keep `staff` | — | |
-| **E3** — Athlete = person or separate | **(b)** separate `athlete` table with nullable `person_id` linkage | pending | riders: athlete-table deletion story is a named schema seam outside ruling E's person boundary; under-18 roster escalation flagged in docblock |
-| **E4** — Advisor cross-role identity | **(a)** single `person` row | — | `institution_contact.person_id` grants zero enterprise capability to the referenced person (docblock) |
-| **E5** — Cohort scope discriminator | **(b)** separate `cohort_period_snapshot` table | — | |
-| **E6** — Reflection ownership | **(c)** joint-owned with athlete-controlled visibility bit | pending | pre-claim visibility gap named: toggle exists only post-claim; program-level consent is the interim posture |
-| **E7** — compliance_audit enforcement | **(a)** endpoint-layer only | — | verify D1 trigger support at build time; layer DB-level enforcement then if cheap |
-| **E8** — connection_detail sensitivity | **(a)** institutional record, docblocked as caution | pending | `connection_detail` on never-emit side of the emit allowlist for all athlete-facing/cross-surface reads |
-| **E9** — Cohort snapshot: persist or derive | **(a)** persist `cohort_period_snapshot` rows | — | snapshot comparison never renders as ranking (#77 precedent extends to consumers of this table) |
-| **E10** — badge origin (Path B) | **(a)** staff-authored descriptive label ONLY, never derived, never a rank | — | three-layer enforcement: docblock + endpoint allowlist + seed-copy screen |
-| **E11** — Enterprise write-gate marker | **(b)** distinct `person.extensions.enterprise.demo_gate` marker | — | fix §7 rationale typo "Q3/Q6/Q8" → "E3/E6/E8" (applied) |
-| **E12** — SetupWizard: create-only vs edit | **(a)** wizard creates once; ongoing edits via Settings surface | — | |
+| **E1** — Institution-scoping model | **agree (c)** — multi-operator via `institution_contact`; `is_default_operator` tie-break | — | pilot has one institution — do not generalize multi-tenancy posture from this ruling |
+| **E2** — person.type for staff | **agree (a)** — keep `staff` | — | role granularity on `institution_contact.role_title` |
+| **E3** — Athlete = person or separate | **OVERRIDE — (b) structure, retention inverted** | pending | FT ruling: athlete data belongs to the athlete. Departure/deletion cascades ALL athlete-related data (contact, activity, staff notes about the athlete, reflections). Institutional residual = stub of name, class, sport ONLY — "almost useless by design." Anonymize-to-stub, sibling of ruling E anonymize-not-orphan. Nullable `person_id` retained. Counsel pending on unclaimed-row PII posture; under-18 escalation flagged in docblock |
+| **E4** — Advisor cross-role identity | **agree (a)** — single `person` row | — | `institution_contact.person_id` grants zero enterprise capability to the referenced person (docblock) |
+| **E5** — Cohort scope discriminator | **agree (b)** — separate `cohort_period_snapshot` table | — | separate tables, no scope discriminator |
+| **E6** — Reflection ownership | **agree (c)** — joint-owned with athlete-controlled visibility bit | pending | reflections are athlete-owned per E3 ruling — cascade on departure; visibility toggle governs during tenure; pre-claim gap covered by program-level consent, named honestly |
+| **E7** — compliance_audit enforcement | **agree (a)** — endpoint-layer only | — | verify D1 trigger support at build time; layer DB-level enforcement then if cheap |
+| **E8** — connection_detail sensitivity | **agree (a) AS AMENDED** — institutional record, docblocked; content convention below | pending | content convention: third parties identified by name + role from PUBLIC record only, never relational or private descriptors (e.g. "Board member Dana Reeves", NEVER "Coach Reeves's spouse"). `connection_detail` sits on never-emit side of emit allowlist for all athlete-facing/cross-surface reads. Counsel pending on legal inclusion limits (FT-named ambiguity) |
+| **E9** — Cohort snapshot: persist or derive | **agree (a)** — persist `cohort_period_snapshot` rows | — | NEW HARD INVARIANT from E3 override: snapshots store aggregates ONLY, zero per-athlete identifiable data — history must survive athlete deletion without retaining PII. Comparison never renders as ranking (#77 precedent) |
+| **E10** — badge origin (Path B) | **agree (a)** — staff-authored descriptive label ONLY, never derived, never a rank | — | three-layer enforcement: docblock + endpoint allowlist + seed-copy screen |
+| **E11** — Enterprise write-gate marker | **agree (b)** — distinct `person.extensions.enterprise.demo_gate` marker | — | fix §7 rationale typo "Q3/Q6/Q8" → "E3/E6/E8" (applied) |
+| **E12** — SetupWizard: create-only vs edit | **agree (a)** — wizard creates once; ongoing edits via Settings surface | — | year-rollover is a future NEW wizard |
 
 Once filled, the schema draft (`docs/enterprise-persistence-schema-
 draft.md`) can be written against these rulings, mirroring the shape of
