@@ -5,9 +5,13 @@
 Read-only investigation opening the Enterprise persistence arc, following
 the completion of the Advisor arc (through `597cbd6` — 2b-ii-b sessions,
 notes, membership). No `src/`, `functions/`, or `migrations/` changes in
-this pass. Output is THIS doc. NEXT deliverable = the design-ruling
-session against the 12 open questions collected below (E1–E12), then a
-schema draft mirroring the shape of `docs/advisor-persistence-schema-draft.md`.
+this pass. Output is THIS doc.
+
+**Status**: rulings CLOSED. FT ruled on E1–E12 per §11; three counsel-gated
+seams (E3, E6, E8) marked `pending` and isolated at the endpoint gate. NEXT
+deliverable = the schema draft at `docs/enterprise-persistence-schema-
+draft.md`, mirroring the shape of `docs/advisor-persistence-schema-
+draft.md` and written against the rulings below.
 
 HEAD at pass open: `597cbd6`. Inherits the persistence precedents banked
 during the Individual and Advisor arcs: gift writes/reads, intake
@@ -269,7 +273,7 @@ consent seam that mattered for advisor persistence sharpens here.
   athlete emails on `athlete.email` for staff contact. Explicit in the
   data-inventory.
 
-### 6.2 L2 legal (Derek-adjacent — recurrence of advisor Q7)
+### 6.2 L2 legal (counsel-gated — recurrence of advisor Q7)
 
 Three questions REMAIN counsel-gated (see E3, E6, E8):
 
@@ -318,7 +322,7 @@ Three questions REMAIN counsel-gated (see E3, E6, E8):
 
 Twelve questions organized by cluster. Each carries: (a) the question,
 (b) the options, (c) a RECOMMENDED position drafted below, (d) a
-counsel-flag if the answer is Derek-gated.
+counsel-flag if the answer is counsel-gated.
 
 ### 7.1 Structural rulings
 
@@ -354,7 +358,7 @@ multi-tenancy?
   operator-of-platform.
 
 **E3 — Athlete = `person` row, or separate `athlete` table with FK?**
-**Derek-adjacent.**
+**Counsel-gated.**
 
 - Options: (a) `athlete` is a `person` row with `type='individual'` and
   a claim path via institutional email; the fixture `athletes` maps 1:1
@@ -377,7 +381,7 @@ multi-tenancy?
 - **COUNSEL FLAG**: whether an unclaimed `athlete` row is "personal
   data" under privacy regimes when it stores a real name + email of a
   non-signing party. Same class as advisor Q7 — parked; the schema
-  lands, the endpoint gate can hold until Derek confirms.
+  lands, the endpoint gate can hold until counsel confirms.
 
 **E4 — Advisor cross-role identity.** Morgan Walker is both an advisor
 person AND enterprise workshop facilitator. Single `person`, or two?
@@ -429,7 +433,7 @@ snapshot) vs advisor `cohort` (practice-scoped roster).
 ### 7.2 Data-protection rulings (counsel-gated)
 
 **E6 — Athlete reflection ownership.** Athlete-authored, institution-
-visible. **Derek-adjacent.**
+visible. **Counsel-gated.**
 
 - Options: (a) athlete-owned (deleting the athlete's individual account
   cascades reflections away, even if the institution still sees them);
@@ -459,8 +463,7 @@ visible. **Derek-adjacent.**
   with a proper CHECK) can layer on when D1 grows support.
 
 **E8 — Exclusion `connection_detail` sensitivity.** Free-text can name
-individuals (e.g. "Coach Reeves's spouse serves on the board"). **Derek-
-adjacent.**
+individuals (e.g. "Coach Reeves's spouse serves on the board"). **Counsel-gated.**
 
 - Options: (a) treat as institutional record with no per-row access
   control; (b) mark as sensitive-field with restricted staff role
@@ -502,7 +505,7 @@ adjacent.**
 
 - **RECOMMENDED**: (b) distinct `person.extensions.enterprise.demo_gate`
   marker. Rationale: the advisor gate ships Q7-dark for client-side
-  writes; the enterprise gate ships until Q3/Q6/Q8 (E3/E6/E8) counsel
+  writes; the enterprise gate ships until E3/E6/E8 counsel
   clears the athletic-institutional PII posture. Same gate PATTERN (per-
   request check against the owning person row); distinct NAMESPACE so
   the two gates can lift independently. The `requireGatedAdvisor`
@@ -546,7 +549,7 @@ scoping stage.
 
 ## 9. Critical-path flag
 
-**Derek advances to critical-path for enterprise persistence.** Three
+**Counsel advances to critical-path for enterprise persistence.** Three
 questions (E3, E6, E8) are counsel-gated; parallel-scoping option holds
 (from the advisor arc precedent), meaning the schema draft can land with
 those seams marked and the gate (`$.enterprise.demo_gate`) can enforce
@@ -582,18 +585,18 @@ carry an EXPLICIT counsel-status flag: `pending`, `confirmed`, or
 
 | Ruling | FT decision | Counsel status | Notes |
 |---|---|---|---|
-| **E1** — Institution-scoping model | | | |
-| **E2** — person.type for staff | | | |
-| **E3** — Athlete = person or separate | | **counsel-gated** | |
-| **E4** — Advisor cross-role identity | | | |
-| **E5** — Cohort scope discriminator | | | |
-| **E6** — Reflection ownership | | **counsel-gated** | |
-| **E7** — compliance_audit enforcement | | | |
-| **E8** — connection_detail sensitivity | | **counsel-gated** | |
-| **E9** — Cohort snapshot: persist or derive | | | |
-| **E10** — badge origin (Path B) | | | |
-| **E11** — Enterprise write-gate marker | | | |
-| **E12** — SetupWizard: create-only vs edit | | | |
+| **E1** — Institution-scoping model | **(c)** institution owned via `institution_contact` with `is_default_operator` tie-break | — | |
+| **E2** — person.type for staff | **(a)** keep `staff` | — | |
+| **E3** — Athlete = person or separate | **(b)** separate `athlete` table with nullable `person_id` linkage | pending | riders: athlete-table deletion story is a named schema seam outside ruling E's person boundary; under-18 roster escalation flagged in docblock |
+| **E4** — Advisor cross-role identity | **(a)** single `person` row | — | `institution_contact.person_id` grants zero enterprise capability to the referenced person (docblock) |
+| **E5** — Cohort scope discriminator | **(b)** separate `cohort_period_snapshot` table | — | |
+| **E6** — Reflection ownership | **(c)** joint-owned with athlete-controlled visibility bit | pending | pre-claim visibility gap named: toggle exists only post-claim; program-level consent is the interim posture |
+| **E7** — compliance_audit enforcement | **(a)** endpoint-layer only | — | verify D1 trigger support at build time; layer DB-level enforcement then if cheap |
+| **E8** — connection_detail sensitivity | **(a)** institutional record, docblocked as caution | pending | `connection_detail` on never-emit side of the emit allowlist for all athlete-facing/cross-surface reads |
+| **E9** — Cohort snapshot: persist or derive | **(a)** persist `cohort_period_snapshot` rows | — | snapshot comparison never renders as ranking (#77 precedent extends to consumers of this table) |
+| **E10** — badge origin (Path B) | **(a)** staff-authored descriptive label ONLY, never derived, never a rank | — | three-layer enforcement: docblock + endpoint allowlist + seed-copy screen |
+| **E11** — Enterprise write-gate marker | **(b)** distinct `person.extensions.enterprise.demo_gate` marker | — | fix §7 rationale typo "Q3/Q6/Q8" → "E3/E6/E8" (applied) |
+| **E12** — SetupWizard: create-only vs edit | **(a)** wizard creates once; ongoing edits via Settings surface | — | |
 
 Once filled, the schema draft (`docs/enterprise-persistence-schema-
 draft.md`) can be written against these rulings, mirroring the shape of
