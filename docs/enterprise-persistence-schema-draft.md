@@ -13,11 +13,16 @@ precedent (fold-in providers, `demo_gate` role gate, per-request write-
 gate helper). Sequence: scope → rule → build; this is the **rule**
 artifact.
 
-**HELD: no migration until FT signs off on this draft.** No `src/`,
-`functions/`, or `migrations/` change this pass. The DDL below is a
-proposal, not applied.
+**SIGNED OFF (FT, open decisions ruled defer-to-team) — migration
+authoring unblocked against this ruled shape.** No `src/`,
+`functions/`, or `migrations/` change this pass. §11 review table
+below records the sign-off row-by-row. Four open decisions were ruled
+`RULED (FT, defer-to-team)` — the drafted team recommendations are
+thereby adopted as the ruled positions and reflected in §3.3 (DDL),
+§4.2 (deletion mechanics), §7 (seed story), and §9 (open items).
 
-HEAD at draft: `efdbf9c`.
+HEAD at draft: `efdbf9c` (subsequent sign-off amendments in this
+commit).
 
 Cross-references: `docs/enterprise-persistence-scoping.md` (inventory +
 E1-E12 rulings + §7 E3 override paragraph); `docs/advisor-persistence-
@@ -209,9 +214,12 @@ CREATE TABLE athlete (
   -- E3 linkage: nullable. Populated when the athlete claims an
   -- individual account via magic-link. When populated and the athlete
   -- later deletes their individual account, ruling E person-boundary
-  -- deletion cascades through this column (see 4.2 for the exact
-  -- mechanics).
-  person_id                TEXT REFERENCES person(id) ON DELETE CASCADE,
+  -- deletion clears this column and the endpoint-layer anonymize-to-
+  -- stub step runs on the surviving athlete row (see §4.2 for the
+  -- exact mechanics).
+  -- E3/§4.2 RULED Option B: SET NULL; anonymize-to-stub runs at
+  -- endpoint layer.
+  person_id                TEXT REFERENCES person(id) ON DELETE SET NULL,
 
   -- STUB COLUMNS (survive E3 anonymize-to-stub).
   -- These three fields are retained after any athlete-side deletion.
@@ -724,13 +732,13 @@ at anonymize time. Anonymize-to-stub mechanics:
 6. `join_date` → NULL.
 7. `person_id` → NULL (the E3 override treats the person linkage as
    athlete-boundary data too).
-8. `name` retention posture: **anonymize to first name only, OR
-   replace with `'redacted'`** — TO BE RULED at build time by FT.
-   The scoping-doc §11 note says "stub of name, class, sport ONLY";
-   whether "name" is full-name-retained or first-name-only or
-   redacted-string is a small ruling. Recommendation: `'redacted'`
-   for full anonymization; class + sport carry the cohort-tally
-   value without the identity.
+8. `name` retention posture: **RULED (FT, defer-to-team) — name →
+   `'redacted'` at anonymize time.** Full anonymization; class + sport
+   carry the cohort-tally value without the identity. The scoping-doc
+   §11 "stub of name, class, sport ONLY" phrasing is satisfied by the
+   literal string `'redacted'` occupying the `name` column — the row
+   still carries three retained values (name / year / sport), the
+   name value just no longer identifies.
 
 `athlete_id` on downstream cascaded tables is nulled/deleted per each
 table's `ON DELETE CASCADE`. The stub row's `id` (PK) stays stable so
@@ -742,22 +750,19 @@ moot.
 **Institutional withdrawal from the platform-wide deletion cascade**:
 if the individual-side `person` row for a claimed athlete is deleted
 via ruling E cascade, the E3 override says the enterprise-side
-athlete row anonymizes-to-stub (via `athlete.person_id ON DELETE
-CASCADE` on the linkage column — which per the current DDL sketch is
-CASCADE, not SET NULL). Two options at build time:
+athlete row anonymizes-to-stub. Two options were considered:
 
-- **Option A (current DDL)**: `person_id ON DELETE CASCADE` — the
+- **Option A — REJECTED**: `person_id ON DELETE CASCADE` — the
   athlete row itself vanishes when the linked person is deleted.
-  Then the stub retention discipline needs a separate anonymize
-  step run BEFORE the cascade (endpoint pre-delete hook).
-- **Option B**: `person_id ON DELETE SET NULL` — the linkage clears
-  but the athlete row survives; anonymize-to-stub runs as the
-  cascade's action (via endpoint contract or trigger).
-
-**Recommendation**: Option B — matches the ruling E anonymize-not-orphan
-precedent shape more cleanly. `SET NULL` at the FK, and the anonymize-
-to-stub step runs at endpoint layer on the athlete-side DELETE. TO BE
-RULED at build time.
+  Rejected because it would delete the institutional cohort-tally
+  stub the E3 override retains, and would require a separate
+  anonymize step BEFORE the cascade to preserve the stub — an
+  extra endpoint pre-delete hook that adds a coupling seam.
+- **Option B — RULED (FT, defer-to-team)**: `person_id ON DELETE
+  SET NULL` — the linkage clears but the athlete row survives;
+  anonymize-to-stub runs as the athlete-side DELETE endpoint's
+  action. Matches the ruling E anonymize-not-orphan precedent
+  shape. §3.3 DDL is updated to `ON DELETE SET NULL` accordingly.
 
 ### 4.3 Counsel-gated seams (isolated per Q7/ruling-E precedent)
 
@@ -1064,26 +1069,25 @@ individual-schema ruling E precedents.
 
 ---
 
-## 11. FT schema review — OPEN
+## 11. FT schema review — SIGNED OFF
 
-FT reviews the DDL sketches, retention mechanics, gate posture, and
-seed options above. Sign-off closes the rule → build gate; migration
-authoring can begin against the ruled shape below.
+FT ruled DEFER-TO-TEAM on the four open decisions; the drafted team
+recommendations are thereby adopted as the ruled positions. Migration
+authoring is unblocked against the shape below.
 
 | Item | FT sign-off | Notes |
 |---|---|---|
-| §3 DDL sketches (12 tables) | | |
-| §4.2 athlete-boundary cascade (E3 override mechanics) | | |
-| §4.2 name-retention posture (full / first-only / redacted) | | |
-| §4.2 person_id FK direction (CASCADE vs SET NULL) | | |
-| §5 Parker invariants coverage | | |
-| §6 gate posture (uniform across all 12 write endpoints) | | |
-| §7 Diane / Jordan reconciliation (Option A / B / C) | | |
-| §7 athlete seed strategy (slim scope vs full seed) | | |
-| §8 index list | | |
-| §9 open-items dispositions | | |
+| §3 DDL sketches (12 tables) | SIGNED OFF | with the §4.2 FK amendment below |
+| §4.2 athlete-boundary cascade (E3 override mechanics) | SIGNED OFF | E3 override mechanics as drafted |
+| §4.2 name-retention posture (full / first-only / redacted) | RULED (FT, defer-to-team) — `'redacted'` | full anonymization; class + sport carry cohort-tally value without identity |
+| §4.2 person_id FK direction (CASCADE vs SET NULL) | RULED (FT, defer-to-team) — Option B, `ON DELETE SET NULL` | anonymize-to-stub runs at endpoint layer on athlete-side delete; matches ruling E anonymize-not-orphan shape |
+| §5 Parker invariants coverage | SIGNED OFF | |
+| §6 gate posture (uniform across all 12 write endpoints) | SIGNED OFF | uniform `$.enterprise.demo_gate` across all write endpoints |
+| §7 Diane / Jordan reconciliation (Option A / B / C) | RULED (FT, defer-to-team) — Option C | Diane added fresh as operator, Jordan stays residual staff; demonstrates E1 multi-contact model with real seed data |
+| §7 athlete seed strategy (slim scope vs full seed) | RULED (FT) — ONBOARDING (slim) | zero athlete rows in seed; real athletes enter D1 exclusively through the gated roster-add write path, exercising the E11 gate + E8 content convention + E6 consent copy as designed; fixture athletes stay in fixture files powering the public demo; highest-PII-tier content never enters D1 as fictional filler (advisor slim-seed precedent) |
+| §8 index list | SIGNED OFF | 4 unindexed person-side reverse FKs accepted — no "my X" read at pilot; flag if any becomes a required read |
+| §9 open-items dispositions | SIGNED OFF | Sunset-on-anonymize accepted (FT, defer-to-team): `enrollment_status` is NOT NULL and `'Sunset'` carries no personal signal; noted as the one stub datum beyond name/class/sport |
 
-Once signed off, the migration file can be authored against this
-draft. Any FT amendment mid-review lands as an inline edit here with
-a **FT AMENDMENT** marker; substantive shape changes reopen the
-relevant ruling (E1-E12) rather than being applied silently.
+Any FT amendment lands as an inline edit here with a **FT AMENDMENT**
+marker; substantive shape changes reopen the relevant ruling (E1-E12)
+rather than being applied silently.

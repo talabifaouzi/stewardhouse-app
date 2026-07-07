@@ -270,6 +270,11 @@ Every substantive change runs as a **slice**. The rhythm:
     extract a shared basePath-derivation helper once 2+ files need it
     (per the standard #47/#57 threshold) rather than duplicating the
     logic per file.
+12. **Secrets discipline (agent-prompt-discipline rule).** Secrets files
+    (`.dev.vars`, any credential store) must never be read or referenced
+    in agent sessions; any transcript that surfaces secret material
+    triggers immediate key rotation (`RESEND_API_KEY` rotated 2026-07-07
+    after a context-compaction surfacing).
 
 Stop background shells (dev server, watch loops) at bank time. Use `TaskStop`,
 not `kill`.
