@@ -147,6 +147,13 @@ export async function onRequestPost(context) {
   const forbidden = rejectRankKeys(body);
   if (forbidden) return jsonError(`Field "${forbidden}" is not permitted`, 400);
 
+  // R1 (docs/client-record-rulings.md): stage defaults to 'New' SERVER-SIDE
+  // when omitted. A form-only default breaks future non-form callers (e.g.
+  // a CLI ingest tool, a bulk-import script, a partner integration). Do it
+  // once here so every caller of the endpoint benefits. When stage IS
+  // present, the enum is still enforced by validateClientBody.
+  if (body.stage === undefined) body.stage = 'New';
+
   const validated = validateClientBody(body, { requireAll: true });
   if (validated.error) return jsonError(validated.error, 400);
   const f = validated.fields;

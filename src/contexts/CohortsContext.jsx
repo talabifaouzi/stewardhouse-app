@@ -76,9 +76,68 @@ export function CohortsProvider({ children, initialState }) {
     }
   }, [authenticated]);
 
+  const addMember = useCallback(async (cohortId, clientId) => {
+    if (!authenticated) {
+      setCohorts((prev) => prev.map((c) => (
+        c.id === cohortId && !(c.memberIds || []).includes(clientId)
+          ? { ...c, memberIds: [...(c.memberIds || []), clientId] }
+          : c
+      )));
+      return { cohortId, clientId };
+    }
+    try {
+      const res = await fetch('/api/cohort-members', {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cohortId, clientId }),
+      });
+      if (!res.ok) throw new Error(await serverError(res, 'Failed to add member'));
+      const saved = await res.json();
+      setCohorts((prev) => prev.map((c) => (
+        c.id === cohortId
+          ? { ...c, memberIds: [...(c.memberIds || []), clientId] }
+          : c
+      )));
+      setWriteError(null);
+      return saved;
+    } catch (err) {
+      setWriteError(err.message || 'Failed to add member');
+      return null;
+    }
+  }, [authenticated]);
+
+  const removeMember = useCallback(async (cohortId, clientId) => {
+    if (!authenticated) {
+      setCohorts((prev) => prev.map((c) => (
+        c.id === cohortId
+          ? { ...c, memberIds: (c.memberIds || []).filter((id) => id !== clientId) }
+          : c
+      )));
+      return true;
+    }
+    try {
+      const res = await fetch('/api/cohort-members', {
+        method: 'DELETE', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cohortId, clientId }),
+      });
+      if (!res.ok) throw new Error(await serverError(res, 'Failed to remove member'));
+      setCohorts((prev) => prev.map((c) => (
+        c.id === cohortId
+          ? { ...c, memberIds: (c.memberIds || []).filter((id) => id !== clientId) }
+          : c
+      )));
+      setWriteError(null);
+      return true;
+    } catch (err) {
+      setWriteError(err.message || 'Failed to remove member');
+      return false;
+    }
+  }, [authenticated]);
+
   const value = useMemo(
-    () => ({ cohorts, add, update, writeError, clearWriteError }),
-    [cohorts, add, update, writeError, clearWriteError],
+    () => ({ cohorts, add, update, addMember, removeMember, writeError, clearWriteError }),
+    [cohorts, add, update, addMember, removeMember, writeError, clearWriteError],
   );
 
   return (

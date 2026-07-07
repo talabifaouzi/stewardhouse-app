@@ -1,12 +1,47 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
+import { Icon } from '../../components/Icon.jsx';
 import { formatSessionDate } from '../../data/clients.js';
 import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 import { useCohorts } from '../../contexts/CohortsContext.jsx';
 
 export default function CohortSpace() {
   const basePath = useBasePath('/advisor', '/app/advisor');
-  const { cohorts } = useCohorts();
+  const { cohorts, add } = useCohorts();
+
+  const [isAddingCohort, setIsAddingCohort] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newFocus, setNewFocus] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
+  const openAdd = () => {
+    setNewName(''); setNewFocus(''); setSaveError('');
+    setIsAddingCohort(true);
+  };
+  const cancelAdd = () => {
+    setNewName(''); setNewFocus(''); setSaveError('');
+    setIsAddingCohort(false);
+  };
+  const saveCohort = async () => {
+    const name = newName.trim();
+    if (!name) { setSaveError('Name is required.'); return; }
+    setSaving(true);
+    setSaveError('');
+    const focus = newFocus.trim();
+    // R1 philosophy: minimal name-only create; focus is a small optional
+    // one-liner. Other fields (started, nextSessionDate, summary,
+    // externalMembers, updates, sessions, assignedLessons) filled through
+    // use via edit later.
+    const payload = focus ? { name, focus } : { name };
+    const result = await add(payload);
+    setSaving(false);
+    if (!result) { setSaveError('Could not save. Please try again.'); return; }
+    cancelAdd();
+  };
+
   return (
     <main style={{
       maxWidth: 'var(--sh-content-max)',
@@ -23,14 +58,44 @@ export default function CohortSpace() {
         }}>
           Cohorts
         </p>
-        <h1 style={{
-          fontFamily: 'var(--sh-font-serif)',
-          fontSize: 'var(--sh-text-2xl)',
-          color: 'var(--sh-text-primary)',
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'baseline',
+          gap: 'var(--sh-space-4)',
           marginBottom: 'var(--sh-space-2)',
+          flexWrap: 'wrap',
         }}>
-          Cohorts and workshops
-        </h1>
+          <h1 style={{
+            fontFamily: 'var(--sh-font-serif)',
+            fontSize: 'var(--sh-text-2xl)',
+            color: 'var(--sh-text-primary)',
+          }}>
+            Cohorts and workshops
+          </h1>
+          {!isAddingCohort && (
+            <button
+              type="button"
+              onClick={openAdd}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'var(--sh-space-1)',
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+                color: 'var(--sh-bronze)',
+                fontSize: 'var(--sh-text-sm)',
+                fontFamily: 'inherit',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <Icon name="plus" />
+              New cohort
+            </button>
+          )}
+        </div>
         <p style={{
           fontSize: 'var(--sh-text-md)',
           color: 'var(--sh-text-secondary)',
@@ -41,21 +106,78 @@ export default function CohortSpace() {
         </p>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-        gap: 'var(--sh-space-5)',
-      }}>
-        {cohorts.map(cohort => (
-          <Link
-            key={cohort.id}
-            to={`${basePath}/cohorts/${cohort.id}`}
-            style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
-          >
-            <CohortCard cohort={cohort} />
-          </Link>
-        ))}
-      </div>
+      {isAddingCohort && (
+        <Card style={{ marginBottom: 'var(--sh-space-6)' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-4)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-1)' }}>
+              <label htmlFor="new-cohort-name" style={fieldLabelStyle}>Name</label>
+              <input
+                id="new-cohort-name"
+                type="text"
+                autoFocus
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="What is this cohort called"
+                style={fieldInputStyle}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-1)' }}>
+              <label htmlFor="new-cohort-focus" style={fieldLabelStyle}>Focus (optional)</label>
+              <input
+                id="new-cohort-focus"
+                type="text"
+                value={newFocus}
+                onChange={(e) => setNewFocus(e.target.value)}
+                placeholder="A short line about what this cohort is about"
+                style={fieldInputStyle}
+              />
+            </div>
+            {saveError && (
+              <p role="alert" style={{
+                fontSize: 'var(--sh-text-xs)',
+                color: 'var(--sh-text-muted)',
+                fontStyle: 'italic',
+              }}>{saveError}</p>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--sh-space-2)', flexWrap: 'wrap' }}>
+              <Button variant="ghost" onClick={cancelAdd} disabled={saving}>Cancel</Button>
+              <Button variant="primary" onClick={saveCohort} disabled={saving || !newName.trim()}>
+                {saving ? 'Saving…' : 'Save'}
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      {cohorts.length === 0 ? (
+        <Card tint>
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-muted)',
+            textAlign: 'center',
+            padding: 'var(--sh-space-6)',
+            fontStyle: 'italic',
+          }}>
+            Your cohorts will appear here.
+          </p>
+        </Card>
+      ) : (
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gap: 'var(--sh-space-5)',
+        }}>
+          {cohorts.map(cohort => (
+            <Link
+              key={cohort.id}
+              to={`${basePath}/cohorts/${cohort.id}`}
+              style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}
+            >
+              <CohortCard cohort={cohort} />
+            </Link>
+          ))}
+        </div>
+      )}
     </main>
   );
 }
@@ -99,7 +221,7 @@ function CohortCard({ cohort }) {
         paddingTop: 'var(--sh-space-3)',
         borderTop: 'var(--sh-border-divider)',
       }}>
-        <Meta label="Members" value={cohort.memberIds.length + (cohort.externalMembers || 0)} />
+        <Meta label="Members" value={(cohort.memberIds?.length ?? 0) + (cohort.externalMembers || 0)} />
         <Meta label="Started" value={cohort.started} />
         <Meta label="Next" value={formatSessionDate(cohort.nextSession)} />
       </div>
@@ -128,3 +250,20 @@ function Meta({ label, value }) {
     </div>
   );
 }
+
+const fieldLabelStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+};
+
+const fieldInputStyle = {
+  padding: 'var(--sh-space-2) var(--sh-space-3)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: 'var(--sh-radius-md)',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-primary)',
+  background: 'var(--sh-card)',
+  fontFamily: 'inherit',
+};

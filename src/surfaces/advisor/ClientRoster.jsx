@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
+import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
+import { Icon } from '../../components/Icon.jsx';
 import { formatSessionDate, stages } from '../../data/clients.js';
 import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 import { useClients } from '../../contexts/ClientsContext.jsx';
@@ -24,8 +26,41 @@ function parseSingleSelect(raw, validValues, defaultValue) {
   return validValues.includes(raw) ? raw : defaultValue;
 }
 
+// R1 initials algorithm: first grapheme of first token + first grapheme of
+// last token, uppercase; single-token names take the first two graphemes.
+// Uses `Array.from` so multi-code-unit graphemes (e.g. accented chars) are
+// not split mid-surrogate.
+function deriveInitials(name) {
+  const trimmed = (name || '').trim();
+  if (!trimmed) return '';
+  const tokens = trimmed.split(/\s+/);
+  if (tokens.length === 1) {
+    return Array.from(tokens[0]).slice(0, 2).join('').toUpperCase();
+  }
+  const first = Array.from(tokens[0])[0] ?? '';
+  const last = Array.from(tokens[tokens.length - 1])[0] ?? '';
+  return (first + last).toUpperCase();
+}
+
+// R6 sort: primary next_session_date ascending (null / absent dates LAST),
+// secondary alphabetical by name as tiebreak. No stage in the ordering.
+function sortRoster(list) {
+  const copy = [...list];
+  copy.sort((a, b) => {
+    const ad = a?.nextSession || null;
+    const bd = b?.nextSession || null;
+    if (ad && bd) {
+      if (ad < bd) return -1;
+      if (ad > bd) return 1;
+    } else if (ad && !bd) return -1;
+    else if (!ad && bd) return 1;
+    return (a?.name || '').localeCompare(b?.name || '');
+  });
+  return copy;
+}
+
 export default function ClientRoster() {
-  const { clients } = useClients();
+  const { clients, add } = useClients();
   const [searchParams, setSearchParams] = useSearchParams();
 
   // URL-derived state — re-read on every render so back/forward + direct
@@ -70,12 +105,53 @@ export default function ClientRoster() {
     writeParam('sport', next, next === 'All');
   }
 
-  const filtered = clients.filter(c => {
+  const filtered = sortRoster(clients.filter(c => {
     if (activeStage !== 'All' && c.stage !== activeStage) return false;
     if (activeSport !== 'All' && c.sport !== activeSport) return false;
     if (qFromUrl && !c.name.toLowerCase().includes(qFromUrl.toLowerCase())) return false;
     return true;
-  });
+  }));
+
+  // New-client inline form (Documentation add-section precedent).
+  const [isAddingClient, setIsAddingClient] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newInitials, setNewInitials] = useState('');
+  const [initialsTouched, setInitialsTouched] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
+  const derivedInitials = deriveInitials(newName);
+  const displayInitials = initialsTouched ? newInitials : derivedInitials;
+
+  const openAddClient = () => {
+    setNewName(''); setNewInitials(''); setInitialsTouched(false);
+    setSaveError(''); setIsAddingClient(true);
+  };
+  const cancelAddClient = () => {
+    setNewName(''); setNewInitials(''); setInitialsTouched(false);
+    setSaveError(''); setIsAddingClient(false);
+  };
+  const onNameChange = (v) => {
+    setNewName(v);
+    if (!initialsTouched) setNewInitials(deriveInitials(v));
+  };
+  const onInitialsChange = (v) => {
+    setNewInitials(v.toUpperCase());
+    setInitialsTouched(true);
+  };
+  const saveClient = async () => {
+    const name = newName.trim();
+    if (!name) { setSaveError('Name is required.'); return; }
+    setSaving(true);
+    setSaveError('');
+    // R1: only name + initials are submitted. Stage defaults server-side to
+    // 'New' when key is omitted. No sport/level/etc — filled through use later.
+    const payload = { name, initials: displayInitials || null };
+    const result = await add(payload);
+    setSaving(false);
+    if (!result) { setSaveError('Could not save. Please try again.'); return; }
+    cancelAddClient();
+  };
 
   return (
     <main style={{
@@ -93,14 +169,90 @@ export default function ClientRoster() {
         }}>
           Roster
         </p>
-        <h1 style={{
-          fontFamily: 'var(--sh-font-serif)',
-          fontSize: 'var(--sh-text-2xl)',
-          color: 'var(--sh-text-primary)',
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'baseline',
+          gap: 'var(--sh-space-4)',
+          flexWrap: 'wrap',
         }}>
-          Clients
-        </h1>
+          <h1 style={{
+            fontFamily: 'var(--sh-font-serif)',
+            fontSize: 'var(--sh-text-2xl)',
+            color: 'var(--sh-text-primary)',
+          }}>
+            Clients
+          </h1>
+          {!isAddingClient && (
+            <button
+              type="button"
+              onClick={openAddClient}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 'var(--sh-space-1)',
+                background: 'transparent',
+                border: 'none',
+                padding: 0,
+                color: 'var(--sh-bronze)',
+                fontSize: 'var(--sh-text-sm)',
+                fontFamily: 'inherit',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              <Icon name="plus" />
+              New client
+            </button>
+          )}
+        </div>
       </div>
+
+      {isAddingClient && (
+        <Card style={{ marginBottom: 'var(--sh-space-6)' }}>
+          <div style={{
+            display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-4)',
+          }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-1)' }}>
+              <label htmlFor="new-client-name" style={fieldLabelStyle}>Name</label>
+              <input
+                id="new-client-name"
+                type="text"
+                autoFocus
+                value={newName}
+                onChange={(e) => onNameChange(e.target.value)}
+                placeholder="Client name"
+                style={fieldInputStyle}
+              />
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-1)', maxWidth: '160px' }}>
+              <label htmlFor="new-client-initials" style={fieldLabelStyle}>Initials</label>
+              <input
+                id="new-client-initials"
+                type="text"
+                value={displayInitials}
+                onChange={(e) => onInitialsChange(e.target.value)}
+                placeholder="—"
+                maxLength={4}
+                style={{ ...fieldInputStyle, textAlign: 'center', letterSpacing: '0.04em', fontWeight: 500 }}
+              />
+            </div>
+            {saveError && (
+              <p role="alert" style={{
+                fontSize: 'var(--sh-text-xs)',
+                color: 'var(--sh-text-muted)',
+                fontStyle: 'italic',
+              }}>{saveError}</p>
+            )}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--sh-space-2)', flexWrap: 'wrap' }}>
+              <Button variant="ghost" onClick={cancelAddClient} disabled={saving}>Cancel</Button>
+              <Button variant="primary" onClick={saveClient} disabled={saving || !newName.trim()}>
+                {saving ? 'Saving…' : 'Save'}
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Filters */}
       <Card padding="sm" style={{ marginBottom: 'var(--sh-space-6)' }}>
@@ -343,3 +495,20 @@ function StageBadge({ stage }) {
     </span>
   );
 }
+
+const fieldLabelStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+};
+
+const fieldInputStyle = {
+  padding: 'var(--sh-space-2) var(--sh-space-3)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: 'var(--sh-radius-md)',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-primary)',
+  background: 'var(--sh-card)',
+  fontFamily: 'inherit',
+};
