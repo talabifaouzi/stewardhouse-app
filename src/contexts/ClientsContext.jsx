@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import { clients as clientsFixture } from '../data/clients.js';
 
-// Advisor-scoped client roster with write-through mutations (2b-i).
+// Advisor-scoped client roster with write-through mutations.
 //
 // Copies PracticeContentProvider's write-through pattern exactly:
 //   authenticated = initialState !== undefined
@@ -10,13 +10,40 @@ import { clients as clientsFixture } from '../data/clients.js';
 // await POST/PUT then setState on success (optimistic-none). writeError +
 // clearWriteError exposed for consumer error surfacing.
 //
-// State shape divergence between trees is intentional at this slice:
-//  - Demo tree: fixture uses `sessions` + `privateNotes` (existing consumer
-//    reads at ClientWorkspace.jsx:50/:191). Provider's demo addSession /
-//    addNote append there.
-//  - Auth tree: /api/me emits `clientSessions` + `clientNotes` (0-length
-//    at seed). Provider's auth addSession / addNote append there.
-// 2b-ii resolves the consumer/shape gap when it wires the reads.
+// ============================================================================
+// CANONICAL CLIENT SHAPE (2b-ii-a — provider-boundary normalization).
+// ============================================================================
+// Every client object exposed via useClients() carries the FIXTURE keys:
+//   client.sessions        (was clientSessions on /api/me)
+//   client.privateNotes    (was clientNotes on /api/me)
+// The demo tree already ships fixture-shape via src/data/clients.js.
+// The authenticated tree passes through `normalizeClientFromServer` at
+// provider mount, which renames the two /api/me keys to their fixture
+// equivalents. From this line down, consumers never see clientSessions /
+// clientNotes — the two-shape era ended here.
+//
+// Rationale for provider-boundary normalization (option a):
+//   * Consumers stay as-is (ClientWorkspace reads client.sessions and
+//     client.privateNotes with no fallback chain).
+//   * One adapter, one file, one place to grep — no shape drift when
+//     future consumers land.
+//   * addSession / addNote below append to the canonical keys on BOTH
+//     trees uniformly — no tree-specific branch.
+// ============================================================================
+
+function normalizeClientFromServer(client) {
+  if (!client || typeof client !== 'object') return client;
+  const { clientSessions, clientNotes, ...rest } = client;
+  return {
+    ...rest,
+    sessions: Array.isArray(clientSessions) ? clientSessions : (rest.sessions ?? []),
+    privateNotes: Array.isArray(clientNotes) ? clientNotes : (rest.privateNotes ?? []),
+  };
+}
+
+function normalizeClientsFromServer(list) {
+  return Array.isArray(list) ? list.map(normalizeClientFromServer) : list;
+}
 
 const ClientsContext = createContext(null);
 
@@ -29,7 +56,9 @@ async function serverError(res, fallback) {
 
 export function ClientsProvider({ children, initialState }) {
   const authenticated = initialState !== undefined;
-  const [clients, setClients] = useState(initialState ?? clientsFixture);
+  const [clients, setClients] = useState(
+    authenticated ? normalizeClientsFromServer(initialState) : clientsFixture
+  );
   const [writeError, setWriteError] = useState(null);
 
   const clearWriteError = useCallback(() => setWriteError(null), []);
@@ -46,7 +75,7 @@ export function ClientsProvider({ children, initialState }) {
         body: JSON.stringify(client),
       });
       if (!res.ok) throw new Error(await serverError(res, 'Failed to save client'));
-      const saved = await res.json();
+      const saved = normalizeClientFromServer(await res.json());
       setClients((prev) => [...prev, saved]);
       setWriteError(null);
       return saved;
@@ -68,7 +97,10 @@ export function ClientsProvider({ children, initialState }) {
         body: JSON.stringify(patch),
       });
       if (!res.ok) throw new Error(await serverError(res, 'Failed to update client'));
-      const saved = await res.json();
+      const saved = normalizeClientFromServer(await res.json());
+      // Merge saved fields into existing row — preserves any consumer-side
+      // sessions/privateNotes that aren't returned by PUT (endpoint returns
+      // fresh client core, not the nested arrays).
       setClients((prev) => prev.map((c) => (c.id === id ? { ...c, ...saved } : c)));
       setWriteError(null);
       return saved;
@@ -78,9 +110,12 @@ export function ClientsProvider({ children, initialState }) {
     }
   }, [authenticated]);
 
+  // addSession / addNote both append to the CANONICAL keys (`sessions`,
+  // `privateNotes`) uniformly across trees — the provider-boundary
+  // normalization above erased the two-shape era.
+
   const addSession = useCallback(async (clientId, session) => {
     if (!authenticated) {
-      // Demo shape: append to client.sessions (fixture key).
       setClients((prev) => prev.map((c) => (
         c.id === clientId
           ? { ...c, sessions: [session, ...(c.sessions || [])] }
@@ -96,10 +131,9 @@ export function ClientsProvider({ children, initialState }) {
       });
       if (!res.ok) throw new Error(await serverError(res, 'Failed to save session'));
       const saved = await res.json();
-      // Auth shape: append to client.clientSessions (server key).
       setClients((prev) => prev.map((c) => (
         c.id === clientId
-          ? { ...c, clientSessions: [saved, ...(c.clientSessions || [])] }
+          ? { ...c, sessions: [saved, ...(c.sessions || [])] }
           : c
       )));
       setWriteError(null);
@@ -112,7 +146,6 @@ export function ClientsProvider({ children, initialState }) {
 
   const addNote = useCallback(async (clientId, note) => {
     if (!authenticated) {
-      // Demo shape: append to client.privateNotes (fixture key).
       setClients((prev) => prev.map((c) => (
         c.id === clientId
           ? { ...c, privateNotes: [note, ...(c.privateNotes || [])] }
@@ -128,10 +161,9 @@ export function ClientsProvider({ children, initialState }) {
       });
       if (!res.ok) throw new Error(await serverError(res, 'Failed to save note'));
       const saved = await res.json();
-      // Auth shape: append to client.clientNotes (server key).
       setClients((prev) => prev.map((c) => (
         c.id === clientId
-          ? { ...c, clientNotes: [saved, ...(c.clientNotes || [])] }
+          ? { ...c, privateNotes: [saved, ...(c.privateNotes || [])] }
           : c
       )));
       setWriteError(null);

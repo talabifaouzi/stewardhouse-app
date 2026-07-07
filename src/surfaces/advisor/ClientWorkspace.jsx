@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
+import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
 import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { formatSessionDate } from '../../data/clients.js';
+import { formatSessionDate, stages } from '../../data/clients.js';
 import { contentTypes, getLessonById } from '../../data/content.js';
 import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 import { useClients } from '../../contexts/ClientsContext.jsx';
@@ -40,7 +41,7 @@ function capitalize(s) {
 export default function ClientWorkspace() {
   const { clientId } = useParams();
   const basePath = useBasePath('/advisor', '/app/advisor');
-  const { clients } = useClients();
+  const { clients, update } = useClients();
   const { cohorts } = useCohorts();
   const client = clients.find(c => c.id === clientId);
 
@@ -75,92 +76,14 @@ export default function ClientWorkspace() {
         <span>{client.name}</span>
       </div>
 
-      {/* Header — client identity */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        gap: 'var(--sh-space-5)',
-        marginBottom: 'var(--sh-space-8)',
-      }}>
-        <div style={{
-          width: '64px',
-          height: '64px',
-          borderRadius: '50%',
-          background: 'var(--sh-bronze-tint)',
-          color: 'var(--sh-bronze-deep)',
-          fontSize: 'var(--sh-text-md)',
-          fontWeight: 500,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          letterSpacing: '0.04em',
-          flexShrink: 0,
-        }}>
-          {client.initials}
-        </div>
-        <div style={{ flex: 1 }}>
-          <h1 style={{
-            fontFamily: 'var(--sh-font-serif)',
-            fontSize: 'var(--sh-text-2xl)',
-            color: 'var(--sh-text-primary)',
-            marginBottom: 'var(--sh-space-2)',
-          }}>
-            {client.name}
-          </h1>
-          <p style={{
-            fontSize: 'var(--sh-text-sm)',
-            color: 'var(--sh-text-muted)',
-            marginBottom: isSunset ? 'var(--sh-space-1)' : 'var(--sh-space-3)',
-          }}>
-            {client.sport} · {client.level} · {client.stage} · relationship started {client.relationshipStartedYear}
-          </p>
-          {isSunset && (
-            <p style={{
-              fontSize: 'var(--sh-text-xs)',
-              color: 'var(--sh-text-muted)',
-              fontStyle: 'italic',
-              marginBottom: 'var(--sh-space-3)',
-              letterSpacing: '0.02em',
-            }}>
-              (Sunset — relationship closing)
-            </p>
-          )}
-          {cohortMatches.length > 0 && (
-            <p style={{
-              fontSize: 'var(--sh-text-xs)',
-              color: 'var(--sh-text-muted)',
-              marginBottom: 'var(--sh-space-3)',
-              letterSpacing: '0.02em',
-            }}>
-              {cohortMatches.length === 1 ? 'Cohort' : 'Cohorts'}
-              {' · '}
-              {cohortMatches.map((c, idx) => (
-                <span key={c.id}>
-                  {idx > 0 && ' · '}
-                  <Link
-                    to={`${basePath}/cohorts/${c.id}`}
-                    style={{
-                      color: 'var(--sh-text-muted)',
-                      fontStyle: 'italic',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    {c.name}
-                  </Link>
-                </span>
-              ))}
-            </p>
-          )}
-          <p style={{
-            fontSize: 'var(--sh-text-md)',
-            color: 'var(--sh-text-body)',
-            lineHeight: 1.6,
-            maxWidth: '720px',
-          }}>
-            {client.summary}
-          </p>
-        </div>
-      </div>
+      {/* Header — client identity (display or edit) */}
+      <IdentityBlock
+        client={client}
+        cohortMatches={cohortMatches}
+        basePath={basePath}
+        isSunset={isSunset}
+        onSave={(patch) => update(client.id, patch)}
+      />
 
       {/* MOVEMENT 1 — Pre-session prep, full width above the workspace columns */}
       <PreSessionPrep
@@ -194,6 +117,334 @@ export default function ClientWorkspace() {
     </main>
   );
 }
+
+// IdentityBlock — display + inline edit for the 7 R4-IN client fields.
+// PracticeSettings precedent copied: single `editing` state, DisplayRow ↔
+// EditRow swap, save awaits ClientsProvider.update and closes on success.
+// Stage renders as four click-to-select pills (StageBadge palette from
+// ClientRoster) — no ordering / progression visual per R6.
+function IdentityBlock({ client, cohortMatches, basePath, isSunset, onSave }) {
+  const [editing, setEditing] = useState(false);
+  const [draftName, setDraftName] = useState(client.name || '');
+  const [draftInitials, setDraftInitials] = useState(client.initials || '');
+  const [draftSport, setDraftSport] = useState(client.sport || '');
+  const [draftLevel, setDraftLevel] = useState(client.level || '');
+  const [draftStage, setDraftStage] = useState(client.stage || 'New');
+  const [draftYear, setDraftYear] = useState(
+    client.relationshipStartedYear != null ? String(client.relationshipStartedYear) : ''
+  );
+  const [draftSummary, setDraftSummary] = useState(client.summary || '');
+  const [draftNextSession, setDraftNextSession] = useState(client.nextSession || '');
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
+  const openEdit = () => {
+    setDraftName(client.name || '');
+    setDraftInitials(client.initials || '');
+    setDraftSport(client.sport || '');
+    setDraftLevel(client.level || '');
+    setDraftStage(client.stage || 'New');
+    setDraftYear(client.relationshipStartedYear != null ? String(client.relationshipStartedYear) : '');
+    setDraftSummary(client.summary || '');
+    setDraftNextSession(client.nextSession || '');
+    setSaveError('');
+    setEditing(true);
+  };
+  const cancelEdit = () => {
+    setSaveError('');
+    setEditing(false);
+  };
+  const save = async () => {
+    setSaveError('');
+    const name = draftName.trim();
+    if (!name) { setSaveError('Name is required.'); return; }
+    const patch = {};
+    if (name !== (client.name || '')) patch.name = name;
+    const initials = draftInitials.trim().toUpperCase();
+    if (initials !== (client.initials || '')) patch.initials = initials || null;
+    const sport = draftSport.trim();
+    if (sport !== (client.sport || '')) patch.sport = sport || null;
+    const level = draftLevel.trim();
+    if (level !== (client.level || '')) patch.level = level || null;
+    if (draftStage !== client.stage) patch.stage = draftStage;
+    const yearStr = draftYear.trim();
+    let yearVal = null;
+    if (yearStr) {
+      const parsed = Number(yearStr);
+      if (!Number.isInteger(parsed) || parsed < 1900 || parsed > 2200) {
+        setSaveError('Year must be a plausible integer (1900–2200) or empty.');
+        return;
+      }
+      yearVal = parsed;
+    }
+    if (yearVal !== (client.relationshipStartedYear ?? null)) {
+      patch.relationshipStartedYear = yearVal;
+    }
+    const summary = draftSummary.trim();
+    if (summary !== (client.summary || '')) patch.summary = summary || null;
+    const nextSession = draftNextSession.trim();
+    if (nextSession && !/^\d{4}-\d{2}-\d{2}$/.test(nextSession)) {
+      setSaveError('Next session must be an ISO YYYY-MM-DD date or empty.');
+      return;
+    }
+    if (nextSession !== (client.nextSession || '')) {
+      patch.nextSession = nextSession || null;
+    }
+    if (Object.keys(patch).length === 0) { setEditing(false); return; }
+    setSaving(true);
+    const result = await onSave(patch);
+    setSaving(false);
+    if (!result) { setSaveError('Could not save. Please try again.'); return; }
+    setEditing(false);
+  };
+
+  if (editing) {
+    return (
+      <Card style={{ marginBottom: 'var(--sh-space-8)' }}>
+        <div style={identityEditHeaderStyle}>
+          <SectionLabel>Client identity</SectionLabel>
+        </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-4)' }}>
+          <FieldGroup id="cw-name" label="Name" required>
+            <input id="cw-name" type="text" value={draftName}
+              onChange={(e) => setDraftName(e.target.value)}
+              style={fieldInputStyle} autoFocus />
+          </FieldGroup>
+          <FieldGroup id="cw-initials" label="Initials">
+            <input id="cw-initials" type="text" value={draftInitials}
+              maxLength={4}
+              onChange={(e) => setDraftInitials(e.target.value.toUpperCase())}
+              style={{ ...fieldInputStyle, maxWidth: '160px', textAlign: 'center', letterSpacing: '0.04em', fontWeight: 500 }} />
+          </FieldGroup>
+          <FieldGroup id="cw-sport" label="Sport">
+            <input id="cw-sport" type="text" value={draftSport}
+              onChange={(e) => setDraftSport(e.target.value)}
+              style={fieldInputStyle} placeholder="Free text (Basketball, Track and Field, …)" />
+          </FieldGroup>
+          <FieldGroup id="cw-level" label="Level">
+            <input id="cw-level" type="text" value={draftLevel}
+              onChange={(e) => setDraftLevel(e.target.value)}
+              style={fieldInputStyle} placeholder="Free text (D1 college, Professional, …)" />
+          </FieldGroup>
+          <FieldGroup label="Stage">
+            <div role="radiogroup" aria-label="Stage" style={{
+              display: 'flex', flexWrap: 'wrap', gap: 'var(--sh-space-2)',
+            }}>
+              {stages.map((s) => {
+                const selected = draftStage === s;
+                return (
+                  <button
+                    key={s}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => setDraftStage(s)}
+                    style={stagePillStyle(s, selected)}
+                  >
+                    {s}
+                  </button>
+                );
+              })}
+            </div>
+          </FieldGroup>
+          <FieldGroup id="cw-year" label="Relationship started (year)">
+            <input id="cw-year" type="number" min={1900} max={2200}
+              value={draftYear}
+              onChange={(e) => setDraftYear(e.target.value)}
+              style={{ ...fieldInputStyle, maxWidth: '160px' }}
+              placeholder="e.g. 2024" />
+          </FieldGroup>
+          <FieldGroup id="cw-next" label="Next session (date, optional)">
+            <input id="cw-next" type="date" value={draftNextSession}
+              onChange={(e) => setDraftNextSession(e.target.value)}
+              style={{ ...fieldInputStyle, maxWidth: '220px' }} />
+          </FieldGroup>
+          <FieldGroup id="cw-summary" label="Summary">
+            <textarea id="cw-summary" value={draftSummary}
+              onChange={(e) => setDraftSummary(e.target.value)}
+              rows={4}
+              style={{ ...fieldInputStyle, resize: 'vertical', minHeight: '96px' }}
+              placeholder="A short line about the working relationship." />
+          </FieldGroup>
+          {saveError && (
+            <p role="alert" style={{
+              fontSize: 'var(--sh-text-sm)',
+              color: 'var(--sh-text-secondary)',
+            }}>{saveError}</p>
+          )}
+          <div style={identityEditActionsStyle}>
+            <Button variant="ghost" onClick={cancelEdit} disabled={saving}>Cancel</Button>
+            <Button variant="primary" onClick={save} disabled={saving || !draftName.trim()}>
+              {saving ? 'Saving…' : 'Save'}
+            </Button>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
+  return (
+    <div style={{
+      display: 'flex',
+      alignItems: 'flex-start',
+      gap: 'var(--sh-space-5)',
+      marginBottom: 'var(--sh-space-8)',
+    }}>
+      <div style={{
+        width: '64px',
+        height: '64px',
+        borderRadius: '50%',
+        background: 'var(--sh-bronze-tint)',
+        color: 'var(--sh-bronze-deep)',
+        fontSize: 'var(--sh-text-md)',
+        fontWeight: 500,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        letterSpacing: '0.04em',
+        flexShrink: 0,
+      }}>
+        {client.initials}
+      </div>
+      <div style={{ flex: 1 }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'baseline',
+          justifyContent: 'space-between',
+          gap: 'var(--sh-space-4)',
+          flexWrap: 'wrap',
+          marginBottom: 'var(--sh-space-2)',
+        }}>
+          <h1 style={{
+            fontFamily: 'var(--sh-font-serif)',
+            fontSize: 'var(--sh-text-2xl)',
+            color: 'var(--sh-text-primary)',
+          }}>
+            {client.name}
+          </h1>
+          <Button variant="ghost" size="sm" onClick={openEdit}>Edit</Button>
+        </div>
+        <p style={{
+          fontSize: 'var(--sh-text-sm)',
+          color: 'var(--sh-text-muted)',
+          marginBottom: isSunset ? 'var(--sh-space-1)' : 'var(--sh-space-3)',
+        }}>
+          {[client.sport, client.level, client.stage,
+            client.relationshipStartedYear ? `relationship started ${client.relationshipStartedYear}` : null,
+          ].filter(Boolean).join(' · ')}
+        </p>
+        {isSunset && (
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            fontStyle: 'italic',
+            marginBottom: 'var(--sh-space-3)',
+            letterSpacing: '0.02em',
+          }}>
+            (Sunset — relationship closing)
+          </p>
+        )}
+        {cohortMatches.length > 0 && (
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            marginBottom: 'var(--sh-space-3)',
+            letterSpacing: '0.02em',
+          }}>
+            {cohortMatches.length === 1 ? 'Cohort' : 'Cohorts'}
+            {' · '}
+            {cohortMatches.map((c, idx) => (
+              <span key={c.id}>
+                {idx > 0 && ' · '}
+                <Link
+                  to={`${basePath}/cohorts/${c.id}`}
+                  style={{
+                    color: 'var(--sh-text-muted)',
+                    fontStyle: 'italic',
+                    textDecoration: 'none',
+                  }}
+                >
+                  {c.name}
+                </Link>
+              </span>
+            ))}
+          </p>
+        )}
+        {client.summary && (
+          <p style={{
+            fontSize: 'var(--sh-text-md)',
+            color: 'var(--sh-text-body)',
+            lineHeight: 1.6,
+            maxWidth: '720px',
+          }}>
+            {client.summary}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function FieldGroup({ id, label, required, children }) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-1)' }}>
+      <label htmlFor={id} style={fieldLabelStyle}>
+        {label}{required && ' *'}
+      </label>
+      {children}
+    </div>
+  );
+}
+
+// Stage pill uses ClientRoster's StageBadge palette (bronze accent on the
+// selected pill; neutral fill for the rest). No ordering / progression
+// implication — R6.
+function stagePillStyle(stage, selected) {
+  const bronzeTint = 'var(--sh-bronze-tint)';
+  const bronzeDeep = 'var(--sh-bronze-deep)';
+  const bronze = 'var(--sh-bronze)';
+  return {
+    padding: 'var(--sh-space-2) var(--sh-space-4)',
+    borderRadius: 'var(--sh-radius-full)',
+    border: `1px solid ${selected ? bronze : 'var(--sh-card-border)'}`,
+    background: selected ? bronzeTint : 'var(--sh-card)',
+    color: selected ? bronzeDeep : 'var(--sh-text-secondary)',
+    fontSize: 'var(--sh-text-xs)',
+    fontFamily: 'inherit',
+    fontWeight: selected ? 500 : 400,
+    letterSpacing: '0.06em',
+    textTransform: 'uppercase',
+    cursor: 'pointer',
+    // 44px min touch target per mobile flag.
+    minHeight: '32px',
+  };
+}
+
+const identityEditHeaderStyle = {
+  marginBottom: 'var(--sh-space-4)',
+};
+const identityEditActionsStyle = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  gap: 'var(--sh-space-2)',
+  marginTop: 'var(--sh-space-4)',
+  flexWrap: 'wrap',
+};
+const fieldLabelStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+};
+const fieldInputStyle = {
+  padding: 'var(--sh-space-2) var(--sh-space-3)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: 'var(--sh-radius-md)',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-primary)',
+  background: 'var(--sh-card)',
+  fontFamily: 'inherit',
+};
 
 function PreSessionPrep({ nextSession, agenda, activeContent, firstName }) {
   const basePath = useBasePath('/advisor', '/app/advisor');
@@ -321,6 +572,7 @@ function PrepBlock({ title, items, muted = false }) {
 
 function GivingPlanCard({ plan, nextSession }) {
   if (!plan) {
+    const dateStr = formatSessionDate(nextSession);
     return (
       <Card>
         <SectionLabel>Giving plan</SectionLabel>
@@ -330,7 +582,9 @@ function GivingPlanCard({ plan, nextSession }) {
           fontStyle: 'italic',
           lineHeight: 1.6,
         }}>
-          Giving Studio in progress — first Studio session {formatSessionDate(nextSession)}.
+          {dateStr
+            ? `Giving Studio in progress — first Studio session ${dateStr}.`
+            : 'Giving Studio in progress — the plan will land after the first Studio session.'}
         </p>
       </Card>
     );
