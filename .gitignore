@@ -10,6 +10,7 @@ dist-ssr
 .env.production
 .claude/
 .dev.vars
+.dev.*
 .wrangler/
 .mf/
 scripts/pilot-invites.json

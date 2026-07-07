@@ -275,6 +275,9 @@ Every substantive change runs as a **slice**. The rhythm:
     in agent sessions; any transcript that surfaces secret material
     triggers immediate key rotation (`RESEND_API_KEY` rotated 2026-07-07
     after a context-compaction surfacing).
+13. **Bank rule (agent-prompt-discipline rule).** Agent prints `git diff`
+    + exact proposed commit message and waits for FT "Option 1 yes"
+    before any commit — diff + message, always.
 
 Stop background shells (dev server, watch loops) at bank time. Use `TaskStop`,
 not `kill`.
