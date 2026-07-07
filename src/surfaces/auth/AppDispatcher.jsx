@@ -6,19 +6,18 @@ import { Button } from '../../components/Button.jsx';
 // Mounted as AppShell's index route. Reads identity from context (already
 // fetched by AppShell — no second /api/me call) and routes to the correct
 // type-specific surface. Types without a built surface yet get an honest
-// placeholder, not a silent failure.
+// placeholder + a sign-out exit (identical mechanism as the Chrome
+// affordance — both route through AppIdentityContext.signOut).
 
 export default function AppDispatcher() {
-  const { identity } = useAppIdentity();
+  const { identity, signOut } = useAppIdentity();
   const [signingOut, setSigningOut] = useState(false);
 
   async function handleSignOut() {
     setSigningOut(true);
-    try {
-      await fetch('/api/auth/sign-out', { method: 'POST', credentials: 'include' });
-    } finally {
-      window.location.href = '/signin';
-    }
+    // signOut hard-navigates on completion; setSigningOut(false) never
+    // runs (component unmounts on the navigation). No need for a finally.
+    await signOut();
   }
 
   if (!identity || !identity.type) {

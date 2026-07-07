@@ -70,6 +70,30 @@ export default function AppShell() {
     return () => { cancelled = true; };
   }, []);
 
+  // BFCACHE FIX. After sign-out we hard-navigate to /signin; the browser
+  // can back-restore an authenticated /app/* page from its back-forward
+  // cache — the JS heap is FROZEN and reused, so useEffect above does NOT
+  // re-run, our /api/me call never fires again, and the stale identity
+  // (button stuck at "Signing out…") stays visible. Dead session, live UI.
+  //
+  // Standard remedy: listen for `pageshow` with `event.persisted === true`
+  // (the bfcache-restore signal per HTML spec / MDN) and force a real
+  // reload. Reload evicts the frozen page and re-mounts AppShell, which
+  // re-runs the /api/me effect, sees the dead cookie, and Navigate-bounces
+  // to /signin. Narrower mitigations considered — a manual event listener
+  // watching for storage change won't fire on same-origin; a Cache-Control
+  // `no-store` header on /app/* would block bfcache at the request layer
+  // but requires a server response header we don't currently set. Reload
+  // is the correct fix at the app boundary; docblock this so a future
+  // reader understands why we intentionally invalidate the bfcache.
+  useEffect(() => {
+    function onPageShow(event) {
+      if (event.persisted) window.location.reload();
+    }
+    window.addEventListener('pageshow', onPageShow);
+    return () => window.removeEventListener('pageshow', onPageShow);
+  }, []);
+
   if (status === 'loading') {
     return (
       <div style={{

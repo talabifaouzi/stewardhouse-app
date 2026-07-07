@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { SHLogo } from './SHLogo.jsx';
 import useMediaQuery, { MOBILE_QUERY } from '../hooks/useMediaQuery.js';
+import { useOptionalAppIdentity } from '../contexts/AppIdentityContext.jsx';
 
 const SURFACE_CONFIG = {
   individual: {
@@ -29,6 +30,12 @@ const SURFACE_CONFIG = {
 export default function Chrome({ surface, userName, userRole, navItems = [], activeNav, onUserClick, onContactsClick, surfaceContext }) {
   const config = SURFACE_CONFIG[surface] || SURFACE_CONFIG.individual;
   const isMobile = useMediaQuery(MOBILE_QUERY);
+  // Auth/demo signal via optional context read — null on the public demo
+  // tree (no AppIdentityProvider ancestor), object on the authenticated
+  // tree. The SignOutButton below renders ONLY when this is non-null —
+  // demo trees are byte-parity unchanged. Reads useContext directly, not
+  // an async hook, so no early-return / conditional-hooks concern.
+  const appIdentity = useOptionalAppIdentity();
 
   return (
     <>
@@ -130,9 +137,96 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
               hideRole={isMobile}
             />
           )}
+          {appIdentity ? (
+            <SignOutButton signOut={appIdentity.signOut} />
+          ) : (
+            <SignInButton />
+          )}
         </div>
       </header>
     </>
+  );
+}
+
+// Auth-only affordance. `appIdentity` is null on the public demo tree
+// (Chrome's parent has no AppIdentityProvider ancestor there), so the
+// caller-guard `{appIdentity && (…)}` blocks all render for demo — zero
+// demo change, verifiable by grep. Text label on all viewports: the Icon
+// set has no exit/logout glyph today, and the SVG-icons-only brand rule
+// forbids ad-hoc text glyphs like `↦` as substitutes. Full "Sign out"
+// label fits inside the right-cluster gap at 375px (per the mobile math
+// in the slice report).
+// Demo-tree affordance — inverse gate of SignOutButton (renders ONLY when
+// appIdentity is null). FT-ruled at the sign-out screen: the demo-tree
+// header slot that shows Sign out on auth stays visually populated on
+// demo, letting a demo visitor discover the sign-in path from any surface.
+//
+// **INTENTIONAL DEMO BYTE-PARITY BREAK.** Prior slice discipline
+// (2b-i / 2b-ii-a) held demo trees pixel-for-pixel unchanged; this
+// intentionally alters demo trees. FT-ruled; recorded here so a future
+// reader does not treat this as accidental drift. Same visual treatment
+// as SignOutButton (text label, hover-tint, tokens).
+function SignInButton() {
+  const [hovered, setHovered] = useState(false);
+  return (
+    <Link
+      to="/signin"
+      aria-label="Sign in"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered ? 'var(--sh-bg-tint)' : 'transparent',
+        color: hovered ? 'var(--sh-text-primary)' : 'var(--sh-text-secondary)',
+        border: 'none',
+        padding: 'var(--sh-space-2) var(--sh-space-3)',
+        fontSize: 'var(--sh-text-sm)',
+        fontFamily: 'inherit',
+        borderRadius: 'var(--sh-radius-md)',
+        cursor: 'pointer',
+        transition: 'all 150ms ease',
+        whiteSpace: 'nowrap',
+        textDecoration: 'none',
+      }}
+    >
+      Sign in
+    </Link>
+  );
+}
+
+function SignOutButton({ signOut }) {
+  const [signingOut, setSigningOut] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const onClick = async () => {
+    if (signingOut) return;
+    setSigningOut(true);
+    // signOut hard-navigates on completion; setSigningOut(false) never
+    // runs (component unmounts). No finally needed.
+    await signOut();
+  };
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={signingOut}
+      aria-label="Sign out"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: hovered ? 'var(--sh-bg-tint)' : 'transparent',
+        color: hovered ? 'var(--sh-text-primary)' : 'var(--sh-text-secondary)',
+        border: 'none',
+        padding: 'var(--sh-space-2) var(--sh-space-3)',
+        fontSize: 'var(--sh-text-sm)',
+        fontFamily: 'inherit',
+        borderRadius: 'var(--sh-radius-md)',
+        cursor: signingOut ? 'default' : 'pointer',
+        transition: 'all 150ms ease',
+        whiteSpace: 'nowrap',
+        opacity: signingOut ? 0.6 : 1,
+      }}
+    >
+      {signingOut ? 'Signing out…' : 'Sign out'}
+    </button>
   );
 }
 

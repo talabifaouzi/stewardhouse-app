@@ -11,9 +11,44 @@ import { Navigate, useLocation } from 'react-router-dom';
 
 const AppIdentityContext = createContext(null);
 
+// Shared sign-out helper. POSTs to better-auth's sign-out endpoint (kills
+// the session row server-side via internalAdapter.deleteSession + emits an
+// expired Set-Cookie to clear the browser cookie), then hard-navigates to
+// /signin so all provider state drops — no stale identity in memory, no
+// SPA-cache lingering after the session is dead.
+//
+// finally-branch hard-nav: even if fetch throws or the cookie couldn't be
+// cleared (network drop, etc), we STILL navigate to /signin. From the
+// user's perspective, a click on Sign out that leaves them on an
+// authenticated surface is a worse failure than a client-only nav; the
+// server session may survive, but it's Q-3-minutes stale and the /signin
+// visit will overwrite the cookie on next successful auth.
+export async function performSignOut() {
+  try {
+    // Content-Type header is REQUIRED — better-auth's sign-out endpoint has
+    // `requireHeaders: true` and rejects any request without
+    // `Content-Type: application/json` with 415 UNSUPPORTED_MEDIA_TYPE.
+    // Verified against
+    // node_modules/better-auth/dist/api/routes/sign-out.mjs and reproduced
+    // in the slice smoke — omitting the header lets the browser send the
+    // fetch but the server refuses to touch the session, leaving a dead
+    // affordance from the user's point of view.
+    await fetch('/api/auth/sign-out', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: '{}',
+    });
+  } catch {
+    // Swallow — hard-nav below is the durable exit.
+  } finally {
+    window.location.href = '/signin';
+  }
+}
+
 export function AppIdentityProvider({ status, identity, updatePracticeProfile, children }) {
   return (
-    <AppIdentityContext.Provider value={{ status, identity, updatePracticeProfile }}>
+    <AppIdentityContext.Provider value={{ status, identity, updatePracticeProfile, signOut: performSignOut }}>
       {children}
     </AppIdentityContext.Provider>
   );
