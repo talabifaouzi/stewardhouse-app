@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { Button } from '../../components/Button.jsx';
 import { Card } from '../../components/Card.jsx';
+import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { formatSessionDate } from '../../data/clients.js';
 import { THEMES } from '../../data/themes.js';
@@ -40,9 +42,10 @@ function formatNames(names) {
 export default function CohortDetail() {
   const { cohortId } = useParams();
   const basePath = useBasePath('/advisor', '/app/advisor');
-  const { cohorts, update: updateCohort } = useCohorts();
+  const { cohorts, update: updateCohort, addMember, removeMember, writeError, clearWriteError } = useCohorts();
   const { clients } = useClients();
   const isAuthenticated = !!useOptionalAppIdentity();
+  const memberDatalistId = useId();
   const cohort = cohorts.find(c => c.id === cohortId);
   const updates = cohort?.updates || [];
   const [titleDraft, setTitleDraft] = useState('');
@@ -71,6 +74,40 @@ export default function CohortDetail() {
     .filter(Boolean);
   const externalCount = cohort.externalMembers || 0;
   const memberCount = cohort.memberIds.length + externalCount;
+
+  // Membership add/remove UI state.
+  const [memberInput, setMemberInput] = useState('');
+  const [memberError, setMemberError] = useState('');
+  const [memberSaving, setMemberSaving] = useState(false);
+  const memberOptions = clients.filter((c) => !cohort.memberIds.includes(c.id));
+
+  const submitAddMember = async () => {
+    clearWriteError();
+    const raw = memberInput.trim();
+    if (!raw) { setMemberError('Type a client name.'); return; }
+    // Case-insensitive exact-name match against options. Ambiguity (2+
+    // clients with the same name) surfaces as an error rather than a
+    // silent pick.
+    const matches = memberOptions.filter((c) => c.name.toLowerCase() === raw.toLowerCase());
+    if (matches.length === 0) {
+      setMemberError('No matching client. Pick from the suggestions.');
+      return;
+    }
+    if (matches.length > 1) {
+      setMemberError('Multiple clients share that name — resolve the ambiguity in Clients first.');
+      return;
+    }
+    setMemberError('');
+    setMemberSaving(true);
+    const result = await addMember(cohort.id, matches[0].id);
+    setMemberSaving(false);
+    if (result) setMemberInput('');
+  };
+
+  const submitRemoveMember = async (clientId) => {
+    clearWriteError();
+    await removeMember(cohort.id, clientId);
+  };
 
   const themeMembership = {};
   rosterMembers.forEach(m => {
@@ -188,6 +225,55 @@ export default function CohortDetail() {
       <div style={{ marginBottom: 'var(--sh-space-6)' }}>
         <Card>
           <SectionLabel>Members</SectionLabel>
+
+          {/* Add-member typeahead: native <datalist> over available clients
+              (excluding current memberIds). ComposeMessage precedent. */}
+          {memberOptions.length > 0 && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start',
+              gap: 'var(--sh-space-2)',
+              marginTop: 'var(--sh-space-3)',
+              marginBottom: 'var(--sh-space-4)',
+              flexWrap: 'wrap',
+            }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-1)', flex: 1, minWidth: '200px' }}>
+                <label htmlFor={memberDatalistId + '-input'} style={memberFieldLabelStyle}>Add member</label>
+                <input
+                  id={memberDatalistId + '-input'}
+                  type="text"
+                  list={memberDatalistId}
+                  value={memberInput}
+                  onChange={(e) => setMemberInput(e.target.value)}
+                  placeholder="Type a client name"
+                  style={memberInputStyle}
+                />
+                <datalist id={memberDatalistId}>
+                  {memberOptions.map((c) => (
+                    <option key={c.id} value={c.name} />
+                  ))}
+                </datalist>
+                {(memberError || writeError) && (
+                  <p role="alert" style={{
+                    fontSize: 'var(--sh-text-xs)',
+                    color: 'var(--sh-text-secondary)',
+                    fontStyle: 'italic',
+                  }}>{memberError || writeError}</p>
+                )}
+              </div>
+              <div style={{ alignSelf: 'flex-end', paddingBottom: 'var(--sh-space-1)' }}>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={submitAddMember}
+                  disabled={memberSaving || !memberInput.trim()}
+                >
+                  {memberSaving ? 'Adding…' : 'Add'}
+                </Button>
+              </div>
+            </div>
+          )}
+
           {rosterMembers.length === 0 && externalCount === 0 && (
             <p style={emptyTextStyle}>No members assigned yet.</p>
           )}
@@ -198,6 +284,10 @@ export default function CohortDetail() {
                   paddingTop: idx === 0 ? 0 : 'var(--sh-space-3)',
                   paddingBottom: 'var(--sh-space-3)',
                   borderTop: idx === 0 ? 'none' : 'var(--sh-border-divider)',
+                  display: 'flex',
+                  alignItems: 'baseline',
+                  gap: 'var(--sh-space-3)',
+                  justifyContent: 'space-between',
                 }}>
                   <Link
                     to={`${basePath}/clients/${m.id}`}
@@ -207,6 +297,8 @@ export default function CohortDetail() {
                       gap: 'var(--sh-space-3)',
                       textDecoration: 'none',
                       color: 'inherit',
+                      flex: 1,
+                      minWidth: 0,
                     }}
                   >
                     <span style={{
@@ -223,6 +315,14 @@ export default function CohortDetail() {
                       {m.sport} · {m.level}
                     </span>
                   </Link>
+                  <button
+                    type="button"
+                    onClick={() => submitRemoveMember(m.id)}
+                    aria-label={`Remove ${m.name} from cohort`}
+                    style={removeMemberButtonStyle}
+                  >
+                    <Icon name="close" />
+                  </button>
                 </li>
               ))}
             </ul>
@@ -530,4 +630,40 @@ const listResetStyle = {
   listStyle: 'none',
   margin: 0,
   padding: 0,
+};
+
+const memberFieldLabelStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+};
+
+const memberInputStyle = {
+  padding: 'var(--sh-space-2) var(--sh-space-3)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: 'var(--sh-radius-md)',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-primary)',
+  background: 'var(--sh-card)',
+  fontFamily: 'inherit',
+  width: '100%',
+  boxSizing: 'border-box',
+  // Touch target ≥ 44px on mobile — padding 8px×2 + input line-height ~28px.
+  minHeight: '44px',
+};
+
+const removeMemberButtonStyle = {
+  background: 'transparent',
+  color: 'var(--sh-text-muted)',
+  border: 'none',
+  padding: 'var(--sh-space-2)',
+  borderRadius: 'var(--sh-radius-md)',
+  cursor: 'pointer',
+  minWidth: '44px',
+  minHeight: '44px',
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  flexShrink: 0,
 };
