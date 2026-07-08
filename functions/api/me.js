@@ -320,6 +320,46 @@ export async function onRequest(context) {
     advisor = { practiceProfile, practiceLessons, docCategories, cohorts, clients };
   }
 
+  // Enterprise/staff identity block (E-Slice 5a). Relational join is the
+  // authoritative source for role + institution — NOT person.extensions
+  // (the seeded $.enterprise.{title,organization} copy would drift the
+  // moment a role/name changes via the enterprise write path, which
+  // updates institution_contact / institution, not extensions). Same
+  // allowlist-pick discipline as the advisor block above: three named
+  // fields, absent → null, and NEVER emit extensions or any
+  // $.enterprise.* server-side key to the client.
+  let enterprise = null;
+  if (person?.type === 'staff') {
+    // Which institution does this staff person operate? A person may hold
+    // more than one institution_contact row (E4 cross-role identity), so
+    // prefer the is_default_operator=1 row deterministically. Read is
+    // covered by idx_institution_contact_person_id (0009).
+    const contact = await db
+      .selectFrom('institution_contact')
+      .select(['institution_id', 'role_title', 'is_default_operator'])
+      .where('person_id', '=', person.id)
+      .orderBy('is_default_operator', 'desc')
+      .executeTakeFirst();
+
+    let institution = null;
+    if (contact) {
+      institution = await db
+        .selectFrom('institution')
+        .select(['name', 'program_term', 'contract_label'])
+        .where('id', '=', contact.institution_id)   // PRIMARY KEY
+        .executeTakeFirst();
+    }
+
+    enterprise = {
+      roleTitle: contact?.role_title ?? null,
+      institutionName: institution?.name ?? null,
+      // Ship the raw term string; the Chrome year-range parse stays
+      // client-side (mirrors the fixture cohortLabel derivation). Do NOT
+      // pre-bake the subtitle server-side.
+      programTerm: institution?.program_term ?? institution?.contract_label ?? null,
+    };
+  }
+
   const body = {
     user: { email: session.user.email },
     person: person ? {
@@ -329,6 +369,7 @@ export async function onRequest(context) {
       gifts,
       scenarios,
       ...(advisor && { advisor }),
+      ...(enterprise && { enterprise }),
     } : null,
   };
 
