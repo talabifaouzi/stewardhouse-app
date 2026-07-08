@@ -4,6 +4,7 @@ import Chrome from '../../components/Chrome.jsx';
 import UserProfile from '../../components/UserProfile.jsx';
 import ContactsDirectory from '../../components/ContactsDirectory.jsx';
 import { CommsProvider, useComms } from '../../contexts/CommsContext.jsx';
+import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 import { contacts, INST_PROFILES, CURRENT_USER, athletes } from '../../data/enterpriseFixtures.js';
 
 import EnterpriseOverview from './EnterpriseOverview.jsx';
@@ -13,14 +14,16 @@ import EnterpriseCompliance from './EnterpriseCompliance.jsx';
 import EnterpriseProgram from './EnterpriseProgram.jsx';
 import EnterpriseSetup from './EnterpriseSetup.jsx';
 
-const NAV_ITEMS = [
-  { key: 'home', label: 'Overview', path: '/enterprise' },
-  { key: 'roster', label: 'Roster', path: '/enterprise/roster' },
-  { key: 'reports', label: 'Reports', path: '/enterprise/reports' },
-  { key: 'compliance', label: 'Compliance', path: '/enterprise/compliance' },
-  { key: 'program', label: 'Program', path: '/enterprise/program' },
-  { key: 'setup', label: 'Setup', path: '/enterprise/setup' },
-];
+function getNavItems(basePath) {
+  return [
+    { key: 'home', label: 'Overview', path: basePath },
+    { key: 'roster', label: 'Roster', path: `${basePath}/roster` },
+    { key: 'reports', label: 'Reports', path: `${basePath}/reports` },
+    { key: 'compliance', label: 'Compliance', path: `${basePath}/compliance` },
+    { key: 'program', label: 'Program', path: `${basePath}/program` },
+    { key: 'setup', label: 'Setup', path: `${basePath}/setup` },
+  ];
+}
 
 const diane = contacts.find((c) => c.id === 'diane');
 
@@ -47,6 +50,8 @@ export default function EnterpriseSurface() {
 
 function EnterpriseSurfaceInner() {
   const location = useLocation();
+  const basePath = useBasePath('/enterprise', '/app/enterprise');
+  const navItems = getNavItems(basePath);
   const path = location.pathname;
   const activeNav =
     path.includes('/roster') ? 'roster' :
@@ -71,7 +76,7 @@ function EnterpriseSurfaceInner() {
         surface="enterprise"
         userName={CURRENT_USER.name}
         userRole={CURRENT_USER.title}
-        navItems={NAV_ITEMS}
+        navItems={navItems}
         activeNav={activeNav}
         onUserClick={() => setActiveContact(diane)}
         onContactsClick={() => setShowContactsDirectory(true)}
@@ -85,7 +90,7 @@ function EnterpriseSurfaceInner() {
           <Route path="compliance" element={<EnterpriseCompliance />} />
           <Route path="program" element={<EnterpriseProgram />} />
           <Route path="setup" element={<EnterpriseSetup />} />
-          <Route path="*" element={<Navigate to="/enterprise" replace />} />
+          <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
       </div>
 

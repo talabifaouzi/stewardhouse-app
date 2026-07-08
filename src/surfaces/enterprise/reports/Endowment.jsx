@@ -6,12 +6,14 @@ import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
 import SegmentedControl from '../../../components/SegmentedControl.jsx';
 import { endowmentSnapshot } from '../../../data/enterpriseFixtures.js';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 import { formatDate } from '../../../utils/formatDate.js';
 
 const fmtUSD = (n) => `$${Math.round(n).toLocaleString('en-US')}`;
 const fmtPct = (n) => `${n.toFixed(1)}%`;
 
 export default function Endowment() {
+  const basePath = useBasePath('/enterprise', '/app/enterprise');
   const [annualContribution, setAnnualContribution] = useState(endowmentSnapshot.annualContribution);
   const [payoutRate, setPayoutRate] = useState(5);
   const [growthRate, setGrowthRate] = useState(6);
@@ -32,7 +34,7 @@ export default function Endowment() {
 
   return (
     <main style={mainStyle}>
-      <BackLink to="/enterprise/reports" label="Reports" />
+      <BackLink to={`${basePath}/reports`} label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Endowment</h1>
       <p style={subtitleStyle}>

@@ -3,6 +3,7 @@ import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import DataTable from '../../../components/DataTable.jsx';
 import useMediaQuery, { MOBILE_QUERY } from '../../../hooks/useMediaQuery.js';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 import { athletes, priorCohortSnapshot, currentCohortSnapshot } from '../../../data/enterpriseFixtures.js';
 
 const fmtUSD = (n) => `$${n.toLocaleString('en-US')}`;
@@ -56,10 +57,11 @@ const yoyRows = [
 ];
 
 export default function CohortComparison() {
+  const basePath = useBasePath('/enterprise', '/app/enterprise');
   const isMobile = useMediaQuery(MOBILE_QUERY);
   return (
     <main style={mainStyle}>
-      <BackLink to="/enterprise/reports" label="Reports" />
+      <BackLink to={`${basePath}/reports`} label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Cohort comparison</h1>
       <p style={subtitleStyle}>

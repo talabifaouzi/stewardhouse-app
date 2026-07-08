@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 import { athletes, exclusions } from '../../../data/enterpriseFixtures.js';
 
 // Stage assignment: each athlete sits at their highest-reached structural
@@ -50,9 +51,10 @@ const stageCounts = STAGES.map((s) => ({
 const totalAthletes = athletes.length;
 
 export default function PhilanthropicReadiness() {
+  const basePath = useBasePath('/enterprise', '/app/enterprise');
   return (
     <main style={mainStyle}>
-      <BackLink to="/enterprise/reports" label="Reports" />
+      <BackLink to={`${basePath}/reports`} label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Philanthropic readiness</h1>
       <p style={subtitleStyle}>
@@ -114,7 +116,7 @@ export default function PhilanthropicReadiness() {
             value={(
               <>
                 {exclusions.length} flagged. Reviewed quarterly per advisor independence policy.{' '}
-                <Link to="/enterprise/compliance" style={postureLinkStyle}>View list</Link>
+                <Link to={`${basePath}/compliance`} style={postureLinkStyle}>View list</Link>
               </>
             )}
           />

@@ -3,6 +3,7 @@ import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
 import DataTable from '../../../components/DataTable.jsx';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 import { athletes, workshops } from '../../../data/enterpriseFixtures.js';
 
 const fmtUSD = (n) => `$${n.toLocaleString('en-US')}`;
@@ -66,9 +67,10 @@ const gpsPct = Math.round((gpsCompleted / totalAthletes) * 100);
 const avgLessonsPerAthlete = Math.round((totalLessonsCompleted / totalAthletes) * 10) / 10;
 
 export default function ProgramOutputs() {
+  const basePath = useBasePath('/enterprise', '/app/enterprise');
   return (
     <main style={mainStyle}>
-      <BackLink to="/enterprise/reports" label="Reports" />
+      <BackLink to={`${basePath}/reports`} label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Program outputs</h1>
       <p style={subtitleStyle}>

@@ -15,6 +15,7 @@ import WorkshopDetail from '../../../components/WorkshopDetail.jsx';
 import FilteredAthletesModal from '../../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../../components/AthleteProfile.jsx';
 import { useComms } from '../../../contexts/CommsContext.jsx';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 import { formatDate } from '../../../utils/formatDate.js';
 import {
   tot,
@@ -36,6 +37,7 @@ function capitalize(s) {
 }
 
 export default function ProgramSummary() {
+  const basePath = useBasePath('/enterprise', '/app/enterprise');
   const { openCompose } = useComms();
   const [activeWorkshop, setActiveWorkshop] = useState(null);
   const [activeWeek, setActiveWeek] = useState(null);
@@ -51,7 +53,7 @@ export default function ProgramSummary() {
 
   return (
     <main style={mainStyle}>
-      <BackLink to="/enterprise/reports" label="Reports" />
+      <BackLink to={`${basePath}/reports`} label="Reports" />
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Program summary</h1>
 
