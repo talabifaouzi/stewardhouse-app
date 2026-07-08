@@ -47,6 +47,15 @@ export default function App() {
             </RequireType>
           }
         />
+        {/* type 'staff' = enterprise operator per E2; URL names the surface, type names the role class */}
+        <Route
+          path="enterprise/*"
+          element={
+            <RequireType type="staff">
+              <EnterpriseSurface />
+            </RequireType>
+          }
+        />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

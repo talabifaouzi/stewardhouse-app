@@ -270,11 +270,26 @@ Every substantive change runs as a **slice**. The rhythm:
     extract a shared basePath-derivation helper once 2+ files need it
     (per the standard #47/#57 threshold) rather than duplicating the
     logic per file.
-12. **Secrets discipline (agent-prompt-discipline rule).** Secrets files
-    (`.dev.vars`, any credential store) must never be read or referenced
-    in agent sessions; any transcript that surfaces secret material
-    triggers immediate key rotation (`RESEND_API_KEY` rotated 2026-07-07
-    after a context-compaction surfacing).
+12. **Secrets discipline (agent-prompt-discipline rule).** Never
+    read / `cat` / view secrets-file (`.dev.vars`, any credential
+    store) CONTENTS into context; any transcript that surfaces secret
+    material triggers immediate key rotation (`RESEND_API_KEY` rotated
+    2026-07-07 after a context-compaction surfacing). **Constructive
+    protocol** (added E-Slice 4a, 2026-07-08): structure checks use
+    key-name extraction or boolean pattern matches only (e.g.
+    `sed -n 's/^KEY=//p'` piped into a boolean, or a name-only grep).
+    Values needed at runtime load OPAQUELY inside shell pipelines —
+    variable assignment (`secret=$(sed -n 's/^BETTER_AUTH_SECRET=//p'
+    .dev.vars)`), passed to the consuming step via env, NEVER echoed /
+    printed / logged, and never the Grep tool (which would render the
+    value). Report only `secret loaded: yes` and downstream verdicts;
+    a derived signature/cookie must be produced and consumed inside the
+    same pipeline (command substitution into the consumer) so it never
+    prints. If a task genuinely requires SEEING a secret value, STOP and
+    hand the step to FT. (First applied: E-Slice 4a staff-dispatch
+    signed-cookie smoke — better-auth session cookie forged from the
+    opaquely-loaded secret, `/api/me` returned `type:'staff'`, secret
+    never surfaced.)
 13. **Bank rule (agent-prompt-discipline rule).** Agent prints `git diff`
     + exact proposed commit message and waits for FT "Option 1 yes"
     before any commit — diff + message, always.
