@@ -4,7 +4,7 @@ import Chrome from '../../components/Chrome.jsx';
 import UserProfile from '../../components/UserProfile.jsx';
 import ContactsDirectory from '../../components/ContactsDirectory.jsx';
 import { CommsProvider, useComms } from '../../contexts/CommsContext.jsx';
-import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
+import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { contacts, INST_PROFILES, CURRENT_USER, athletes } from '../../data/enterpriseFixtures.js';
 
 import EnterpriseOverview from './EnterpriseOverview.jsx';
@@ -27,12 +27,19 @@ function getNavItems(basePath) {
 
 const diane = contacts.find((c) => c.id === 'diane');
 
-// Cohort context surfaced in Chrome subtitle: "Cooper State University · 2026–2027"
-const _instProfile = INST_PROFILES[0];
-const _dateRange = (_instProfile.contract.split(' — ')[1] || '');
-const _years = _dateRange.match(/\d{4}/g);
-const _yearRange = _years && _years.length >= 2 ? `${_years[0]}–${_years[1]}` : '';
-const cohortLabel = `${_instProfile.name} · ${_yearRange}`;
+// Chrome subtitle: "<institution> · <startYear>–<endYear>", parsed from a
+// contract/term string. Shared by the demo-tree fixture derivation (below)
+// and the authenticated-tree derivation in component scope — the auth tree
+// passes enterprise.institutionName + enterprise.programTerm from /api/me.
+function buildCohortLabel(name, term) {
+  const dateRange = (term || '').split(' — ')[1] || '';
+  const years = dateRange.match(/\d{4}/g);
+  const yearRange = years && years.length >= 2 ? `${years[0]}–${years[1]}` : '';
+  return `${name} · ${yearRange}`;
+}
+
+// Demo-tree subtitle (fixture): "Cooper State University · <years>".
+const cohortLabel = buildCohortLabel(INST_PROFILES[0].name, INST_PROFILES[0].contract);
 
 // Recipients list for ComposeMessage autocomplete — 21 entries (16 athletes + 5 contacts).
 const recipientsList = [
@@ -41,8 +48,19 @@ const recipientsList = [
 ];
 
 export default function EnterpriseSurface() {
+  // useOptionalAppIdentity in the OUTER component too: CommsProvider lives
+  // here (above EnterpriseSurfaceInner), so the sender identity swap has to
+  // read identity at this level. Null on the public demo tree.
+  const appIdentity = useOptionalAppIdentity();
+  const isAuthenticated = !!appIdentity;
+  // CommsProvider sender identity: real identity on the authenticated tree,
+  // Diane fixture on the demo tree. Recipients stay fixture on BOTH trees
+  // (demonstrative directory — scoping-accepted note).
+  const commsUser = isAuthenticated
+    ? { name: appIdentity.identity?.displayName ?? '', email: appIdentity.identity?.email ?? '' }
+    : CURRENT_USER;
   return (
-    <CommsProvider currentUser={CURRENT_USER} recipients={recipientsList}>
+    <CommsProvider currentUser={commsUser} recipients={recipientsList}>
       <EnterpriseSurfaceInner />
     </CommsProvider>
   );
@@ -65,6 +83,33 @@ function EnterpriseSurfaceInner() {
   const [activeContact, setActiveContact] = useState(null);
   const [showContactsDirectory, setShowContactsDirectory] = useState(false);
 
+  // Chrome identity swap (E-Slice 5b), mirroring AdvisorSurface: fixture
+  // fallback ONLY on the public demo tree; the authenticated tree renders
+  // real identity (or '' / null), never Diane.
+  const appIdentity = useOptionalAppIdentity();
+  const isAuthenticated = !!appIdentity;
+  const enterpriseIdentity = appIdentity?.identity?.enterprise ?? null;
+  const authenticatedName = appIdentity?.identity?.displayName ?? null;
+  const authenticatedRole = enterpriseIdentity?.roleTitle ?? null;
+  const userName = authenticatedName ?? (isAuthenticated ? '' : CURRENT_USER.name);
+  const userRole = authenticatedRole ?? (isAuthenticated ? null : CURRENT_USER.title);
+  const surfaceContext = isAuthenticated
+    ? (enterpriseIdentity?.institutionName
+        ? buildCohortLabel(enterpriseIdentity.institutionName, enterpriseIdentity.programTerm)
+        : null)
+    : cohortLabel;
+  // onUserClick target: real-identity contact on the auth tree (ruled),
+  // Diane fixture on the demo tree — the fixture must never surface for a
+  // real operator.
+  const selfContact = isAuthenticated
+    ? {
+        name: authenticatedName,
+        title: authenticatedRole,
+        organization: enterpriseIdentity?.institutionName ?? null,
+        email: appIdentity.identity?.email ?? null,
+      }
+    : diane;
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -74,13 +119,13 @@ function EnterpriseSurfaceInner() {
     }}>
       <Chrome
         surface="enterprise"
-        userName={CURRENT_USER.name}
-        userRole={CURRENT_USER.title}
+        userName={userName}
+        userRole={userRole}
         navItems={navItems}
         activeNav={activeNav}
-        onUserClick={() => setActiveContact(diane)}
+        onUserClick={() => setActiveContact(selfContact)}
         onContactsClick={() => setShowContactsDirectory(true)}
-        surfaceContext={cohortLabel}
+        surfaceContext={surfaceContext}
       />
       <div style={{ flex: 1 }}>
         <Routes>

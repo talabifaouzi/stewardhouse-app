@@ -8,7 +8,7 @@ import { AppIdentityProvider } from '../../contexts/AppIdentityContext.jsx';
 // surface (e.g. /app/individual) doesn't require a second fetch, and Chrome
 // can read real identity instead of a hardcoded fixture.
 //
-// identity shape: { type, displayName, email, intake, gifts, scenarios, advisor? } | null
+// identity shape: { type, displayName, email, intake, gifts, scenarios, advisor?, enterprise? } | null
 // — intake is the user's persisted intake answers from
 // person.extensions.individual (null for fresh users); gifts and scenarios
 // are the arrays of the user's gift records and saved GivingModeler
@@ -58,6 +58,7 @@ export default function AppShell() {
             gifts: data.person?.gifts ?? [],
             scenarios: data.person?.scenarios ?? [],
             advisor: data.person?.advisor ?? null,
+            enterprise: data.person?.enterprise ?? null,
           });
           setStatus('ready');
         } else {

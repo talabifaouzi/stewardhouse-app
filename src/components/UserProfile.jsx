@@ -28,11 +28,13 @@ export default function UserProfile({ isOpen, onClose, contact, onSendMessage })
       {/* Header meta + role pill */}
       <div style={headerStyle}>
         <p style={metaStyle}>
-          {contact.title} · {contact.organization}
+          {contact.title}{contact.organization ? ` · ${contact.organization}` : ''}
         </p>
-        <Tag color="bronze" tracking="loose">
-          {ROLE_LABEL[contact.role] || contact.role}
-        </Tag>
+        {contact.role && (
+          <Tag color="bronze" tracking="loose">
+            {ROLE_LABEL[contact.role] || contact.role}
+          </Tag>
+        )}
       </div>
 
       <div style={sectionsStyle}>
