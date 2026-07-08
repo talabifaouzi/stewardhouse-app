@@ -1,0 +1,22 @@
+-- Migration 0012 — athlete.consent_acknowledged_at (E-Write-1, roster-add).
+--
+-- FT ruling (Q6, defer-to-team): ADD a nullable consent_acknowledged_at
+-- column recording the staff operator's acknowledgment at enrollment. The
+-- roster-add form cannot submit without the E6 program-level consent
+-- acknowledgment; the endpoint stamps this column with the create timestamp
+-- on every successful athlete insert (and requires the acknowledgment flag in
+-- the request body, so non-form callers cannot skip it).
+--
+-- Nullable: existing/future rows created outside the consent flow (none today
+-- — the slim seed carries zero athletes) are not retroactively asserted. A
+-- non-null value means "consent acknowledged at this ISO instant."
+--
+-- E6 counsel seam: the exact consent LANGUAGE is counsel-gated (ships behind
+-- the $.enterprise.demo_gate as caution copy). This column records THAT an
+-- acknowledgment occurred, not the language of it; the language can change
+-- without a schema migration.
+--
+-- Local apply this slice; remote apply rides the bank per the standing
+-- local-then-remote sequence (CLAUDE.md §6.10).
+
+ALTER TABLE athlete ADD COLUMN consent_acknowledged_at TEXT;   -- ISO 8601; NULL = not acknowledged via the consent flow

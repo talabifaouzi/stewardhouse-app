@@ -4,12 +4,15 @@ import StatTile from '../../components/StatTile.jsx';
 import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
 import DataTable from '../../components/DataTable.jsx';
+import { Button } from '../../components/Button.jsx';
 import { useComms } from '../../contexts/CommsContext.jsx';
 import { useAthletes } from '../../contexts/AthletesContext.jsx';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { formatDate } from '../../utils/formatDate.js';
 import { computeStats } from './shared/enterpriseStats.js';
 import { statusFor, STATUS_PRIORITY } from './shared/athleteStatus.js';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
+import AddAthleteModal from './AddAthleteModal.jsx';
 
 const ROSTER_COLUMNS = [
   { key: 'name',       label: 'Name',        render: (a) => a.name },
@@ -25,9 +28,13 @@ const ROSTER_COLUMNS = [
 
 export default function EnterpriseRoster() {
   const { openCompose } = useComms();
-  const { athletes } = useAthletes();
+  const { athletes, add } = useAthletes();
+  // Roster-add affordance is authenticated-only — the demo tree renders
+  // byte-identical (no CTA, no modal). Gate on identity presence.
+  const isAuthenticated = !!useOptionalAppIdentity();
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
+  const [addOpen, setAddOpen] = useState(false);
 
   const { tot, certD, stalled, onTrack, notStarted, activelyProgressingPct } = computeStats(athletes);
   const sortedAthletes = useMemo(() => [...athletes].sort((a, b) => {
@@ -54,6 +61,14 @@ export default function EnterpriseRoster() {
         <StatTile label="Invited" value={notStarted} onClick={() => setActiveCategory('invited')} />
       </div>
 
+      {/* Add-athlete CTA — authenticated tree only, when the roster is
+          non-empty (the empty state carries its own affordance below). */}
+      {isAuthenticated && sortedAthletes.length > 0 && (
+        <div style={addRowStyle}>
+          <Button variant="secondary" size="sm" onClick={() => setAddOpen(true)}>Add athlete</Button>
+        </div>
+      )}
+
       {/* Roster table — rows clickable, opens profile directly. Empty until
           athletes enroll via the roster-add write path (slim-seed ruling). */}
       <Card>
@@ -67,9 +82,19 @@ export default function EnterpriseRoster() {
             rowAriaLabel={(a) => `View ${a.name}'s profile`}
           />
         ) : (
-          <p style={emptyStateStyle}>No athletes enrolled yet.</p>
+          <div style={emptyBlockStyle}>
+            <p style={emptyStateStyle}>No athletes enrolled yet.</p>
+            {isAuthenticated && (
+              <Button variant="secondary" size="sm" onClick={() => setAddOpen(true)}>Add the first athlete</Button>
+            )}
+          </div>
         )}
       </Card>
+
+      {/* Roster-add form — authenticated tree only. */}
+      {isAuthenticated && (
+        <AddAthleteModal isOpen={addOpen} onClose={() => setAddOpen(false)} onAdd={add} />
+      )}
 
       {/* Drill-down: stat tile → filtered list → profile (stacks) */}
       <FilteredAthletesModal
@@ -125,5 +150,21 @@ const emptyStateStyle = {
   color: 'var(--sh-text-secondary)',
   lineHeight: 1.6,
   padding: 'var(--sh-space-2) 0',
+};
+
+// Empty-state block: line + "Add the first athlete" affordance (auth tree).
+const emptyBlockStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'flex-start',
+  gap: 'var(--sh-space-3)',
+  padding: 'var(--sh-space-2) 0',
+};
+
+// Right-aligned "Add athlete" CTA row above a populated roster (auth tree).
+const addRowStyle = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  marginBottom: 'var(--sh-space-4)',
 };
 

@@ -22,6 +22,7 @@
 import { Kysely } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import { makeAuth } from '../_lib/auth.js';
+import { ATHLETE_ELEMENT_COLUMNS, toAthleteElement } from './athletes.js';
 
 export async function onRequest(context) {
   const auth = makeAuth(context.env);
@@ -342,12 +343,28 @@ export async function onRequest(context) {
       .executeTakeFirst();
 
     let institution = null;
+    let athletes = [];
     if (contact) {
       institution = await db
         .selectFrom('institution')
         .select(['name', 'program_term', 'contract_label', 'endowment_annual', 'endowment_current'])
         .where('id', '=', contact.institution_id)   // PRIMARY KEY
         .executeTakeFirst();
+
+      // Institution athlete roster (E-Slice E-Write-1). Owner-scoped by
+      // institution_id (idx_athlete_institution_id). Mapped to the fixture-
+      // shaped element AthletesProvider consumes (camelCase, activity: []),
+      // via the shared toAthleteElement so the /api/me roster and the
+      // POST /api/athletes round-trip stay identical. notes rides along here
+      // because this block is STAFF-ONLY (RequireType('staff')) — it is never
+      // emitted to athlete-facing or cross-surface reads (E8 never-emit side).
+      const athleteRows = await db
+        .selectFrom('athlete')
+        .select(ATHLETE_ELEMENT_COLUMNS)
+        .where('institution_id', '=', contact.institution_id)
+        .orderBy('created_at', 'desc')
+        .execute();
+      athletes = athleteRows.map(toAthleteElement);
     }
 
     enterprise = {
@@ -362,6 +379,10 @@ export async function onRequest(context) {
       // the authenticated tree (E-Slice 6b). Allowlist-picked, null-safe.
       endowmentAnnual: institution?.endowment_annual ?? null,
       endowmentCurrent: institution?.endowment_current ?? null,
+      // The staff operator's institution roster (empty [] until athletes are
+      // enrolled via POST /api/athletes). Seeds AthletesProvider's
+      // initialState on the authenticated tree.
+      athletes,
     };
   }
 

@@ -87,6 +87,40 @@ export async function requireGatedAdvisor(db, context) {
   return { person };
 }
 
+export async function requireGatedEnterprise(db, context) {
+  // Twin of requireGatedAdvisor for the enterprise write arc (E-Slice E-Write-1,
+  // E11 ruling): session → person → type==='staff' → the demo_gate on the
+  // owning person row, keyed on the DISTINCT namespace $.enterprise.demo_gate
+  // so the enterprise gate lifts independently of the advisor gate.
+  //
+  // Production posture (mirrors requireGatedAdvisor): production staff rows
+  // carry NO gate — every enterprise write returns 403 until FT designates a
+  // person row by setting $.enterprise.demo_gate=true, a DELIBERATE decision
+  // with its own --remote step. Local smoke works against a locally-designated
+  // staff person (Faouzi, 04...0002). The gate stays dark on production while
+  // the E3 (unclaimed-row PII) / E6 (pre-claim reflection consent) / E8
+  // (connection_detail limits) counsel seams remain open.
+  const resolved = await getPersonForSession(db, context);
+  if (resolved.error) return resolved;
+  const { person } = resolved;
+  if (person.type !== 'staff') {
+    return { error: 'Not authorized', status: 403 };
+  }
+  const gateRow = await db
+    .selectFrom('person')
+    .select((eb) => [
+      sql`json_extract(extensions, '$.enterprise.demo_gate')`.as('gate'),
+    ])
+    .where('id', '=', person.id)
+    .executeTakeFirst();
+  // SQLite json_extract of a JSON boolean returns integer 1 / 0, or NULL if the
+  // path is missing. Only integer 1 passes.
+  if (!gateRow || gateRow.gate !== 1) {
+    return { error: 'Not authorized', status: 403 };
+  }
+  return { person };
+}
+
 export function jsonError(error, status) {
   return new Response(JSON.stringify({ error }), {
     status, headers: { 'Content-Type': 'application/json' },

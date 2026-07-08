@@ -70,9 +70,14 @@ export default function EnterpriseSurface() {
   const commsUser = isAuthenticated
     ? { name: appIdentity.identity?.displayName ?? '', email: appIdentity.identity?.email ?? '' }
     : CURRENT_USER;
+  // Authenticated tree seeds the roster from the /api/me enterprise block
+  // (empty [] until athletes are enrolled). Demo tree passes undefined → the
+  // provider's fixture default. Keying on isStaff (identity type), not on
+  // whether the roster array is present — the defensive-seam lesson.
+  const rosterInitialState = isStaff ? (appIdentity?.identity?.enterprise?.athletes ?? []) : undefined;
   return (
     <CommsProvider currentUser={commsUser} recipients={isStaff ? contactsRecipients : allRecipients}>
-      <AthletesProvider initialState={isStaff ? [] : undefined}>
+      <AthletesProvider initialState={rosterInitialState}>
         <EnterpriseSurfaceInner />
       </AthletesProvider>
     </CommsProvider>
