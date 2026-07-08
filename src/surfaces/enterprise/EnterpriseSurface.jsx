@@ -4,6 +4,7 @@ import Chrome from '../../components/Chrome.jsx';
 import UserProfile from '../../components/UserProfile.jsx';
 import ContactsDirectory from '../../components/ContactsDirectory.jsx';
 import { CommsProvider, useComms } from '../../contexts/CommsContext.jsx';
+import { AthletesProvider } from '../../contexts/AthletesContext.jsx';
 import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { contacts, INST_PROFILES, CURRENT_USER, athletes } from '../../data/enterpriseFixtures.js';
 
@@ -41,27 +42,39 @@ function buildCohortLabel(name, term) {
 // Demo-tree subtitle (fixture): "Cooper State University · <years>".
 const cohortLabel = buildCohortLabel(INST_PROFILES[0].name, INST_PROFILES[0].contract);
 
-// Recipients list for ComposeMessage autocomplete — 21 entries (16 athletes + 5 contacts).
-const recipientsList = [
+// ComposeMessage autocomplete recipients. Demo tree: 21 entries (16 athletes +
+// 5 contacts). Authenticated tree: contacts only — the athlete roster is empty
+// until the roster-add write path (slim-seed ruling), and contacts stay fixture
+// for now (Compose is demonstrative per the scoping note; contacts-isolation
+// deferred past 6a).
+const contactsRecipients = contacts.map((c) => ({ name: c.name, email: c.email }));
+const allRecipients = [
   ...athletes.map((a) => ({ name: a.name, email: a.email })),
-  ...contacts.map((c) => ({ name: c.name, email: c.email })),
+  ...contactsRecipients,
 ];
 
 export default function EnterpriseSurface() {
-  // useOptionalAppIdentity in the OUTER component too: CommsProvider lives
-  // here (above EnterpriseSurfaceInner), so the sender identity swap has to
-  // read identity at this level. Null on the public demo tree.
+  // useOptionalAppIdentity in the OUTER component too: CommsProvider +
+  // AthletesProvider both live here (above EnterpriseSurfaceInner), so the
+  // identity/data swaps read identity at this level. Null on the public demo
+  // tree.
   const appIdentity = useOptionalAppIdentity();
   const isAuthenticated = !!appIdentity;
+  // Data-isolation gate keys on identity TYPE, never on whether server data
+  // arrived (advisor defensive-seam lesson). On the authenticated tree
+  // (RequireType('staff')) type is always 'staff'; the explicit check is
+  // belt-and-braces against a future non-staff mount.
+  const isStaff = appIdentity?.identity?.type === 'staff';
   // CommsProvider sender identity: real identity on the authenticated tree,
-  // Diane fixture on the demo tree. Recipients stay fixture on BOTH trees
-  // (demonstrative directory — scoping-accepted note).
+  // Diane fixture on the demo tree.
   const commsUser = isAuthenticated
     ? { name: appIdentity.identity?.displayName ?? '', email: appIdentity.identity?.email ?? '' }
     : CURRENT_USER;
   return (
-    <CommsProvider currentUser={commsUser} recipients={recipientsList}>
-      <EnterpriseSurfaceInner />
+    <CommsProvider currentUser={commsUser} recipients={isStaff ? contactsRecipients : allRecipients}>
+      <AthletesProvider initialState={isStaff ? [] : undefined}>
+        <EnterpriseSurfaceInner />
+      </AthletesProvider>
     </CommsProvider>
   );
 }

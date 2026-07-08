@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { exclusions, complianceAuditLog, CURRENT_USER } from '../../data/enterpriseFixtures.js';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { Tag } from '../../components/Tag.jsx';
@@ -12,6 +13,14 @@ export default function EnterpriseCompliance() {
   const [hoveredId, setHoveredId] = useState(null);
   const [sessionAuditEntries, setSessionAuditEntries] = useState([]);
 
+  // Session-edit audit author: real operator identity on the authenticated
+  // tree, Diane fixture on the demo tree. NOTE: the exclusion list and audit
+  // trail BELOW still render fixtures on both trees — their D1 isolation
+  // (exclusion / compliance_audit are empty per the slim seed) is E-Slice 6b.
+  const appIdentity = useOptionalAppIdentity();
+  const authorName = appIdentity ? (appIdentity.identity?.displayName ?? '') : CURRENT_USER.name;
+  const authorRole = appIdentity ? (appIdentity.identity?.enterprise?.roleTitle ?? '') : CURRENT_USER.title;
+
   const displayedExclusions = exclusions.map((e) => ({ ...e, ...exclusionOverrides[e.id] }));
 
   const handleSave = (updated) => {
@@ -20,8 +29,8 @@ export default function EnterpriseCompliance() {
       {
         id: `session-${crypto.randomUUID()}`,
         timestamp: 'Just now',
-        user: CURRENT_USER.name,
-        userRole: CURRENT_USER.title,
+        user: authorName,
+        userRole: authorRole,
         action: 'Edited organization in exclusion list',
         target: updated.name,
         reason: 'Session edit',

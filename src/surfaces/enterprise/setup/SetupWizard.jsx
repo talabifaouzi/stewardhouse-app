@@ -7,6 +7,7 @@ import { Tag } from '../../../components/Tag.jsx';
 import SegmentedControl from '../../../components/SegmentedControl.jsx';
 import { formatDate } from '../../../utils/formatDate.js';
 import { CURRENT_USER } from '../../../data/enterpriseFixtures.js';
+import { useOptionalAppIdentity } from '../../../contexts/AppIdentityContext.jsx';
 
 // -----------------------------------------------------------------------------
 // Constants
@@ -34,14 +35,20 @@ const DEFAULT_LESSONS = [
   'Lesson 9: Capstone Reflection',
 ];
 
-const DEFAULT_STATE = {
+// operator = { name, email, title }: the signed-in staff operator on the
+// authenticated tree, or the Diane fixture (CURRENT_USER) on the demo tree.
+// Only the operator-identity fields are swapped; the remaining pre-filled
+// values (partnership terms, roster count, compliance-officer names,
+// workshops) stay illustrative — broader Setup isolation is out of 6a scope.
+function buildDefaultState(operator) {
+  return {
   institution: {
     name: 'Cooper State University',
     sector: 'Athletics',
     dept: 'Athletic Department',
-    contactName: CURRENT_USER.name,
-    contactEmail: CURRENT_USER.email,
-    contactTitle: CURRENT_USER.title,
+    contactName: operator.name,
+    contactEmail: operator.email,
+    contactTitle: operator.title,
   },
   partnership: {
     tier: 'revenue-sports',
@@ -56,7 +63,7 @@ const DEFAULT_STATE = {
     note: 'Cooper State pilot cohort (pre-filled demo data)',
   },
   roles: {
-    programAdmin: { name: CURRENT_USER.name, email: CURRENT_USER.email },
+    programAdmin: { name: operator.name, email: operator.email },
     complianceOfficer: { name: 'Sarah Mitchell', email: 'sarah.mitchell@cooperstate.edu' },
     devDirector: { name: 'Sarah Johnson', email: 'sarah.johnson@cooperstate.edu' },
   },
@@ -74,16 +81,27 @@ const DEFAULT_STATE = {
     accuracy: false,
     terms: false,
   },
-};
+  };
+}
 
 // -----------------------------------------------------------------------------
 // Wizard
 // -----------------------------------------------------------------------------
 
 export default function SetupWizard() {
+  // Operator identity seeds the wizard's contact + program-admin fields:
+  // real identity on the authenticated tree, Diane fixture on the demo tree.
+  const appIdentity = useOptionalAppIdentity();
+  const operator = appIdentity
+    ? {
+        name: appIdentity.identity?.displayName ?? '',
+        email: appIdentity.identity?.email ?? '',
+        title: appIdentity.identity?.enterprise?.roleTitle ?? '',
+      }
+    : { name: CURRENT_USER.name, email: CURRENT_USER.email, title: CURRENT_USER.title };
   const [currentStep, setCurrentStep] = useState(0);
   const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
-  const [formState, setFormState] = useState(DEFAULT_STATE);
+  const [formState, setFormState] = useState(() => buildDefaultState(operator));
   const [showConfirmation, setShowConfirmation] = useState(false);
   // Demo control: facilitator (default) gates Steps 5-6 as pending; in-house keeps them editable.
   const [partnershipType, setPartnershipType] = useState('facilitator');

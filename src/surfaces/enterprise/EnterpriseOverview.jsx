@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { athletes, engagementTimeline, engagementWeekDates, engagedAthletesByWeek, dailyBriefItems } from '../../data/enterpriseFixtures.js';
+import { engagementTimeline, engagementWeekDates, engagedAthletesByWeek, dailyBriefItems } from '../../data/enterpriseFixtures.js';
 import { formatDate } from '../../utils/formatDate.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
@@ -9,24 +9,21 @@ import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
 import DailyBrief from '../../components/DailyBrief.jsx';
 import { useComms } from '../../contexts/CommsContext.jsx';
-import {
-  tot,
-  gpsD,
-  certD,
-  stalled,
-  onTrack,
-  notStarted,
-  tGi,
-  athletesWithGifts,
-  gpsRate,
-  activelyProgressingPct,
-  engagementMin,
-  engagementMax,
-} from './shared/enterpriseStats.js';
+import { useAthletes } from '../../contexts/AthletesContext.jsx';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { computeStats, engagementBounds } from './shared/enterpriseStats.js';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 
 export default function EnterpriseOverview() {
   const { openCompose } = useComms();
+  const { athletes } = useAthletes();
+  // Engagement chart + daily brief have no provider (no D1 timeseries yet);
+  // gate them on identity presence — auth-empty on the authenticated tree,
+  // fixture on the demo tree. Stat tiles follow the roster data automatically
+  // (computeStats([]) → zeros).
+  const isAuthenticated = !!useOptionalAppIdentity();
+  const { tot, gpsD, certD, stalled, onTrack, notStarted, tGi, athletesWithGifts, gpsRate, activelyProgressingPct } = computeStats(athletes);
+  const { min: engagementMin, max: engagementMax } = engagementBounds(engagementTimeline);
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeWeek, setActiveWeek] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
@@ -69,9 +66,17 @@ export default function EnterpriseOverview() {
         Athletes participate as individuals; the department supports structurally — not advisorially.
       </p>
 
-      {/* Daily brief — morning-triage entry point */}
+      {/* Daily brief — morning-triage entry point. Auth-empty until athletes
+          enroll and generate activity; fixture on the demo tree. */}
       <div style={{ marginBottom: 'var(--sh-space-6)' }}>
-        <DailyBrief {...dailyBriefItems} />
+        {isAuthenticated ? (
+          <Card>
+            <SectionLabel>Today's brief</SectionLabel>
+            <p style={emptyStateStyle}>Nothing to review.</p>
+          </Card>
+        ) : (
+          <DailyBrief {...dailyBriefItems} />
+        )}
       </div>
 
       {/* Primary stat grid — each tile drills into a filtered athlete list */}
@@ -88,22 +93,35 @@ export default function EnterpriseOverview() {
         GPS completed by {gpsD} of {tot} athletes ({gpsRate}%). Total gifts: {tGi} across {athletesWithGifts} athletes.
       </p>
 
-      {/* Engagement panel */}
-      <Card>
-        <div style={engagementHeaderStyle}>
-          <SectionLabel>Weekly active engagement</SectionLabel>
-          <p style={engagementRangeStyle}>Last 12 weeks</p>
-        </div>
-        <BarChart
-          data={engagementTimeline}
-          labels={engagementWeekDates.map((d) => formatDate(d, { omitYear: true }))}
-          onBarClick={(_, i) => openWeek(i)}
-          ariaLabel={`Weekly engagement rate over 12 weeks ending ${formatDate(engagementWeekDates[engagementWeekDates.length - 1])}, ranging from ${engagementMin}% to ${engagementMax}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
-        />
-        <p style={engagementCaptionStyle}>
-          Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.
-        </p>
-      </Card>
+      {/* Engagement panel. Auth-empty: no engagement timeseries exists until
+          athletes participate — a designed empty panel, not a zero-height
+          chart with poisoned aria bounds. Fixture chart on the demo tree. */}
+      {isAuthenticated ? (
+        <Card>
+          <div style={engagementHeaderStyle}>
+            <SectionLabel>Weekly active engagement</SectionLabel>
+          </div>
+          <p style={emptyStateStyle}>
+            Weekly engagement appears here once athletes join the program.
+          </p>
+        </Card>
+      ) : (
+        <Card>
+          <div style={engagementHeaderStyle}>
+            <SectionLabel>Weekly active engagement</SectionLabel>
+            <p style={engagementRangeStyle}>Last 12 weeks</p>
+          </div>
+          <BarChart
+            data={engagementTimeline}
+            labels={engagementWeekDates.map((d) => formatDate(d, { omitYear: true }))}
+            onBarClick={(_, i) => openWeek(i)}
+            ariaLabel={`Weekly engagement rate over 12 weeks ending ${formatDate(engagementWeekDates[engagementWeekDates.length - 1])}, ranging from ${engagementMin}% to ${engagementMax}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
+          />
+          <p style={engagementCaptionStyle}>
+            Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.
+          </p>
+        </Card>
+      )}
 
       {/* Drill-down: filtered list (from tile or bar) → individual profile */}
       <FilteredAthletesModal
@@ -187,4 +205,12 @@ const engagementCaptionStyle = {
   color: 'var(--sh-text-secondary)',
   lineHeight: 1.55,
   marginTop: 'var(--sh-space-3)',
+};
+
+// Quiet empty-state line for auth-empty panels (engagement, daily brief).
+const emptyStateStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  marginTop: 'var(--sh-space-2)',
 };

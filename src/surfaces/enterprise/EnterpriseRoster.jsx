@@ -1,28 +1,15 @@
-import { useState } from 'react';
-import { athletes } from '../../data/enterpriseFixtures.js';
+import { useState, useMemo } from 'react';
 import { Card } from '../../components/Card.jsx';
 import StatTile from '../../components/StatTile.jsx';
 import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
 import DataTable from '../../components/DataTable.jsx';
 import { useComms } from '../../contexts/CommsContext.jsx';
+import { useAthletes } from '../../contexts/AthletesContext.jsx';
 import { formatDate } from '../../utils/formatDate.js';
-import {
-  tot,
-  certD,
-  stalled,
-  onTrack,
-  notStarted,
-  activelyProgressingPct,
-} from './shared/enterpriseStats.js';
+import { computeStats } from './shared/enterpriseStats.js';
 import { statusFor, STATUS_PRIORITY } from './shared/athleteStatus.js';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
-
-const sortedAthletes = [...athletes].sort((a, b) => {
-  const p = STATUS_PRIORITY[statusFor(a)] - STATUS_PRIORITY[statusFor(b)];
-  if (p !== 0) return p;
-  return a.name.localeCompare(b.name);
-});
 
 const ROSTER_COLUMNS = [
   { key: 'name',       label: 'Name',        render: (a) => a.name },
@@ -38,8 +25,16 @@ const ROSTER_COLUMNS = [
 
 export default function EnterpriseRoster() {
   const { openCompose } = useComms();
+  const { athletes } = useAthletes();
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
+
+  const { tot, certD, stalled, onTrack, notStarted, activelyProgressingPct } = computeStats(athletes);
+  const sortedAthletes = useMemo(() => [...athletes].sort((a, b) => {
+    const p = STATUS_PRIORITY[statusFor(a)] - STATUS_PRIORITY[statusFor(b)];
+    if (p !== 0) return p;
+    return a.name.localeCompare(b.name);
+  }), [athletes]);
 
   const config = activeCategory ? CATEGORY_CONFIG[activeCategory] : null;
   const filteredAthletes = config ? athletes.filter(config.filter) : [];
@@ -59,16 +54,21 @@ export default function EnterpriseRoster() {
         <StatTile label="Invited" value={notStarted} onClick={() => setActiveCategory('invited')} />
       </div>
 
-      {/* Roster table — rows clickable, opens profile directly */}
+      {/* Roster table — rows clickable, opens profile directly. Empty until
+          athletes enroll via the roster-add write path (slim-seed ruling). */}
       <Card>
-        <DataTable
-          columns={ROSTER_COLUMNS}
-          data={sortedAthletes}
-          rowKey={(a) => a.id}
-          minWidth="880px"
-          onRowClick={setActiveAthlete}
-          rowAriaLabel={(a) => `View ${a.name}'s profile`}
-        />
+        {sortedAthletes.length > 0 ? (
+          <DataTable
+            columns={ROSTER_COLUMNS}
+            data={sortedAthletes}
+            rowKey={(a) => a.id}
+            minWidth="880px"
+            onRowClick={setActiveAthlete}
+            rowAriaLabel={(a) => `View ${a.name}'s profile`}
+          />
+        ) : (
+          <p style={emptyStateStyle}>No athletes enrolled yet.</p>
+        )}
       </Card>
 
       {/* Drill-down: stat tile → filtered list → profile (stacks) */}
@@ -117,5 +117,13 @@ const statGridStyle = {
   gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
   gap: 'var(--sh-space-4)',
   marginBottom: 'var(--sh-space-6)',
+};
+
+// Quiet empty-state line when the roster carries no athletes (auth tree).
+const emptyStateStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  padding: 'var(--sh-space-2) 0',
 };
 

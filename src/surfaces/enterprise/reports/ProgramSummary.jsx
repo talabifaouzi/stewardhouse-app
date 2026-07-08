@@ -17,18 +17,7 @@ import AthleteProfile from '../../../components/AthleteProfile.jsx';
 import { useComms } from '../../../contexts/CommsContext.jsx';
 import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 import { formatDate } from '../../../utils/formatDate.js';
-import {
-  tot,
-  gpsRate,
-  certRate,
-  tGi,
-  onTrack,
-  certD,
-  stalled,
-  notStarted,
-  engagementMin,
-  engagementMax,
-} from '../shared/enterpriseStats.js';
+import { computeStats, engagementBounds } from '../shared/enterpriseStats.js';
 
 const athletesById = Object.fromEntries(athletes.map((a) => [a.id, a]));
 
@@ -39,6 +28,10 @@ function capitalize(s) {
 export default function ProgramSummary() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
   const { openCompose } = useComms();
+  // Reports stay fixture-backed until E-Slice 6b; computeStats over the
+  // fixture roster reproduces the pre-6a module-const values exactly.
+  const { tot, gpsRate, certRate, tGi, onTrack, certD, stalled, notStarted } = computeStats(athletes);
+  const { min: engagementMin, max: engagementMax } = engagementBounds(engagementTimeline);
   const [activeWorkshop, setActiveWorkshop] = useState(null);
   const [activeWeek, setActiveWeek] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
