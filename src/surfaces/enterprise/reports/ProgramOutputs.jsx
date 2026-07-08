@@ -4,6 +4,7 @@ import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
 import DataTable from '../../../components/DataTable.jsx';
 import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
+import { useAthletes } from '../../../contexts/AthletesContext.jsx';
 import { athletes, workshops } from '../../../data/enterpriseFixtures.js';
 
 const fmtUSD = (n) => `$${n.toLocaleString('en-US')}`;
@@ -68,6 +69,22 @@ const avgLessonsPerAthlete = Math.round((totalLessonsCompleted / totalAthletes) 
 
 export default function ProgramOutputs() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
+  const { athletes } = useAthletes();
+
+  // Auth tree: empty roster → honest page-level line. Demo tree renders the
+  // full fixture report below (module-level derivations remain demo-scoped
+  // until the enterprise athlete write path lands).
+  if (athletes.length === 0) {
+    return (
+      <main style={mainStyle}>
+        <BackLink to={`${basePath}/reports`} label="Reports" />
+        <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+        <h1 style={titleStyle}>Program outputs</h1>
+        <p style={emptyLineStyle}>No program data yet.</p>
+      </main>
+    );
+  }
+
   return (
     <main style={mainStyle}>
       <BackLink to={`${basePath}/reports`} label="Reports" />
@@ -171,6 +188,14 @@ const mainStyle = {
   maxWidth: 'var(--sh-content-max)',
   margin: '0 auto',
   padding: 'var(--sh-space-10) clamp(var(--sh-space-3), 4vw, var(--sh-space-8)) var(--sh-space-16)',
+};
+
+// Quiet page-level empty line (auth tree, no program data yet).
+const emptyLineStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  marginTop: 'var(--sh-space-4)',
 };
 
 const eyebrowStyle = {

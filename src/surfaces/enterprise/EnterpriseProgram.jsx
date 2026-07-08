@@ -1,5 +1,7 @@
-import { useState } from 'react';
-import { INST_PROFILES, workshops, athletes } from '../../data/enterpriseFixtures.js';
+import { useState, useMemo } from 'react';
+import { INST_PROFILES, workshops } from '../../data/enterpriseFixtures.js';
+import { useAthletes } from '../../contexts/AthletesContext.jsx';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { Tag } from '../../components/Tag.jsx';
@@ -27,17 +29,58 @@ import WorkshopDetail from '../../components/WorkshopDetail.jsx';
 
 const profile = INST_PROFILES[0];
 const [termPart, dateRangePart = ''] = profile.contract.split(' — ');
-const athletesById = Object.fromEntries(athletes.map((a) => [a.id, a]));
+
+const endowmentTag = (label) => (
+  <>
+    {label}
+    <Tag color="bronze" tracking="loose" style={{ marginLeft: 'var(--sh-space-2)' }}>Pending review</Tag>
+  </>
+);
 
 export default function EnterpriseProgram() {
+  const { athletes } = useAthletes();
+  const appIdentity = useOptionalAppIdentity();
   const [activeWorkshop, setActiveWorkshop] = useState(null);
+
+  const isAuthenticated = !!appIdentity;
+  const ent = appIdentity?.identity?.enterprise ?? null;
+  const athletesById = useMemo(
+    () => Object.fromEntries(athletes.map((a) => [a.id, a])),
+    [athletes],
+  );
+
+  // Institution term + endowment: identity on the auth tree, fixture on demo.
+  const [authTerm, authRange = ''] = (ent?.programTerm || '').split(' — ');
+  const termLabel = isAuthenticated ? authTerm : termPart;
+  const rangeLabel = isAuthenticated ? authRange : dateRangePart;
+  const endowmentLabel = isAuthenticated
+    ? (ent?.endowmentAnnual != null ? `$${ent.endowmentAnnual.toLocaleString('en-US')}/yr` : '—')
+    : profile.endowment;
+
+  // Program-details rows differ by tree. The authenticated tree shows only the
+  // identity-backed fields (Term, Endowment); Package tier + Facilitator are
+  // NOT emitted by /api/me (institution.tier and the facilitator contact are
+  // unwired), so they are omitted on auth rather than leaking the fixture.
+  // Wiring those would be a follow-up /api/me widening (same shape as the
+  // endowment fields added in 6b).
+  const detailRows = isAuthenticated
+    ? [
+        { label: 'Term', value: `${termLabel} · ${rangeLabel}` },
+        { label: 'Endowment', value: endowmentTag(endowmentLabel) },
+      ]
+    : [
+        { label: 'Package tier', value: `${profile.tier} — ${profile.annual}` },
+        { label: 'Term', value: `${termLabel} · ${rangeLabel}` },
+        { label: 'Facilitator', value: profile.facilitator },
+        { label: 'Endowment', value: endowmentTag(endowmentLabel) },
+      ];
 
   return (
     <main style={mainStyle}>
       <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
       <h1 style={titleStyle}>Program</h1>
       <p style={subtitleStyle}>
-        {athletes.length} athletes · {termPart} · {dateRangePart}
+        {athletes.length} athletes · {termLabel} · {rangeLabel}
       </p>
 
       <div style={cardStackStyle}>
@@ -45,27 +88,29 @@ export default function EnterpriseProgram() {
         <Card>
           <SectionLabel>Program details</SectionLabel>
           <div style={detailsListStyle}>
-            <InfoRow label="Package tier" value={`${profile.tier} — ${profile.annual}`} />
-            <InfoRow label="Term" value={`${termPart} · ${dateRangePart}`} />
-            <InfoRow label="Facilitator" value={profile.facilitator} />
-            <InfoRow
-              label="Endowment"
-              value={(
-                <>
-                  {profile.endowment}
-                  <Tag color="bronze" tracking="loose" style={{ marginLeft: 'var(--sh-space-2)' }}>Pending review</Tag>
-                </>
-              )}
-              last
-            />
+            {detailRows.map((row, i) => (
+              <InfoRow
+                key={row.label}
+                label={row.label}
+                value={row.value}
+                last={i === detailRows.length - 1}
+              />
+            ))}
           </div>
         </Card>
 
-        {/* Card 2 — Workshop calendar */}
+        {/* Card 2 — Workshop calendar. Auth tree: empty until the workshop
+            write path lands. Demo tree: fixture calendar. */}
         <Card>
           <SectionLabel>Workshop calendar</SectionLabel>
-          <p style={framingStyle}>Five workshops over the program term.</p>
-          <WorkshopCalendar workshops={workshops} onWorkshopClick={setActiveWorkshop} />
+          {isAuthenticated ? (
+            <p style={framingStyle}>No workshops scheduled yet.</p>
+          ) : (
+            <>
+              <p style={framingStyle}>Five workshops over the program term.</p>
+              <WorkshopCalendar workshops={workshops} onWorkshopClick={setActiveWorkshop} />
+            </>
+          )}
         </Card>
 
         {/* Card 3 — Module curriculum reference */}

@@ -16,6 +16,7 @@ import FilteredAthletesModal from '../../../components/FilteredAthletesModal.jsx
 import AthleteProfile from '../../../components/AthleteProfile.jsx';
 import { useComms } from '../../../contexts/CommsContext.jsx';
 import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
+import { useAthletes } from '../../../contexts/AthletesContext.jsx';
 import { formatDate } from '../../../utils/formatDate.js';
 import { computeStats, engagementBounds } from '../shared/enterpriseStats.js';
 
@@ -28,13 +29,28 @@ function capitalize(s) {
 export default function ProgramSummary() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
   const { openCompose } = useComms();
-  // Reports stay fixture-backed until E-Slice 6b; computeStats over the
-  // fixture roster reproduces the pre-6a module-const values exactly.
-  const { tot, gpsRate, certRate, tGi, onTrack, certD, stalled, notStarted } = computeStats(athletes);
-  const { min: engagementMin, max: engagementMax } = engagementBounds(engagementTimeline);
+  const { athletes } = useAthletes();
   const [activeWorkshop, setActiveWorkshop] = useState(null);
   const [activeWeek, setActiveWeek] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
+
+  // Auth tree: empty roster (no enterprise athlete write path yet) → a single
+  // honest page-level line, not a page of zeros. Demo tree renders the full
+  // fixture report below. Module-level fixture derivations remain demo-scoped;
+  // they move to provider-backed computation when the roster-add path lands.
+  if (athletes.length === 0) {
+    return (
+      <main style={mainStyle}>
+        <BackLink to={`${basePath}/reports`} label="Reports" />
+        <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+        <h1 style={titleStyle}>Program summary</h1>
+        <p style={emptyLineStyle}>No program data yet.</p>
+      </main>
+    );
+  }
+
+  const { tot, gpsRate, certRate, tGi, onTrack, certD, stalled, notStarted } = computeStats(athletes);
+  const { min: engagementMin, max: engagementMax } = engagementBounds(engagementTimeline);
   const latestEngagement = engagementTimeline[engagementTimeline.length - 1];
 
   const weekAthletes = activeWeek !== null
@@ -161,6 +177,14 @@ const mainStyle = {
   maxWidth: 'var(--sh-content-max)',
   margin: '0 auto',
   padding: 'var(--sh-space-10) clamp(var(--sh-space-3), 4vw, var(--sh-space-8)) var(--sh-space-16)',
+};
+
+// Quiet page-level empty line (auth tree, no program data yet).
+const emptyLineStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  marginTop: 'var(--sh-space-4)',
 };
 
 const eyebrowStyle = {

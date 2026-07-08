@@ -6,7 +6,7 @@ import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
 import SegmentedControl from '../../../components/SegmentedControl.jsx';
 import { endowmentSnapshot } from '../../../data/enterpriseFixtures.js';
-import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
+import { useBasePath, useOptionalAppIdentity } from '../../../contexts/AppIdentityContext.jsx';
 import { formatDate } from '../../../utils/formatDate.js';
 
 const fmtUSD = (n) => `$${Math.round(n).toLocaleString('en-US')}`;
@@ -14,7 +14,23 @@ const fmtPct = (n) => `${n.toFixed(1)}%`;
 
 export default function Endowment() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
-  const [annualContribution, setAnnualContribution] = useState(endowmentSnapshot.annualContribution);
+  const appIdentity = useOptionalAppIdentity();
+  // Auth tree: real endowment from /api/me (endowmentAnnual / endowmentCurrent
+  // off the institution row). The two dependent display figures derive from
+  // those two — program-year-1 contributions-to-date equals the annual figure,
+  // and growth == current − contributions. asOfDate isn't emitted, so its line
+  // hides on auth. Demo tree: the fixture snapshot (byte-identical).
+  const ent = appIdentity?.identity?.enterprise ?? null;
+  const endowment = appIdentity
+    ? {
+        annualContribution: ent?.endowmentAnnual ?? 0,
+        currentValue: ent?.endowmentCurrent ?? 0,
+        contributionsToDate: ent?.endowmentAnnual ?? 0,
+        growthToDate: (ent?.endowmentCurrent ?? 0) - (ent?.endowmentAnnual ?? 0),
+        asOfDate: null,
+      }
+    : endowmentSnapshot;
+  const [annualContribution, setAnnualContribution] = useState(endowment.annualContribution);
   const [payoutRate, setPayoutRate] = useState(5);
   const [growthRate, setGrowthRate] = useState(6);
   const [termYears, setTermYears] = useState(10);
@@ -25,7 +41,7 @@ export default function Endowment() {
   const g = growthRate / 100;
   const n = termYears;
   const P = annualContribution;
-  const startingValue = endowmentSnapshot.currentValue;
+  const startingValue = endowment.currentValue;
   const projectedValue = Math.round(
     startingValue * Math.pow(1 + g, n) + P * ((Math.pow(1 + g, n) - 1) / g),
   );
@@ -44,24 +60,26 @@ export default function Endowment() {
       {/* Phase 1 — Current state */}
       <Card>
         <SectionLabel>Current state</SectionLabel>
-        <p style={asOfStyle}>As of {formatDate(endowmentSnapshot.asOfDate)}</p>
+        {endowment.asOfDate && (
+          <p style={asOfStyle}>As of {formatDate(endowment.asOfDate)}</p>
+        )}
         <div style={statRowStyle}>
           <StatTile
             variant="inline"
             label="Current value"
-            value={fmtUSD(endowmentSnapshot.currentValue)}
+            value={fmtUSD(endowment.currentValue)}
             sublabel="Endowment principal + growth"
           />
           <StatTile
             variant="inline"
             label="Contributions to date"
-            value={fmtUSD(endowmentSnapshot.contributionsToDate)}
+            value={fmtUSD(endowment.contributionsToDate)}
             sublabel="Program year 1"
           />
           <StatTile
             variant="inline"
             label="Growth to date"
-            value={fmtUSD(endowmentSnapshot.growthToDate)}
+            value={fmtUSD(endowment.growthToDate)}
             sublabel="Estimated, ~6% annualized"
           />
         </div>

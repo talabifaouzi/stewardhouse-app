@@ -3,6 +3,7 @@ import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
+import { useAthletes } from '../../../contexts/AthletesContext.jsx';
 import { athletes, exclusions } from '../../../data/enterpriseFixtures.js';
 
 // Stage assignment: each athlete sits at their highest-reached structural
@@ -52,6 +53,22 @@ const totalAthletes = athletes.length;
 
 export default function PhilanthropicReadiness() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
+  const { athletes } = useAthletes();
+
+  // Auth tree: empty roster → honest page-level line. Demo tree renders the
+  // full fixture report below (module-level stage derivations remain
+  // demo-scoped until the enterprise athlete write path lands).
+  if (athletes.length === 0) {
+    return (
+      <main style={mainStyle}>
+        <BackLink to={`${basePath}/reports`} label="Reports" />
+        <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+        <h1 style={titleStyle}>Philanthropic readiness</h1>
+        <p style={emptyLineStyle}>No program data yet.</p>
+      </main>
+    );
+  }
+
   return (
     <main style={mainStyle}>
       <BackLink to={`${basePath}/reports`} label="Reports" />
@@ -152,6 +169,14 @@ const mainStyle = {
   maxWidth: 'var(--sh-content-max)',
   margin: '0 auto',
   padding: 'var(--sh-space-10) clamp(var(--sh-space-3), 4vw, var(--sh-space-8)) var(--sh-space-16)',
+};
+
+// Quiet page-level empty line (auth tree, no program data yet).
+const emptyLineStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  marginTop: 'var(--sh-space-4)',
 };
 
 const eyebrowStyle = {

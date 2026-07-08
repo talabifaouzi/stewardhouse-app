@@ -14,14 +14,17 @@ export default function EnterpriseCompliance() {
   const [sessionAuditEntries, setSessionAuditEntries] = useState([]);
 
   // Session-edit audit author: real operator identity on the authenticated
-  // tree, Diane fixture on the demo tree. NOTE: the exclusion list and audit
-  // trail BELOW still render fixtures on both trees — their D1 isolation
-  // (exclusion / compliance_audit are empty per the slim seed) is E-Slice 6b.
+  // tree, Diane fixture on the demo tree.
   const appIdentity = useOptionalAppIdentity();
+  const isAuthenticated = !!appIdentity;
   const authorName = appIdentity ? (appIdentity.identity?.displayName ?? '') : CURRENT_USER.name;
   const authorRole = appIdentity ? (appIdentity.identity?.enterprise?.roleTitle ?? '') : CURRENT_USER.title;
 
-  const displayedExclusions = exclusions.map((e) => ({ ...e, ...exclusionOverrides[e.id] }));
+  // Auth tree: exclusion + audit fixtures are withheld — the exclusion and
+  // compliance_audit tables are empty per the slim seed (write path is
+  // future). Session edits made THIS session still append to the visible log
+  // (real-authored per the identity above).
+  const displayedExclusions = (isAuthenticated ? [] : exclusions).map((e) => ({ ...e, ...exclusionOverrides[e.id] }));
 
   const handleSave = (updated) => {
     setExclusionOverrides((prev) => ({ ...prev, [updated.id]: updated }));
@@ -40,7 +43,7 @@ export default function EnterpriseCompliance() {
     ]);
   };
 
-  const auditEntries = [...sessionAuditEntries, ...complianceAuditLog];
+  const auditEntries = [...sessionAuditEntries, ...(isAuthenticated ? [] : complianceAuditLog)];
 
   const hasOverride = activeExclusion
     ? Boolean(exclusionOverrides[activeExclusion.id])
@@ -69,30 +72,34 @@ export default function EnterpriseCompliance() {
           <p style={explainerStyle}>
             Organizations flagged by the department. Athletes still see these when choosing a gift target, with a contextual note explaining the flag — disclosure model, not blocking.
           </p>
-          <ul style={listResetStyle}>
-            {displayedExclusions.map((org, i) => {
-              const isLast = i === displayedExclusions.length - 1;
-              const isHovered = hoveredId === org.id;
-              return (
-                <li key={org.id}>
-                  <button
-                    type="button"
-                    onClick={() => setActiveExclusion(org)}
-                    onMouseEnter={() => setHoveredId(org.id)}
-                    onMouseLeave={() => setHoveredId(null)}
-                    style={{
-                      ...rowButtonStyle(isLast),
-                      background: isHovered ? 'var(--sh-bg-tint)' : 'transparent',
-                    }}
-                  >
-                    <p style={orgNameStyle}>{org.name}</p>
-                    <p style={metaStyle}>EIN: {org.ein}</p>
-                    <p style={reasonStyle}>Reason: {org.reason}</p>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+          {displayedExclusions.length > 0 ? (
+            <ul style={listResetStyle}>
+              {displayedExclusions.map((org, i) => {
+                const isLast = i === displayedExclusions.length - 1;
+                const isHovered = hoveredId === org.id;
+                return (
+                  <li key={org.id}>
+                    <button
+                      type="button"
+                      onClick={() => setActiveExclusion(org)}
+                      onMouseEnter={() => setHoveredId(org.id)}
+                      onMouseLeave={() => setHoveredId(null)}
+                      style={{
+                        ...rowButtonStyle(isLast),
+                        background: isHovered ? 'var(--sh-bg-tint)' : 'transparent',
+                      }}
+                    >
+                      <p style={orgNameStyle}>{org.name}</p>
+                      <p style={metaStyle}>EIN: {org.ein}</p>
+                      <p style={reasonStyle}>Reason: {org.reason}</p>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p style={emptyStateStyle}>No exclusions recorded.</p>
+          )}
         </Card>
       </div>
 
@@ -102,16 +109,20 @@ export default function EnterpriseCompliance() {
         <p style={auditContextStyle}>
           Compliance actions logged with timestamp and reviewer. Production maintains tamper-resistant audit log; prototype shows pre-seeded entries and any in-session edits.
         </p>
-        <ul style={auditListStyle}>
-          {auditEntries.map((entry, i) => {
-            const isLast = i === auditEntries.length - 1;
-            return (
-              <li key={entry.id}>
-                <AuditEntry entry={entry} isLast={isLast} />
-              </li>
-            );
-          })}
-        </ul>
+        {auditEntries.length > 0 ? (
+          <ul style={auditListStyle}>
+            {auditEntries.map((entry, i) => {
+              const isLast = i === auditEntries.length - 1;
+              return (
+                <li key={entry.id}>
+                  <AuditEntry entry={entry} isLast={isLast} />
+                </li>
+              );
+            })}
+          </ul>
+        ) : (
+          <p style={emptyStateStyle}>Audit entries appear here as compliance actions occur.</p>
+        )}
         <p style={auditFootnoteStyle}>
           Production deployment captures every exclusion edit, review, and policy change. This audit log is read-only in production.
         </p>
@@ -162,6 +173,14 @@ const mainStyle = {
   maxWidth: 'var(--sh-content-max)',
   margin: '0 auto',
   padding: 'var(--sh-space-10) clamp(var(--sh-space-3), 4vw, var(--sh-space-8)) var(--sh-space-16)',
+};
+
+// Quiet empty-state line for the auth tree (no exclusions / audit entries yet).
+const emptyStateStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  marginTop: 'var(--sh-space-3)',
 };
 
 const eyebrowStyle = {

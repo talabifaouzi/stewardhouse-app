@@ -3,7 +3,7 @@ import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import DataTable from '../../../components/DataTable.jsx';
 import useMediaQuery, { MOBILE_QUERY } from '../../../hooks/useMediaQuery.js';
-import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
+import { useBasePath, useOptionalAppIdentity } from '../../../contexts/AppIdentityContext.jsx';
 import { athletes, priorCohortSnapshot, currentCohortSnapshot } from '../../../data/enterpriseFixtures.js';
 
 const fmtUSD = (n) => `$${n.toLocaleString('en-US')}`;
@@ -59,6 +59,32 @@ const yoyRows = [
 export default function CohortComparison() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
   const isMobile = useMediaQuery(MOBILE_QUERY);
+  const appIdentity = useOptionalAppIdentity();
+
+  // Snapshot gate (FT ruling, pilot-tile pattern). A year-over-year comparison
+  // needs at least one persisted program-period snapshot; the demo tree ships
+  // two fixture snapshots (prior + current), the authenticated tree has zero
+  // (cohort_period_snapshot is empty per the slim seed and is not yet emitted
+  // by /api/me). UNLOCK CONDITION: when the snapshot write path lands and
+  // /api/me emits cohort_period_snapshot rows, this count becomes the real
+  // row count and the panel below unlocks at snapshotCount >= 1.
+  const snapshotCount = appIdentity ? 0 : 2;
+  if (snapshotCount < 1) {
+    return (
+      <main style={mainStyle}>
+        <BackLink to={`${basePath}/reports`} label="Reports" />
+        <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+        <h1 style={titleStyle}>Cohort comparison</h1>
+        <Card tint>
+          <SectionLabel>Not yet available</SectionLabel>
+          <p style={gatePanelStyle}>
+            Cohort comparison becomes available after your first program period closes.
+          </p>
+        </Card>
+      </main>
+    );
+  }
+
   return (
     <main style={mainStyle}>
       <BackLink to={`${basePath}/reports`} label="Reports" />
@@ -153,6 +179,15 @@ const mainStyle = {
   maxWidth: 'var(--sh-content-max)',
   margin: '0 auto',
   padding: 'var(--sh-space-10) clamp(var(--sh-space-3), 4vw, var(--sh-space-8)) var(--sh-space-16)',
+};
+
+// Gated-panel copy (auth tree, no closed program period yet).
+const gatePanelStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.65,
+  marginTop: 'var(--sh-space-3)',
+  maxWidth: '640px',
 };
 
 const eyebrowStyle = {

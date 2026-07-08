@@ -345,7 +345,7 @@ export async function onRequest(context) {
     if (contact) {
       institution = await db
         .selectFrom('institution')
-        .select(['name', 'program_term', 'contract_label'])
+        .select(['name', 'program_term', 'contract_label', 'endowment_annual', 'endowment_current'])
         .where('id', '=', contact.institution_id)   // PRIMARY KEY
         .executeTakeFirst();
     }
@@ -357,6 +357,11 @@ export async function onRequest(context) {
       // client-side (mirrors the fixture cohortLabel derivation). Do NOT
       // pre-bake the subtitle server-side.
       programTerm: institution?.program_term ?? institution?.contract_label ?? null,
+      // Endowment values from the SAME already-fetched institution row (no
+      // extra query) — the enterprise Reports/Endowment page reads these on
+      // the authenticated tree (E-Slice 6b). Allowlist-picked, null-safe.
+      endowmentAnnual: institution?.endowment_annual ?? null,
+      endowmentCurrent: institution?.endowment_current ?? null,
     };
   }
 
