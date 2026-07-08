@@ -110,7 +110,15 @@ export default function Chrome({ surface, userName, userRole, navItems = [], act
             display: 'flex',
             gap: 'var(--sh-space-1)',
             flex: 1,
-            justifyContent: 'center',
+            // `safe center`: center the tab row when it fits (wide-view
+            // design), but fall back to start-alignment when it overflows a
+            // narrow viewport. Plain `center` on an overflow-x scroll
+            // container pushes the overflow symmetrically to BOTH sides, and
+            // the left-overflowed tabs land at negative scroll offsets that
+            // scrollLeft (min 0) can never reach — clipping Overview/Roster on
+            // mobile. `safe` keys on actual overflow, not a breakpoint guess,
+            // and degrades to flex-start on browsers that don't support it.
+            justifyContent: 'safe center',
             overflow: 'auto',
           }}>
             {navItems.map((item) => (
