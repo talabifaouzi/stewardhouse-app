@@ -63,9 +63,40 @@ export function WorkshopsProvider({ initialState, children }) {
     }
   }, [authenticated]);
 
+  // Attendance upsert write-through (E-Write-3b). PUTs the full-roster batch to
+  // /api/workshops/:id/attendance; on success the endpoint returns the FULL
+  // updated workshop element (attendance nested per Q7/Q6), which replaces that
+  // workshop object wholesale in local state (map + swap by id) so the read
+  // view re-renders from the saved data.
+  const updateAttendance = useCallback(async (workshopId, records) => {
+    if (!authenticated) {
+      // Demo tree: sync-local. Edit mode is authenticated-only, so this branch
+      // is not reached in practice — kept for the provider-mirror shape.
+      setWorkshops((prev) => prev.map((w) => (
+        w.id === workshopId ? { ...w, attendance: records } : w
+      )));
+      return true;
+    }
+    try {
+      const res = await fetch(`/api/workshops/${encodeURIComponent(workshopId)}/attendance`, {
+        method: 'PUT', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ records }),
+      });
+      if (!res.ok) throw new Error(await serverError(res, 'Failed to record attendance'));
+      const saved = await res.json();
+      setWorkshops((prev) => prev.map((w) => (w.id === saved.id ? saved : w)));
+      setWriteError(null);
+      return saved;
+    } catch (err) {
+      setWriteError(err.message || 'Failed to record attendance');
+      return null;
+    }
+  }, [authenticated]);
+
   const value = useMemo(
-    () => ({ workshops, add, writeError, clearWriteError }),
-    [workshops, add, writeError, clearWriteError],
+    () => ({ workshops, add, updateAttendance, writeError, clearWriteError }),
+    [workshops, add, updateAttendance, writeError, clearWriteError],
   );
 
   return (

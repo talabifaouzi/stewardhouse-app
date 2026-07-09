@@ -45,10 +45,19 @@ export default function EnterpriseProgram() {
   // Workshops come from the provider now (was a direct fixture import). Demo
   // tree: the provider's fixture default (byte-identical to the old import).
   // Auth tree: the /api/me institution workshops (empty until scheduled).
-  const { workshops, add: addWorkshop, writeError, clearWriteError } = useWorkshops();
+  const { workshops, add: addWorkshop, updateAttendance, writeError, clearWriteError } = useWorkshops();
   const appIdentity = useOptionalAppIdentity();
   const [activeWorkshop, setActiveWorkshop] = useState(null);
   const [scheduleOpen, setScheduleOpen] = useState(false);
+
+  // Attendance save (E-Write-3b): write through the provider, then refresh the
+  // open modal with the returned element (activeWorkshop is a click-time
+  // snapshot, so it must be re-pointed at the saved workshop to re-render).
+  const handleSaveAttendance = async (workshopId, records) => {
+    const saved = await updateAttendance(workshopId, records);
+    if (saved && typeof saved === 'object') setActiveWorkshop(saved);
+    return saved;
+  };
 
   const isAuthenticated = !!appIdentity;
   const ent = appIdentity?.identity?.enterprise ?? null;
@@ -153,12 +162,18 @@ export default function EnterpriseProgram() {
         </Card>
       </div>
 
-      {/* Workshop detail modal */}
+      {/* Workshop detail modal. Auth tree enables attendance edit mode
+          (editable + roster + save wired); demo tree renders read-only. */}
       <WorkshopDetail
         isOpen={activeWorkshop !== null}
         onClose={() => setActiveWorkshop(null)}
         workshop={activeWorkshop}
         athletesById={athletesById}
+        editable={isAuthenticated}
+        roster={athletes}
+        onSaveAttendance={handleSaveAttendance}
+        writeError={writeError}
+        clearWriteError={clearWriteError}
       />
 
       {/* Schedule-workshop form — authenticated tree only (E11-gated). */}
