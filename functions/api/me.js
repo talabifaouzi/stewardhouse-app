@@ -362,6 +362,9 @@ export async function onRequest(context) {
         .selectFrom('athlete')
         .select(ATHLETE_ELEMENT_COLUMNS)
         .where('institution_id', '=', contact.institution_id)
+        // Exclude anonymized stubs (E-Write-2): a 'Sunset' row is E9-snapshot
+        // residue (class + sport cohort tally), never an active roster row.
+        .where('enrollment_status', '!=', 'Sunset')
         .orderBy('created_at', 'desc')
         .execute();
       athletes = athleteRows.map(toAthleteElement);

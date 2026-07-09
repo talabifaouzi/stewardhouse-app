@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Card } from './Card.jsx';
 import { SectionLabel } from './SectionLabel.jsx';
 import { Modal } from './Modal.jsx';
@@ -11,6 +12,11 @@ import { formatDate } from '../utils/formatDate.js';
 // Single-athlete profile modal. Six sections: header (with status badge),
 // contact, progress, giving, activity timeline, notes. Renders nothing when
 // athlete is null (the consumer toggles isOpen based on athlete presence).
+//
+// Remove from roster (E-Write-2): when onRemove is wired (Roster, auth-only),
+// the footer carries a destructive "Remove from roster" action that opens a
+// nested confirm modal (E3 anonymize-to-stub copy). writeError surfaces in the
+// confirm modal (E-Write-1 idiom). Demo tree: no onRemove → no Remove action.
 
 const TYPE_LABEL = {
   'gps_completed':    'GPS',
@@ -21,9 +27,29 @@ const TYPE_LABEL = {
   'certified':        'Certification',
 };
 
-export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminder }) {
+export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminder, onRemove, writeError, clearWriteError }) {
   const { getThread } = useComms();
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [removing, setRemoving] = useState(false);
   if (!athlete) return null;
+
+  const openConfirm = () => {
+    clearWriteError?.();
+    setConfirmOpen(true);
+  };
+  const handleConfirmRemove = async () => {
+    if (removing) return;
+    setRemoving(true);
+    clearWriteError?.();
+    const ok = await onRemove(athlete.id);
+    if (ok) {
+      setConfirmOpen(false);
+      setRemoving(false);
+      onClose();   // the athlete row no longer exists — close the profile too
+    } else {
+      setRemoving(false);   // writeError surfaces in the confirm modal
+    }
+  };
 
   const giftEvents = athlete.activity.filter((e) => e.type === 'gift_made');
   const messages = getThread(athlete.email);
@@ -131,13 +157,40 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
         <MessageHistoryCard messages={messages} />
       </div>
 
-      {/* Footer CTA — only renders when caller wires onSendReminder */}
-      {onSendReminder && (
+      {/* Footer — Remove (destructive, auth-only) + Send reminder. */}
+      {(onSendReminder || onRemove) && (
         <div style={footerStyle}>
-          <Button variant="primary" size="sm" onClick={() => onSendReminder(athlete)}>
-            Send reminder
-          </Button>
+          {onRemove && (
+            <Button variant="ghost" size="sm" onClick={openConfirm}>
+              Remove from roster
+            </Button>
+          )}
+          {onSendReminder && (
+            <Button variant="primary" size="sm" onClick={() => onSendReminder(athlete)}>
+              Send reminder
+            </Button>
+          )}
         </div>
+      )}
+
+      {/* Nested confirm modal — E3 anonymize-to-stub. Modal focuses its close
+          (×) affordance first, so the destructive Confirm never receives
+          initial focus (the safe default). */}
+      {onRemove && (
+        <Modal isOpen={confirmOpen} onClose={() => setConfirmOpen(false)} title="Remove from roster">
+          <p style={confirmBodyStyle}>
+            Remove {athlete.name}? This deletes their contact details, activity, notes, and reflections. Only an anonymized cohort tally (class and sport) is retained. This cannot be undone.
+          </p>
+          {writeError && <p style={confirmErrorStyle}>{writeError}</p>}
+          <div style={confirmFooterStyle}>
+            <Button variant="ghost" size="sm" onClick={() => setConfirmOpen(false)} disabled={removing}>
+              Cancel
+            </Button>
+            <Button variant="primary" size="sm" onClick={handleConfirmRemove} disabled={removing}>
+              {removing ? 'Removing…' : 'Remove athlete'}
+            </Button>
+          </div>
+        </Modal>
       )}
     </Modal>
   );
@@ -295,7 +348,33 @@ const notesStyle = {
 const footerStyle = {
   display: 'flex',
   justifyContent: 'flex-end',
+  gap: 'var(--sh-space-2)',
   marginTop: 'var(--sh-space-5)',
+  paddingTop: 'var(--sh-space-4)',
+  borderTop: 'var(--sh-border-thin)',
+};
+
+// Nested remove-confirm modal (E-Write-2).
+const confirmBodyStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  lineHeight: 1.65,
+  marginTop: 0,
+  marginBottom: 'var(--sh-space-4)',
+};
+
+const confirmErrorStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-bronze-deep)',
+  lineHeight: 1.5,
+  marginBottom: 'var(--sh-space-3)',
+};
+
+const confirmFooterStyle = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  gap: 'var(--sh-space-2)',
+  marginTop: 'var(--sh-space-4)',
   paddingTop: 'var(--sh-space-4)',
   borderTop: 'var(--sh-border-thin)',
 };

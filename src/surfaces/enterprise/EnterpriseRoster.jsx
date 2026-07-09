@@ -28,7 +28,7 @@ const ROSTER_COLUMNS = [
 
 export default function EnterpriseRoster() {
   const { openCompose } = useComms();
-  const { athletes, add, writeError, clearWriteError } = useAthletes();
+  const { athletes, add, remove, writeError, clearWriteError } = useAthletes();
   // Roster-add affordance is authenticated-only — the demo tree renders
   // byte-identical (no CTA, no modal). Gate on identity presence.
   const isAuthenticated = !!useOptionalAppIdentity();
@@ -111,12 +111,16 @@ export default function EnterpriseRoster() {
         onAthleteClick={setActiveAthlete}
       />
 
-      {/* Profile: opened from filtered modal OR directly from table row */}
+      {/* Profile: opened from filtered modal OR directly from table row.
+          Remove-from-roster (anonymize) is authenticated-only. */}
       <AthleteProfile
         isOpen={activeAthlete !== null}
         onClose={() => setActiveAthlete(null)}
         athlete={activeAthlete}
         onSendReminder={(a) => openCompose({ name: a.name, email: a.email }, 'Reminder')}
+        onRemove={isAuthenticated ? remove : undefined}
+        writeError={writeError}
+        clearWriteError={clearWriteError}
       />
     </main>
   );

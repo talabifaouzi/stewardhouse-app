@@ -56,9 +56,32 @@ export function AthletesProvider({ initialState, children }) {
     }
   }, [authenticated]);
 
+  const remove = useCallback(async (id) => {
+    if (!authenticated) {
+      // Demo tree: sync-local splice, no fetch (mirror shape; the Remove
+      // affordance is authenticated-only, so not reached in practice).
+      setAthletes((prev) => prev.filter((a) => a.id !== id));
+      return true;
+    }
+    try {
+      const res = await fetch(`/api/athletes/${encodeURIComponent(id)}`, {
+        method: 'DELETE', credentials: 'include',
+      });
+      if (!res.ok) throw new Error(await serverError(res, 'Failed to remove athlete'));
+      // Anonymize-to-stub: the row survives in D1 as a Sunset stub but leaves
+      // the active roster (matching /api/me's Sunset exclusion). Splice it out.
+      setAthletes((prev) => prev.filter((a) => a.id !== id));
+      setWriteError(null);
+      return true;
+    } catch (err) {
+      setWriteError(err.message || 'Failed to remove athlete');
+      return false;
+    }
+  }, [authenticated]);
+
   const value = useMemo(
-    () => ({ athletes, add, writeError, clearWriteError }),
-    [athletes, add, writeError, clearWriteError],
+    () => ({ athletes, add, remove, writeError, clearWriteError }),
+    [athletes, add, remove, writeError, clearWriteError],
   );
 
   return (
