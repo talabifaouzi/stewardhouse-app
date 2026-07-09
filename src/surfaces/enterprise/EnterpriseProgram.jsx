@@ -1,10 +1,13 @@
 import { useState, useMemo } from 'react';
-import { INST_PROFILES, workshops } from '../../data/enterpriseFixtures.js';
+import { INST_PROFILES } from '../../data/enterpriseFixtures.js';
 import { useAthletes } from '../../contexts/AthletesContext.jsx';
+import { useWorkshops } from '../../contexts/WorkshopsContext.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { Tag } from '../../components/Tag.jsx';
+import { Button } from '../../components/Button.jsx';
+import ScheduleWorkshopModal from './ScheduleWorkshopModal.jsx';
 
 const DEFAULT_CURRICULUM = [
   'Building Your GPS',
@@ -39,8 +42,13 @@ const endowmentTag = (label) => (
 
 export default function EnterpriseProgram() {
   const { athletes } = useAthletes();
+  // Workshops come from the provider now (was a direct fixture import). Demo
+  // tree: the provider's fixture default (byte-identical to the old import).
+  // Auth tree: the /api/me institution workshops (empty until scheduled).
+  const { workshops, add: addWorkshop, writeError, clearWriteError } = useWorkshops();
   const appIdentity = useOptionalAppIdentity();
   const [activeWorkshop, setActiveWorkshop] = useState(null);
+  const [scheduleOpen, setScheduleOpen] = useState(false);
 
   const isAuthenticated = !!appIdentity;
   const ent = appIdentity?.identity?.enterprise ?? null;
@@ -99,12 +107,24 @@ export default function EnterpriseProgram() {
           </div>
         </Card>
 
-        {/* Card 2 — Workshop calendar. Auth tree: empty until the workshop
-            write path lands. Demo tree: fixture calendar. */}
+        {/* Card 2 — Workshop calendar. Demo tree: fixture calendar (no CTA).
+            Auth tree: "Schedule workshop" affordance (authenticated-only,
+            E11-gated dark on prod) + empty state OR the live calendar. */}
         <Card>
           <SectionLabel>Workshop calendar</SectionLabel>
           {isAuthenticated ? (
-            <p style={framingStyle}>No workshops scheduled yet.</p>
+            <>
+              <div style={scheduleRowStyle}>
+                <Button variant="secondary" size="sm" onClick={() => setScheduleOpen(true)}>
+                  Schedule workshop
+                </Button>
+              </div>
+              {workshops.length === 0 ? (
+                <p style={framingStyle}>No workshops scheduled yet.</p>
+              ) : (
+                <WorkshopCalendar workshops={workshops} onWorkshopClick={setActiveWorkshop} />
+              )}
+            </>
           ) : (
             <>
               <p style={framingStyle}>Five workshops over the program term.</p>
@@ -140,6 +160,17 @@ export default function EnterpriseProgram() {
         workshop={activeWorkshop}
         athletesById={athletesById}
       />
+
+      {/* Schedule-workshop form — authenticated tree only (E11-gated). */}
+      {isAuthenticated && (
+        <ScheduleWorkshopModal
+          isOpen={scheduleOpen}
+          onClose={() => setScheduleOpen(false)}
+          onAdd={addWorkshop}
+          writeError={writeError}
+          clearWriteError={clearWriteError}
+        />
+      )}
     </main>
   );
 }
@@ -218,6 +249,15 @@ const framingStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-secondary)',
   lineHeight: 1.6,
+  marginTop: 'var(--sh-space-3)',
+  marginBottom: 'var(--sh-space-4)',
+};
+
+// Right-aligned "Schedule workshop" CTA row above the calendar (auth tree),
+// mirroring the roster's addRowStyle.
+const scheduleRowStyle = {
+  display: 'flex',
+  justifyContent: 'flex-end',
   marginTop: 'var(--sh-space-3)',
   marginBottom: 'var(--sh-space-4)',
 };

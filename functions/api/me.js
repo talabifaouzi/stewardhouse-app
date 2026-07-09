@@ -23,6 +23,7 @@ import { Kysely } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import { makeAuth } from '../_lib/auth.js';
 import { ATHLETE_ELEMENT_COLUMNS, toAthleteElement } from './athletes.js';
+import { WORKSHOP_ELEMENT_COLUMNS, toWorkshopElement } from './workshops.js';
 
 export async function onRequest(context) {
   const auth = makeAuth(context.env);
@@ -344,6 +345,7 @@ export async function onRequest(context) {
 
     let institution = null;
     let athletes = [];
+    let workshops = [];
     if (contact) {
       institution = await db
         .selectFrom('institution')
@@ -368,6 +370,43 @@ export async function onRequest(context) {
         .orderBy('created_at', 'desc')
         .execute();
       athletes = athleteRows.map(toAthleteElement);
+
+      // Institution workshops (E-Write-3a). Owner-scoped by institution_id
+      // (idx_workshop_institution_id), ORDER BY date so the calendar and the
+      // WorkshopsProvider share one ordering. Attendance is nested per workshop
+      // via a single IN query grouped by workshop_id (the advisor cohort_member
+      // nesting shape), mapped through the same toWorkshopElement used by the
+      // POST round-trip so the two paths stay identical.
+      //
+      // Q7 DEBT: attendance[] rides inside this staff payload; it grows
+      // per-workshop-per-athlete as a real institution accrues sessions.
+      // Revisit to a per-workshop fetch (on WorkshopDetail open) when a real
+      // institution's payload is measurable. Empty at 3a — no attendance write
+      // path exists until 3b.
+      const workshopRows = await db
+        .selectFrom('workshop')
+        .select(WORKSHOP_ELEMENT_COLUMNS)
+        .where('institution_id', '=', contact.institution_id)
+        .orderBy('date')
+        .execute();
+      let attendanceByWorkshop = new Map();
+      if (workshopRows.length > 0) {
+        const workshopIds = workshopRows.map((w) => w.id);
+        const attendanceRows = await db
+          .selectFrom('workshop_attendance')
+          .select(['workshop_id', 'athlete_id', 'attended', 'note'])
+          .where('workshop_id', 'in', workshopIds)
+          .execute();
+        for (const a of attendanceRows) {
+          if (!attendanceByWorkshop.has(a.workshop_id)) {
+            attendanceByWorkshop.set(a.workshop_id, []);
+          }
+          attendanceByWorkshop.get(a.workshop_id).push(a);
+        }
+      }
+      workshops = workshopRows.map(
+        (w) => toWorkshopElement(w, attendanceByWorkshop.get(w.id) ?? []),
+      );
     }
 
     enterprise = {
@@ -386,6 +425,10 @@ export async function onRequest(context) {
       // enrolled via POST /api/athletes). Seeds AthletesProvider's
       // initialState on the authenticated tree.
       athletes,
+      // The staff operator's institution workshops (empty [] until scheduled
+      // via POST /api/workshops). Seeds WorkshopsProvider's initialState on the
+      // authenticated tree; each element carries nested attendance[] (Q7).
+      workshops,
     };
   }
 

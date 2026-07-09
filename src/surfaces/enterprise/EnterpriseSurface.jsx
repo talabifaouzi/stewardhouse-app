@@ -5,6 +5,7 @@ import UserProfile from '../../components/UserProfile.jsx';
 import ContactsDirectory from '../../components/ContactsDirectory.jsx';
 import { CommsProvider, useComms } from '../../contexts/CommsContext.jsx';
 import { AthletesProvider } from '../../contexts/AthletesContext.jsx';
+import { WorkshopsProvider } from '../../contexts/WorkshopsContext.jsx';
 import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { contacts, INST_PROFILES, CURRENT_USER, athletes } from '../../data/enterpriseFixtures.js';
 
@@ -75,10 +76,17 @@ export default function EnterpriseSurface() {
   // provider's fixture default. Keying on isStaff (identity type), not on
   // whether the roster array is present — the defensive-seam lesson.
   const rosterInitialState = isStaff ? (appIdentity?.identity?.enterprise?.athletes ?? []) : undefined;
+  // Workshops fold-in seeds the same way (E-Write-3a): server array on the
+  // authenticated staff tree (empty [] until scheduled), fixture default on the
+  // demo tree. Keyed on isStaff (identity type), never on data — the
+  // defensive-seam lesson.
+  const workshopsInitialState = isStaff ? (appIdentity?.identity?.enterprise?.workshops ?? []) : undefined;
   return (
     <CommsProvider currentUser={commsUser} recipients={isStaff ? contactsRecipients : allRecipients}>
       <AthletesProvider initialState={rosterInitialState}>
-        <EnterpriseSurfaceInner />
+        <WorkshopsProvider initialState={workshopsInitialState}>
+          <EnterpriseSurfaceInner />
+        </WorkshopsProvider>
       </AthletesProvider>
     </CommsProvider>
   );
