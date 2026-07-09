@@ -24,6 +24,8 @@ import { D1Dialect } from 'kysely-d1';
 import { makeAuth } from '../_lib/auth.js';
 import { ATHLETE_ELEMENT_COLUMNS, toAthleteElement } from './athletes.js';
 import { WORKSHOP_ELEMENT_COLUMNS, toWorkshopElement } from './workshops.js';
+import { EXCLUSION_ELEMENT_COLUMNS, toExclusionElement } from './exclusions.js';
+import { toAuditElement } from '../_lib/audit.js';
 
 export async function onRequest(context) {
   const auth = makeAuth(context.env);
@@ -346,6 +348,8 @@ export async function onRequest(context) {
     let institution = null;
     let athletes = [];
     let workshops = [];
+    let exclusions = [];
+    let complianceAudit = [];
     if (contact) {
       institution = await db
         .selectFrom('institution')
@@ -407,6 +411,35 @@ export async function onRequest(context) {
       workshops = workshopRows.map(
         (w) => toWorkshopElement(w, attendanceByWorkshop.get(w.id) ?? []),
       );
+
+      // Institution exclusions (E-Write-4). Owner-scoped by institution_id
+      // (idx_exclusion_institution_id). connection_detail rides in this element
+      // — STAFF-ONLY (RequireType('staff')); per E8 it is emitted nowhere else
+      // (never-emit side of the athlete-facing/cross-surface allowlist).
+      const exclusionRows = await db
+        .selectFrom('exclusion')
+        .select(EXCLUSION_ELEMENT_COLUMNS)
+        .where('institution_id', '=', contact.institution_id)
+        .orderBy('created_at', 'desc')
+        .execute();
+      exclusions = exclusionRows.map(toExclusionElement);
+
+      // Compliance audit log (E-Write-4, E7). Owner-scoped, NEWEST-FIRST. The
+      // author display name resolves via a leftJoin to person (the row stores
+      // user_person_id + the frozen user_role); user_role is NOT re-derived
+      // (append-only historical accuracy).
+      const auditRows = await db
+        .selectFrom('compliance_audit as ca')
+        .leftJoin('person as p', 'p.id', 'ca.user_person_id')
+        .select([
+          'ca.id as id', 'ca.timestamp as timestamp', 'ca.user_role as user_role',
+          'ca.action as action', 'ca.target as target', 'ca.reason as reason',
+          'ca.notes as notes', 'p.display_name as user_display',
+        ])
+        .where('ca.institution_id', '=', contact.institution_id)
+        .orderBy('ca.timestamp', 'desc')
+        .execute();
+      complianceAudit = auditRows.map((r) => toAuditElement(r, r.user_display));
     }
 
     enterprise = {
@@ -429,6 +462,11 @@ export async function onRequest(context) {
       // via POST /api/workshops). Seeds WorkshopsProvider's initialState on the
       // authenticated tree; each element carries nested attendance[] (Q7).
       workshops,
+      // Institution exclusions + compliance audit (E-Write-4). Both seed
+      // ComplianceProvider on the authenticated tree. connection_detail rides in
+      // exclusions here and NOWHERE else (E8 staff-only); audit is newest-first.
+      exclusions,
+      complianceAudit,
     };
   }
 

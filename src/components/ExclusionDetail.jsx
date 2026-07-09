@@ -13,11 +13,18 @@ import { SectionLabel } from './SectionLabel.jsx';
 // Edits are session-only; the parent holds an overrides map and merges at
 // render time. Refresh clears overrides.
 
-export default function ExclusionDetail({ isOpen, onClose, exclusion, onSave, hasOverride }) {
+// onRemove (E-Write-4, auth-only): when wired (Compliance, authenticated tree),
+// the footer carries a destructive "Remove from list" action that opens a nested
+// confirm modal (E-Write-2 idiom; the removal is recorded in the audit log).
+// writeError surfaces in the confirm modal. Demo tree: no onRemove → the
+// existing session-edit flow (Edit button) renders unchanged, byte-identical.
+export default function ExclusionDetail({ isOpen, onClose, exclusion, onSave, hasOverride, onRemove, writeError, clearWriteError }) {
   const [mode, setMode] = useState('view');
   const [reasonDraft, setReasonDraft] = useState('');
   const [connectionDraft, setConnectionDraft] = useState('');
   const [connectionDetailDraft, setConnectionDetailDraft] = useState('');
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [removing, setRemoving] = useState(false);
 
   useEffect(() => {
     if (isOpen && exclusion) {
@@ -25,10 +32,26 @@ export default function ExclusionDetail({ isOpen, onClose, exclusion, onSave, ha
       setReasonDraft(exclusion.reason);
       setConnectionDraft(exclusion.connection);
       setConnectionDetailDraft(exclusion.connectionDetail);
+      setConfirmOpen(false);
+      setRemoving(false);
+      if (clearWriteError) clearWriteError();
     }
-  }, [isOpen, exclusion]);
+  }, [isOpen, exclusion, clearWriteError]);
 
   if (!exclusion) return null;
+
+  const handleConfirmRemove = async () => {
+    if (removing) return;
+    setRemoving(true);
+    if (clearWriteError) clearWriteError();
+    const ok = await onRemove(exclusion.id);
+    if (ok) {
+      setConfirmOpen(false);
+      onClose();
+    } else {
+      setRemoving(false);   // writeError surfaces in the confirm modal
+    }
+  };
 
   const startEdit = () => setMode('edit');
 
@@ -102,13 +125,16 @@ export default function ExclusionDetail({ isOpen, onClose, exclusion, onSave, ha
         </div>
       </div>
 
-      {/* Footer */}
+      {/* Footer. Auth tree (onRemove): destructive "Remove from list" only (no
+          edit per Q1). Demo tree: the existing session Edit flow, unchanged. */}
       <div style={footerStyle}>
         {!isEdit && hasOverride && (
           <span style={editedIndicatorStyle}>Edited this session</span>
         )}
         <div style={footerButtonsStyle}>
-          {isEdit ? (
+          {onRemove ? (
+            <Button variant="ghost" size="sm" onClick={() => setConfirmOpen(true)}>Remove from list</Button>
+          ) : isEdit ? (
             <>
               <Button variant="ghost" size="sm" onClick={cancelEdit}>Cancel</Button>
               <Button variant="primary" size="sm" onClick={saveEdit}>Save changes</Button>
@@ -118,9 +144,48 @@ export default function ExclusionDetail({ isOpen, onClose, exclusion, onSave, ha
           )}
         </div>
       </div>
+
+      {/* Nested confirm modal (E-Write-4 removal). */}
+      {onRemove && (
+        <Modal isOpen={confirmOpen} onClose={() => setConfirmOpen(false)} title="Remove exclusion">
+          <p style={confirmBodyStyle}>
+            Remove {exclusion.name} from the exclusion list? This is recorded in the audit log and cannot be undone.
+          </p>
+          {writeError && <p style={confirmErrorStyle}>{writeError}</p>}
+          <div style={confirmFooterStyle}>
+            <Button variant="ghost" size="sm" onClick={() => setConfirmOpen(false)}>Cancel</Button>
+            <Button variant="primary" size="sm" onClick={handleConfirmRemove} disabled={removing}>
+              {removing ? 'Removing…' : 'Remove exclusion'}
+            </Button>
+          </div>
+        </Modal>
+      )}
     </Modal>
   );
 }
+
+const confirmBodyStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  lineHeight: 1.65,
+  marginTop: 0,
+  marginBottom: 'var(--sh-space-4)',
+};
+
+const confirmErrorStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-bronze-deep)',
+  marginBottom: 'var(--sh-space-3)',
+};
+
+const confirmFooterStyle = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  gap: 'var(--sh-space-2)',
+  marginTop: 'var(--sh-space-4)',
+  paddingTop: 'var(--sh-space-4)',
+  borderTop: 'var(--sh-border-thin)',
+};
 
 const einStyle = {
   fontSize: 'var(--sh-text-xs)',

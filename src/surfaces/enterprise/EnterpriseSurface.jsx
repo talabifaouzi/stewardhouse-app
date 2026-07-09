@@ -6,6 +6,7 @@ import ContactsDirectory from '../../components/ContactsDirectory.jsx';
 import { CommsProvider, useComms } from '../../contexts/CommsContext.jsx';
 import { AthletesProvider } from '../../contexts/AthletesContext.jsx';
 import { WorkshopsProvider } from '../../contexts/WorkshopsContext.jsx';
+import { ComplianceProvider } from '../../contexts/ComplianceContext.jsx';
 import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { contacts, INST_PROFILES, CURRENT_USER, athletes } from '../../data/enterpriseFixtures.js';
 
@@ -81,11 +82,21 @@ export default function EnterpriseSurface() {
   // demo tree. Keyed on isStaff (identity type), never on data — the
   // defensive-seam lesson.
   const workshopsInitialState = isStaff ? (appIdentity?.identity?.enterprise?.workshops ?? []) : undefined;
+  // Compliance fold-in (E-Write-4): exclusions + audit from /api/me on the staff
+  // tree, fixture default on demo. Keyed on isStaff (identity type), never on data.
+  const complianceInitialState = isStaff
+    ? {
+        exclusions: appIdentity?.identity?.enterprise?.exclusions ?? [],
+        audit: appIdentity?.identity?.enterprise?.complianceAudit ?? [],
+      }
+    : undefined;
   return (
     <CommsProvider currentUser={commsUser} recipients={isStaff ? contactsRecipients : allRecipients}>
       <AthletesProvider initialState={rosterInitialState}>
         <WorkshopsProvider initialState={workshopsInitialState}>
-          <EnterpriseSurfaceInner />
+          <ComplianceProvider initialState={complianceInitialState}>
+            <EnterpriseSurfaceInner />
+          </ComplianceProvider>
         </WorkshopsProvider>
       </AthletesProvider>
     </CommsProvider>

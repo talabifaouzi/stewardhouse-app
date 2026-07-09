@@ -1,17 +1,29 @@
 import { useState } from 'react';
-import { exclusions, complianceAuditLog, CURRENT_USER } from '../../data/enterpriseFixtures.js';
+import { CURRENT_USER } from '../../data/enterpriseFixtures.js';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { useCompliance } from '../../contexts/ComplianceContext.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { Tag } from '../../components/Tag.jsx';
+import { Button } from '../../components/Button.jsx';
 import ExclusionDetail from '../../components/ExclusionDetail.jsx';
+import AddExclusionModal from './AddExclusionModal.jsx';
+import RecordAuditModal from './RecordAuditModal.jsx';
 import { formatDateTime } from '../../utils/formatDate.js';
 
 export default function EnterpriseCompliance() {
+  // Exclusions + audit come from the provider now (E-Write-4). Demo tree: the
+  // provider's fixture defaults. Auth tree: the /api/me persisted rows.
+  const {
+    exclusions, audit, addExclusion, removeExclusion, addAuditEntry,
+    writeError, clearWriteError,
+  } = useCompliance();
   const [activeExclusion, setActiveExclusion] = useState(null);
   const [exclusionOverrides, setExclusionOverrides] = useState({});
   const [hoveredId, setHoveredId] = useState(null);
   const [sessionAuditEntries, setSessionAuditEntries] = useState([]);
+  const [addExclusionOpen, setAddExclusionOpen] = useState(false);
+  const [recordAuditOpen, setRecordAuditOpen] = useState(false);
 
   // Session-edit audit author: real operator identity on the authenticated
   // tree, Diane fixture on the demo tree.
@@ -20,12 +32,15 @@ export default function EnterpriseCompliance() {
   const authorName = appIdentity ? (appIdentity.identity?.displayName ?? '') : CURRENT_USER.name;
   const authorRole = appIdentity ? (appIdentity.identity?.enterprise?.roleTitle ?? '') : CURRENT_USER.title;
 
-  // Auth tree: exclusion + audit fixtures are withheld — the exclusion and
-  // compliance_audit tables are empty per the slim seed (write path is
-  // future). Session edits made THIS session still append to the visible log
-  // (real-authored per the identity above).
-  const displayedExclusions = (isAuthenticated ? [] : exclusions).map((e) => ({ ...e, ...exclusionOverrides[e.id] }));
+  // Auth tree: persisted provider data (no session-edit overlay — the auth
+  // exclusion flow is create + hard-delete per Q1, no edit). Demo tree: the
+  // fixture exclusions + the existing session-edit overrides, byte-identical.
+  const displayedExclusions = isAuthenticated
+    ? exclusions
+    : exclusions.map((e) => ({ ...e, ...exclusionOverrides[e.id] }));
 
+  // handleSave is the DEMO-ONLY session-edit path (ExclusionDetail Edit mode).
+  // The auth tree passes onRemove instead of onSave, so this never fires there.
   const handleSave = (updated) => {
     setExclusionOverrides((prev) => ({ ...prev, [updated.id]: updated }));
     setSessionAuditEntries((prev) => [
@@ -43,7 +58,12 @@ export default function EnterpriseCompliance() {
     ]);
   };
 
-  const auditEntries = [...sessionAuditEntries, ...(isAuthenticated ? [] : complianceAuditLog)];
+  // Auth tree: the persisted audit log (newest-first from /api/me + this
+  // session's writes prepended by the provider). Demo tree: session edits over
+  // the fixture log, byte-identical.
+  const auditEntries = isAuthenticated
+    ? audit
+    : [...sessionAuditEntries, ...audit];
 
   const hasOverride = activeExclusion
     ? Boolean(exclusionOverrides[activeExclusion.id])
@@ -72,6 +92,12 @@ export default function EnterpriseCompliance() {
           <p style={explainerStyle}>
             Organizations flagged by the department. Athletes still see these when choosing a gift target, with a contextual note explaining the flag — disclosure model, not blocking.
           </p>
+          {/* Add-exclusion affordance — authenticated tree only (E11-gated). */}
+          {isAuthenticated && (
+            <div style={ctaRowStyle}>
+              <Button variant="secondary" size="sm" onClick={() => setAddExclusionOpen(true)}>Add exclusion</Button>
+            </div>
+          )}
           {displayedExclusions.length > 0 ? (
             <ul style={listResetStyle}>
               {displayedExclusions.map((org, i) => {
@@ -109,6 +135,12 @@ export default function EnterpriseCompliance() {
         <p style={auditContextStyle}>
           Compliance actions logged with timestamp and reviewer. Production maintains tamper-resistant audit log; prototype shows pre-seeded entries and any in-session edits.
         </p>
+        {/* Manual audit-entry affordance — authenticated tree only (E11-gated). */}
+        {isAuthenticated && (
+          <div style={ctaRowStyle}>
+            <Button variant="secondary" size="sm" onClick={() => setRecordAuditOpen(true)}>Record entry</Button>
+          </div>
+        )}
         {auditEntries.length > 0 ? (
           <ul style={auditListStyle}>
             {auditEntries.map((entry, i) => {
@@ -128,16 +160,49 @@ export default function EnterpriseCompliance() {
         </p>
       </Card>
 
+      {/* Exclusion detail. Demo tree: onSave (session edit). Auth tree: onRemove
+          (hard-delete via provider) — no edit per Q1. */}
       <ExclusionDetail
         isOpen={activeExclusion !== null}
         onClose={() => setActiveExclusion(null)}
         exclusion={activeExclusion}
-        onSave={handleSave}
+        onSave={isAuthenticated ? undefined : handleSave}
         hasOverride={hasOverride}
+        onRemove={isAuthenticated ? removeExclusion : undefined}
+        writeError={writeError}
+        clearWriteError={clearWriteError}
       />
+
+      {/* Write modals — authenticated tree only (E11-gated). */}
+      {isAuthenticated && (
+        <>
+          <AddExclusionModal
+            isOpen={addExclusionOpen}
+            onClose={() => setAddExclusionOpen(false)}
+            onAdd={addExclusion}
+            writeError={writeError}
+            clearWriteError={clearWriteError}
+          />
+          <RecordAuditModal
+            isOpen={recordAuditOpen}
+            onClose={() => setRecordAuditOpen(false)}
+            onAdd={addAuditEntry}
+            writeError={writeError}
+            clearWriteError={clearWriteError}
+          />
+        </>
+      )}
     </main>
   );
 }
+
+// Auth-only CTA row (Add exclusion / Record entry), left-aligned above the list.
+const ctaRowStyle = {
+  display: 'flex',
+  justifyContent: 'flex-start',
+  marginTop: 'var(--sh-space-3)',
+  marginBottom: 'var(--sh-space-4)',
+};
 
 function AuditEntry({ entry, isLast }) {
   return (
