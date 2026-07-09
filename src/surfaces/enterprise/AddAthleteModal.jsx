@@ -15,29 +15,38 @@ import { Button } from '../../components/Button.jsx';
 //
 // E8: the notes field carries the authoring-discipline caution — third parties
 // by public-record name + role only, never relational/private descriptors.
+//
+// Failure surfacing (E-Write-1 fix): the modal renders the provider's
+// writeError (the real server message, e.g. "Not authorized" from the E11
+// gate) rather than a generic local string — matching the ClientWorkspace /
+// CohortDetail idiom. Form contents are preserved on failure.
+//
+// Position (E-Write-1 fix, FT ruling): the form no longer collects Position.
+// The `athlete.position` column and the endpoint's allowlist entry remain
+// (advisor idiom — the endpoint contract stays complete for future callers;
+// the form is one caller that chooses not to collect it).
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const BLANK = {
-  name: '', sport: '', year: '', position: '',
+  name: '', sport: '', year: '',
   email: '', phone: '', badge: '', notes: '',
 };
 
-export default function AddAthleteModal({ isOpen, onClose, onAdd }) {
+export default function AddAthleteModal({ isOpen, onClose, onAdd, writeError, clearWriteError }) {
   const [form, setForm] = useState(BLANK);
   const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState(null);
 
-  // Reset on open.
+  // Reset on open — including any stale provider writeError from a prior submit.
   useEffect(() => {
     if (isOpen) {
       setForm(BLANK);
       setConsent(false);
       setSubmitting(false);
-      setError(null);
+      clearWriteError();
     }
-  }, [isOpen]);
+  }, [isOpen, clearWriteError]);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
@@ -47,7 +56,7 @@ export default function AddAthleteModal({ isOpen, onClose, onAdd }) {
   const handleSubmit = async () => {
     if (!canSubmit) return;
     setSubmitting(true);
-    setError(null);
+    clearWriteError();
     // Trim + drop empties to null; the endpoint owns institution/status/dates.
     const payload = { consentAcknowledged: true };
     for (const k of Object.keys(BLANK)) {
@@ -59,8 +68,9 @@ export default function AddAthleteModal({ isOpen, onClose, onAdd }) {
     if (saved) {
       onClose();
     } else {
+      // add() already set the provider writeError (the real server message);
+      // the modal renders it below. Form contents preserved for retry/correct.
       setSubmitting(false);
-      setError('Could not enroll the athlete. Please try again.');
     }
   };
 
@@ -74,9 +84,6 @@ export default function AddAthleteModal({ isOpen, onClose, onAdd }) {
       </Field>
       <Field label="Class">
         <input type="text" value={form.year} onChange={set('year')} placeholder="e.g. Junior" style={inputStyle} />
-      </Field>
-      <Field label="Position">
-        <input type="text" value={form.position} onChange={set('position')} placeholder="e.g. Guard" style={inputStyle} />
       </Field>
       <Field label="Email">
         <input type="email" value={form.email} onChange={set('email')} placeholder="name@school.edu" style={inputStyle} />
@@ -108,7 +115,7 @@ export default function AddAthleteModal({ isOpen, onClose, onAdd }) {
         </label>
       </div>
 
-      {error && <p style={formErrorStyle}>{error}</p>}
+      {writeError && <p style={formErrorStyle}>{writeError}</p>}
 
       <div style={footerStyle}>
         <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>

@@ -28,7 +28,7 @@ const ROSTER_COLUMNS = [
 
 export default function EnterpriseRoster() {
   const { openCompose } = useComms();
-  const { athletes, add } = useAthletes();
+  const { athletes, add, writeError, clearWriteError } = useAthletes();
   // Roster-add affordance is authenticated-only — the demo tree renders
   // byte-identical (no CTA, no modal). Gate on identity presence.
   const isAuthenticated = !!useOptionalAppIdentity();
@@ -93,7 +93,13 @@ export default function EnterpriseRoster() {
 
       {/* Roster-add form — authenticated tree only. */}
       {isAuthenticated && (
-        <AddAthleteModal isOpen={addOpen} onClose={() => setAddOpen(false)} onAdd={add} />
+        <AddAthleteModal
+          isOpen={addOpen}
+          onClose={() => setAddOpen(false)}
+          onAdd={add}
+          writeError={writeError}
+          clearWriteError={clearWriteError}
+        />
       )}
 
       {/* Drill-down: stat tile → filtered list → profile (stacks) */}
