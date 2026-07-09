@@ -26,6 +26,7 @@ import { ATHLETE_ELEMENT_COLUMNS, toAthleteElement } from './athletes.js';
 import { WORKSHOP_ELEMENT_COLUMNS, toWorkshopElement } from './workshops.js';
 import { EXCLUSION_ELEMENT_COLUMNS, toExclusionElement } from './exclusions.js';
 import { toAuditElement } from '../_lib/audit.js';
+import { SNAPSHOT_ELEMENT_COLUMNS, toSnapshotElement } from './snapshots.js';
 
 export async function onRequest(context) {
   const auth = makeAuth(context.env);
@@ -350,6 +351,7 @@ export async function onRequest(context) {
     let workshops = [];
     let exclusions = [];
     let complianceAudit = [];
+    let snapshots = [];
     if (contact) {
       institution = await db
         .selectFrom('institution')
@@ -440,6 +442,19 @@ export async function onRequest(context) {
         .orderBy('ca.timestamp', 'desc')
         .execute();
       complianceAudit = auditRows.map((r) => toAuditElement(r, r.user_display));
+
+      // Cohort period snapshots (E-Write-5, E9). Owner-scoped, NEWEST-FIRST
+      // (snapshot_at desc). Frozen historical aggregates — seeds
+      // SnapshotsProvider; CohortComparison renders 0 → gate, 1 → single-cohort,
+      // ≥2 → year-over-year (the two most recent). The two nullable aggregates
+      // pass through as null (rendered "Not tracked").
+      const snapshotRows = await db
+        .selectFrom('cohort_period_snapshot')
+        .select(SNAPSHOT_ELEMENT_COLUMNS)
+        .where('institution_id', '=', contact.institution_id)
+        .orderBy('snapshot_at', 'desc')
+        .execute();
+      snapshots = snapshotRows.map(toSnapshotElement);
     }
 
     enterprise = {
@@ -467,6 +482,9 @@ export async function onRequest(context) {
       // exclusions here and NOWHERE else (E8 staff-only); audit is newest-first.
       exclusions,
       complianceAudit,
+      // Cohort period snapshots (E-Write-5). Seeds SnapshotsProvider; newest
+      // first. Drives CohortComparison's 0 / 1 / ≥2 rendering.
+      snapshots,
     };
   }
 

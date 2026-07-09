@@ -7,6 +7,7 @@ import { CommsProvider, useComms } from '../../contexts/CommsContext.jsx';
 import { AthletesProvider } from '../../contexts/AthletesContext.jsx';
 import { WorkshopsProvider } from '../../contexts/WorkshopsContext.jsx';
 import { ComplianceProvider } from '../../contexts/ComplianceContext.jsx';
+import { SnapshotsProvider } from '../../contexts/SnapshotsContext.jsx';
 import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { contacts, INST_PROFILES, CURRENT_USER, athletes } from '../../data/enterpriseFixtures.js';
 
@@ -90,12 +91,17 @@ export default function EnterpriseSurface() {
         audit: appIdentity?.identity?.enterprise?.complianceAudit ?? [],
       }
     : undefined;
+  // Snapshots fold-in (E-Write-5): the /api/me snapshots on the staff tree,
+  // fixture default on demo. Keyed on isStaff (identity type), never on data.
+  const snapshotsInitialState = isStaff ? (appIdentity?.identity?.enterprise?.snapshots ?? []) : undefined;
   return (
     <CommsProvider currentUser={commsUser} recipients={isStaff ? contactsRecipients : allRecipients}>
       <AthletesProvider initialState={rosterInitialState}>
         <WorkshopsProvider initialState={workshopsInitialState}>
           <ComplianceProvider initialState={complianceInitialState}>
-            <EnterpriseSurfaceInner />
+            <SnapshotsProvider initialState={snapshotsInitialState}>
+              <EnterpriseSurfaceInner />
+            </SnapshotsProvider>
           </ComplianceProvider>
         </WorkshopsProvider>
       </AthletesProvider>
