@@ -56,6 +56,15 @@ export default function App() {
             </RequireType>
           }
         />
+        {/* type 'ops' = internal StewardHouse staff (Ruling Q5: read gated by type alone) */}
+        <Route
+          path="operations/*"
+          element={
+            <RequireType type="ops">
+              <OperationsSurface />
+            </RequireType>
+          }
+        />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

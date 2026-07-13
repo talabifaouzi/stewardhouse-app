@@ -5,6 +5,7 @@ import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import unified from '../../data/unified/index.js';
 import { CURRENT_OPS_USER } from '../../data/opsFixtures.js';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import IndividualsDirectory from './directories/IndividualsDirectory.jsx';
 import InstitutionsDirectory from './directories/InstitutionsDirectory.jsx';
 import AdvisorPracticesDirectory from './directories/AdvisorPracticesDirectory.jsx';
@@ -177,6 +178,22 @@ export default function OperationsSurface() {
     path.includes('/organizations') ? 'organizations' :
     'home';
 
+  // Chrome identity swap (O-1), mirroring AdvisorSurface / EnterpriseSurface:
+  // the CURRENT_OPS_USER fixture falls back ONLY on the public demo tree; the
+  // authenticated tree (/app/operations) renders real identity, never the
+  // fixture. useOptionalAppIdentity() is null on the demo tree (no AppShell
+  // provider) and carries the identity on the authenticated tree.
+  //
+  // userRole is null on the authenticated tree because /api/me does not yet
+  // emit an ops-specific block (no roleTitle) — Chrome shows the real name
+  // without a role. When O-3's roster endpoint / ops identity block lands, an
+  // ops register can populate here the way enterprise reads roleTitle.
+  const appIdentity = useOptionalAppIdentity();
+  const isAuthenticated = !!appIdentity;
+  const authenticatedName = appIdentity?.identity?.displayName ?? null;
+  const userName = authenticatedName ?? (isAuthenticated ? '' : CURRENT_OPS_USER.name);
+  const userRole = isAuthenticated ? null : CURRENT_OPS_USER.role;
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -186,8 +203,8 @@ export default function OperationsSurface() {
     }}>
       <Chrome
         surface="operations"
-        userName={CURRENT_OPS_USER.name}
-        userRole={CURRENT_OPS_USER.role}
+        userName={userName}
+        userRole={userRole}
         navItems={NAV_ITEMS}
         activeNav={activeNav}
       />

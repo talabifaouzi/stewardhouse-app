@@ -44,6 +44,10 @@ export default function AppDispatcher() {
     return <Navigate to="/app/enterprise" replace />;
   }
 
+  if (identity.type === 'ops') {
+    return <Navigate to="/app/operations" replace />;
+  }
+
   return (
     <PlaceholderPanel
       title="You're signed in"
