@@ -121,6 +121,33 @@ export async function requireGatedEnterprise(db, context) {
   return { person };
 }
 
+export async function requireOps(db, context) {
+  // Roster READ gate (O-3, Ruling 1.1 live-gated mode; scoping at
+  // docs/operations-roster-scoping.md, Q5). Session → person → type === 'ops'.
+  //
+  // TYPE-ONLY, NO demo_gate — deliberately lighter than the requireGatedEnterprise
+  // and requireGatedAdvisor twins. Ops accounts are inherently FT-exclusive (the auth
+  // claim hook only ever mints type='individual'; scripts/seed-invites.mjs is
+  // the sole path that mints an 'ops' person row), so being ops-typed IS the
+  // gate for the READ. The FUTURE invite WRITE endpoint gets a separate
+  // $.ops.demo_gate twin (the requireGated* pattern) — the read does not.
+  //
+  // Q6: this authorizes a FULL-FIDELITY operator view (real names, emails,
+  // invite/bound status, no redaction). That is valid ONLY while ops is FT
+  // exclusively; if ops accounts are ever provisioned beyond FT, the roster's
+  // redaction posture must be re-ruled before those accounts activate.
+  //
+  // Status conventions mirror the twins via getPersonForSession: 401 no
+  // session, 403 no person, 403 wrong type.
+  const resolved = await getPersonForSession(db, context);
+  if (resolved.error) return resolved;
+  const { person } = resolved;
+  if (person.type !== 'ops') {
+    return { error: 'Not authorized', status: 403 };
+  }
+  return { person };
+}
+
 export function jsonError(error, status) {
   return new Response(JSON.stringify({ error }), {
     status, headers: { 'Content-Type': 'application/json' },
