@@ -5,7 +5,7 @@ import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import unified from '../../data/unified/index.js';
 import { CURRENT_OPS_USER } from '../../data/opsFixtures.js';
-import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { useOptionalAppIdentity, useBasePath } from '../../contexts/AppIdentityContext.jsx';
 import IndividualsDirectory from './directories/IndividualsDirectory.jsx';
 import InstitutionsDirectory from './directories/InstitutionsDirectory.jsx';
 import AdvisorPracticesDirectory from './directories/AdvisorPracticesDirectory.jsx';
@@ -160,13 +160,18 @@ function formatAbsDate(iso) {
   return `${MONTH_SHORT[m - 1]} ${d}, ${y}`;
 }
 
-const NAV_ITEMS = [
-  { key: 'home', label: 'Overview', path: '/operations' },
-  { key: 'individuals', label: 'Individuals', path: '/operations/individuals' },
-  { key: 'institutions', label: 'Institutions', path: '/operations/institutions' },
-  { key: 'advisors', label: 'Advisor Practices', path: '/operations/advisors' },
-  { key: 'organizations', label: 'Organizations', path: '/operations/organizations' },
-];
+// Mount-aware nav items (O-1 path-fix): built from basePath so links resolve
+// to /operations on the demo tree and /app/operations on the authenticated
+// tree. Mirrors AdvisorSurface's getNavItems(basePath).
+function getNavItems(basePath) {
+  return [
+    { key: 'home', label: 'Overview', path: basePath },
+    { key: 'individuals', label: 'Individuals', path: `${basePath}/individuals` },
+    { key: 'institutions', label: 'Institutions', path: `${basePath}/institutions` },
+    { key: 'advisors', label: 'Advisor Practices', path: `${basePath}/advisors` },
+    { key: 'organizations', label: 'Organizations', path: `${basePath}/organizations` },
+  ];
+}
 
 export default function OperationsSurface() {
   const location = useLocation();
@@ -194,6 +199,11 @@ export default function OperationsSurface() {
   const userName = authenticatedName ?? (isAuthenticated ? '' : CURRENT_OPS_USER.name);
   const userRole = isAuthenticated ? null : CURRENT_OPS_USER.role;
 
+  // Mount-aware base path (O-1 path-fix): /operations on demo, /app/operations
+  // on the authenticated tree. Drives nav items + the catch-all redirect.
+  const basePath = useBasePath('/operations', '/app/operations');
+  const navItems = getNavItems(basePath);
+
   return (
     <div style={{
       minHeight: '100vh',
@@ -205,7 +215,7 @@ export default function OperationsSurface() {
         surface="operations"
         userName={userName}
         userRole={userRole}
-        navItems={NAV_ITEMS}
+        navItems={navItems}
         activeNav={activeNav}
       />
       <div style={{ flex: 1 }}>
@@ -219,7 +229,7 @@ export default function OperationsSurface() {
           <Route path="advisors/:id" element={<AdvisorPracticeDetail />} />
           <Route path="organizations" element={<OrganizationsDirectory />} />
           <Route path="organizations/:id" element={<OrganizationDetail />} />
-          <Route path="*" element={<Navigate to="/operations" replace />} />
+          <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
       </div>
     </div>
@@ -232,6 +242,7 @@ function OperationsHome() {
   const recentActivityLabelId = useId();
   const openIssuesLabelId = useId();
   const navigate = useNavigate();
+  const basePath = useBasePath('/operations', '/app/operations');
   return (
     <main style={{
       maxWidth: 'var(--sh-content-max)',
@@ -404,19 +415,19 @@ function OperationsHome() {
             label="Individuals"
             value={INDIVIDUAL_COUNT}
             sub="On platform"
-            onClick={() => navigate('/operations/individuals')}
+            onClick={() => navigate(`${basePath}/individuals`)}
           />
           <Stat
             label="Institutions"
             value={INSTITUTION_COUNT}
             sub="Active programs"
-            onClick={() => navigate('/operations/institutions')}
+            onClick={() => navigate(`${basePath}/institutions`)}
           />
           <Stat
             label="Advisor Practices"
             value={PRACTICE_COUNT}
             sub="On platform"
-            onClick={() => navigate('/operations/advisors')}
+            onClick={() => navigate(`${basePath}/advisors`)}
           />
           {/* Open issues stays non-interactive — its drill is the Open-issues
               card above; clicking the tile would duplicate that affordance. */}
@@ -516,6 +527,7 @@ const PLATFORM_HEALTH_SUB_LABEL = {
 
 function PlatformHealthCard({ health }) {
   const labelId = useId();
+  const basePath = useBasePath('/operations', '/app/operations');
   const externalMonText = health.externalMonitoring === 'not-wired'
     ? 'not yet enabled'
     : health.externalMonitoring;
@@ -616,7 +628,7 @@ function PlatformHealthCard({ health }) {
                   }}>
                     {isPrePlanDrill ? (
                       <Link
-                        to={`/operations/individuals?ids=${PRE_PLAN_CLIENT_IDS.join(',')}`}
+                        to={`${basePath}/individuals?ids=${PRE_PLAN_CLIENT_IDS.join(',')}`}
                         style={INLINE_LINK_STYLE}
                       >
                         {info.text}
@@ -869,6 +881,7 @@ const INLINE_LINK_STYLE = {
 // byId resolves; otherwise plain text. Per D3, inline org names in row
 // description bodies stay plain text — only the structured About: line drills.
 function AboutLine({ relatedEntityType, relatedEntityId, related }) {
+  const basePath = useBasePath('/operations', '/app/operations');
   if (relatedEntityType === null) {
     return 'Platform-level (no specific record)';
   }
@@ -882,7 +895,7 @@ function AboutLine({ relatedEntityType, relatedEntityId, related }) {
   return (
     <>
       About:{' '}
-      <Link to={`/operations/${routeSeg}/${relatedEntityId}`} style={INLINE_LINK_STYLE}>
+      <Link to={`${basePath}/${routeSeg}/${relatedEntityId}`} style={INLINE_LINK_STYLE}>
         {related.name}
       </Link>
       {' '}({relatedEntityType})

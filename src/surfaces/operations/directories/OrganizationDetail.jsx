@@ -6,6 +6,7 @@ import BackLink from '../../../components/BackLink.jsx';
 import unified from '../../../data/unified/index.js';
 import { CAUSES } from '../../../data/intakeData.js';
 import NotFoundCard from './NotFoundCard.jsx';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 
 // Detail page for organizations — Candid-aligned profile flow (founder
 // directive 2026-06). The shape mirrors a GuideStar profile: name + category
@@ -27,7 +28,7 @@ import NotFoundCard from './NotFoundCard.jsx';
 // future home is Candid's leadership-demographics section; surfacing it as a
 // header chip on the operator detail was a stop-gap from earlier slices.
 
-const DIR_PATH = '/operations/organizations';
+const DIR_SEG = 'organizations';
 const DIR_LABEL = 'Organizations';
 
 const META_LABEL = {
@@ -83,6 +84,8 @@ const CR_STAGES = ['matched', 'viewed', 'connected', 'conversing', 'gave', 'ongo
 export default function OrganizationDetail() {
   const { id } = useParams();
   const location = useLocation();
+  const basePath = useBasePath('/operations', '/app/operations');
+  const dirPath = `${basePath}/${DIR_SEG}`;
   const headerLabelId = useId();
   const summaryLabelId = useId();
   const missionLabelId = useId();
@@ -95,10 +98,10 @@ export default function OrganizationDetail() {
 
   const org = unified.byId('orgs', id);
   if (!org) {
-    return <NotFoundCard kind="organization" id={id} dirPath={DIR_PATH} dirLabel={DIR_LABEL} />;
+    return <NotFoundCard kind="organization" id={id} dirPath={dirPath} dirLabel={DIR_LABEL} />;
   }
 
-  const backTo = `${DIR_PATH}${location.state?.fromQuery ?? ''}`;
+  const backTo = `${dirPath}${location.state?.fromQuery ?? ''}`;
   const ext = org.extensions?.individual ?? {};
 
   const causeChips = (org.causes || [])

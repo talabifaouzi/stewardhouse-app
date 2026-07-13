@@ -6,6 +6,7 @@ import BackLink from '../../../components/BackLink.jsx';
 import unified from '../../../data/unified/index.js';
 import { resolveSourceAccent } from './sourceAccents.js';
 import NotFoundCard from './NotFoundCard.jsx';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 
 // First detail page in the detail-routes arc — establishes the chrome pattern
 // the other three details (AdvisorPractice / Organization / Individual) follow:
@@ -26,7 +27,7 @@ import NotFoundCard from './NotFoundCard.jsx';
 // detail routes don't exist until slices 2 and 4 respectively; the explicit
 // retrofit sites are marked below.
 
-const DIR_PATH = '/operations/institutions';
+const DIR_SEG = 'institutions';
 const DIR_LABEL = 'Institutions';
 
 const MONO_ID_STYLE = {
@@ -71,6 +72,8 @@ function personTitle(person) {
 export default function InstitutionDetail() {
   const { id } = useParams();
   const location = useLocation();
+  const basePath = useBasePath('/operations', '/app/operations');
+  const dirPath = `${basePath}/${DIR_SEG}`;
   const headerLabelId = useId();
   const contractLabelId = useId();
   const partnerLabelId = useId();
@@ -80,10 +83,10 @@ export default function InstitutionDetail() {
 
   const institution = unified.byId('institutions', id);
   if (!institution) {
-    return <NotFoundCard kind="institution" id={id} dirPath={DIR_PATH} dirLabel={DIR_LABEL} />;
+    return <NotFoundCard kind="institution" id={id} dirPath={dirPath} dirLabel={DIR_LABEL} />;
   }
 
-  const backTo = `${DIR_PATH}${location.state?.fromQuery ?? ''}`;
+  const backTo = `${dirPath}${location.state?.fromQuery ?? ''}`;
 
   // Partner practice (slice-2 retrofit: link this to /operations/advisors/{partner.id}).
   const partner = institution.partnerAdvisorPracticeId
@@ -224,7 +227,7 @@ export default function InstitutionDetail() {
                 ...META_VALUE,
                 marginBottom: 'var(--sh-space-1)',
               }}>
-                <Link to={`/operations/advisors/${partner.id}`} style={LINK_STYLE}>
+                <Link to={`${basePath}/advisors/${partner.id}`} style={LINK_STYLE}>
                   {partner.name}
                 </Link>
                 {' '}
@@ -269,7 +272,7 @@ export default function InstitutionDetail() {
                 return (
                   <div key={s.id}>
                     <p style={META_VALUE}>
-                      <Link to={`/operations/individuals/${s.id}`} style={LINK_STYLE}>
+                      <Link to={`${basePath}/individuals/${s.id}`} style={LINK_STYLE}>
                         {s.name}
                       </Link>
                       {' '}
@@ -344,7 +347,7 @@ export default function InstitutionDetail() {
                   >
                     <div role="cell">
                       {person ? (
-                        <Link to={`/operations/individuals/${person.id}`} style={LINK_STYLE}>
+                        <Link to={`${basePath}/individuals/${person.id}`} style={LINK_STYLE}>
                           {personName}
                         </Link>
                       ) : (

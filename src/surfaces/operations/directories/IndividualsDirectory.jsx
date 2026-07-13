@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-do
 import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
 import { SOURCE_ACCENT, resolveSourceAccent } from './sourceAccents.js';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 
 const NAME_LINK_STYLE = {
   color: 'var(--sh-text-primary)',
@@ -51,6 +52,7 @@ export default function IndividualsDirectory() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const basePath = useBasePath('/operations', '/app/operations');
   const [hoveredId, setHoveredId] = useState(null);
 
   // Slice 6 — row click navigates to the detail page, preserving the
@@ -59,7 +61,7 @@ export default function IndividualsDirectory() {
   // lets the inner name <Link> handle its own click without double-navigation.
   function onRowClick(e, personId) {
     if (e.target.closest('a')) return;
-    navigate(`/operations/individuals/${personId}`, {
+    navigate(`${basePath}/individuals/${personId}`, {
       state: { fromQuery: location.search },
     });
   }
@@ -317,7 +319,7 @@ export default function IndividualsDirectory() {
                 >
                   <div role="cell">
                     <Link
-                      to={`/operations/individuals/${p.id}`}
+                      to={`${basePath}/individuals/${p.id}`}
                       state={{ fromQuery: location.search }}
                       style={NAME_LINK_STYLE}
                     >

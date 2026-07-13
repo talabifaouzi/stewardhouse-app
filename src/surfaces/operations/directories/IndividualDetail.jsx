@@ -7,6 +7,7 @@ import unified from '../../../data/unified/index.js';
 import { CAUSES } from '../../../data/intakeData.js';
 import { resolveSourceAccent } from './sourceAccents.js';
 import NotFoundCard from './NotFoundCard.jsx';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 
 // Detail page for any Person record — handles type='individual' (full view)
 // AND type='staff'/'advisor' (light view). The retrofit links from slices 1–3
@@ -29,7 +30,7 @@ import NotFoundCard from './NotFoundCard.jsx';
 //        Framed as records-with-the-same-name, not an identity claim — dedup
 //        remains deferred. Section hidden when no matches.
 
-const DIR_PATH = '/operations/individuals';
+const DIR_SEG = 'individuals';
 const DIR_LABEL = 'Individuals';
 
 const MONO_ID_STYLE = {
@@ -83,6 +84,8 @@ function personTitle(person) {
 export default function IndividualDetail() {
   const { id } = useParams();
   const location = useLocation();
+  const basePath = useBasePath('/operations', '/app/operations');
+  const dirPath = `${basePath}/${DIR_SEG}`;
   const [contactRevealed, setContactRevealed] = useState(false);
 
   const headerLabelId = useId();
@@ -100,10 +103,10 @@ export default function IndividualDetail() {
 
   const person = unified.byId('persons', id);
   if (!person) {
-    return <NotFoundCard kind="person" id={id} dirPath={DIR_PATH} dirLabel={DIR_LABEL} />;
+    return <NotFoundCard kind="person" id={id} dirPath={dirPath} dirLabel={DIR_LABEL} />;
   }
 
-  const backTo = `${DIR_PATH}${location.state?.fromQuery ?? ''}`;
+  const backTo = `${dirPath}${location.state?.fromQuery ?? ''}`;
   const sourceAccent = resolveSourceAccent(person.sourceSurface);
   const ext = person.extensions?.[person.sourceSurface] ?? {};
 
@@ -394,7 +397,7 @@ export default function IndividualDetail() {
                         <div key={pp.id}>
                           <p style={META_VALUE}>
                             {inst ? (
-                              <Link to={`/operations/institutions/${inst.id}`} style={LINK_STYLE}>
+                              <Link to={`${basePath}/institutions/${inst.id}`} style={LINK_STYLE}>
                                 {inst.name}
                               </Link>
                             ) : (
@@ -460,7 +463,7 @@ export default function IndividualDetail() {
                     <div key={pr.id}>
                       <p style={META_VALUE}>
                         Client of{' '}
-                        <Link to={`/operations/advisors/${pr.id}`} style={LINK_STYLE}>
+                        <Link to={`${basePath}/advisors/${pr.id}`} style={LINK_STYLE}>
                           {pr.name}
                         </Link>
                         {' '}
@@ -525,7 +528,7 @@ export default function IndividualDetail() {
                   {staffAtInstitutions.map((inst) => (
                     <p key={`s-${inst.id}`} style={META_VALUE}>
                       Staff at{' '}
-                      <Link to={`/operations/institutions/${inst.id}`} style={LINK_STYLE}>
+                      <Link to={`${basePath}/institutions/${inst.id}`} style={LINK_STYLE}>
                         {inst.name}
                       </Link>
                       {' '}
@@ -535,7 +538,7 @@ export default function IndividualDetail() {
                   {leadOfPractices.map((pr) => (
                     <p key={`l-${pr.id}`} style={META_VALUE}>
                       Lead of{' '}
-                      <Link to={`/operations/advisors/${pr.id}`} style={LINK_STYLE}>
+                      <Link to={`${basePath}/advisors/${pr.id}`} style={LINK_STYLE}>
                         {pr.name}
                       </Link>
                       {' '}
@@ -545,7 +548,7 @@ export default function IndividualDetail() {
                   {coAdvisorAtPractices.map((pr) => (
                     <p key={`c-${pr.id}`} style={META_VALUE}>
                       Co-advisor at{' '}
-                      <Link to={`/operations/advisors/${pr.id}`} style={LINK_STYLE}>
+                      <Link to={`${basePath}/advisors/${pr.id}`} style={LINK_STYLE}>
                         {pr.name}
                       </Link>
                       {' '}
@@ -584,7 +587,7 @@ export default function IndividualDetail() {
                     flexWrap: 'wrap',
                     gap: 'var(--sh-space-3)',
                   }}>
-                    <Link to={`/operations/individuals/${p.id}`} style={LINK_STYLE}>
+                    <Link to={`${basePath}/individuals/${p.id}`} style={LINK_STYLE}>
                       {p.name}
                     </Link>
                     <span style={{
@@ -734,6 +737,7 @@ function ProfileSection({ person, ext, labelId }) {
 }
 
 function ConnectionsTable({ connections }) {
+  const basePath = useBasePath('/operations', '/app/operations');
   return (
     <div role="table" aria-label="Connections">
       <div role="row" style={{
@@ -777,7 +781,7 @@ function ConnectionsTable({ connections }) {
           >
             <div role="cell">
               {catOrg ? (
-                <Link to={`/operations/organizations/${catOrg.id}`} style={LINK_STYLE}>
+                <Link to={`${basePath}/organizations/${catOrg.id}`} style={LINK_STYLE}>
                   {catOrg.name}
                 </Link>
               ) : (

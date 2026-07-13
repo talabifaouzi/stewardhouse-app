@@ -6,6 +6,7 @@ import BackLink from '../../../components/BackLink.jsx';
 import unified from '../../../data/unified/index.js';
 import { resolveSourceAccent } from './sourceAccents.js';
 import NotFoundCard from './NotFoundCard.jsx';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 
 // Detail page for advisor practices — follows the chrome pattern established
 // in InstitutionDetail (slice 1). Per the slice spec:
@@ -20,7 +21,7 @@ import NotFoundCard from './NotFoundCard.jsx';
 //  - Cohorts render as plain text with member counts (no cohort detail
 //    route this arc, per ruling D11).
 
-const DIR_PATH = '/operations/advisors';
+const DIR_SEG = 'advisors';
 const DIR_LABEL = 'Advisor Practices';
 
 const MONO_ID_STYLE = {
@@ -62,6 +63,8 @@ function personTitle(person) {
 export default function AdvisorPracticeDetail() {
   const { id } = useParams();
   const location = useLocation();
+  const basePath = useBasePath('/operations', '/app/operations');
+  const dirPath = `${basePath}/${DIR_SEG}`;
   const headerLabelId = useId();
   const leadLabelId = useId();
   const coAdvisorsLabelId = useId();
@@ -72,10 +75,10 @@ export default function AdvisorPracticeDetail() {
 
   const practice = unified.byId('advisorPractices', id);
   if (!practice) {
-    return <NotFoundCard kind="advisor practice" id={id} dirPath={DIR_PATH} dirLabel={DIR_LABEL} />;
+    return <NotFoundCard kind="advisor practice" id={id} dirPath={dirPath} dirLabel={DIR_LABEL} />;
   }
 
-  const backTo = `${DIR_PATH}${location.state?.fromQuery ?? ''}`;
+  const backTo = `${dirPath}${location.state?.fromQuery ?? ''}`;
 
   // Lead (slice-4 retrofit: link this to /operations/individuals/{lead.id}).
   const lead = practice.leadPersonId
@@ -184,7 +187,7 @@ export default function AdvisorPracticeDetail() {
           {lead ? (
             <div>
               <p style={META_VALUE}>
-                <Link to={`/operations/individuals/${lead.id}`} style={LINK_STYLE}>
+                <Link to={`${basePath}/individuals/${lead.id}`} style={LINK_STYLE}>
                   {lead.name}
                 </Link>
                 {' '}
@@ -229,7 +232,7 @@ export default function AdvisorPracticeDetail() {
                 return (
                   <div key={co.id}>
                     <p style={META_VALUE}>
-                      <Link to={`/operations/individuals/${co.id}`} style={LINK_STYLE}>
+                      <Link to={`${basePath}/individuals/${co.id}`} style={LINK_STYLE}>
                         {co.name}
                       </Link>
                       {' '}
@@ -302,7 +305,7 @@ export default function AdvisorPracticeDetail() {
                     }}
                   >
                     <div role="cell">
-                      <Link to={`/operations/individuals/${c.id}`} style={LINK_STYLE}>
+                      <Link to={`${basePath}/individuals/${c.id}`} style={LINK_STYLE}>
                         {c.name}
                       </Link>
                       {' '}
@@ -394,7 +397,7 @@ export default function AdvisorPracticeDetail() {
               {partneredInstitutions.map((inst) => (
                 <div key={inst.id}>
                   <p style={META_VALUE}>
-                    <Link to={`/operations/institutions/${inst.id}`} style={LINK_STYLE}>
+                    <Link to={`${basePath}/institutions/${inst.id}`} style={LINK_STYLE}>
                       {inst.name}
                     </Link>
                     {' '}

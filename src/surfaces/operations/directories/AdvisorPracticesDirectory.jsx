@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-do
 import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
 import { SOURCE_ACCENT, resolveSourceAccent } from './sourceAccents.js';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 
 const NAME_LINK_STYLE = {
   color: 'var(--sh-text-primary)',
@@ -49,12 +50,13 @@ export default function AdvisorPracticesDirectory() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const basePath = useBasePath('/operations', '/app/operations');
   const [hoveredId, setHoveredId] = useState(null);
 
   // Slice 6 — see IndividualsDirectory for the row-click pattern rationale.
   function onRowClick(e, practiceId) {
     if (e.target.closest('a')) return;
-    navigate(`/operations/advisors/${practiceId}`, {
+    navigate(`${basePath}/advisors/${practiceId}`, {
       state: { fromQuery: location.search },
     });
   }
@@ -326,7 +328,7 @@ export default function AdvisorPracticesDirectory() {
                 >
                   <div role="cell">
                     <Link
-                      to={`/operations/advisors/${p.id}`}
+                      to={`${basePath}/advisors/${p.id}`}
                       state={{ fromQuery: location.search }}
                       style={NAME_LINK_STYLE}
                     >

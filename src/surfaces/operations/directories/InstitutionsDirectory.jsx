@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate, useLocation, Link } from 'react-router-do
 import { Card } from '../../../components/Card.jsx';
 import unified from '../../../data/unified/index.js';
 import { SOURCE_ACCENT, resolveSourceAccent } from './sourceAccents.js';
+import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 
 const NAME_LINK_STYLE = {
   color: 'var(--sh-text-primary)',
@@ -38,12 +39,13 @@ export default function InstitutionsDirectory() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const location = useLocation();
+  const basePath = useBasePath('/operations', '/app/operations');
   const [hoveredId, setHoveredId] = useState(null);
 
   // Slice 6 — see IndividualsDirectory for the row-click pattern rationale.
   function onRowClick(e, instId) {
     if (e.target.closest('a')) return;
-    navigate(`/operations/institutions/${instId}`, {
+    navigate(`${basePath}/institutions/${instId}`, {
       state: { fromQuery: location.search },
     });
   }
@@ -314,7 +316,7 @@ export default function InstitutionsDirectory() {
                 >
                   <div role="cell">
                     <Link
-                      to={`/operations/institutions/${i.id}`}
+                      to={`${basePath}/institutions/${i.id}`}
                       state={{ fromQuery: location.search }}
                       style={NAME_LINK_STYLE}
                     >
