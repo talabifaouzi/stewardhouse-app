@@ -14,6 +14,7 @@ import InstitutionDetail from './directories/InstitutionDetail.jsx';
 import AdvisorPracticeDetail from './directories/AdvisorPracticeDetail.jsx';
 import OrganizationDetail from './directories/OrganizationDetail.jsx';
 import IndividualDetail from './directories/IndividualDetail.jsx';
+import OperationsRoster from './OperationsRoster.jsx';
 
 // Operations Overview stat values — computed once at module load from the
 // unified data layer. unified import is eager: it runs the three adapters +
@@ -170,6 +171,7 @@ function getNavItems(basePath) {
     { key: 'institutions', label: 'Institutions', path: `${basePath}/institutions` },
     { key: 'advisors', label: 'Advisor Practices', path: `${basePath}/advisors` },
     { key: 'organizations', label: 'Organizations', path: `${basePath}/organizations` },
+    { key: 'roster', label: 'Roster', path: `${basePath}/roster` },
   ];
 }
 
@@ -181,6 +183,7 @@ export default function OperationsSurface() {
     path.includes('/institutions') ? 'institutions' :
     path.includes('/advisors') ? 'advisors' :
     path.includes('/organizations') ? 'organizations' :
+    path.includes('/roster') ? 'roster' :
     'home';
 
   // Chrome identity swap (O-1), mirroring AdvisorSurface / EnterpriseSurface:
@@ -229,6 +232,7 @@ export default function OperationsSurface() {
           <Route path="advisors/:id" element={<AdvisorPracticeDetail />} />
           <Route path="organizations" element={<OrganizationsDirectory />} />
           <Route path="organizations/:id" element={<OrganizationDetail />} />
+          <Route path="roster" element={<OperationsRoster />} />
           <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
       </div>
