@@ -81,6 +81,21 @@ export default function SignIn() {
         setErrorMessage('Enter a valid email address.');
         return;
       }
+      if (res.status === 403) {
+        // Pre-send signup gate (invite-allowlist): unknown email, no link sent.
+        // The server echoes better-auth's disableSignUp code so the existing
+        // ERROR_MESSAGES copy renders.
+        let code = null;
+        try {
+          const data = await res.json();
+          code = data && data.code;
+        } catch {
+          code = null;
+        }
+        setStatus('error');
+        setErrorMessage((code && ERROR_MESSAGES[code]) || ERROR_MESSAGES.new_user_signup_disabled);
+        return;
+      }
       if (!res.ok) {
         setStatus('error');
         setErrorMessage('Sign-in is temporarily unavailable. Please try again shortly.');

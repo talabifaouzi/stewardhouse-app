@@ -15,15 +15,18 @@
 // Roster file shape (scripts/pilot-invites.json), JSON array of:
 //   {
 //     "email": "jane@example.org",
-//     "type": "advisor" | "staff" | "ops",
+//     "type": "individual" | "advisor" | "staff" | "ops",
 //     "display_name": "Jane Smith",
-//     "source_surface": "advisor" | "enterprise" | "operations" | ...,
+//     "source_surface": "individual" | "advisor" | "enterprise" | "operations" | ...,
 //     "extra": { ...fields nested under extensions.<source_surface> }
 //   }
 //
-// type is restricted to bespoke (non-'individual') types. Organic signups
-// always get type='individual' via the (c) claim-or-create hook; this script
-// only pre-seeds privileged-type claimable rows per the bespoke-type ruling.
+// type accepts 'individual' AND the bespoke privileged types. As of the
+// invite-gate slice, production signup is invite-only (pre-send allowlist in
+// functions/api/auth/[[route]].js keyed on person.invite_email), so organic
+// individuals are no longer auto-created on an unknown email — an individual
+// invitee must be pre-seeded here (or, later, through the Operations invite
+// form per Ruling 1.1) exactly like a bespoke invitee.
 
 import { readFileSync, writeFileSync, unlinkSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
@@ -32,7 +35,7 @@ import { randomUUID } from 'node:crypto';
 const ROSTER_PATH = 'scripts/pilot-invites.json';
 const TMP_SQL_PATH = 'scripts/.invite-batch.tmp.sql';
 const DB_NAME = 'stewardhouse-pilot';
-const ALLOWED_TYPES = new Set(['staff', 'advisor', 'ops']);
+const ALLOWED_TYPES = new Set(['individual', 'staff', 'advisor', 'ops']);
 
 function fail(msg) {
   console.error(`[seed-invites] ERROR: ${msg}`);
@@ -84,7 +87,7 @@ roster.forEach((entry, i) => {
   seenEmails.add(normalizedEmail);
 
   if (!ALLOWED_TYPES.has(type)) {
-    fail(`${ctx}: "type" must be one of ${[...ALLOWED_TYPES].join(', ')} — got "${type}". Organic 'individual' rows are never pre-seeded; the claim hook creates those automatically.`);
+    fail(`${ctx}: "type" must be one of ${[...ALLOWED_TYPES].join(', ')} — got "${type}".`);
   }
 
   if (!display_name || typeof display_name !== 'string') fail(`${ctx}: missing/invalid "display_name"`);

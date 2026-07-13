@@ -34,13 +34,22 @@
 //
 // databaseHooks (added in sub-slice c):
 //   - user.create.after — claim-or-create person on first sign-in.
-//     Tries to claim Marcus's seed person row (matching extensions.
-//     legacy_individual_id = 'c-001'); on no match, inserts a fresh
-//     person row with type='individual' (organic self-signups are
-//     always individual; enterprise/advisor person rows are PRE-SEEDED
-//     by FT/staff before invite, so their first sign-in is a CLAIM of
-//     an existing typed row, never a fresh insert). Errors are logged
+//     Tries to claim a pre-seeded person row (matching invite_email =
+//     the signing-in email); on no match, inserts a fresh person row
+//     with type='individual' (organic self-signups are always
+//     individual; enterprise/advisor person rows are PRE-SEEDED by
+//     FT/staff before invite, so their first sign-in is a CLAIM of an
+//     existing typed row, never a fresh insert). Errors are logged
 //     + SWALLOWED — the hook MUST NOT block sign-in completion.
+//
+//   As of the invite-gate slice, this hook fires ONLY for emails that
+//   cleared the pre-send allowlist in functions/api/auth/[[route]].js
+//   (an unknown email never gets a verification link, so it never
+//   reaches createUser). The fresh-person branch below therefore
+//   creates individual rows ONLY for allowlisted invitees whose
+//   invite_email claim did not match (e.g. a fresh individual with no
+//   pre-seeded row). It is left OPEN deliberately — see the CLAIM
+//   MATCH KEY note on the after() body.
 
 import { betterAuth } from 'better-auth';
 import { magicLink } from 'better-auth/plugins/magic-link';
@@ -129,12 +138,23 @@ export function makeAuth(env) {
           // of an existing row, never a fresh insert. The hook never
           // creates a privileged type.
           //
-          // CLAIM MATCH KEY: extensions.legacy_individual_id = 'c-001'
-          // is the seed-specific claim for Marcus. Future bespoke
-          // claims will EXTEND THIS LOOKUP HERE (additional legacy_*
-          // ids, or invite-token fields stored on the pre-seeded row's
-          // extensions). The structure of this UPDATE is the
-          // extension point — do NOT broaden to arbitrary matching.
+          // CLAIM MATCH KEY: invite_email = the signing-in email. Every
+          // pre-seeded person row (bespoke staff/advisor/ops via
+          // scripts/seed-invites.mjs, or a pre-seeded individual) carries
+          // its invitee's email in invite_email; first sign-in claims it.
+          // This is the SAME column the pre-send allowlist gate reads, so
+          // invite_email is the single source of truth for "who may sign
+          // up" AND "which row do they claim". Do NOT broaden to arbitrary
+          // matching — the allowlist gate depends on this exact key.
+          //
+          // FRESH-PERSON BRANCH left OPEN, not closed belt-and-braces:
+          // with the pre-send gate in place it is reachable only for an
+          // allowlisted email, so it can no longer mint an unknown-email
+          // account. Closing it would strand an allowlisted individual
+          // whose invite_email claim missed (it would leave person=null).
+          // Leaving it open keeps claim-or-create graceful. FUTURE-HARDEN:
+          // if a non-magic-link signup method is ever added, that path
+          // must be gated too, or re-add an allowlist re-check here.
           after: async (user) => {
             try {
               let claimed = 0;
