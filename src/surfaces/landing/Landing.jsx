@@ -107,8 +107,7 @@ export default function Landing() {
           marginBottom: 'var(--sh-space-12)',
           lineHeight: 1.55,
         }}>
-          StewardHouse has four user surfaces. Each is a distinct working environment for a distinct kind of person.
-          Choose where to enter the demo.
+          StewardHouse has four user surfaces. Choose yours to enter the demo.
         </p>
 
         <div style={{
