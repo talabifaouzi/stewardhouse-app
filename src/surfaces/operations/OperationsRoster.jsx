@@ -34,6 +34,15 @@ function titleCase(s) {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
+// Display labels for the account-type value (naming ruling 2026-07-13,
+// display-layer only). The DB enum + /api/me emission stay 'ops'; only the
+// rendered Type cell reads "Admin". Other types fall through to titleCase
+// (Individual / Advisor / Staff).
+const TYPE_LABELS = { ops: 'Admin' };
+function typeLabel(type) {
+  return TYPE_LABELS[type] ?? titleCase(type);
+}
+
 // 5 columns: type · display name · invite email · status · source surface.
 // minWidth keeps columns readable; the overflow-x wrapper scrolls on narrow
 // viewports.
@@ -65,7 +74,7 @@ const FOOTNOTE_STYLE = {
 function RosterTable({ rows }) {
   return (
     <div style={{ overflowX: 'auto' }}>
-      <div role="table" aria-label="Roster" style={{ minWidth: '600px' }}>
+      <div role="table" aria-label="Accounts" style={{ minWidth: '600px' }}>
         <div role="row" style={HEADER_ROW_STYLE}>
           <div role="columnheader">Type</div>
           <div role="columnheader">Name</div>
@@ -88,7 +97,7 @@ function RosterTable({ rows }) {
               alignItems: 'center',
             }}
           >
-            <div role="cell">{titleCase(r.type)}</div>
+            <div role="cell">{typeLabel(r.type)}</div>
             <div role="cell" style={{ color: 'var(--sh-text-primary)' }}>{r.displayName}</div>
             <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{r.inviteEmail ?? '—'}</div>
             {/* Lifecycle state, not a judgment (Path B): claimed reads affirmed,
@@ -150,8 +159,8 @@ function DemoRoster({ headingId }) {
         marginBottom: 'var(--sh-space-5)',
         maxWidth: '720px',
       }}>
-        This roster is demonstrative — the five identities below are the local
-        seed accounts, not live platform accounts.
+        The accounts below are demonstrative — five local seed identities, not
+        live platform accounts.
       </p>
 
       <Card aria-labelledby={headingId}>
@@ -197,12 +206,12 @@ function LiveRoster({ headingId }) {
     <Card aria-labelledby={headingId}>
       {state.status === 'loading' && (
         <p style={{ fontSize: 'var(--sh-text-sm)', color: 'var(--sh-text-muted)', margin: 0 }}>
-          Loading the roster…
+          Loading accounts…
         </p>
       )}
       {state.status === 'error' && (
         <p style={{ fontSize: 'var(--sh-text-sm)', color: 'var(--sh-text-secondary)', margin: 0 }}>
-          The roster could not be loaded.
+          The accounts list could not be loaded.
         </p>
       )}
       {state.status === 'ready' && state.rows.length === 0 && (
@@ -249,7 +258,7 @@ export default function OperationsRoster() {
             color: 'var(--sh-text-primary)',
             marginBottom: 'var(--sh-space-2)',
           }}>
-            Roster
+            Accounts
           </h1>
           <p style={{
             fontSize: 'var(--sh-text-md)',

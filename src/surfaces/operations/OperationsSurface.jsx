@@ -152,6 +152,17 @@ function resolveSurfaceColor(surface) {
   return SURFACE_COLORS_FALLBACK;
 }
 
+// Display labels for ActivityItem.surface (naming ruling 2026-07-13,
+// display-layer only). Only the RENDERED activity-chip text changes:
+// 'Operations' → 'Admin'. The raw item.surface value is UNCHANGED — the
+// unified-layer emission strings and the SURFACE_COLORS keys still key on
+// 'Operations', so the color lookup (resolveSurfaceColor(item.surface)) is
+// untouched. Other surfaces pass through.
+const SURFACE_DISPLAY_LABELS = { Operations: 'Admin' };
+function surfaceDisplayLabel(surface) {
+  return SURFACE_DISPLAY_LABELS[surface] ?? surface;
+}
+
 // Short-form month names for the absolute-date format used by formatTimeAgo
 // (≥56 days) and the IssueRow/ActivityRow expand "Logged Mon DD, YYYY".
 const MONTH_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -171,7 +182,12 @@ function getNavItems(basePath) {
     { key: 'institutions', label: 'Institutions', path: `${basePath}/institutions` },
     { key: 'advisors', label: 'Advisor Practices', path: `${basePath}/advisors` },
     { key: 'organizations', label: 'Organizations', path: `${basePath}/organizations` },
-    { key: 'roster', label: 'Roster', path: `${basePath}/roster` },
+    // Display label "Accounts" (naming ruling 2026-07-13); the route segment,
+    // nav key, and activeNav match all deliberately keep the legacy 'roster'
+    // name (paths + the /api/roster endpoint are NOT renamed — display-layer
+    // change only). See the `path.includes('/roster')` activeNav below and the
+    // `<Route path="roster">` mount.
+    { key: 'roster', label: 'Accounts', path: `${basePath}/roster` },
   ];
 }
 
@@ -1030,7 +1046,7 @@ function ActivityRowInteractive({ item, first }) {
             flexShrink: 0,
             cursor: 'default',
           }}>
-            {item.surface}
+            {surfaceDisplayLabel(item.surface)}
           </span>
           <p style={{
             flex: 1,

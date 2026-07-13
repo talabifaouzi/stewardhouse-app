@@ -30,7 +30,7 @@ const surfaces = [
   },
   {
     key: 'operations',
-    label: 'Operations',
+    label: 'Admin',
     sub: 'Internal admin',
     description: 'Internal view for StewardHouse staff to monitor and support across all three end-user surfaces.',
     accent: 'var(--sh-operations-accent)',

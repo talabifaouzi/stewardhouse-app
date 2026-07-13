@@ -21,7 +21,10 @@ const SURFACE_CONFIG = {
     role: 'Practice workspace',
   },
   operations: {
-    label: 'Operations',
+    // Display label 'Admin' (naming ruling 2026-07-13, display-layer only).
+    // The config key 'operations' (keyed on the surface prop / route) is
+    // unchanged — only the rendered chrome-header label reads "Admin".
+    label: 'Admin',
     accent: 'var(--sh-operations-accent)',
     role: 'Internal admin',
   },
