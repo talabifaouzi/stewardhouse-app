@@ -82,15 +82,6 @@ export default function Landing() {
         margin: '0 auto',
         width: '100%',
       }}>
-        <p style={{
-          fontSize: 'var(--sh-text-xs)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.12em',
-          color: 'var(--sh-text-muted)',
-          marginBottom: 'var(--sh-space-4)',
-        }}>
-          Prototype demo · v0
-        </p>
         <h1 style={{
           fontFamily: 'var(--sh-font-serif)',
           fontSize: 'var(--sh-text-3xl)',
@@ -161,6 +152,16 @@ export default function Landing() {
         }}>
           All clients, organizations, conversations, and figures shown in this demo are fictional.
           The platform does not provide financial, legal, or compliance advice.
+        </p>
+
+        {/* Demoted status marker — quiet, buried but present (FT ruling) */}
+        <p style={{
+          marginTop: 'var(--sh-space-4)',
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+          textAlign: 'center',
+        }}>
+          Prototype demo · v0
         </p>
       </section>
     </main>
