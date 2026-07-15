@@ -16,8 +16,14 @@ import { Button } from '../../components/Button.jsx';
 // Consent (E6): the FT-ruled roster-add copy is shown and a required
 // acknowledgment must be checked before submit. The endpoint ALSO requires the
 // acknowledgment (consentAcknowledged: true) so non-form callers cannot skip
-// it. The copy's opening ("sends them an invitation right away") describes the
-// C-2 auto-send, which is not yet wired — the copy is ruled as final text now.
+// it. As of C-2 the auto-invite is LIVE: enrolling an athlete mints a claimable
+// person row and sends an invitation email (POST /api/athletes), so the copy's
+// opening ("sends them an invitation right away") now describes real behavior.
+//
+// Email is REQUIRED (C-2) — the invitation cannot send without an address. On
+// success the response carries invite ∈ 'sent' | 'skipped' | 'failed', surfaced
+// here via the CreateInviteModal warning-on-success idiom (a post-submit notice
+// view for 'skipped'/'failed'; 'sent' closes normally).
 //
 // Failure surfacing (E-Write-1 fix): the modal renders the provider's
 // writeError (the real server message, e.g. "Not authorized" from the E11
@@ -36,6 +42,10 @@ export default function AddAthleteModal({ isOpen, onClose, onAdd, writeError, cl
   const [form, setForm] = useState(BLANK);
   const [consent, setConsent] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  // C-2 warning-on-success notice (CreateInviteModal idiom). Set after a
+  // successful enroll whose invite was 'skipped' or 'failed'; the athlete IS
+  // enrolled in both cases — the notice reports the invite outcome only.
+  const [notice, setNotice] = useState(null);
 
   // Reset on open — including any stale provider writeError from a prior submit.
   useEffect(() => {
@@ -43,13 +53,15 @@ export default function AddAthleteModal({ isOpen, onClose, onAdd, writeError, cl
       setForm(BLANK);
       setConsent(false);
       setSubmitting(false);
+      setNotice(null);
       clearWriteError();
     }
   }, [isOpen, clearWriteError]);
 
   const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
 
-  const emailOk = form.email.trim() === '' || EMAIL_REGEX.test(form.email.trim());
+  // C-2: email is REQUIRED (consistent with Name) — no blank-allowed branch.
+  const emailOk = EMAIL_REGEX.test(form.email.trim());
   const canSubmit = form.name.trim().length > 0 && consent && emailOk && !submitting;
 
   const handleSubmit = async () => {
@@ -64,28 +76,47 @@ export default function AddAthleteModal({ isOpen, onClose, onAdd, writeError, cl
       else if (v !== '') payload[k] = v;
     }
     const saved = await onAdd(payload);
-    if (saved) {
-      onClose();
-    } else {
+    setSubmitting(false);
+    if (!saved) {
       // add() already set the provider writeError (the real server message);
       // the modal renders it below. Form contents preserved for retry/correct.
-      setSubmitting(false);
+      return;
+    }
+    // C-2 invite outcome. 'sent' (or absent, defensive) closes normally;
+    // 'skipped'/'failed' surface a notice — the athlete is enrolled either way.
+    if (saved.invite === 'skipped') {
+      setNotice({ tone: 'note', text: 'This address already has a StewardHouse invitation — no duplicate email was sent.' });
+    } else if (saved.invite === 'failed') {
+      setNotice({ tone: 'warn', text: "Athlete enrolled, but the invitation email didn't send. You can re-invite this address from Operations." });
+    } else {
+      onClose();
     }
   };
+
+  if (notice) {
+    return (
+      <Modal isOpen={isOpen} onClose={onClose} title="Add athlete">
+        <p style={notice.tone === 'warn' ? noticeWarnStyle : noticeNoteStyle}>{notice.text}</p>
+        <div style={footerStyle}>
+          <Button variant="primary" size="sm" onClick={onClose}>Done</Button>
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Add athlete">
       <Field label="Name" required>
         <input type="text" value={form.name} onChange={set('name')} placeholder="Full name" style={inputStyle} />
       </Field>
-      <Field label="Email">
+      <Field label="Email" required>
         <input type="email" value={form.email} onChange={set('email')} placeholder="name@school.edu" style={inputStyle} />
-        {!emailOk && <p style={fieldErrorStyle}>Enter a valid email address, or leave blank.</p>}
+        {form.email.trim() !== '' && !emailOk && <p style={fieldErrorStyle}>Enter a valid email address.</p>}
       </Field>
 
       {/* E6 consent — FT-ruled roster-add copy + required acknowledgment.
-          NOTE: invitation auto-send lands in C-2; the copy below is ruled as
-          final text now (its first sentence describes the C-2 behavior). */}
+          The invitation auto-send is LIVE as of C-2; the copy's first sentence
+          now describes real behavior. */}
       <div style={consentBoxStyle}>
         <p style={consentTextStyle}>
           Adding an athlete sends them an invitation right away — give them a heads-up that it&rsquo;s coming and why. Until they accept, their record holds only name and email; nothing else can be added. When they claim their account they choose: manage it themselves, or authorize you to manage it for them. Either way it&rsquo;s theirs, and it leaves with them.
@@ -189,6 +220,30 @@ const formErrorStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-bronze-deep)',
   marginBottom: 'var(--sh-space-3)',
+};
+
+// C-2 warning-on-success notices (CreateInviteModal idiom). 'note' (skipped) is
+// quiet/neutral; 'warn' (failed) is the soft warning tint.
+const noticeNoteStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  padding: 'var(--sh-space-3) var(--sh-space-4)',
+  background: 'var(--sh-bg-tint)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: 'var(--sh-radius-md)',
+  margin: 0,
+};
+
+const noticeWarnStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-warning-text)',
+  lineHeight: 1.6,
+  padding: 'var(--sh-space-3) var(--sh-space-4)',
+  background: 'var(--sh-warning-bg)',
+  border: '1px solid var(--sh-warning-border)',
+  borderRadius: 'var(--sh-radius-md)',
+  margin: 0,
 };
 
 const footerStyle = {

@@ -27,13 +27,25 @@
 // (lessons/gifts/certified/gps/timestamps) are server-zeroed at enrollment and
 // accrue via later write paths, never accepted from the enrollment body.
 //
-// Response shape: the /api/me roster element (camelCase, activity: []) so
-// AthletesProvider.add() splices the response into local state without
-// transformation.
+// C-2: roster-add auto-invite. email is REQUIRED (the invitation can't send
+// without an address). After the athlete row commits, a claimable person row
+// (type 'individual', keyed by the same normalized invite_email) is minted and
+// a notification email sent, mirroring POST /api/invites. The athlete row is
+// NEVER rolled back for an invite problem; the outcome rides the response as
+// invite ∈ 'sent' | 'skipped' (address already invited) | 'failed' (mint/send
+// error). athlete.person_id stays NULL — the athlete↔person claim bind is C-3.
+//
+// Response shape: the /api/me roster element (camelCase, activity: []) PLUS a
+// top-level `invite` outcome flag. AthletesProvider.add() splices the roster
+// element into local state (stripping `invite`) and returns the full body so
+// the form can surface the invite outcome.
 
+import { sql } from 'kysely';
 import {
   makeDb, requireGatedEnterprise, rejectRankKeys, jsonError, jsonOk,
 } from '../_lib/gate.js';
+import { createSender } from '../_lib/sender.js';
+import { buildInviteEmail } from '../_lib/inviteEmail.js';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -99,13 +111,14 @@ function validateAthleteBody(body) {
   // C-1: name + email only. sport/year/position/phone/badge/notes are no longer
   // accepted at enrollment (rejected as extra keys in the handler); they become
   // settable only after the athlete claims and delegates.
-  if (body.email !== undefined) {
-    if (body.email !== null &&
-        (typeof body.email !== 'string' || !EMAIL_REGEX.test(body.email.trim()))) {
-      return { error: 'email must be a valid address or null' };
-    }
-    out.email = typeof body.email === 'string' ? body.email.trim() : body.email;
+  // C-2: email is REQUIRED — roster-add auto-sends an invitation, which cannot
+  // go out without an address. Normalized trim().toLowerCase() so the stored
+  // athlete email and the minted person.invite_email never diverge (the claim
+  // hook + pre-send allowlist both key on invite_email).
+  if (typeof body.email !== 'string' || !EMAIL_REGEX.test(body.email.trim())) {
+    return { error: 'A valid email is required — the invitation cannot be sent without an address' };
   }
+  out.email = body.email.trim().toLowerCase();
   return { fields: out };
 }
 
@@ -170,7 +183,7 @@ export async function onRequestPost(context) {
       sport: null,                           // C-1: locked out pre-claim
       year: null,                            // C-1: locked out pre-claim
       position: null,                        // C-1: locked out pre-claim
-      email: f.email ?? null,
+      email: f.email,                        // C-2: required + normalized (== person.invite_email)
       phone: null,                           // C-1: locked out pre-claim
       notes: null,                           // C-1: locked out pre-claim (was E8)
       badge: null,                           // C-1: locked out pre-claim (was E10)
@@ -196,5 +209,70 @@ export async function onRequestPost(context) {
     .select(ATHLETE_ELEMENT_COLUMNS)
     .where('id', '=', id)
     .executeTakeFirst();
-  return jsonOk(toAthleteElement(row));
+  const element = toAthleteElement(row);
+
+  // C-2: roster-add auto-invite. The athlete row above is ALREADY COMMITTED and
+  // is NEVER rolled back for an invite problem. Mint a claimable person row (the
+  // invites.js 10-column shape) keyed by f.email — the SAME normalized value the
+  // athlete row stored, so athlete.email and person.invite_email never diverge
+  // (the claim hook + pre-send allowlist both pivot on invite_email). Then send
+  // the notification email, mirroring the invites.js order. athlete.person_id
+  // stays NULL; the athlete↔person bind is C-3's job at claim. The whole block
+  // is wrapped so any unexpected throw degrades to invite:'failed' — never a
+  // 500, never a non-2xx for an invite problem.
+  let invite = 'failed';
+  try {
+    const personId = crypto.randomUUID();
+    let minted = false;
+    try {
+      await db.insertInto('person').values({
+        id: personId,
+        auth_user_id: null,
+        display_name: f.name,
+        initials: null,
+        type: 'individual',
+        source_surface: 'individual',
+        extensions: JSON.stringify({ individual: {} }),
+        invite_email: f.email,
+        soft_deleted_at: null,
+        deletion_state: null,
+        created_at: nowIso,
+      }).execute();
+      minted = true;
+    } catch (err) {
+      // UNIQUE(invite_email) — the address already has a claimable person row.
+      // Skip the mint + send WITHOUT failing the athlete-add (the athlete
+      // stands). Any other error rethrows → degrades to 'failed' below.
+      if (String(err && err.message).includes('UNIQUE')) {
+        invite = 'skipped';
+      } else {
+        throw err;
+      }
+    }
+
+    if (minted) {
+      // Send in its own step. On success, stamp $.invite.sentAt/messageId on the
+      // NEW person row (invites.js json_set shape). A send failure rethrows →
+      // the person row stands UNSTAMPED and invite becomes 'failed'.
+      const sender = createSender(context.env);
+      const { subject, html, text } = buildInviteEmail({ displayName: f.name });
+      const result = await sender.send({ to: f.email, subject, html, text });
+      const messageId = result && result.id ? String(result.id) : null;
+      const sentIso = new Date().toISOString();
+      await db
+        .updateTable('person')
+        .set({
+          extensions: sql`json_set(json_set(coalesce(extensions, '{}'), '$.invite.sentAt', ${sentIso}), '$.invite.messageId', ${messageId})`,
+        })
+        .where('id', '=', personId)
+        .execute();
+      invite = 'sent';
+    }
+  } catch (err) {
+    // Mint error other than UNIQUE, or a send failure — the committed athlete
+    // row stands; report the invite as failed.
+    invite = 'failed';
+  }
+
+  return jsonOk({ ...element, invite });
 }
