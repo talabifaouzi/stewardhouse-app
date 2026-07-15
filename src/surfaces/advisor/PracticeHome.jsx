@@ -16,11 +16,9 @@ export default function PracticeHome() {
   const practiceName = practiceProfile?.practiceName
     ?? (isAuthenticated ? 'Your practice' : advisorPracticeProfile.practiceName);
   const { clients } = useClients();
-  // ADV-011 — static demo date aligned with the seed timeline (journal entry
-  // April 28, upcoming sessions May 9-July 7). Live new Date() made
-  // screenshots non-deterministic and depended on the user's local clock.
-  // Verified: 2026-05-04 is a Monday.
-  const dateStr = 'Monday, May 4';
+  // Real current date (first-run polish ruling 2026-07-15, reversing ADV-011's
+  // static screenshot date): both trees show today's date.
+  const dateStr = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
 
   // Client counts by stage
   const stageCounts = stages.reduce((acc, stage) => {
@@ -75,10 +73,36 @@ export default function PracticeHome() {
         ))}
       </div>
 
-      {/* Two-column working area */}
+      {/* First-run guidance — authenticated advisor with no clients yet. */}
+      {isAuthenticated && clients.length === 0 && (
+        <Card style={{ marginBottom: 'var(--sh-space-6)' }}>
+          <SectionLabel>Set up your practice</SectionLabel>
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-secondary)',
+            lineHeight: 1.6,
+            marginBottom: 'var(--sh-space-2)',
+          }}>
+            Complete your practice identity in{' '}
+            <Link to={`${basePath}/settings`} style={{ color: 'var(--sh-bronze)', fontWeight: 500, textDecoration: 'none' }}>Settings</Link>.
+          </p>
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-text-secondary)',
+            lineHeight: 1.6,
+            margin: 0,
+          }}>
+            Add your first client from the{' '}
+            <Link to={`${basePath}/clients`} style={{ color: 'var(--sh-bronze)', fontWeight: 500, textDecoration: 'none' }}>Roster</Link>.
+          </p>
+        </Card>
+      )}
+
+      {/* Two-column working area (single-column on the authenticated tree,
+          where the demo-only journal card doesn't render). */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)',
+        gridTemplateColumns: isAuthenticated ? 'minmax(0, 1fr)' : 'minmax(0, 2fr) minmax(0, 1fr)',
         gap: 'var(--sh-space-6)',
         alignItems: 'start',
       }}>
@@ -197,7 +221,9 @@ export default function PracticeHome() {
             color: 'var(--sh-text-secondary)',
             marginBottom: 'var(--sh-space-3)',
           }}>
-            {totalActiveContent} content items active across {clients.length} clients · 5 content types in rotation
+            {clients.length === 0
+              ? 'Pipeline activity will appear here once you add clients.'
+              : `${totalActiveContent} content items active across ${clients.length} clients · 5 content types in rotation`}
           </p>
         </Card>
       </div>

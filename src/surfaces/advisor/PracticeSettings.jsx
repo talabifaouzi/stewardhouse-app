@@ -296,9 +296,10 @@ function DisplayRow({ label, value, last, action }) {
         flex: 1,
         minWidth: '180px',
         fontSize: 'var(--sh-text-sm)',
-        color: 'var(--sh-text-primary)',
+        color: value ? 'var(--sh-text-primary)' : 'var(--sh-text-muted)',
+        fontStyle: value ? 'normal' : 'italic',
       }}>
-        {value}
+        {value || 'Not set'}
       </p>
       {action}
     </div>

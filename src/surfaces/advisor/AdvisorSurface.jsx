@@ -75,7 +75,7 @@ export default function AdvisorSurface() {
   // tree an absent authenticatedTitle renders as null (Chrome hides the
   // role slot when falsy) — never Morgan's fixture "Principal Advisor".
   const userName = authenticatedName ?? (isAuthenticated ? '' : advisorPracticeProfile.advisorName);
-  const userRole = authenticatedTitle ?? (isAuthenticated ? null : advisorPracticeProfile.advisorTitle);
+  const userRole = authenticatedTitle ?? (isAuthenticated ? 'Advisor' : advisorPracticeProfile.advisorTitle);
 
   // Cohorts + clients providers land on this surface too (slice 2 fold-in):
   //  - Cohorts: seed from identity.advisor.cohorts on auth (Morgan's 2
