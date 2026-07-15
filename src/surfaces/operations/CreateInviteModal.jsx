@@ -18,7 +18,7 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const TYPE_OPTIONS = [
   { value: 'individual', label: 'Individual' },
   { value: 'advisor', label: 'Advisor' },
-  { value: 'staff', label: 'Staff' },
+  { value: 'staff', label: 'Staff' }, // bootstrap-only; canonical staff provisioning = docs/enterprise-provisioning-runbook.md
   { value: 'ops', label: 'Admin' },
 ];
 

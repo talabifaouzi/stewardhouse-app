@@ -1,0 +1,23 @@
+{
+  "name": "Example State University",
+  "sector": "Athletics",
+  "dept": "Athletic Department",
+  "contract_label": "Season Residency — Aug 2025 to May 2026",
+  "tier": "Revenue Sports Package",
+  "annual_amount": 85000,
+  "endowment_annual": 8500,
+  "endowment_current": 8628,
+  "program_term": "Season Residency — Aug 2025 to May 2026",
+  "contacts": [
+    {
+      "email": "athletic-development-lead@example.org",
+      "role_title": "Senior Director, Athletic Development",
+      "is_default_operator": 1
+    },
+    {
+      "email": "program-facilitator@example.org",
+      "role_title": "Facilitator",
+      "is_default_operator": 0
+    }
+  ]
+}
