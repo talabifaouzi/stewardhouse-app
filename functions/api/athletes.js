@@ -37,6 +37,15 @@ import {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// C-1 field lockdown (consent model, docs/enterprise-provisioning-runbook.md
+// §4 E6): pre-claim, an athlete record holds name + email ONLY. No other field
+// may be set by anyone until the athlete claims their account and delegates
+// management to staff (C-3). consentAcknowledged is the E6 gate flag, not a
+// stored athlete column. Anything else in the body is rejected 400 (explicit,
+// not silently dropped — staff learn the model), matching the rejectRankKeys
+// precedent.
+const ALLOWED_BODY_KEYS = ['name', 'email', 'consentAcknowledged'];
+
 // DB enrollment_status enum → the lowercase `status` the fixture-shaped
 // consumers (statusFor) read. Provisional: roster-add only ever creates
 // 'Invited' athletes (lessons 0 → statusFor returns 'Invited' via the
@@ -87,14 +96,9 @@ function validateAthleteBody(body) {
     return { error: 'name is required' };
   }
   out.name = body.name.trim();
-  for (const k of ['sport', 'year', 'position', 'phone', 'badge', 'notes']) {
-    if (body[k] !== undefined) {
-      if (body[k] !== null && typeof body[k] !== 'string') {
-        return { error: `${k} must be a string or null` };
-      }
-      out[k] = typeof body[k] === 'string' ? body[k].trim() : body[k];
-    }
-  }
+  // C-1: name + email only. sport/year/position/phone/badge/notes are no longer
+  // accepted at enrollment (rejected as extra keys in the handler); they become
+  // settable only after the athlete claims and delegates.
   if (body.email !== undefined) {
     if (body.email !== null &&
         (typeof body.email !== 'string' || !EMAIL_REGEX.test(body.email.trim()))) {
@@ -118,6 +122,19 @@ export async function onRequestPost(context) {
   }
   const forbidden = rejectRankKeys(body);
   if (forbidden) return jsonError(`Field "${forbidden}" is not permitted`, 400);
+
+  // C-1 field lockdown: reject any key beyond name + email + the consent flag,
+  // naming the offending keys so staff learn the pre-claim model rather than
+  // losing data silently. rejectRankKeys (above) catches progress columns with
+  // its own message first; this catches sport/year/position/phone/badge/notes
+  // and anything else.
+  const extraKeys = Object.keys(body).filter((k) => !ALLOWED_BODY_KEYS.includes(k));
+  if (extraKeys.length > 0) {
+    return jsonError(
+      `Field(s) not permitted before the athlete claims their account: ${extraKeys.join(', ')}`,
+      400,
+    );
+  }
 
   // E6: consent is required server-side, not just in the form.
   if (body.consentAcknowledged !== true) {
@@ -150,13 +167,14 @@ export async function onRequestPost(context) {
       institution_id: contact.institution_id,
       person_id: null,                       // E3: unclaimed at enrollment
       name: f.name,
-      sport: f.sport ?? null,
-      year: f.year ?? null,
-      position: f.position ?? null,
+      sport: null,                           // C-1: locked out pre-claim
+      year: null,                            // C-1: locked out pre-claim
+      position: null,                        // C-1: locked out pre-claim
       email: f.email ?? null,
-      phone: f.phone ?? null,
-      notes: f.notes ?? null,                // E8: authoring-discipline field
-      badge: f.badge ?? null,                // E10: staff descriptive label
+      phone: null,                           // C-1: locked out pre-claim
+      notes: null,                           // C-1: locked out pre-claim (was E8)
+      badge: null,                           // C-1: locked out pre-claim (was E10)
+      management_mode: null,                 // C-1: deny-by-default; athlete sets at claim (C-3)
       gps_completed_at: null,
       lessons_count: 0,
       gifts_count: 0,

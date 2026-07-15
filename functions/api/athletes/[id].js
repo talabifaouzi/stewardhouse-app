@@ -88,6 +88,7 @@ export async function onRequestDelete(context) {
       join_date: null,
       last_active_at: null,
       consent_acknowledged_at: null,   // Q1 ruling: NULL in the stub
+      management_mode: null,           // C-1 hygiene: no stale consent state on a Sunset stub
       // Zero the counters + certification.
       lessons_count: 0,
       gifts_count: 0,

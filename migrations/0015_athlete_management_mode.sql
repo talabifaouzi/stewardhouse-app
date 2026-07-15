@@ -1,0 +1,21 @@
+-- Migration 0015 — athlete.management_mode (consent-enforcement slice C-1).
+--
+-- The athlete's consent/management state, ruled by the FT consent model
+-- (docs/enterprise-provisioning-runbook.md §4 E6). Written at CLAIM by the
+-- ATHLETE ONLY (the claim/delegation UI lands in the C-3 slice); staff never
+-- set it.
+--
+--   NULL        — unclaimed, or claimed but no choice made yet. NO staff writes.
+--   'self'      — athlete-managed. Staff have READ-ONLY access; no staff writes.
+--   'delegated' — the athlete authorized institution staff to manage their
+--                 record. Staff writes are permitted.
+--
+-- Gate semantics (deny-by-default): a staff write on an athlete requires
+-- management_mode = 'delegated' EXACTLY — NULL, 'self', or any other value
+-- blocks. Enforced at the write endpoints (attendance in C-1; future
+-- note/reflection/activity writes reuse the same filter).
+--
+-- Local-then-remote (§6.10): applied LOCAL with this slice; the --remote apply
+-- is a SEPARATE FT-run step after the bank.
+
+ALTER TABLE athlete ADD COLUMN management_mode TEXT;

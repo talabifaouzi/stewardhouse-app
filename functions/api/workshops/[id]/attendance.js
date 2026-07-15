@@ -133,17 +133,33 @@ export async function onRequestPut(context) {
   }
 
   // (b) Every athleteId must be an ACTIVE roster row on this institution. One IN
-  // query; shortfall → reject the WHOLE batch (no partial write).
+  // query (pulls management_mode for the (c) claim-state gate); shortfall →
+  // reject the WHOLE batch (no partial write).
   const athleteIds = records.map((r) => r.athleteId);
   const validAthletes = await db
     .selectFrom('athlete')
-    .select(['id'])
+    .select(['id', 'management_mode'])
     .where('id', 'in', athleteIds)
     .where('institution_id', '=', contact.institution_id)
     .where('enrollment_status', '!=', 'Sunset')
     .execute();
   if (validAthletes.length !== athleteIds.length) {
     return jsonError('One or more athletes are not on this institution roster', 400);
+  }
+
+  // (c) C-1 claim-state gate (deny-by-default): a staff write requires the
+  // athlete to have delegated management. management_mode must equal
+  // 'delegated' EXACTLY — NULL (unclaimed / no choice made) and 'self'
+  // (athlete-managed, staff read-only) both block. Reject the WHOLE batch,
+  // naming the non-delegated ids so staff know which athletes to follow up.
+  const notDelegated = validAthletes
+    .filter((a) => a.management_mode !== 'delegated')
+    .map((a) => a.id);
+  if (notDelegated.length > 0) {
+    return jsonError(
+      `Cannot record attendance — athlete(s) have not delegated management to staff: ${notDelegated.join(', ')}`,
+      403,
+    );
   }
 
   // Single multi-row upsert — atomic on its own. excluded.<col> pulls the

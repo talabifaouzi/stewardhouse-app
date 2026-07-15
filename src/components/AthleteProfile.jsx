@@ -59,7 +59,9 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
     <Modal isOpen={isOpen} onClose={onClose} title={athlete.name}>
       {/* Header */}
       <div style={headerStyle}>
-        <p style={subtitleStyle}>{athlete.sport} · {athlete.year} · {athlete.position}</p>
+        {/* C-1: pre-claim athletes carry no sport/year/position — drop null
+            segments so the subtitle doesn't render bare separators. */}
+        <p style={subtitleStyle}>{[athlete.sport, athlete.year, athlete.position].filter(Boolean).join(' · ')}</p>
         <span style={statusBadgeStyle}>{statusFor(athlete)}</span>
       </div>
 

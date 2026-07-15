@@ -7,30 +7,29 @@ import { Button } from '../../components/Button.jsx';
 // The endpoint is E11-gated (dark on production); this form only ever renders
 // on the authenticated tree (Roster gates it on identity).
 //
-// Consent (E6): the verbatim program-consent line is shown and a required
+// C-1 field lockdown (consent model, docs/enterprise-provisioning-runbook.md
+// §4 E6): pre-claim, an athlete record holds NAME + EMAIL only. The form
+// collects nothing else — sport / class / phone / badge / notes are removed,
+// and the endpoint rejects those keys 400. They become settable only after the
+// athlete claims their account and delegates management to staff (C-3).
+//
+// Consent (E6): the FT-ruled roster-add copy is shown and a required
 // acknowledgment must be checked before submit. The endpoint ALSO requires the
 // acknowledgment (consentAcknowledged: true) so non-form callers cannot skip
-// it. COUNSEL-GATED: the exact consent language is pending counsel; it ships
-// behind the $.enterprise.demo_gate as caution copy until confirmed.
-//
-// E8: the notes field carries the authoring-discipline caution — third parties
-// by public-record name + role only, never relational/private descriptors.
+// it. The copy's opening ("sends them an invitation right away") describes the
+// C-2 auto-send, which is not yet wired — the copy is ruled as final text now.
 //
 // Failure surfacing (E-Write-1 fix): the modal renders the provider's
 // writeError (the real server message, e.g. "Not authorized" from the E11
 // gate) rather than a generic local string — matching the ClientWorkspace /
 // CohortDetail idiom. Form contents are preserved on failure.
-//
-// Position (E-Write-1 fix, FT ruling): the form no longer collects Position.
-// The `athlete.position` column and the endpoint's allowlist entry remain
-// (advisor idiom — the endpoint contract stays complete for future callers;
-// the form is one caller that chooses not to collect it).
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// C-1: name + email only. The payload loop in handleSubmit iterates these keys,
+// so adding a field here would re-widen the form — keep it to the two.
 const BLANK = {
-  name: '', sport: '', year: '',
-  email: '', phone: '', badge: '', notes: '',
+  name: '', email: '',
 };
 
 export default function AddAthleteModal({ isOpen, onClose, onAdd, writeError, clearWriteError }) {
@@ -79,39 +78,21 @@ export default function AddAthleteModal({ isOpen, onClose, onAdd, writeError, cl
       <Field label="Name" required>
         <input type="text" value={form.name} onChange={set('name')} placeholder="Full name" style={inputStyle} />
       </Field>
-      <Field label="Sport">
-        <input type="text" value={form.sport} onChange={set('sport')} placeholder="e.g. Basketball" style={inputStyle} />
-      </Field>
-      <Field label="Class">
-        <input type="text" value={form.year} onChange={set('year')} placeholder="e.g. Junior" style={inputStyle} />
-      </Field>
       <Field label="Email">
         <input type="email" value={form.email} onChange={set('email')} placeholder="name@school.edu" style={inputStyle} />
         {!emailOk && <p style={fieldErrorStyle}>Enter a valid email address, or leave blank.</p>}
       </Field>
-      <Field label="Phone">
-        <input type="tel" value={form.phone} onChange={set('phone')} placeholder="(555) 000-0000" style={inputStyle} />
-      </Field>
-      <Field label="Badge">
-        <input type="text" value={form.badge} onChange={set('badge')} placeholder="Descriptive label (optional)" style={inputStyle} />
-      </Field>
-      <Field label="Notes">
-        <textarea value={form.notes} onChange={set('notes')} rows={4} placeholder="Staff observations (optional)" style={textareaStyle} />
-        {/* E8 authoring caution — name+role from public record only. */}
-        <p style={cautionStyle}>
-          Name third parties by public-record name and role only (e.g. “Board member Dana Reeves”) — never relational or private descriptors.
-        </p>
-      </Field>
 
-      {/* E6 consent — verbatim program-consent line + required acknowledgment.
-          COUNSEL-GATED: exact language pending counsel; ships behind the gate. */}
+      {/* E6 consent — FT-ruled roster-add copy + required acknowledgment.
+          NOTE: invitation auto-send lands in C-2; the copy below is ruled as
+          final text now (its first sentence describes the C-2 behavior). */}
       <div style={consentBoxStyle}>
         <p style={consentTextStyle}>
-          Reflections you record during the program are visible to your athletic department staff. When you claim your StewardHouse account, you gain per-reflection visibility controls.
+          Adding an athlete sends them an invitation right away — give them a heads-up that it&rsquo;s coming and why. Until they accept, their record holds only name and email; nothing else can be added. When they claim their account they choose: manage it themselves, or authorize you to manage it for them. Either way it&rsquo;s theirs, and it leaves with them.
         </p>
         <label style={consentLabelStyle}>
           <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} style={checkboxStyle} />
-          <span>I acknowledge the program consent posture above applies to this athlete.</span>
+          <span>I acknowledge the consent model above applies to this athlete.</span>
         </label>
       </div>
 
@@ -162,19 +143,6 @@ const inputStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-body)',
   background: 'var(--sh-card)',
-};
-
-const textareaStyle = {
-  ...inputStyle,
-  resize: 'vertical',
-  lineHeight: 1.6,
-};
-
-const cautionStyle = {
-  fontSize: 'var(--sh-text-xs)',
-  color: 'var(--sh-text-muted)',
-  lineHeight: 1.5,
-  marginTop: 'var(--sh-space-2)',
 };
 
 const fieldErrorStyle = {

@@ -90,11 +90,14 @@ export default function CohortComparison() {
   // Sport-level breakdown from the live roster (provider). Demo: fixture 16.
   const sportRows = useMemo(() => {
     const bySport = athletes.reduce((acc, a) => {
-      if (!acc[a.sport]) acc[a.sport] = { athletes: [], gpsCount: 0, certCount: 0, giftCount: 0 };
-      acc[a.sport].athletes.push(a);
-      if (a.gpsCompleted) acc[a.sport].gpsCount++;
-      if (a.certified) acc[a.sport].certCount++;
-      acc[a.sport].giftCount += a.gifts;
+      // C-1: pre-claim athletes carry no sport — bucket them under an explicit
+      // label rather than a null/"null" key.
+      const sport = a.sport || 'Not yet provided';
+      if (!acc[sport]) acc[sport] = { athletes: [], gpsCount: 0, certCount: 0, giftCount: 0 };
+      acc[sport].athletes.push(a);
+      if (a.gpsCompleted) acc[sport].gpsCount++;
+      if (a.certified) acc[sport].certCount++;
+      acc[sport].giftCount += a.gifts;
       return acc;
     }, {});
     return Object.entries(bySport)
