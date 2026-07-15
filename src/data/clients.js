@@ -12,6 +12,25 @@ export const advisorPracticeProfile = {
   yearsActive: 7,
 };
 
+// Practice-journal demonstrative fixture — the advisor's own private reflection
+// space on PracticeHome. DEMO TREE ONLY: rendered from this fixture on the
+// public /advisor tree; the authenticated /app/advisor tree renders NO journal
+// Card at all (no persistence exists, so no empty-state feature is implied).
+//
+// Previously a hardcoded literal in PracticeHome.jsx, which leaked to the
+// authenticated tree (found on an FT screen 2026-07-15) — the advisor
+// fixture-isolation slice (slice 2, 8c3e4f7) missed it because its isolation
+// grep targeted fixture IMPORTS, and a hardcoded string is not an import.
+// Fixture-ized here so it is a proper isolatable demo entry. `clientRef` names
+// the fixture client the reflection is about (Marcus, c-001).
+export const PRACTICE_JOURNAL = [
+  {
+    quote: "Marcus is asking better questions about restricted vs. unrestricted than three months ago. The shift from 'what's the safest gift' to 'what does this organization actually need' is happening on its own — not because of a lesson.",
+    date: "April 28, 2026",
+    clientRef: "Marcus",
+  },
+];
+
 export const clients = [
   {
     id: 'c-001',

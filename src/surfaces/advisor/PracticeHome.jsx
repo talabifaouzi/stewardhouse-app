@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
 import { Icon } from '../../components/Icon.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
-import { advisorPracticeProfile, formatSessionDate, stages } from '../../data/clients.js';
+import { advisorPracticeProfile, formatSessionDate, stages, PRACTICE_JOURNAL } from '../../data/clients.js';
 import { useBasePath, useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { useClients } from '../../contexts/ClientsContext.jsx';
 
@@ -141,25 +141,32 @@ export default function PracticeHome() {
           )}
         </Card>
 
-        {/* Practice journal — the advisor's own private reflection space */}
-        <Card tint>
-          <SectionLabel>Practice journal</SectionLabel>
-          <p style={{
-            fontSize: 'var(--sh-text-sm)',
-            color: 'var(--sh-text-secondary)',
-            lineHeight: 1.6,
-            fontStyle: 'italic',
-            marginBottom: 'var(--sh-space-4)',
-          }}>
-            "Marcus is asking better questions about restricted vs. unrestricted than three months ago. The shift from 'what's the safest gift' to 'what does this organization actually need' is happening on its own — not because of a lesson."
-          </p>
-          <p style={{
-            fontSize: 'var(--sh-text-xs)',
-            color: 'var(--sh-text-muted)',
-          }}>
-            April 28, 2026
-          </p>
-        </Card>
+        {/* Practice journal — the advisor's own private reflection space.
+            DEMO TREE ONLY (journal-leak fix): rendered from the PRACTICE_JOURNAL
+            fixture on the public tree; the authenticated tree renders NO journal
+            Card at all — not even an empty state, because no persistence exists,
+            so no feature would be implied. Previously a hardcoded literal that
+            leaked to the auth tree (missed by slice-2's import-grep). */}
+        {!isAuthenticated && PRACTICE_JOURNAL.map((entry, i) => (
+          <Card tint key={i}>
+            <SectionLabel>Practice journal</SectionLabel>
+            <p style={{
+              fontSize: 'var(--sh-text-sm)',
+              color: 'var(--sh-text-secondary)',
+              lineHeight: 1.6,
+              fontStyle: 'italic',
+              marginBottom: 'var(--sh-space-4)',
+            }}>
+              "{entry.quote}"
+            </p>
+            <p style={{
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-text-muted)',
+            }}>
+              {entry.date}
+            </p>
+          </Card>
+        ))}
       </div>
 
       {/* Pipeline preview */}
