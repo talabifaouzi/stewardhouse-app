@@ -36,11 +36,15 @@
 //   Session, non-ops/no gate: 403, { error: 'Not authorized' }
 //   Invalid body:             400, { error: '<reason>' }
 //   Duplicate invite_email:   409, { error: 'This address has already been invited.' }
-//   Success:                  201, the GET /api/roster element shape + createdAt:
-//     { id, displayName, type, sourceSurface, inviteEmail, pending, createdAt }
+//   Success:                  201, the GET /api/roster element shape + createdAt
+//     + emailSent (boolean — the notification-email outcome; create-succeeds-
+//     with-warning, so 201 even when emailSent:false):
+//     { id, displayName, type, sourceSurface, inviteEmail, pending, createdAt, emailSent }
 
 import { sql } from 'kysely';
 import { makeDb, requireGatedOps, rejectRankKeys, jsonError, jsonOk } from '../_lib/gate.js';
+import { createSender } from '../_lib/sender.js';
+import { buildInviteEmail } from '../_lib/inviteEmail.js';
 
 const ALLOWED_TYPES = new Set(['individual', 'staff', 'advisor', 'ops']);
 
@@ -115,10 +119,7 @@ export async function onRequestPost(context) {
     .where('id', '=', id)
     .executeTakeFirst();
 
-  // 201 Created — a new resource (the invite/person row) was minted. (The
-  // older write endpoints return 200 via jsonOk's default; this create is
-  // deliberately REST-correct.)
-  return jsonOk({
+  const element = {
     id: row.id,
     displayName: row.display_name,
     type: row.type,
@@ -126,5 +127,40 @@ export async function onRequestPost(context) {
     inviteEmail: row.invite_email,
     pending: !!row.pending,
     createdAt: row.created_at,
-  }, 201);
+  };
+
+  // Notification email (FT ruling 2026-07-15). CREATE-SUCCEEDS-WITH-WARNING:
+  // the person row is already persisted, and the send is a non-DB side effect
+  // (the FIRST in a non-auth endpoint) that CANNOT be transactional with the
+  // INSERT — an external Resend call has no rollback. So the send runs in its
+  // OWN try/catch and NEVER undoes the create or 500s the response:
+  //   - success → stamp $.invite.sentAt + $.invite.messageId on extensions
+  //     (json_set, no migration) and return emailSent:true.
+  //   - failure → NO stamp, NO throw; the row STANDS and we return
+  //     emailSent:false so the operator sees the warning (the invitee can still
+  //     self-initiate at /signin).
+  // 201 on BOTH paths — the resource was created either way.
+  let emailSent = false;
+  try {
+    const sender = createSender(context.env);
+    const { subject, html, text } = buildInviteEmail({ displayName });
+    const result = await sender.send({ to: email, subject, html, text });
+    const messageId = result && result.id ? String(result.id) : null;
+    const sentIso = new Date().toISOString();
+    await db
+      .updateTable('person')
+      .set({
+        extensions: sql`json_set(json_set(coalesce(extensions, '{}'), '$.invite.sentAt', ${sentIso}), '$.invite.messageId', ${messageId})`,
+      })
+      .where('id', '=', id)
+      .execute();
+    emailSent = true;
+  } catch (err) {
+    emailSent = false;
+  }
+
+  // 201 Created — a new resource (the invite/person row) was minted. (The
+  // older write endpoints return 200 via jsonOk's default; this create is
+  // deliberately REST-correct.) emailSent flags the notification outcome.
+  return jsonOk({ ...element, emailSent }, 201);
 }

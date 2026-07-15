@@ -27,11 +27,17 @@ const BLANK = { displayName: '', email: '', type: 'individual' };
 export default function CreateInviteModal({ isOpen, onClose, onCreate, writeError, clearWriteError }) {
   const [form, setForm] = useState(BLANK);
   const [submitting, setSubmitting] = useState(false);
+  // Outcome notice shown after a successful create. This is a WARNING ON A
+  // SUCCESS (first of its kind): the row is created either way; the notice
+  // reports whether the notification email went out. Distinct from writeError
+  // (a failed create) — quiet, token-styled.
+  const [notice, setNotice] = useState(null);
 
   useEffect(() => {
     if (isOpen) {
       setForm(BLANK);
       setSubmitting(false);
+      setNotice(null);
       clearWriteError();
     }
   }, [isOpen, clearWriteError]);
@@ -50,14 +56,28 @@ export default function CreateInviteModal({ isOpen, onClose, onCreate, writeErro
       email: form.email.trim(),
       type: form.type,
     });
+    setSubmitting(false);
     if (saved) {
-      onClose();
-    } else {
-      // onCreate already set writeError (the real server message, e.g. the
-      // 403 gate message or the 409 duplicate). Form preserved for correction.
-      setSubmitting(false);
+      // The row was created and spliced into the table by onCreate. Show the
+      // email outcome instead of closing immediately.
+      setNotice(saved.emailSent
+        ? { emailSent: true, text: 'Invite created — email sent.' }
+        : { emailSent: false, text: 'Invite created, but the email could not be sent. The invitee can still sign in at steward-house.org/signin.' });
     }
+    // On failure onCreate already set writeError (the real server message, e.g.
+    // the 403 gate message or the 409 duplicate); form preserved for correction.
   };
+
+  if (notice) {
+    return (
+      <Modal isOpen={isOpen} onClose={onClose} title="Create invite">
+        <p style={notice.emailSent ? noticeSuccessStyle : noticeWarnStyle}>{notice.text}</p>
+        <div style={footerStyle}>
+          <Button variant="primary" size="sm" onClick={onClose}>Done</Button>
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Create invite">
@@ -151,6 +171,31 @@ const formErrorStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-bronze-deep)',
   marginBottom: 'var(--sh-space-3)',
+};
+
+// Warning-on-a-success notices — quiet, token-styled, distinct from the bronze
+// writeError (which marks a FAILED create). Success reads neutral-quiet; the
+// email-failed case reads as a soft warning tint.
+const noticeSuccessStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  padding: 'var(--sh-space-3) var(--sh-space-4)',
+  background: 'var(--sh-bg-tint)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: 'var(--sh-radius-md)',
+  margin: 0,
+};
+
+const noticeWarnStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-warning-text)',
+  lineHeight: 1.6,
+  padding: 'var(--sh-space-3) var(--sh-space-4)',
+  background: 'var(--sh-warning-bg)',
+  border: '1px solid var(--sh-warning-border)',
+  borderRadius: 'var(--sh-radius-md)',
+  margin: 0,
 };
 
 const footerStyle = {

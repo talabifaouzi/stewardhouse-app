@@ -27,6 +27,12 @@
 // individuals are no longer auto-created on an unknown email — an individual
 // invitee must be pre-seeded here (or, later, through the Operations invite
 // form per Ruling 1.1) exactly like a bespoke invitee.
+//
+// NO EMAIL (FT ruling 2026-07-15): this CLI DELIBERATELY does not send an
+// invitation email — it only writes the claimable person row(s). The Operations
+// invite FORM (POST /api/invites) sends the notification email; the CLI (bulk
+// pre-seed, no request/Resend context) stays silent, and its invitees
+// self-initiate at /signin.
 
 import { readFileSync, writeFileSync, unlinkSync, existsSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
