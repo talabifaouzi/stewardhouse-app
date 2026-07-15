@@ -1,0 +1,24 @@
+-- Migration 0014 — person.created_at (invite-creation form; Operations roster
+-- "Added" column).
+--
+-- FT ruling (invite-form slice): ADD a nullable created_at column recording
+-- when a person row was created. The invite-creation form (POST /api/invites)
+-- stamps it with the create timestamp on every new invite row; the live
+-- roster ("Accounts" view) renders it as the "Added" column.
+--
+-- Nullable: the 5 existing rows (Marcus, Morgan, Reese, Diane, Faouzi-staff —
+-- seeded by migrations 0002/0005/0010/0011 before this column existed) are NOT
+-- retroactively asserted a creation date. NULL renders "—" in the roster, the
+-- same not-asserted idiom as 0012's consent_acknowledged_at. A non-null value
+-- means "person row created at this ISO 8601 instant."
+--
+-- TEXT / ISO 8601 (not INTEGER epoch): matches gift.created_at (the version
+-- axis, 0001) and the ISO instants the app layer already writes elsewhere
+-- (consent_acknowledged_at, snapshot timestamps). SELECTs render it via the
+-- roster's field-wise date formatter.
+--
+-- Local-then-remote (§6.10): applied LOCAL with this slice; the --remote apply
+-- is a SEPARATE post-bank step (documented, not silent) alongside setting
+-- $.ops.demo_gate on FT's ops row — production writes stay dark until both land.
+
+ALTER TABLE person ADD COLUMN created_at TEXT;

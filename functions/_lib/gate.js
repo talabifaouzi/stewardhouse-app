@@ -148,6 +148,39 @@ export async function requireOps(db, context) {
   return { person };
 }
 
+export async function requireGatedOps(db, context) {
+  // Ops WRITE gate (invite-creation form). The PAIR, per Q5:
+  //   requireOps       — READ  gate: type==='ops' only (the roster read; ops
+  //                      accounts are inherently FT-exclusive, so type IS the
+  //                      gate for reads).
+  //   requireGatedOps  — WRITE gate: type==='ops' AND $.ops.demo_gate===1.
+  //                      Mirrors requireGatedEnterprise / requireGatedAdvisor:
+  //                      production ops rows carry NO gate, so every write
+  //                      returns 403 until FT designates the person row by
+  //                      setting $.ops.demo_gate=true (a DELIBERATE --remote
+  //                      step of its own). The $.ops namespace lifts
+  //                      independently of the advisor/enterprise gates.
+  const resolved = await getPersonForSession(db, context);
+  if (resolved.error) return resolved;
+  const { person } = resolved;
+  if (person.type !== 'ops') {
+    return { error: 'Not authorized', status: 403 };
+  }
+  const gateRow = await db
+    .selectFrom('person')
+    .select((eb) => [
+      sql`json_extract(extensions, '$.ops.demo_gate')`.as('gate'),
+    ])
+    .where('id', '=', person.id)
+    .executeTakeFirst();
+  // SQLite json_extract of a JSON boolean returns integer 1 / 0, or NULL if the
+  // path is missing. Only integer 1 passes.
+  if (!gateRow || gateRow.gate !== 1) {
+    return { error: 'Not authorized', status: 403 };
+  }
+  return { person };
+}
+
 export function jsonError(error, status) {
   return new Response(JSON.stringify({ error }), {
     status, headers: { 'Content-Type': 'application/json' },

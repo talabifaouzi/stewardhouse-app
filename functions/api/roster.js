@@ -30,10 +30,10 @@
 //   - ORDER BY type, then display_name COLLATE NOCASE (case-insensitive).
 //   - NO pagination — deliberate at pilot scale; revisit ~200 rows.
 //
-// No `created_at` / "Added" column: the person table has no such column
-// (see migrations 0001/0004). Row-creation timestamps arrive with the
-// invite-form slice (which owns the person-row write path); the roster's
-// "Added" column is deferred until then and is not part of this response.
+// created_at ("Added" column): person.created_at was added in migration 0014
+// (invite-form slice) and is emitted here as `createdAt` (nullable). The 5
+// pre-0014 rows carry NULL → the roster renders "—"; rows minted by
+// POST /api/invites carry the ISO create instant.
 
 import { sql } from 'kysely';
 import { makeDb, requireOps, jsonError, jsonOk } from '../_lib/gate.js';
@@ -47,7 +47,7 @@ export async function onRequestGet(context) {
   const rows = await db
     .selectFrom('person')
     .select((eb) => [
-      'id', 'display_name', 'type', 'source_surface', 'invite_email',
+      'id', 'display_name', 'type', 'source_surface', 'invite_email', 'created_at',
       sql`(auth_user_id IS NULL)`.as('pending'),
     ])
     .where('soft_deleted_at', 'is', null)
@@ -66,6 +66,7 @@ export async function onRequestGet(context) {
     sourceSurface: row.source_surface,
     inviteEmail: row.invite_email,
     pending: !!row.pending,
+    createdAt: row.created_at,
   }));
 
   return jsonOk({ roster });
