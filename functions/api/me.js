@@ -10,10 +10,19 @@
 // advisor field is present ONLY for person.type='advisor'. It carries the
 // slim-scope Q11 payload the wire-surfaces slice needs: practiceProfile
 // (from person.extensions.advisor), practiceLessons, docCategories (docs
-// nested per-category), cohorts. All owner-scoped via indexed reads
-// (owner_advisor_person_id = person.id). Q7 gate holds: client / session /
-// note / cohort_member are NOT included here — they enter via separate
-// endpoints when the gated write path enables.
+// nested per-category), cohorts, AND clients (with nested clientSessions +
+// clientNotes). All owner-scoped via indexed reads
+// (owner_advisor_person_id = person.id).
+//
+// CORRECTED 2026-07-16 (P-0 manifest reconciliation): this docblock used to
+// read "Q7 gate holds: client / session / note / cohort_member are NOT
+// included here — they enter via separate endpoints when the gated write
+// path enables." That statement went stale when the advisor write arc landed
+// (2026-07-02 → 07-07) and is FALSE: the clients block below assembles
+// client + client_session + client_note (see the clientRows read and the
+// `clients` key on the advisor object), and cohort_member is read into
+// memberIds on every cohort. Corrected in place per the P-0 slice; comment
+// only, no behavior change.
 //
 // person: null is defensive — the (c) hook always creates or claims a person row on
 // sign-in, so this shouldn't happen in practice, but callers must not assume person
