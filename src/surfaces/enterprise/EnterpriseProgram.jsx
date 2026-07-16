@@ -3,6 +3,7 @@ import { INST_PROFILES } from '../../data/enterpriseFixtures.js';
 import { useAthletes } from '../../contexts/AthletesContext.jsx';
 import { useWorkshops } from '../../contexts/WorkshopsContext.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { Tag } from '../../components/Tag.jsx';
@@ -41,6 +42,7 @@ const endowmentTag = (label) => (
 );
 
 export default function EnterpriseProgram() {
+  const eyebrow = useInstitutionEyebrow();
   const { athletes } = useAthletes();
   // Workshops come from the provider now (was a direct fixture import). Demo
   // tree: the provider's fixture default (byte-identical to the old import).
@@ -94,7 +96,7 @@ export default function EnterpriseProgram() {
 
   return (
     <main style={mainStyle}>
-      <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+      {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Program</h1>
       <p style={subtitleStyle}>
         {athletes.length} athletes · {termLabel} · {rangeLabel}

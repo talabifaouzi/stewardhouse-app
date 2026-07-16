@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { CURRENT_USER } from '../../data/enterpriseFixtures.js';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 import { useCompliance } from '../../contexts/ComplianceContext.jsx';
 import { Card } from '../../components/Card.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
@@ -12,6 +13,7 @@ import RecordAuditModal from './RecordAuditModal.jsx';
 import { formatDateTime } from '../../utils/formatDate.js';
 
 export default function EnterpriseCompliance() {
+  const eyebrow = useInstitutionEyebrow();
   // Exclusions + audit come from the provider now (E-Write-4). Demo tree: the
   // provider's fixture defaults. Auth tree: the /api/me persisted rows.
   const {
@@ -71,7 +73,7 @@ export default function EnterpriseCompliance() {
 
   return (
     <main style={mainStyle}>
-      <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+      {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Compliance</h1>
       <p style={subtitleStyle}>
         The department surfaces compliance-relevant information to athletes. Final filings and approvals remain with the school's compliance officer; the platform does not adjudicate or evaluate.

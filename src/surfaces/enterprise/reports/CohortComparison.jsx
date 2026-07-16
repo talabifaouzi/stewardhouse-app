@@ -9,6 +9,7 @@ import useMediaQuery, { MOBILE_QUERY } from '../../../hooks/useMediaQuery.js';
 import { useBasePath, useOptionalAppIdentity } from '../../../contexts/AppIdentityContext.jsx';
 import { useSnapshots } from '../../../contexts/SnapshotsContext.jsx';
 import { useAthletes } from '../../../contexts/AthletesContext.jsx';
+import { useInstitutionEyebrow } from '../shared/useInstitutionEyebrow.js';
 import RecordSnapshotModal from '../RecordSnapshotModal.jsx';
 
 // Cohort comparison (E-Write-5 rewire). Snapshots + roster come from providers
@@ -75,6 +76,7 @@ const SPORT_COLUMNS = [
 
 export default function CohortComparison() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
+  const eyebrow = useInstitutionEyebrow();
   const isMobile = useMediaQuery(MOBILE_QUERY);
   const appIdentity = useOptionalAppIdentity();
   const isAuthenticated = !!appIdentity;
@@ -177,7 +179,7 @@ export default function CohortComparison() {
     return (
       <main style={mainStyle}>
         <BackLink to={`${basePath}/reports`} label="Reports" />
-        <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+        {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
         <h1 style={titleStyle}>Cohort comparison</h1>
         {managementBlock}
         <Card tint>
@@ -200,7 +202,7 @@ export default function CohortComparison() {
   return (
     <main style={mainStyle}>
       <BackLink to={`${basePath}/reports`} label="Reports" />
-      <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+      {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Cohort comparison</h1>
       <p style={subtitleStyle}>
         {isComparison

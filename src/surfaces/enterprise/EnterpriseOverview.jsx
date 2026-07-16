@@ -11,10 +11,12 @@ import DailyBrief from '../../components/DailyBrief.jsx';
 import { useComms } from '../../contexts/CommsContext.jsx';
 import { useAthletes } from '../../contexts/AthletesContext.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 import { computeStats, engagementBounds } from './shared/enterpriseStats.js';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 
 export default function EnterpriseOverview() {
+  const eyebrow = useInstitutionEyebrow();
   const { openCompose } = useComms();
   const { athletes } = useAthletes();
   // Engagement chart + daily brief have no provider (no D1 timeseries yet);
@@ -60,7 +62,7 @@ export default function EnterpriseOverview() {
 
   return (
     <main style={mainStyle}>
-      <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+      {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Program overview</h1>
       <p style={subtitleStyle}>
         Athletes participate as individuals; the department supports structurally — not advisorially.
@@ -93,16 +95,19 @@ export default function EnterpriseOverview() {
         GPS completed by {gpsD} of {tot} athletes ({gpsRate}%). Total gifts: {tGi} across {athletesWithGifts} athletes.
       </p>
 
-      {/* Engagement panel. Auth-empty: no engagement timeseries exists until
-          athletes participate — a designed empty panel, not a zero-height
-          chart with poisoned aria bounds. Fixture chart on the demo tree. */}
+      {/* Engagement panel. UNSOURCED, not merely empty: no engagement-tracking
+          table exists at all (migration 0013 ruled avg_weekly_engagement "not
+          tracked" for the same reason), so this does NOT arrive when athletes
+          join. P-1 corrects the prior copy ("appears here once athletes join
+          the program"), which promised a capability the platform has no source
+          for. Fixture chart on the demo tree. */}
       {isAuthenticated ? (
         <Card>
           <div style={engagementHeaderStyle}>
             <SectionLabel>Weekly active engagement</SectionLabel>
           </div>
           <p style={emptyStateStyle}>
-            Weekly engagement appears here once athletes join the program.
+            Weekly engagement tracking is not yet available.
           </p>
         </Card>
       ) : (

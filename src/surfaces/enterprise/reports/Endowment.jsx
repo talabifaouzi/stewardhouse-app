@@ -6,6 +6,7 @@ import BackLink from '../../../components/BackLink.jsx';
 import StatTile from '../../../components/StatTile.jsx';
 import SegmentedControl from '../../../components/SegmentedControl.jsx';
 import { endowmentSnapshot } from '../../../data/enterpriseFixtures.js';
+import { useInstitutionEyebrow } from '../shared/useInstitutionEyebrow.js';
 import { useBasePath, useOptionalAppIdentity } from '../../../contexts/AppIdentityContext.jsx';
 import { formatDate } from '../../../utils/formatDate.js';
 
@@ -14,6 +15,7 @@ const fmtPct = (n) => `${n.toFixed(1)}%`;
 
 export default function Endowment() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
+  const eyebrow = useInstitutionEyebrow();
   const appIdentity = useOptionalAppIdentity();
   // Auth tree: real endowment from /api/me (endowmentAnnual / endowmentCurrent
   // off the institution row). The two dependent display figures derive from
@@ -51,7 +53,7 @@ export default function Endowment() {
   return (
     <main style={mainStyle}>
       <BackLink to={`${basePath}/reports`} label="Reports" />
-      <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+      {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Endowment</h1>
       <p style={subtitleStyle}>
         Current snapshot and forward modeling. Structural details subject to legal review.

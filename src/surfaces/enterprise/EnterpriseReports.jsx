@@ -1,5 +1,6 @@
 import { Routes, Route, Link } from 'react-router-dom';
 import { Card } from '../../components/Card.jsx';
+import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 
 import ProgramSummary from './reports/ProgramSummary.jsx';
 import CohortComparison from './reports/CohortComparison.jsx';
@@ -12,7 +13,11 @@ const REPORT_CARDS = [
   { slug: 'cohort',    title: 'Cohort comparison',       desc: 'Year-over-year and sport-level comparisons.' },
   { slug: 'readiness', title: 'Philanthropic readiness', desc: 'Per-athlete structural progress against program gates.' },
   { slug: 'program-outputs', title: 'Program outputs',   desc: 'Activity summary: dollars moved, certifications, gifts. Outputs reporting, not return calculation.' },
-  { slug: 'endowment', title: 'Endowment',               desc: '$8.5K/yr endowment snapshot and projections.' },
+  // P-1: the "$8.5K/yr" figure here was the FIXTURE endowment, shown to every
+  // institution regardless of their own. Card descriptions are static config —
+  // generic copy is correct on both trees; the real figure lives on the
+  // Endowment page itself (identity-backed).
+  { slug: 'endowment', title: 'Endowment',               desc: 'Endowment snapshot and projections.' },
 ];
 
 export default function EnterpriseReports() {
@@ -29,9 +34,10 @@ export default function EnterpriseReports() {
 }
 
 function ReportsHub() {
+  const eyebrow = useInstitutionEyebrow();
   return (
     <main style={mainStyle}>
-      <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+      {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Reports</h1>
       <div style={gridStyle}>
         {REPORT_CARDS.map((card) => (

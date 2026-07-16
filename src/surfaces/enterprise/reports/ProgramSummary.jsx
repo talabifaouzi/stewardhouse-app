@@ -1,10 +1,14 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
+// DEMO-ONLY fixture imports: the weekly-engagement series has NO live source
+// (no engagement-tracking table exists — see migration 0013, which ruled
+// avg_weekly_engagement "not tracked" for the same reason). These three feed
+// the demo-tree chart branch ONLY; the authenticated tree renders the
+// "Not tracked" panel instead and never reads them. The roster and workshop
+// imports are gone — those come from providers now.
 import {
-  athletes,
   engagementTimeline,
   engagementWeekDates,
   engagedAthletesByWeek,
-  workshops,
 } from '../../../data/enterpriseFixtures.js';
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
@@ -15,12 +19,19 @@ import WorkshopDetail from '../../../components/WorkshopDetail.jsx';
 import FilteredAthletesModal from '../../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../../components/AthleteProfile.jsx';
 import { useComms } from '../../../contexts/CommsContext.jsx';
-import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
+import { useBasePath, useOptionalAppIdentity } from '../../../contexts/AppIdentityContext.jsx';
 import { useAthletes } from '../../../contexts/AthletesContext.jsx';
+import { useWorkshops } from '../../../contexts/WorkshopsContext.jsx';
+import { useInstitutionEyebrow } from '../shared/useInstitutionEyebrow.js';
 import { formatDate } from '../../../utils/formatDate.js';
 import { computeStats, engagementBounds } from '../shared/enterpriseStats.js';
 
-const athletesById = Object.fromEntries(athletes.map((a) => [a.id, a]));
+// P-1 isolation. Cohort snapshot + status breakdown were already live
+// (computeStats over the provider roster). What was NOT: athletesById and the
+// workshop list were module-level consts over the FIXTURE, so a real operator
+// saw five Cooper State workshops and fixture attendee names. Both now come
+// from providers. The engagement chart is UNSOURCED (Idiom B) — demo keeps the
+// fixture chart, auth gets the "Not tracked" panel.
 
 function capitalize(s) {
   return s ? s.charAt(0).toUpperCase() + s.slice(1) : '';
@@ -28,21 +39,30 @@ function capitalize(s) {
 
 export default function ProgramSummary() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
+  const eyebrow = useInstitutionEyebrow();
+  const appIdentity = useOptionalAppIdentity();
+  const isAuthenticated = !!appIdentity;
   const { openCompose } = useComms();
   const { athletes } = useAthletes();
+  const { workshops } = useWorkshops();
   const [activeWorkshop, setActiveWorkshop] = useState(null);
   const [activeWeek, setActiveWeek] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
 
-  // Auth tree: empty roster (no enterprise athlete write path yet) → a single
-  // honest page-level line, not a page of zeros. Demo tree renders the full
-  // fixture report below. Module-level fixture derivations remain demo-scoped;
-  // they move to provider-backed computation when the roster-add path lands.
+  // Attendee-name lookup for WorkshopDetail, over the LIVE roster. Demo tree
+  // reproduces the pre-P-1 map via the provider's fixture default.
+  const athletesById = useMemo(
+    () => Object.fromEntries(athletes.map((a) => [a.id, a])),
+    [athletes],
+  );
+
+  // Empty roster → honest page-level line (unchanged). Passing this guard no
+  // longer reveals fixture data.
   if (athletes.length === 0) {
     return (
       <main style={mainStyle}>
         <BackLink to={`${basePath}/reports`} label="Reports" />
-        <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+        {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
         <h1 style={titleStyle}>Program summary</h1>
         <p style={emptyLineStyle}>No program data yet.</p>
       </main>
@@ -53,6 +73,8 @@ export default function ProgramSummary() {
   const { min: engagementMin, max: engagementMax } = engagementBounds(engagementTimeline);
   const latestEngagement = engagementTimeline[engagementTimeline.length - 1];
 
+  // Bar-click membership is demo-only: engagedAthletesByWeek is a fixture id
+  // list, and the chart that triggers this never renders on the auth tree.
   const weekAthletes = activeWeek !== null
     ? athletes.filter((a) => (engagedAthletesByWeek[activeWeek] || []).includes(a.id))
     : [];
@@ -63,7 +85,7 @@ export default function ProgramSummary() {
   return (
     <main style={mainStyle}>
       <BackLink to={`${basePath}/reports`} label="Reports" />
-      <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+      {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Program summary</h1>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-5)' }}>
@@ -86,36 +108,54 @@ export default function ProgramSummary() {
           </p>
         </Card>
 
-        {/* Engagement */}
-        <Card>
-          <div style={engagementHeaderStyle}>
-            <SectionLabel>Weekly active engagement</SectionLabel>
-            <p style={engagementRangeStyle}>Last 12 weeks</p>
-          </div>
-          <BarChart
-            data={engagementTimeline}
-            labels={engagementWeekDates.map((d) => formatDate(d, { omitYear: true }))}
-            onBarClick={(_, i) => setActiveWeek(i)}
-            ariaLabel={`Weekly engagement rate over 12 weeks ending ${formatDate(engagementWeekDates[engagementWeekDates.length - 1])}, ranging from ${engagementMin}% to ${engagementMax}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
-          />
-          <p style={engagementCaptionStyle}>
-            Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.
-          </p>
-        </Card>
+        {/* Engagement — UNSOURCED (Idiom B). No engagement-tracking table
+            exists (0013), so the auth tree gets "Not tracked", never a chart of
+            zeros. Demo renders the fixture chart unchanged. */}
+        {isAuthenticated ? (
+          <Card>
+            <div style={engagementHeaderStyle}>
+              <SectionLabel>Weekly active engagement</SectionLabel>
+            </div>
+            <p style={notTrackedStyle}>
+              Not tracked. Weekly engagement tracking is not yet available.
+            </p>
+          </Card>
+        ) : (
+          <Card>
+            <div style={engagementHeaderStyle}>
+              <SectionLabel>Weekly active engagement</SectionLabel>
+              <p style={engagementRangeStyle}>Last 12 weeks</p>
+            </div>
+            <BarChart
+              data={engagementTimeline}
+              labels={engagementWeekDates.map((d) => formatDate(d, { omitYear: true }))}
+              onBarClick={(_, i) => setActiveWeek(i)}
+              ariaLabel={`Weekly engagement rate over 12 weeks ending ${formatDate(engagementWeekDates[engagementWeekDates.length - 1])}, ranging from ${engagementMin}% to ${engagementMax}%. Current week: ${engagementTimeline[engagementTimeline.length - 1]}%. Click a bar to see engaged athletes for that week.`}
+            />
+            <p style={engagementCaptionStyle}>
+              Current week: {latestEngagement}% active — up from {engagementTimeline[0]}% in week 1.
+            </p>
+          </Card>
+        )}
 
-        {/* Workshops to date */}
+        {/* Workshops to date — live (provider). Empty-state mirrors
+            EnterpriseProgram's "No workshops scheduled yet." idiom. */}
         <Card>
           <SectionLabel>Workshops to date</SectionLabel>
-          <ul style={listResetStyle}>
-            {workshops.map((w, i) => {
-              const isLast = i === workshops.length - 1;
-              return (
-                <li key={w.id}>
-                  <WorkshopRow workshop={w} isLast={isLast} onClick={() => setActiveWorkshop(w)} />
-                </li>
-              );
-            })}
-          </ul>
+          {workshops.length === 0 ? (
+            <p style={emptyLineStyle}>No workshops scheduled yet.</p>
+          ) : (
+            <ul style={listResetStyle}>
+              {workshops.map((w, i) => {
+                const isLast = i === workshops.length - 1;
+                return (
+                  <li key={w.id}>
+                    <WorkshopRow workshop={w} isLast={isLast} onClick={() => setActiveWorkshop(w)} />
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </Card>
       </div>
 
@@ -179,12 +219,23 @@ const mainStyle = {
   padding: 'var(--sh-space-10) clamp(var(--sh-space-3), 4vw, var(--sh-space-8)) var(--sh-space-16)',
 };
 
-// Quiet page-level empty line (auth tree, no program data yet).
+// Quiet page-level empty line (auth tree, no program data yet). Also carries
+// the workshops empty-state inside the card.
 const emptyLineStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-text-secondary)',
   lineHeight: 1.6,
   marginTop: 'var(--sh-space-4)',
+};
+
+// "Not tracked" body copy for the unsourced engagement section (auth tree).
+// Secondary, not muted — a substantive statement about what the platform
+// measures, not an incidental caption. Existing tokens only.
+const notTrackedStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  marginTop: 'var(--sh-space-3)',
 };
 
 const eyebrowStyle = {

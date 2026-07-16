@@ -1,10 +1,24 @@
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '../../../components/Card.jsx';
 import { SectionLabel } from '../../../components/SectionLabel.jsx';
 import BackLink from '../../../components/BackLink.jsx';
 import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 import { useAthletes } from '../../../contexts/AthletesContext.jsx';
-import { athletes, exclusions } from '../../../data/enterpriseFixtures.js';
+import { useCompliance } from '../../../contexts/ComplianceContext.jsx';
+import { useInstitutionEyebrow } from '../shared/useInstitutionEyebrow.js';
+
+// P-1 isolation: this page is FULLY live-backable — every figure derives from
+// the roster (useAthletes) and the exclusion list (useCompliance), both of
+// which fall back to fixtures on the demo tree via their providers' defaults.
+// No fixture import remains, and no section is unsourced.
+//
+// Before P-1 the stage buckets + totals were module-level consts over the
+// FIXTURE athletes, guarded only by `athletes.length === 0` — a roster-emptiness
+// proxy for "demo tree" that expired the moment the roster-add write path landed
+// (E-Write-1). Past that guard a real operator saw FIXTURE athlete NAMES in the
+// stage chips (a §7 names-verbatim violation). The derivations now live inside
+// the component over provider data, so the proxy is gone.
 
 // Stage assignment: each athlete sits at their highest-reached structural
 // milestone. Not a score — a checklist of progression steps.
@@ -44,25 +58,30 @@ const STAGES = [
   },
 ];
 
-const stageCounts = STAGES.map((s) => ({
-  ...s,
-  athletes: athletes.filter((a) => philanthropicStage(a) === s.n),
-}));
-
-const totalAthletes = athletes.length;
-
 export default function PhilanthropicReadiness() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
+  const eyebrow = useInstitutionEyebrow();
   const { athletes } = useAthletes();
+  const { exclusions } = useCompliance();
 
-  // Auth tree: empty roster → honest page-level line. Demo tree renders the
-  // full fixture report below (module-level stage derivations remain
-  // demo-scoped until the enterprise athlete write path lands).
+  // Stage buckets over the LIVE roster (provider). Demo tree: the provider's
+  // fixture default reproduces the pre-P-1 buckets exactly.
+  const stageCounts = useMemo(
+    () => STAGES.map((s) => ({
+      ...s,
+      athletes: athletes.filter((a) => philanthropicStage(a) === s.n),
+    })),
+    [athletes],
+  );
+  const totalAthletes = athletes.length;
+
+  // Empty roster → honest page-level line (unchanged). This guard is still
+  // correct; what changed is that passing it no longer reveals fixture data.
   if (athletes.length === 0) {
     return (
       <main style={mainStyle}>
         <BackLink to={`${basePath}/reports`} label="Reports" />
-        <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+        {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
         <h1 style={titleStyle}>Philanthropic readiness</h1>
         <p style={emptyLineStyle}>No program data yet.</p>
       </main>
@@ -72,7 +91,7 @@ export default function PhilanthropicReadiness() {
   return (
     <main style={mainStyle}>
       <BackLink to={`${basePath}/reports`} label="Reports" />
-      <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+      {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Philanthropic readiness</h1>
       <p style={subtitleStyle}>
         Cohort progression through structural milestones. Stage-based view of where athletes are in their giving journey — outputs reporting, not numeric readiness score.

@@ -8,6 +8,7 @@ import { Button } from '../../components/Button.jsx';
 import { useComms } from '../../contexts/CommsContext.jsx';
 import { useAthletes } from '../../contexts/AthletesContext.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 import { formatDate } from '../../utils/formatDate.js';
 import { computeStats } from './shared/enterpriseStats.js';
 import { statusFor, STATUS_PRIORITY, accessLabel } from './shared/athleteStatus.js';
@@ -40,6 +41,7 @@ const AUTH_ROSTER_COLUMNS = [
 ];
 
 export default function EnterpriseRoster() {
+  const eyebrow = useInstitutionEyebrow();
   const { openCompose } = useComms();
   const { athletes, add, remove, writeError, clearWriteError } = useAthletes();
   // Roster-add affordance is authenticated-only — the demo tree renders
@@ -67,7 +69,7 @@ export default function EnterpriseRoster() {
 
   return (
     <main style={mainStyle}>
-      <p style={eyebrowStyle}>Athletic Department · Cooper State University</p>
+      {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Roster</h1>
 
       {/* Stat grid — each tile drills into a filtered athlete list */}
