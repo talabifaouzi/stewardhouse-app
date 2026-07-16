@@ -16,3 +16,17 @@ export const STATUS_PRIORITY = {
   'Outreach paused': 4,
   'Invited': 5,
 };
+
+// Consent/claim state for the roster Access column + profile line (C-3b). Four
+// states, distinct from enrollment status: an athlete first CLAIMS their
+// account (person_id bind), then CHOOSES how it's managed (management_mode).
+// Deny-by-default: a claimed athlete who hasn't chosen yet reads "Pending
+// choice". LIVE-only — `claimed` is a boolean on authenticated roster elements
+// (toAthleteElement); demo fixtures don't carry it, so consumers render this
+// only on the authenticated tree.
+export function accessLabel(a) {
+  if (!a.claimed) return 'Unclaimed';
+  if (a.managementMode === 'self') return 'Self-managed';
+  if (a.managementMode === 'delegated') return 'Delegated';
+  return 'Pending choice';
+}

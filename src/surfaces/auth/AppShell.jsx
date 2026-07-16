@@ -8,7 +8,7 @@ import { AppIdentityProvider } from '../../contexts/AppIdentityContext.jsx';
 // surface (e.g. /app/individual) doesn't require a second fetch, and Chrome
 // can read real identity instead of a hardcoded fixture.
 //
-// identity shape: { type, displayName, email, intake, gifts, scenarios, advisor?, enterprise? } | null
+// identity shape: { type, displayName, email, intake, gifts, scenarios, athlete?, advisor?, enterprise? } | null
 // — intake is the user's persisted intake answers from
 // person.extensions.individual (null for fresh users); gifts and scenarios
 // are the arrays of the user's gift records and saved GivingModeler
@@ -43,6 +43,21 @@ export default function AppShell() {
     });
   }, []);
 
+  // Athlete-consent write-through (C-3b): POST /api/athlete-consent succeeds,
+  // the interstitial passes the chosen mode here, and IndividualSurface's
+  // consent gate (identity.athlete.managementMode === null) closes without a
+  // refetch — the surface renders. Mirrors updatePracticeProfile. No-op when
+  // the identity carries no athlete block (ordinary individuals never reach it).
+  const updateAthleteConsent = useCallback((mode) => {
+    setIdentity((prev) => {
+      if (!prev || !prev.athlete) return prev;
+      return {
+        ...prev,
+        athlete: { ...prev.athlete, managementMode: mode },
+      };
+    });
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     fetch('/api/me', { credentials: 'include' })
@@ -57,6 +72,10 @@ export default function AppShell() {
             intake: data.person?.intake ?? null,
             gifts: data.person?.gifts ?? [],
             scenarios: data.person?.scenarios ?? [],
+            // athlete is present ONLY for an individual who is also a linked
+            // athlete (C-3a /api/me emission); null for ordinary individuals.
+            // Drives IndividualSurface's one-time consent interstitial (C-3b).
+            athlete: data.person?.athlete ?? null,
             advisor: data.person?.advisor ?? null,
             enterprise: data.person?.enterprise ?? null,
           });
@@ -116,7 +135,12 @@ export default function AppShell() {
   }
 
   return (
-    <AppIdentityProvider status={status} identity={identity} updatePracticeProfile={updatePracticeProfile}>
+    <AppIdentityProvider
+      status={status}
+      identity={identity}
+      updatePracticeProfile={updatePracticeProfile}
+      updateAthleteConsent={updateAthleteConsent}
+    >
       <Outlet />
     </AppIdentityProvider>
   );

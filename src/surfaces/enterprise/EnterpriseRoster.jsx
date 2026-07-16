@@ -10,7 +10,7 @@ import { useAthletes } from '../../contexts/AthletesContext.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { formatDate } from '../../utils/formatDate.js';
 import { computeStats } from './shared/enterpriseStats.js';
-import { statusFor, STATUS_PRIORITY } from './shared/athleteStatus.js';
+import { statusFor, STATUS_PRIORITY, accessLabel } from './shared/athleteStatus.js';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 import AddAthleteModal from './AddAthleteModal.jsx';
 
@@ -24,6 +24,19 @@ const ROSTER_COLUMNS = [
   { key: 'gifts',      label: 'Gifts',       render: (a) => a.gifts },
   { key: 'lastActive', label: 'Last Active', render: (a) => a.lastActive },
   { key: 'certified',  label: 'Certified',   render: (a) => (a.certified ? formatDate(a.certDate) : '—') },
+];
+
+// Access column (C-3b) — claim/consent state, plain text. AUTHENTICATED-ONLY:
+// `claimed` is a live boolean present only on /api/me roster elements; the demo
+// fixtures don't carry it, so surfacing this on the demo tree would falsely
+// read every demonstrative athlete as "Unclaimed" (a false live-signal, against
+// the demonstrative/LIVE honesty boundary). Inserted after Status on the auth
+// tree only; the demo tree renders ROSTER_COLUMNS byte-identical.
+const ACCESS_COLUMN = { key: 'access', label: 'Access', render: (a) => accessLabel(a) };
+const AUTH_ROSTER_COLUMNS = [
+  ...ROSTER_COLUMNS.slice(0, 4),   // through Status
+  ACCESS_COLUMN,
+  ...ROSTER_COLUMNS.slice(4),
 ];
 
 export default function EnterpriseRoster() {
@@ -42,6 +55,11 @@ export default function EnterpriseRoster() {
     if (p !== 0) return p;
     return a.name.localeCompare(b.name);
   }), [athletes]);
+
+  // Access column is authenticated-only (see AUTH_ROSTER_COLUMNS docblock);
+  // the demo tree keeps the 9-column set byte-identical.
+  const rosterColumns = isAuthenticated ? AUTH_ROSTER_COLUMNS : ROSTER_COLUMNS;
+  const rosterMinWidth = isAuthenticated ? '960px' : '880px';
 
   const config = activeCategory ? CATEGORY_CONFIG[activeCategory] : null;
   const filteredAthletes = config ? athletes.filter(config.filter) : [];
@@ -74,10 +92,10 @@ export default function EnterpriseRoster() {
       <Card>
         {sortedAthletes.length > 0 ? (
           <DataTable
-            columns={ROSTER_COLUMNS}
+            columns={rosterColumns}
             data={sortedAthletes}
             rowKey={(a) => a.id}
-            minWidth="880px"
+            minWidth={rosterMinWidth}
             onRowClick={setActiveAthlete}
             rowAriaLabel={(a) => `View ${a.name}'s profile`}
           />

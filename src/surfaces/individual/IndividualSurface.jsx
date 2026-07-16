@@ -2,6 +2,7 @@ import { Routes, Route, useLocation, Navigate, useNavigate } from 'react-router-
 import { useState } from 'react';
 import Chrome from '../../components/Chrome.jsx';
 import { Card } from '../../components/Card.jsx';
+import { Button } from '../../components/Button.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
@@ -41,6 +42,30 @@ function getNavItems(basePath) {
 }
 
 export default function IndividualSurface() {
+  const appIdentity = useOptionalAppIdentity();
+  const [dismissed, setDismissed] = useState(false);
+
+  // Consent interstitial (C-3b). A signed-in individual who is ALSO a linked
+  // athlete carries identity.athlete; while their management_mode is still
+  // unset (deny-by-default), they choose self- vs delegated-management BEFORE
+  // anything else on the surface renders — before the onboarding redirect and
+  // before the dashboard. The CONDITION gates it, not the route, so it fires
+  // regardless of where they land. Ordinary individuals (no identity.athlete)
+  // and the public demo tree (no AppIdentityProvider → appIdentity null) never
+  // reach it. "Decide later" sets a local flag for THIS mount only and never
+  // writes; on the next load management_mode is still null so the card returns.
+  const athlete = appIdentity?.status === 'ready' ? appIdentity.identity?.athlete : null;
+  const needsConsentChoice = !!athlete && athlete.managementMode === null;
+  if (needsConsentChoice && !dismissed) {
+    return (
+      <ConsentInterstitial
+        institutionName={athlete.institutionName}
+        onChoose={(mode) => appIdentity?.updateAthleteConsent?.(mode)}
+        onDismiss={() => setDismissed(true)}
+      />
+    );
+  }
+
   return (
     <Routes>
       {/* Onboarding flow — chrome-less, full-screen */}
@@ -55,6 +80,135 @@ export default function IndividualSurface() {
     </Routes>
   );
 }
+
+// One-time account-ownership choice for a linked athlete (C-3b). Framed as
+// ownership, never "grant staff access": the account belongs to the athlete
+// either way. Two writes to POST /api/athlete-consent ('self' | 'delegated');
+// dismissal writes nothing (deny-by-default holds). On success the parent's
+// updateAthleteConsent closes the gate and the surface renders; on failure the
+// server error surfaces in-card (writeError idiom) and dismissal still works.
+function ConsentInterstitial({ institutionName, onChoose, onDismiss }) {
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(null);
+
+  const choose = async (mode) => {
+    if (submitting) return;
+    setSubmitting(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/athlete-consent', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mode }),
+      });
+      if (!res.ok) {
+        let msg = 'Something went wrong. Please try again.';
+        try { const b = await res.json(); if (b && b.error) msg = b.error; } catch { /* keep default */ }
+        setError(msg);
+        setSubmitting(false);
+        return;
+      }
+      onChoose(mode);   // parent closes the gate → surface renders; component unmounts
+    } catch {
+      setError('Something went wrong. Please try again.');
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div style={interstitialWrapStyle}>
+      <Card padding="lg" style={interstitialCardStyle}>
+        <h1 style={interstitialHeadingStyle}>Your account, your choice</h1>
+        <p style={interstitialBodyStyle}>
+          You're enrolled in {institutionName}'s program. You can manage your
+          StewardHouse account yourself, or have your program staff help manage
+          it for you. Either way, this account and everything in it belongs to
+          you — and you can change this anytime.
+        </p>
+        {error && <p style={interstitialErrorStyle}>{error}</p>}
+        <div style={interstitialActionsStyle}>
+          <Button variant="primary" size="lg" onClick={() => choose('self')} disabled={submitting} style={fullWidthBtnStyle}>
+            I'll manage it myself
+          </Button>
+          <Button variant="secondary" size="lg" onClick={() => choose('delegated')} disabled={submitting} style={fullWidthBtnStyle}>
+            Let program staff manage it
+          </Button>
+        </div>
+        <button type="button" onClick={onDismiss} disabled={submitting} style={interstitialDismissStyle}>
+          Decide later
+        </button>
+      </Card>
+    </div>
+  );
+}
+
+// Consent interstitial styles — full-height centered, chrome-less (mirrors the
+// onboarding screens). Fluid: the card is max-width-capped and shrinks to the
+// viewport (width:100% + max-width, no fixed px width), padding scales via
+// tokens, and the action buttons stack full-width so nothing overflows at phone
+// width. No fixed widths, no horizontal scroll.
+const interstitialWrapStyle = {
+  minHeight: '100vh',
+  background: 'var(--sh-bg)',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: 'var(--sh-space-6) var(--sh-space-4)',
+};
+
+const interstitialCardStyle = {
+  width: '100%',
+  maxWidth: '480px',
+};
+
+const interstitialHeadingStyle = {
+  fontFamily: 'var(--sh-font-serif)',
+  fontSize: 'var(--sh-text-xl)',
+  color: 'var(--sh-text-primary)',
+  fontWeight: 400,
+  marginBottom: 'var(--sh-space-3)',
+  lineHeight: 1.3,
+};
+
+const interstitialBodyStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  lineHeight: 1.65,
+  marginBottom: 'var(--sh-space-5)',
+};
+
+const interstitialErrorStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-bronze-deep)',
+  lineHeight: 1.5,
+  marginBottom: 'var(--sh-space-4)',
+};
+
+const interstitialActionsStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 'var(--sh-space-2)',
+  marginBottom: 'var(--sh-space-4)',
+};
+
+const fullWidthBtnStyle = {
+  width: '100%',
+};
+
+const interstitialDismissStyle = {
+  display: 'block',
+  margin: '0 auto',
+  background: 'transparent',
+  border: 'none',
+  color: 'var(--sh-text-muted)',
+  fontSize: 'var(--sh-text-xs)',
+  fontStyle: 'italic',
+  textDecoration: 'underline',
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+  padding: 0,
+};
 
 function DashboardLayout() {
   const location = useLocation();

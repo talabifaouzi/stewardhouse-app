@@ -4,7 +4,7 @@ import { SectionLabel } from './SectionLabel.jsx';
 import { Modal } from './Modal.jsx';
 import { Button } from './Button.jsx';
 import MessageHistoryCard from './MessageHistoryCard.jsx';
-import { statusFor } from '../surfaces/enterprise/shared/athleteStatus.js';
+import { statusFor, accessLabel } from '../surfaces/enterprise/shared/athleteStatus.js';
 import { useComms } from '../contexts/CommsContext.jsx';
 import { athleteReflections } from '../data/enterpriseFixtures.js';
 import { formatDate } from '../utils/formatDate.js';
@@ -64,6 +64,13 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
         <p style={subtitleStyle}>{[athlete.sport, athlete.year, athlete.position].filter(Boolean).join(' · ')}</p>
         <span style={statusBadgeStyle}>{statusFor(athlete)}</span>
       </div>
+
+      {/* Access line (C-3b) — claim/consent state, quiet. LIVE-only: `claimed`
+          is a boolean on authenticated roster elements; demo fixtures omit it,
+          so this renders on the authenticated tree only (no false signal). */}
+      {typeof athlete.claimed === 'boolean' && (
+        <p style={accessLineStyle}>Access · {accessLabel(athlete)}</p>
+      )}
 
       <div style={sectionsStyle}>
         {/* Contact */}
@@ -231,6 +238,16 @@ const statusBadgeStyle = {
   color: 'var(--sh-text-secondary)',
   letterSpacing: '0.04em',
   whiteSpace: 'nowrap',
+};
+
+// Quiet access/consent line under the header (C-3b), muted so it reads as
+// metadata, not a badge (no color-coding this slice).
+const accessLineStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  letterSpacing: '0.04em',
+  marginTop: 'calc(-1 * var(--sh-space-3))',
+  marginBottom: 'var(--sh-space-5)',
 };
 
 const sectionsStyle = {

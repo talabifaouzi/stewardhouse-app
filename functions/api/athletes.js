@@ -74,6 +74,7 @@ export const ATHLETE_ELEMENT_COLUMNS = [
   'gps_completed_at', 'lessons_count', 'gifts_count', 'last_active_at',
   'join_date', 'certified', 'cert_at', 'enrollment_status', 'notes',
   'management_mode',                       // C-3a: athlete-set consent state (staff Access column, C-3b)
+  'person_id',                             // C-3b: claim state — emitted as the boolean `claimed`, NEVER raw
 ];
 
 export function toAthleteElement(row) {
@@ -97,6 +98,7 @@ export function toAthleteElement(row) {
     status: STATUS_MAP[row.enrollment_status] ?? 'active',
     notes: row.notes,
     managementMode: row.management_mode,   // C-3a: null (unclaimed/unset) | 'self' | 'delegated'
+    claimed: !!row.person_id,              // C-3b: claim state distinct from mode; boolean only, raw person_id never emitted
     // athlete_activity is a separate table (empty until the activity-write
     // slice). Always present so AthleteProfile's athlete.activity.map/.filter
     // never touches undefined.

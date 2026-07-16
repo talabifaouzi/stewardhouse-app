@@ -7,7 +7,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 // Chrome (for display), and any future type-specific surface.
 //
 // status: 'loading' | 'ready' | 'unauthenticated'
-// identity: { type, displayName, email, intake, gifts, scenarios, advisor?, enterprise? } | null — only non-null when status is 'ready'; advisor sub-block present only when type='advisor', enterprise sub-block only when type='staff'
+// identity: { type, displayName, email, intake, gifts, scenarios, athlete?, advisor?, enterprise? } | null — only non-null when status is 'ready'; advisor sub-block present only when type='advisor', enterprise sub-block only when type='staff'; athlete sub-block present only for an individual who is also a linked athlete (C-3b consent state)
 
 const AppIdentityContext = createContext(null);
 
@@ -46,9 +46,9 @@ export async function performSignOut() {
   }
 }
 
-export function AppIdentityProvider({ status, identity, updatePracticeProfile, children }) {
+export function AppIdentityProvider({ status, identity, updatePracticeProfile, updateAthleteConsent, children }) {
   return (
-    <AppIdentityContext.Provider value={{ status, identity, updatePracticeProfile, signOut: performSignOut }}>
+    <AppIdentityContext.Provider value={{ status, identity, updatePracticeProfile, updateAthleteConsent, signOut: performSignOut }}>
       {children}
     </AppIdentityContext.Provider>
   );
