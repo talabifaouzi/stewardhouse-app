@@ -57,6 +57,28 @@ import { Kysely } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import { createSender } from './sender.js';
 
+// C-3a: bind an athlete's institutional record(s) to their claimed person.
+// athlete.person_id FKs person.id (not auth_user.id), and an athlete may hold
+// rows at multiple institutions (no UNIQUE on athlete.email) — one person, many
+// enrollments — so this binds ALL matching unclaimed rows. Email is normalized
+// trim().toLowerCase() to match the exact value POST /api/athletes stored (and
+// person.invite_email). management_mode is untouched (stays NULL — the athlete's
+// consent choice sets it via /api/athlete-consent). Best-effort: called inside
+// the hook's try/catch, so a bind failure never breaks sign-in.
+async function bindAthleteRows(db, personId, email) {
+  if (!personId || typeof email !== 'string') return;
+  const normalized = email.trim().toLowerCase();
+  if (!normalized) return;
+  const res = await db
+    .updateTable('athlete')
+    .set({ person_id: personId })
+    .where('email', '=', normalized)
+    .where('person_id', 'is', null)
+    .executeTakeFirst();
+  const n = Number(res?.numUpdatedRows ?? 0n);
+  if (n > 0) console.log(`[auth/claim] bound ${n} athlete row(s) to person=${personId}`);
+}
+
 export function makeAuth(env) {
   const db = new Kysely({
     dialect: new D1Dialect({ database: env.DB }),
@@ -172,6 +194,14 @@ export function makeAuth(env) {
 
               if (claimed === 1) {
                 console.log(`[auth/claim] claimed seed person for auth_user=${user.id}`);
+                // C-3a athlete bind: the claim UPDATE above didn't return the
+                // person.id, so resolve it, then bind any linked athlete rows.
+                const claimedPerson = await db
+                  .selectFrom('person')
+                  .select(['id'])
+                  .where('auth_user_id', '=', user.id)
+                  .executeTakeFirst();
+                await bindAthleteRows(db, claimedPerson?.id, user.email);
                 return;
               }
               if (claimed > 1) {
@@ -196,6 +226,9 @@ export function makeAuth(env) {
               }).execute();
 
               console.log(`[auth/claim] created fresh person ${personId} for auth_user=${user.id}`);
+              // C-3a athlete bind: an athlete whose C-2 invite was somehow lost
+              // still binds on organic signup with the same email.
+              await bindAthleteRows(db, personId, user.email);
             } catch (err) {
               // Log + SWALLOW. Sign-in already succeeded upstream
               // (auth_user + session minted before this hook ran). A

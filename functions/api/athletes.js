@@ -73,6 +73,7 @@ export const ATHLETE_ELEMENT_COLUMNS = [
   'id', 'name', 'sport', 'year', 'position', 'email', 'phone', 'badge',
   'gps_completed_at', 'lessons_count', 'gifts_count', 'last_active_at',
   'join_date', 'certified', 'cert_at', 'enrollment_status', 'notes',
+  'management_mode',                       // C-3a: athlete-set consent state (staff Access column, C-3b)
 ];
 
 export function toAthleteElement(row) {
@@ -95,6 +96,7 @@ export function toAthleteElement(row) {
     certDate: row.cert_at,
     status: STATUS_MAP[row.enrollment_status] ?? 'active',
     notes: row.notes,
+    managementMode: row.management_mode,   // C-3a: null (unclaimed/unset) | 'self' | 'delegated'
     // athlete_activity is a separate table (empty until the activity-write
     // slice). Always present so AthleteProfile's athlete.activity.map/.filter
     // never touches undefined.
@@ -245,6 +247,26 @@ export async function onRequestPost(context) {
       // stands). Any other error rethrows → degrades to 'failed' below.
       if (String(err && err.message).includes('UNIQUE')) {
         invite = 'skipped';
+        // C-3a bind-at-enroll (A1): the address already has a person row. If it
+        // is ALREADY CLAIMED, the claim hook won't re-fire for this new athlete
+        // row, so bind it now. management_mode stays NULL — a NEW enrollment;
+        // the athlete's consent choice sets it (never copied from sibling rows).
+        // Best-effort: a bind hiccup must not fail the committed athlete-add.
+        try {
+          const existing = await db
+            .selectFrom('person')
+            .select(['id', 'auth_user_id'])
+            .where('invite_email', '=', f.email)
+            .executeTakeFirst();
+          if (existing && existing.auth_user_id) {
+            await db
+              .updateTable('athlete')
+              .set({ person_id: existing.id })
+              .where('id', '=', id)
+              .where('person_id', 'is', null)
+              .execute();
+          }
+        } catch (bindErr) { /* bind is best-effort; the athlete row stands */ }
       } else {
         throw err;
       }

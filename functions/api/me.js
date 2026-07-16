@@ -105,6 +105,30 @@ export async function onRequest(context) {
     });
   }
 
+  // C-3a: linked-athlete consent state. An individual person who is also an
+  // enrolled athlete (athlete.person_id bind) carries their management_mode so
+  // the surface can render the one-time consent card (managementMode === null)
+  // or the current setting. One choice covers all rows, so a uniform value is
+  // emitted; if rows disagree (shouldn't — the consent endpoint sets all at
+  // once), unset wins (null) and the card re-prompts. institutionName is
+  // presentational: the single name for one row, else a joined list.
+  let linkedAthlete = null;
+  if (person) {
+    const athleteRows = await db
+      .selectFrom('athlete')
+      .innerJoin('institution', 'institution.id', 'athlete.institution_id')
+      .select(['athlete.management_mode as management_mode', 'institution.name as institution_name'])
+      .where('athlete.person_id', '=', person.id)
+      .execute();
+    if (athleteRows.length > 0) {
+      const modes = new Set(athleteRows.map((r) => r.management_mode));
+      const managementMode = modes.size === 1 ? [...modes][0] : null;
+      const names = [...new Set(athleteRows.map((r) => r.institution_name))];
+      const institutionName = names.length === 1 ? names[0] : names.join(', ');
+      linkedAthlete = { managementMode, institutionName };
+    }
+  }
+
   let advisor = null;
   if (person?.type === 'advisor') {
     // practiceProfile is an EXPLICIT ALLOWLIST pick from parsed.advisor —
@@ -496,6 +520,7 @@ export async function onRequest(context) {
       intake,
       gifts,
       scenarios,
+      ...(linkedAthlete && { athlete: linkedAthlete }),
       ...(advisor && { advisor }),
       ...(enterprise && { enterprise }),
     } : null,
