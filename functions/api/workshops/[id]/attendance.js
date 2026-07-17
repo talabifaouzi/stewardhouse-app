@@ -138,7 +138,7 @@ export async function onRequestPut(context) {
   const athleteIds = records.map((r) => r.athleteId);
   const validAthletes = await db
     .selectFrom('athlete')
-    .select(['id', 'management_mode'])
+    .select(['id', 'management_mode', 'person_id'])
     .where('id', 'in', athleteIds)
     .where('institution_id', '=', contact.institution_id)
     .where('enrollment_status', '!=', 'Sunset')
@@ -152,12 +152,17 @@ export async function onRequestPut(context) {
   // 'delegated' EXACTLY — NULL (unclaimed / no choice made) and 'self'
   // (athlete-managed, staff read-only) both block. Reject the WHOLE batch,
   // naming the non-delegated ids so staff know which athletes to follow up.
+  // D7 (P-2): reject not-delegated OR person_id-NULL orphans. athlete.person_id
+  // is ON DELETE SET NULL, so a departed owning account leaves a row that still
+  // reads management_mode='delegated' but is no longer claim-backed — staff must
+  // not write against it. management_mode must be 'delegated' EXACTLY AND
+  // person_id must be set.
   const notDelegated = validAthletes
-    .filter((a) => a.management_mode !== 'delegated')
+    .filter((a) => a.management_mode !== 'delegated' || a.person_id == null)
     .map((a) => a.id);
   if (notDelegated.length > 0) {
     return jsonError(
-      `Cannot record attendance — athlete(s) have not delegated management to staff: ${notDelegated.join(', ')}`,
+      `Cannot record attendance — athlete(s) have not delegated management to staff (or the linked account was removed): ${notDelegated.join(', ')}`,
       403,
     );
   }

@@ -30,8 +30,9 @@
 // flagged, not built.
 
 import {
-  makeDb, requireGatedEnterprise, jsonError, jsonOk,
+  makeDb, requireGatedEnterprise, rejectRankKeys, jsonError, jsonOk,
 } from '../../_lib/gate.js';
+import { ATHLETE_ELEMENT_COLUMNS, toAthleteElement } from '../athletes.js';
 
 export async function onRequestDelete(context) {
   const db = makeDb(context);
@@ -111,4 +112,153 @@ export async function onRequestDelete(context) {
   }
 
   return jsonOk({ id: athleteId, anonymized: true });
+}
+
+// -----------------------------------------------------------------------------
+// PUT /api/athletes/:id — record athlete progression milestones (P-2 Stage B).
+//
+// Gated dark per E11: requireGatedEnterprise → 403 unless the staff person
+// carries $.enterprise.demo_gate=1 (production rows carry none; local smoke
+// only). Owner scope: the athlete must belong to the operator's institution;
+// 404 is IDENTICAL for absent / not-this-institution's / Sunset stub, so a
+// caller can't probe which ids exist (the onRequestDelete idiom above).
+//
+// Claim-state gate (P-2 L1 / D6+D7): milestone writes are STAFF writes on the
+// athlete's own record, so they require delegated record-keeping — the same
+// gate as C-1 attendance. management_mode must equal 'delegated' EXACTLY AND
+// person_id IS NOT NULL (D7: an ON DELETE SET NULL orphan still reads
+// 'delegated' but its owning account is gone). NULL / 'self' / orphan → 403.
+// The FORK 1 "institution-writable" set is exactly this predicate.
+//
+// Allowlist (P-2 L2): lessons (int 0..9) / gpsCompleted (bool) / certified
+// (bool); >=1 required. gifts_count is NOT sourced in P-2 (FORK 3);
+// last_active_at is NOT written (only updated_at moves). certified + cert_at
+// are authoritative; enrollment_status is the act-derived MIRROR
+// (resolveStatus).
+//
+// Status (P-2 R2, EXACT): recording advances Invited→Active only on a POSITIVE
+// milestone (lessons>=1 | gpsCompleted:true | certified:true); never backward,
+// never touches Stalled/Sunset; a negative-only write on Invited stays Invited.
+// -----------------------------------------------------------------------------
+
+const ALLOWED_MILESTONE_KEYS = ['lessons', 'gpsCompleted', 'certified'];
+
+function validateMilestoneBody(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return { error: 'Body must be an object' };
+  }
+  const extra = Object.keys(body).filter((k) => !ALLOWED_MILESTONE_KEYS.includes(k));
+  if (extra.length > 0) {
+    return { error: `Field(s) not permitted: ${extra.join(', ')}` };
+  }
+  if (!ALLOWED_MILESTONE_KEYS.some((k) => body[k] !== undefined)) {
+    return { error: 'At least one of lessons, gpsCompleted, certified is required' };
+  }
+  const out = {};
+  if (body.lessons !== undefined) {
+    if (typeof body.lessons !== 'number' || !Number.isInteger(body.lessons)
+        || body.lessons < 0 || body.lessons > 9) {
+      return { error: 'lessons must be an integer from 0 to 9' };
+    }
+    out.lessons = body.lessons;
+  }
+  if (body.gpsCompleted !== undefined) {
+    if (typeof body.gpsCompleted !== 'boolean') return { error: 'gpsCompleted must be a boolean' };
+    out.gpsCompleted = body.gpsCompleted;
+  }
+  if (body.certified !== undefined) {
+    if (typeof body.certified !== 'boolean') return { error: 'certified must be a boolean' };
+    out.certified = body.certified;
+  }
+  return { fields: out };
+}
+
+// Act-derived enrollment_status mirror (P-2 R2 — implement EXACTLY as ruled).
+function resolveStatus(current, f) {
+  if (f.certified === true) return 'Certified';
+  const positive = (f.lessons != null && f.lessons >= 1) || f.gpsCompleted === true;
+  if (current === 'Invited' && positive) return 'Active';
+  if (f.certified === false && current === 'Certified') return 'Active';
+  return current; // unchanged — never backward, never Stalled/Sunset
+}
+
+export async function onRequestPut(context) {
+  const db = makeDb(context);
+  const { person, error, status } = await requireGatedEnterprise(db, context);
+  if (error) return jsonError(error, status);
+
+  const athleteId = context.params.id;
+  if (!athleteId || typeof athleteId !== 'string') {
+    return jsonError('Invalid athlete id', 400);
+  }
+
+  let body;
+  try { body = await context.request.json(); }
+  catch { return jsonError('Invalid JSON body', 400); }
+  const forbidden = rejectRankKeys(body);
+  if (forbidden) return jsonError(`Field "${forbidden}" is not permitted`, 400);
+  const validated = validateMilestoneBody(body);
+  if (validated.error) return jsonError(validated.error, 400);
+  const f = validated.fields;
+
+  // Owner scope: institution from the session's institution_contact (prefer the
+  // default-operator row), NEVER the body.
+  const contact = await db
+    .selectFrom('institution_contact')
+    .select(['institution_id', 'is_default_operator'])
+    .where('person_id', '=', person.id)
+    .orderBy('is_default_operator', 'desc')
+    .executeTakeFirst();
+  if (!contact) {
+    return jsonError('No institution is associated with this operator', 403);
+  }
+
+  // Scope by id AND institution AND non-Sunset. 404 identical for absent /
+  // not-yours / Sunset stub (no existence probe). Pulls the current values the
+  // claim gate + status resolution + idempotent-keep need.
+  const row = await db
+    .selectFrom('athlete')
+    .select(['id', 'person_id', 'management_mode', 'enrollment_status', 'certified', 'cert_at', 'gps_completed_at'])
+    .where('id', '=', athleteId)
+    .where('institution_id', '=', contact.institution_id)
+    .where('enrollment_status', '!=', 'Sunset')
+    .executeTakeFirst();
+  if (!row) {
+    return jsonError('Athlete not found', 404);
+  }
+
+  // Claim-state gate (D6 + D7): delegated EXACTLY AND claimed (person_id set).
+  if (row.management_mode !== 'delegated' || row.person_id == null) {
+    return jsonError('Cannot record progression — the athlete has not delegated record-keeping to staff', 403);
+  }
+
+  const nowIso = new Date().toISOString();
+  const today = nowIso.slice(0, 10);
+  const set = { updated_at: nowIso };
+  if (f.lessons !== undefined) set.lessons_count = f.lessons;
+  if (f.gpsCompleted !== undefined) {
+    // true: stamp today if not already set (idempotent-keep); false: clear.
+    set.gps_completed_at = f.gpsCompleted ? (row.gps_completed_at ?? today) : null;
+  }
+  if (f.certified !== undefined) {
+    set.certified = f.certified ? 1 : 0;
+    set.cert_at = f.certified ? (row.cert_at ?? today) : null;
+  }
+  set.enrollment_status = resolveStatus(row.enrollment_status, f);
+
+  try {
+    await db.updateTable('athlete').set(set)
+      .where('id', '=', athleteId)
+      .where('institution_id', '=', contact.institution_id)
+      .execute();
+  } catch (err) {
+    return jsonError('Failed to record progression', 500);
+  }
+
+  const updated = await db
+    .selectFrom('athlete')
+    .select(ATHLETE_ELEMENT_COLUMNS)
+    .where('id', '=', athleteId)
+    .executeTakeFirst();
+  return jsonOk(toAthleteElement(updated));
 }
