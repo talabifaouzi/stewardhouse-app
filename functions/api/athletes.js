@@ -95,7 +95,12 @@ export function toAthleteElement(row) {
     joinDate: row.join_date,
     certified: !!row.certified,
     certDate: row.cert_at,
-    status: STATUS_MAP[row.enrollment_status] ?? 'active',
+    // P-2: enrollment_status is CHECK-constrained to the 5-value enum (migration
+    // 0016) and STATUS_MAP covers all five, so this lookup is always defined —
+    // the prior `?? 'active'` laundering (which would have masked a corrupt
+    // value as 'active') is removed. toAthleteElement is server-only, always on
+    // DB rows; the demo tree never routes fixtures through it.
+    status: STATUS_MAP[row.enrollment_status],
     notes: row.notes,
     managementMode: row.management_mode,   // C-3a: null (unclaimed/unset) | 'self' | 'delegated'
     claimed: !!row.person_id,              // C-3b: claim state distinct from mode; boolean only, raw person_id never emitted
