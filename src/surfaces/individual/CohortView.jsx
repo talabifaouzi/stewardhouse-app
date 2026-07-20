@@ -6,7 +6,7 @@ import { individualProfile } from '../../data/individualProfile.js';
 import { THEMES } from '../../data/themes.js';
 import { simulatedMemberSignals } from '../../data/cohortSignals.js';
 import { useCohortMember } from '../../contexts/CohortMemberContext.jsx';
-import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
+import { useFixtureIsolated } from './useFixtureIsolated.js';
 
 // CohortView rewire (Tier 3): first Individual file to read from the unified
 // data layer. Replaces raw cohorts.js + clients.js reads with
@@ -31,7 +31,7 @@ function joinNames(names) {
 
 export default function CohortView() {
   const { optedIn, optIn, optOut, signaledThemeIds, toggleSignal } = useCohortMember();
-  const appIdentity = useOptionalAppIdentity();
+  const fixtureIsolated = useFixtureIsolated();
 
   // P-3a — fixture isolation. Everything below this gate reads the DEMO
   // persona (individualProfile.id = 'c-001') out of the unified layer. There is
@@ -47,14 +47,14 @@ export default function CohortView() {
   // signaled this — make a connection". A §7 names-verbatim violation that
   // additionally invited an action against people the user has no relation to.
   //
-  // Demo tree: useOptionalAppIdentity() returns null (createContext(null), no
-  // provider) → the gate is skipped and the fixture render below is reached
-  // unchanged, byte-identical. The `!appIdentity` demo test is the established
-  // precedent (IndividualSurface.jsx:669).
+  // Demo tree: useFixtureIsolated() is false (no AppIdentityProvider mounted)
+  // → the gate is skipped and the fixture render below is reached unchanged,
+  // byte-identical. P-3b-1 routed this through the shared helper; the predicate
+  // and the behaviour are the same ones shipped and verified live in P-3a.
   //
   // The copy reuses this file's OWN existing absent-state card (the no-cohort
   // branch below) verbatim — no new phrasing introduced.
-  if (appIdentity) {
+  if (fixtureIsolated) {
     return (
       <main style={mainStyle}>
         <p style={eyebrowStyle}>Your cohort</p>

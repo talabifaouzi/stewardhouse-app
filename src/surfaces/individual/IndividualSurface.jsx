@@ -8,6 +8,7 @@ import { SectionLabel } from '../../components/SectionLabel.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { useBasePath } from './useBasePath.js';
+import { useFixtureIsolated } from './useFixtureIsolated.js';
 import {
   individualProfile,
   getFundingSpotlight,
@@ -266,7 +267,14 @@ function DashboardLayout() {
 function IndividualHome() {
   const navigate = useNavigate();
   const basePath = useBasePath();
+  // TWO distinct questions, deliberately not merged (see useFixtureIsolated.js):
+  //   appIdentity      — demo affordance; gates the "Restore Marcus's demo
+  //                      profile" button below, which is correctly demo-only.
+  //   fixtureIsolated  — isolation; gates fixture content that has no
+  //                      authenticated source (the cohort callout).
+  // Same predicate today; different reasons. Keep them apart.
   const appIdentity = useOptionalAppIdentity();
+  const fixtureIsolated = useFixtureIsolated();
   const [showAllGifts, setShowAllGifts] = useState(false);
   const { answers, gifts, givingStyle, worldLabel, resetIntake, loadDemo, intakeComplete } = useIntake();
 
@@ -422,8 +430,9 @@ function IndividualHome() {
           claim "You're part of a cohort" one click from "You're not part of a
           cohort yet." The callout is REMOVED rather than replaced with an
           absent-state line: Home should not advertise a section with nothing in
-          it. `!appIdentity` is this file's established demo test (:669). */}
-      {!appIdentity && (
+          it. P-3b-1 routed this through the shared useFixtureIsolated() helper;
+          the behaviour is the one shipped and verified live in P-3a. */}
+      {!fixtureIsolated && (
         <Card
           interactive
           onClick={() => navigate(`${basePath}/cohort`)}

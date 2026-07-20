@@ -3,9 +3,11 @@ import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
 import { UNIVERSAL_LESSONS, ATHLETICS_LESSONS, VISIBILITY_LESSONS, GLOSSARY, ADVISOR_ASSIGNMENTS } from '../../data/lessonsData.js';
+import { useFixtureIsolated } from './useFixtureIsolated.js';
 
 export default function Learn() {
   const { lessonsDone, markLessonDone, assignmentsDone, toggleAssignment, answers } = useIntake();
+  const fixtureIsolated = useFixtureIsolated();
   const [activeLesson, setActiveLesson] = useState(null);
   const [showGlossary, setShowGlossary] = useState(false);
 
@@ -108,34 +110,50 @@ export default function Learn() {
         </p>
       </Card>
 
-      {/* From your advisor — standalone client-side assignments mock */}
-      <div style={{ marginBottom: 'var(--sh-space-6)' }}>
-        <p style={{
-          fontSize: '11px',
-          fontWeight: 600,
-          color: 'var(--sh-bronze)',
-          textTransform: 'uppercase',
-          letterSpacing: '0.08em',
-          marginBottom: '4px',
-        }}>
-          From your advisor
-        </p>
-        <p style={{
-          fontSize: 'var(--sh-text-xs)',
-          color: 'var(--sh-text-muted)',
-          marginBottom: 'var(--sh-space-3)',
-        }}>
-          {assignmentsDoneCount} of {ADVISOR_ASSIGNMENTS.length} complete
-        </p>
-        {ADVISOR_ASSIGNMENTS.map(assignment => (
-          <AssignmentRow
-            key={assignment.id}
-            assignment={assignment}
-            done={assignmentsDone.includes(assignment.id)}
-            onToggle={() => toggleAssignment(assignment.id)}
-          />
-        ))}
-      </div>
+      {/* From your advisor — standalone client-side assignments mock.
+          P-3b-1: DEMO-ONLY. This block asserts that an advisor assigned this
+          user specific work, and on the authenticated tree that is false —
+          /api/me has no assignment relation in either direction (the advisor
+          block at me.js:141-358 scopes by owner_advisor_person_id, i.e. an
+          advisor reading their own book; the reciprocal is never emitted).
+          Nothing to wire to, so the honest state is absence.
+          The two referenced PDFs are dead links, and the rows are interactive
+          checkboxes whose toggleAssignment is setState ONLY (IntakeContext.jsx
+          :206-211; /api/intake is written from Questions.jsx alone) — so a
+          signed-in user could check off a fictional advisor's homework and lose
+          it on refresh. Removed rather than given an absent-state line: Learn
+          should not advertise a section with nothing in it.
+          The lesson catalog and glossary below are editorial content, not
+          per-person data, and are deliberately KEPT for authenticated users. */}
+      {!fixtureIsolated && (
+        <div style={{ marginBottom: 'var(--sh-space-6)' }}>
+          <p style={{
+            fontSize: '11px',
+            fontWeight: 600,
+            color: 'var(--sh-bronze)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            marginBottom: '4px',
+          }}>
+            From your advisor
+          </p>
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+            marginBottom: 'var(--sh-space-3)',
+          }}>
+            {assignmentsDoneCount} of {ADVISOR_ASSIGNMENTS.length} complete
+          </p>
+          {ADVISOR_ASSIGNMENTS.map(assignment => (
+            <AssignmentRow
+              key={assignment.id}
+              assignment={assignment}
+              done={assignmentsDone.includes(assignment.id)}
+              onToggle={() => toggleAssignment(assignment.id)}
+            />
+          ))}
+        </div>
+      )}
 
       {sections.map(section => (
         <div key={section.label} style={{ marginBottom: 'var(--sh-space-6)' }}>
