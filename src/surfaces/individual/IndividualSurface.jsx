@@ -413,30 +413,41 @@ function IndividualHome() {
         )}
       </Card>
 
-      {/* Cohort callout — quiet entry into the member-side cohort view */}
-      <Card
-        interactive
-        onClick={() => navigate(`${basePath}/cohort`)}
-        style={{
-          marginBottom: 'var(--sh-space-3)',
-          cursor: 'pointer',
-        }}
-      >
-        <p style={{
-          fontSize: 'var(--sh-text-sm)',
-          fontWeight: 600,
-          color: 'var(--sh-text-primary)',
-          marginBottom: '2px',
-        }}>
-          You're part of a cohort →
-        </p>
-        <p style={{
-          fontSize: 'var(--sh-text-xs)',
-          color: 'var(--sh-text-muted)',
-        }}>
-          Athletes working on a giving practice together.
-        </p>
-      </Card>
+      {/* Cohort callout — quiet entry into the member-side cohort view.
+          P-3a: DEMO-ONLY. "You're part of a cohort" is an assertion, and on the
+          authenticated tree it is false — /api/me emits cohorts only inside the
+          advisor block (me.js:358, gated to type==='advisor'), so a signed-in
+          individual has no cohort. CohortView itself now renders an honest
+          absent state for that user; leaving this callout ungated would put the
+          claim "You're part of a cohort" one click from "You're not part of a
+          cohort yet." The callout is REMOVED rather than replaced with an
+          absent-state line: Home should not advertise a section with nothing in
+          it. `!appIdentity` is this file's established demo test (:669). */}
+      {!appIdentity && (
+        <Card
+          interactive
+          onClick={() => navigate(`${basePath}/cohort`)}
+          style={{
+            marginBottom: 'var(--sh-space-3)',
+            cursor: 'pointer',
+          }}
+        >
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            fontWeight: 600,
+            color: 'var(--sh-text-primary)',
+            marginBottom: '2px',
+          }}>
+            You're part of a cohort →
+          </p>
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+          }}>
+            Athletes working on a giving practice together.
+          </p>
+        </Card>
+      )}
 
       {/* Living pulse stats */}
       {hasGifts ? (

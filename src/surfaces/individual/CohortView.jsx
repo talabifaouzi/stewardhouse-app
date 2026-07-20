@@ -6,6 +6,7 @@ import { individualProfile } from '../../data/individualProfile.js';
 import { THEMES } from '../../data/themes.js';
 import { simulatedMemberSignals } from '../../data/cohortSignals.js';
 import { useCohortMember } from '../../contexts/CohortMemberContext.jsx';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 
 // CohortView rewire (Tier 3): first Individual file to read from the unified
 // data layer. Replaces raw cohorts.js + clients.js reads with
@@ -30,6 +31,39 @@ function joinNames(names) {
 
 export default function CohortView() {
   const { optedIn, optIn, optOut, signaledThemeIds, toggleSignal } = useCohortMember();
+  const appIdentity = useOptionalAppIdentity();
+
+  // P-3a — fixture isolation. Everything below this gate reads the DEMO
+  // persona (individualProfile.id = 'c-001') out of the unified layer. There is
+  // no individual-side cohort relation to read instead: /api/me emits cohorts
+  // ONLY inside the advisor block (me.js:358, gated to type==='advisor'), so a
+  // signed-in individual has no cohort source at all. The honest state is
+  // therefore ABSENCE, not a rewire (the P-1 useInstitutionEyebrow idiom: no
+  // real source → render nothing).
+  //
+  // Before this gate, a signed-in individual was rendered AS Marcus Thompson —
+  // his cohort title, his themes as their interests, and a solicitation naming
+  // two real records (Isaiah Coleman, Naomi Pierce) as cohort-mates who "also
+  // signaled this — make a connection". A §7 names-verbatim violation that
+  // additionally invited an action against people the user has no relation to.
+  //
+  // Demo tree: useOptionalAppIdentity() returns null (createContext(null), no
+  // provider) → the gate is skipped and the fixture render below is reached
+  // unchanged, byte-identical. The `!appIdentity` demo test is the established
+  // precedent (IndividualSurface.jsx:669).
+  //
+  // The copy reuses this file's OWN existing absent-state card (the no-cohort
+  // branch below) verbatim — no new phrasing introduced.
+  if (appIdentity) {
+    return (
+      <main style={mainStyle}>
+        <p style={eyebrowStyle}>Your cohort</p>
+        <Card>
+          <p style={emptyTextStyle}>You're not part of a cohort yet.</p>
+        </Card>
+      </main>
+    );
+  }
 
   // D1 identity bridge — the current Individual user (individualProfile.id =
   // 'c-001') is represented in the unified layer as TWO Person records:
