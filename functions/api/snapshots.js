@@ -1,19 +1,23 @@
 // POST /api/snapshots — records a cohort period snapshot for the operator's
 // institution (E-Slice E-Write-5, E9). Gated dark per E11.
 //
-// Q5 DERIVATION: the six SOURCED aggregates are derived server-side from live
-// D1 at snapshot time, institution-scoped over the ACTIVE roster (non-Sunset):
+// Q5 DERIVATION: the SOURCED aggregates are derived server-side from live D1 at
+// snapshot time, institution-scoped over the ACTIVE roster (non-Sunset):
 //   athletes_count      — COUNT active athletes
 //   gps_completed_count — COUNT gps_completed_at IS NOT NULL; gps_rate = round%
 //   certified_count     — COUNT certified=1;                   cert_rate = round%
-//   gifts_count         — SUM(athlete.gifts_count) SOFT COUNTER (a per-athlete
-//                         tally, not a gift-row count — docblocked as such)
 //   attendance_rate     — SUM(attended)/COUNT across the institution's
 //                         workshop_attendance rows (joined through workshop)
-// The two UNSOURCED aggregates are written NULL (migration 0013 made them
-// nullable): dollars_moved (no enterprise gift-dollar table) and
-// avg_weekly_engagement (no engagement-tracking table). NULL = "not tracked";
-// never 0 (a real 0% / $0 reading) and never staff-entered.
+// gps_rate / cert_rate denominators stay the FULL non-Sunset roster (P-2 L4 —
+// snapshots are a frozen historical series and do NOT adopt the FORK 1
+// consent-aware denominator, which would break a mid-series trend).
+//
+// The UNSOURCED aggregates are written NULL (migrations 0013 + 0017 made them
+// nullable): gifts_count (P-2 FORK 3 — the athlete.gifts_count soft counter is
+// never written by any P-2 path, so SUM would be a frozen, dishonest 0),
+// dollars_moved (no enterprise gift-dollar table), and avg_weekly_engagement
+// (no engagement-tracking table). NULL = "not tracked"; never 0 (a real 0% / $0
+// reading) and never staff-entered.
 //
 // Rate representation matches the fixture (enterpriseFixtures cohort snapshots):
 // integer percent 0-100, no '%' — CohortComparison adds the sign via fmtPct.
@@ -115,7 +119,7 @@ export async function onRequestPost(context) {
       sql`COUNT(*)`.as('athletes_count'),
       sql`COALESCE(SUM(CASE WHEN gps_completed_at IS NOT NULL THEN 1 ELSE 0 END), 0)`.as('gps_completed_count'),
       sql`COALESCE(SUM(CASE WHEN certified = 1 THEN 1 ELSE 0 END), 0)`.as('certified_count'),
-      sql`COALESCE(SUM(gifts_count), 0)`.as('gifts_count'),
+      // FORK 3: gifts_count is NOT summed — it is written NULL below.
     ])
     .where('institution_id', '=', instId)
     .where('enrollment_status', '!=', 'Sunset')
@@ -135,7 +139,6 @@ export async function onRequestPost(context) {
   const athletesCount = Number(agg?.athletes_count ?? 0);
   const gpsCompleted = Number(agg?.gps_completed_count ?? 0);
   const certified = Number(agg?.certified_count ?? 0);
-  const giftsCount = Number(agg?.gifts_count ?? 0);
   const attTotal = Number(att?.total ?? 0);
   const attAttended = Number(att?.attended ?? 0);
 
@@ -158,7 +161,7 @@ export async function onRequestPost(context) {
       gps_rate: gpsRate,
       certified_count: certified,
       cert_rate: certRate,
-      gifts_count: giftsCount,
+      gifts_count: null,                   // FORK 3: not tracked (never a frozen 0)
       dollars_moved: null,                 // Q5: not tracked
       attendance_rate: attendanceRate,
       avg_weekly_engagement: null,         // Q5: not tracked

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from './Card.jsx';
 import { SectionLabel } from './SectionLabel.jsx';
 import { Modal } from './Modal.jsx';
@@ -27,11 +27,41 @@ const TYPE_LABEL = {
   'certified':        'Certification',
 };
 
-export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminder, onRemove, writeError, clearWriteError }) {
+export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminder, onRemove, onUpdate, writeError, clearWriteError }) {
   const { getThread } = useComms();
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [removing, setRemoving] = useState(false);
+  // P-2 Stage D: milestone editor state (auth-only; only when onUpdate is wired).
+  // Re-seeded whenever a different athlete opens.
+  const [editLessons, setEditLessons] = useState(0);
+  const [editGps, setEditGps] = useState(false);
+  const [editCert, setEditCert] = useState(false);
+  const [savingProgress, setSavingProgress] = useState(false);
+  useEffect(() => {
+    if (!athlete) return;
+    setEditLessons(Number(athlete.lessons ?? 0));
+    setEditGps(!!athlete.gpsCompleted);
+    setEditCert(!!athlete.certified);
+    clearWriteError?.();
+    // Re-seed on athlete change only (clearWriteError is a stable provider cb).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [athlete?.id]);
   if (!athlete) return null;
+
+  // Writable == the PUT gate predicate. onUpdate is passed only on the auth tree
+  // (EnterpriseRoster), so the editor never appears on the demo tree.
+  const isWritable = athlete.claimed === true && athlete.managementMode === 'delegated';
+  const canEdit = !!onUpdate;
+  const saveProgress = async () => {
+    if (savingProgress) return;
+    setSavingProgress(true);
+    clearWriteError?.();
+    await onUpdate(athlete.id, { lessons: editLessons, gpsCompleted: editGps, certified: editCert });
+    setSavingProgress(false);
+    // On success the provider replaces the row; the parent passes the live
+    // element back (derive-by-id), so the read view refreshes. On failure
+    // writeError surfaces in-card and the editor stays open with the edits.
+  };
 
   const openConfirm = () => {
     clearWriteError?.();
@@ -83,27 +113,70 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
           <Field label="Phone" value={athlete.phone} last />
         </Card>
 
-        {/* Progress */}
+        {/* Progress — read-only, OR the auth-only milestone editor (P-2 Stage D)
+            when this athlete has delegated record-keeping to staff. */}
         <Card>
           <SectionLabel>Progress</SectionLabel>
-          <Field
-            label="GPS"
-            value={athlete.gpsCompleted ? `Completed ${formatDate(athlete.gpsDate)}` : 'Pending'}
-          />
-          <Field label="Lessons" value={`${athlete.lessons} of 9 completed`} />
-          <Field
-            label="Certification"
-            value={athlete.certified ? `Awarded ${formatDate(athlete.certDate)}` : 'Not yet awarded'}
-            last
-          />
+          {canEdit && isWritable ? (
+            <div style={editorStyle}>
+              <label style={editRowStyle}>
+                <span style={editLabelStyle}>Lessons</span>
+                <input
+                  type="number"
+                  min={0}
+                  max={9}
+                  value={editLessons}
+                  onChange={(e) => setEditLessons(Math.max(0, Math.min(9, Math.floor(Number(e.target.value) || 0))))}
+                  style={numberInputStyle}
+                  aria-label="Lessons completed, 0 to 9"
+                />
+                <span style={editHintStyle}>of 9</span>
+              </label>
+              <label style={editRowStyle}>
+                <span style={editLabelStyle}>GPS completed</span>
+                <input type="checkbox" checked={editGps} onChange={(e) => setEditGps(e.target.checked)} />
+              </label>
+              <label style={editRowStyle}>
+                <span style={editLabelStyle}>Certified</span>
+                <input type="checkbox" checked={editCert} onChange={(e) => setEditCert(e.target.checked)} />
+              </label>
+              {writeError && <p style={editErrorStyle}>{writeError}</p>}
+              <div style={editFooterStyle}>
+                <Button variant="primary" size="sm" onClick={saveProgress} disabled={savingProgress}>
+                  {savingProgress ? 'Saving…' : 'Save progress'}
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <Field
+                label="GPS"
+                value={athlete.gpsCompleted ? `Completed ${formatDate(athlete.gpsDate)}` : 'Pending'}
+              />
+              <Field label="Lessons" value={`${athlete.lessons} of 9 completed`} />
+              <Field
+                label="Certification"
+                value={athlete.certified ? `Awarded ${formatDate(athlete.certDate)}` : 'Not yet awarded'}
+                last
+              />
+              {canEdit && !isWritable && (
+                <p style={notDelegatedStyle}>Record-keeping not delegated — the athlete manages this account.</p>
+              )}
+            </>
+          )}
         </Card>
 
         {/* Giving */}
         <Card>
           <SectionLabel>Giving</SectionLabel>
+          {/* FORK 3: athlete.gifts_count is written by no path, so on the auth
+              tree this is a frozen 0 — "Not tracked", never a measured zero.
+              Gated on canEdit (!!onUpdate), this file's existing auth
+              discriminator; the demo tree passes no onUpdate and renders the
+              fixture count unchanged. */}
           <Field
             label="Total gifts"
-            value={athlete.gifts}
+            value={canEdit ? 'Not tracked' : athlete.gifts}
             last={giftEvents.length === 0}
           />
           {giftEvents.length > 0 && (
@@ -284,6 +357,70 @@ const fieldValueStyle = {
 const emailLinkStyle = {
   color: 'var(--sh-bronze)',
   textDecoration: 'none',
+};
+
+// P-2 Stage D milestone editor styles.
+const editorStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  gap: 'var(--sh-space-2)',
+  marginTop: 'var(--sh-space-2)',
+};
+
+const editRowStyle = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: 'var(--sh-space-3)',
+  padding: 'var(--sh-space-2) 0',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  cursor: 'pointer',
+};
+
+const editLabelStyle = {
+  color: 'var(--sh-text-muted)',
+  minWidth: '140px',
+  flexShrink: 0,
+  fontSize: 'var(--sh-text-xs)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.06em',
+};
+
+const numberInputStyle = {
+  width: '64px',
+  padding: 'var(--sh-space-1) var(--sh-space-2)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: 'var(--sh-radius-sm)',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  background: 'var(--sh-card)',
+};
+
+const editHintStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+};
+
+const editErrorStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-bronze-deep)',
+  lineHeight: 1.5,
+  marginTop: 'var(--sh-space-1)',
+};
+
+const editFooterStyle = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  marginTop: 'var(--sh-space-2)',
+};
+
+// Quiet line when staff can't edit (athlete self-manages / not delegated).
+const notDelegatedStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  fontStyle: 'italic',
+  lineHeight: 1.55,
+  marginTop: 'var(--sh-space-3)',
 };
 
 const recentGiftsStyle = {

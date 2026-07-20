@@ -7,11 +7,16 @@ import { useBasePath } from '../../../contexts/AppIdentityContext.jsx';
 import { useAthletes } from '../../../contexts/AthletesContext.jsx';
 import { useCompliance } from '../../../contexts/ComplianceContext.jsx';
 import { useInstitutionEyebrow } from '../shared/useInstitutionEyebrow.js';
+import { computeStats } from '../shared/enterpriseStats.js';
 
 // P-1 isolation: this page is FULLY live-backable — every figure derives from
 // the roster (useAthletes) and the exclusion list (useCompliance), both of
 // which fall back to fixtures on the demo tree via their providers' defaults.
-// No fixture import remains, and no section is unsourced.
+// No fixture import remains. P-2 (FORK 3): Stage 4 (gift-making) is the one
+// UNSOURCED section — enterprise gifts are not tracked in this prototype — so
+// its card is labeled "Not tracked" rather than showing a fabricated count.
+// P-2 (FORK 1): the stage distribution is consent-aware — stages beyond Invited
+// require delegated record-keeping, disclosed in a note on the auth tree.
 //
 // Before P-1 the stage buckets + totals were module-level consts over the
 // FIXTURE athletes, guarded only by `athletes.length === 0` — a roster-emptiness
@@ -22,9 +27,12 @@ import { useInstitutionEyebrow } from '../shared/useInstitutionEyebrow.js';
 
 // Stage assignment: each athlete sits at their highest-reached structural
 // milestone. Not a score — a checklist of progression steps.
+// P-2 FORK 3: Stage 4 (Making Gifts) no longer gates on a.gifts — the enterprise
+// gift counter is not sourced in this prototype, so it's a frozen 0 that would
+// silently strand real athletes at Stage 1. Gift-based progression is UNSOURCED;
+// Stage 4 is labeled "Not tracked" below and never auto-assigned here.
 function philanthropicStage(a) {
   if (a.certified) return 5;
-  if (a.gifts > 0) return 4;
   if (a.gpsCompleted) return 3;
   if (a.lessons > 0) return 2;
   return 1;
@@ -74,6 +82,9 @@ export default function PhilanthropicReadiness() {
     [athletes],
   );
   const totalAthletes = athletes.length;
+  // FORK 1 note gate: consent-aware, auth tree only, and only when some athlete
+  // is excluded from staff record-keeping.
+  const { consentAware, writable } = computeStats(athletes);
 
   // Empty roster → honest page-level line (unchanged). This guard is still
   // correct; what changed is that passing it no longer reveals fixture data.
@@ -113,17 +124,29 @@ export default function PhilanthropicReadiness() {
         </p>
       </div>
 
+      {consentAware && (totalAthletes - writable) > 0 && (
+        <p style={consentNoteStyle}>
+          Stages beyond Invited require delegated record-keeping. Athletes who manage their own records or have not yet claimed their account remain at Invited here.
+        </p>
+      )}
+
       {stageCounts.map((stage) => {
         const count = stage.athletes.length;
         const pct = Math.round((count / totalAthletes) * 100);
+        // FORK 3: Stage 4 (Making Gifts) is UNSOURCED — gifts aren't tracked, so
+        // it never populates. Label it "Not tracked" (never "No athletes at this
+        // stage", which would falsely imply we looked and found none).
+        const notTracked = stage.n === 4;
         return (
           <Card key={stage.n} style={stageCardStyle}>
             <div style={stageHeaderStyle}>
               <span style={stageTitleStyle}>Stage {stage.n}: {stage.label}</span>
-              <span style={stageCountStyle}>{count} of {totalAthletes} — {pct}%</span>
+              <span style={stageCountStyle}>{notTracked ? 'Not tracked' : `${count} of ${totalAthletes} — ${pct}%`}</span>
             </div>
             <p style={stageDescStyle}>{stage.description}</p>
-            {count === 0 ? (
+            {notTracked ? (
+              <p style={emptyStageStyle}>Gift-making is not tracked in this prototype.</p>
+            ) : count === 0 ? (
               <p style={emptyStageStyle}>No athletes currently at this stage.</p>
             ) : (
               <div style={chipsRowStyle}>
@@ -247,6 +270,16 @@ const contextLineStyle = {
   lineHeight: 1.55,
   marginTop: 'var(--sh-space-2)',
   marginBottom: 'var(--sh-space-3)',
+};
+
+// FORK 1 consent-aware note (auth tree, when some athlete is excluded).
+const consentNoteStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  lineHeight: 1.55,
+  letterSpacing: '0.02em',
+  marginBottom: 'var(--sh-space-4)',
+  maxWidth: '720px',
 };
 
 const stageCardStyle = {

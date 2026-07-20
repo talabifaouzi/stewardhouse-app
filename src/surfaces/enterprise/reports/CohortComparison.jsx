@@ -31,6 +31,8 @@ const fmtPct = (n) => `${n}%`;
 const NT = 'Not tracked';
 const fmtUSDorNT = (n) => (n == null ? NT : fmtUSD(n));
 const fmtPctorNT = (n) => (n == null ? NT : fmtPct(n));
+// FORK 3: gifts_count is written NULL by snapshots.js (not tracked).
+const fmtCountOrNT = (n) => (n == null ? NT : n);
 
 // Year-over-year rows from two snapshots (prior, current).
 function buildYoyRows(prior, current) {
@@ -46,7 +48,7 @@ function buildYoyRows(prior, current) {
       prior: `${fmtPct(prior.certRate)} (${prior.certified} of ${prior.athletes})`,
       current: `${fmtPct(current.certRate)} (${current.certified} of ${current.athletes})`,
     },
-    { metric: 'Total gifts', prior: prior.totalGifts, current: current.totalGifts },
+    { metric: 'Total gifts', prior: fmtCountOrNT(prior.totalGifts), current: fmtCountOrNT(current.totalGifts) },
     { metric: 'Total dollars moved', prior: fmtUSDorNT(prior.totalDollarsMoved), current: fmtUSDorNT(current.totalDollarsMoved) },
     { metric: 'Workshop attendance', prior: fmtPct(prior.workshopAttendanceRate), current: fmtPct(current.workshopAttendanceRate) },
     { metric: 'Avg weekly engagement', prior: fmtPctorNT(prior.avgWeeklyEngagement), current: fmtPctorNT(current.avgWeeklyEngagement) },
@@ -59,7 +61,7 @@ function buildSingleRows(s) {
     { metric: 'Athletes', value: s.athletes },
     { metric: 'GPS completion', value: `${fmtPct(s.gpsRate)} (${s.gpsCompleted} of ${s.athletes})` },
     { metric: 'Certification', value: `${fmtPct(s.certRate)} (${s.certified} of ${s.athletes})` },
-    { metric: 'Total gifts', value: s.totalGifts },
+    { metric: 'Total gifts', value: fmtCountOrNT(s.totalGifts) },
     { metric: 'Total dollars moved', value: fmtUSDorNT(s.totalDollarsMoved) },
     { metric: 'Workshop attendance', value: fmtPct(s.workshopAttendanceRate) },
     { metric: 'Avg weekly engagement', value: fmtPctorNT(s.avgWeeklyEngagement) },
@@ -73,6 +75,14 @@ const SPORT_COLUMNS = [
   { key: 'certCount',    label: 'Certified', render: (r) => `${r.certCount} of ${r.athleteCount}` },
   { key: 'giftCount',    label: 'Gifts',     render: (r) => r.giftCount },
 ];
+
+// FORK 3 (P-2): giftCount sums athlete.gifts_count, which is written by no
+// path — every auth row would read a frozen 0. The column is KEPT and rendered
+// as "—", explained by one caption under the table. Gated on isAuthenticated,
+// not consentAware: the counter is unsourced for every athlete, claimed or not.
+const AUTH_SPORT_COLUMNS = SPORT_COLUMNS.map((c) => (
+  c.key === 'giftCount' ? { ...c, render: () => '—' } : c
+));
 
 export default function CohortComparison() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
@@ -210,6 +220,12 @@ export default function CohortComparison() {
           : 'Structural milestones for the current program period. A year-over-year comparison appears once a second period is recorded.'}
       </p>
 
+      {isAuthenticated && (
+        <p style={consentNoteStyle}>
+          Snapshot rates are frozen over the full roster at capture time. Live progression rates elsewhere are consent-aware — they cover only athletes who delegated record-keeping — so the two may differ.
+        </p>
+      )}
+
       {managementBlock}
 
       {/* Section 1 — Year-over-year (≥2) OR single-cohort (1) */}
@@ -281,10 +297,15 @@ export default function CohortComparison() {
           Current cohort by sport. Some sports have a single representative — context for interpretation, not comparison.
         </p>
         <DataTable
-          columns={SPORT_COLUMNS}
+          columns={isAuthenticated ? AUTH_SPORT_COLUMNS : SPORT_COLUMNS}
           data={sportRows}
           rowKey={(r) => r.sport}
         />
+        {/* FORK 3 caption — explains the "—" in the Gifts column. Same string
+            shipped in PhilanthropicReadiness Stage 4. Auth tree only. */}
+        {isAuthenticated && (
+          <p style={giftNoteStyle}>Gift-making is not tracked in this prototype.</p>
+        )}
       </Card>
 
       {/* Section 3 — About this report */}
@@ -361,6 +382,17 @@ const subtitleStyle = {
   maxWidth: '720px',
 };
 
+// FORK 3 / FORK 1 consent-aware note (auth tree only).
+const consentNoteStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  lineHeight: 1.55,
+  letterSpacing: '0.02em',
+  marginTop: 'calc(-1 * var(--sh-space-3))',
+  marginBottom: 'var(--sh-space-6)',
+  maxWidth: '720px',
+};
+
 // Auth-only management block (Record + per-snapshot delete).
 const managementNoteStyle = {
   fontSize: 'var(--sh-text-sm)',
@@ -421,6 +453,16 @@ const contextLineStyle = {
   marginTop: 'var(--sh-space-2)',
   marginBottom: 'var(--sh-space-4)',
   lineHeight: 1.55,
+};
+
+// FORK 3 caption under the sport table (auth tree) — the muted xs disclosure
+// idiom shared with RateDisclosure.
+const giftNoteStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  lineHeight: 1.55,
+  letterSpacing: '0.02em',
+  marginTop: 'var(--sh-space-3)',
 };
 
 const yoyGridStyle = {

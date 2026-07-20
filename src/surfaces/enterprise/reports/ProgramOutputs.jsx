@@ -181,12 +181,26 @@ export default function ProgramOutputs() {
             value={`${athletesCertified} of ${totalAthletes}`}
             sublabel={`${certifiedPct}% of cohort`}
           />
-          <StatTile
-            variant="inline"
-            label="Athletes making gifts"
-            value={`${athletesWithGifts} of ${totalAthletes}`}
-            sublabel={`${totalGifts} gifts total (tracked + untracked)`}
-          />
+          {/* FORK 3: unsourced — athlete.gifts_count is written by no path, so
+              both the count and the "(tracked + untracked)" sublabel would be
+              false on the auth tree (the sublabel actively claims untracked
+              gifts are counted). Mirrors the "Total dollars moved" tile above.
+              Demo keeps the fixture figures. */}
+          {isAuthenticated ? (
+            <StatTile
+              variant="inline"
+              label="Athletes making gifts"
+              value={NT}
+              sublabel="No gift source yet"
+            />
+          ) : (
+            <StatTile
+              variant="inline"
+              label="Athletes making gifts"
+              value={`${athletesWithGifts} of ${totalAthletes}`}
+              sublabel={`${totalGifts} gifts total (tracked + untracked)`}
+            />
+          )}
           <StatTile
             variant="inline"
             label="Workshops held"

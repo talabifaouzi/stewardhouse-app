@@ -16,3 +16,4 @@ dist-ssr
 scripts/pilot-invites.json
 scripts/provision-institution.json
 scripts/*.tmp.sql
+scripts/seed-screen-*.mjs

@@ -25,6 +25,7 @@ import { useWorkshops } from '../../../contexts/WorkshopsContext.jsx';
 import { useInstitutionEyebrow } from '../shared/useInstitutionEyebrow.js';
 import { formatDate } from '../../../utils/formatDate.js';
 import { computeStats, engagementBounds } from '../shared/enterpriseStats.js';
+import RateDisclosure, { fmtRate } from '../shared/RateDisclosure.jsx';
 
 // P-1 isolation. Cohort snapshot + status breakdown were already live
 // (computeStats over the provider roster). What was NOT: athletesById and the
@@ -69,7 +70,8 @@ export default function ProgramSummary() {
     );
   }
 
-  const { tot, gpsRate, certRate, tGi, onTrack, certD, stalled, notStarted } = computeStats(athletes);
+  const stats = computeStats(athletes);
+  const { tot, gpsRate, certRate, tGi, onTrack, certD, stalled, notStarted } = stats;
   const { min: engagementMin, max: engagementMax } = engagementBounds(engagementTimeline);
   const latestEngagement = engagementTimeline[engagementTimeline.length - 1];
 
@@ -94,10 +96,14 @@ export default function ProgramSummary() {
           <SectionLabel>Cohort snapshot</SectionLabel>
           <div style={statGridStyle}>
             <StatTile variant="inline" label="Athletes" value={tot} />
-            <StatTile variant="inline" label="GPS completed" value={`${gpsRate}%`} />
-            <StatTile variant="inline" label="Certified" value={`${certRate}%`} />
-            <StatTile variant="inline" label="Total gifts" value={tGi} />
+            <StatTile variant="inline" label="GPS completed" value={fmtRate(gpsRate)} />
+            <StatTile variant="inline" label="Certified" value={fmtRate(certRate)} />
+            {/* FORK 3: gifts_count is unsourced — "Not tracked" on the auth
+                tree (the fmtRate idiom used by the two tiles above), never a
+                frozen 0. Demo keeps the fixture figure. */}
+            <StatTile variant="inline" label="Total gifts" value={isAuthenticated ? 'Not tracked' : tGi} />
           </div>
+          <RateDisclosure stats={stats} />
         </Card>
 
         {/* Status breakdown */}

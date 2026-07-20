@@ -13,6 +13,7 @@ import { useAthletes } from '../../contexts/AthletesContext.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 import { computeStats, engagementBounds } from './shared/enterpriseStats.js';
+import RateDisclosure from './shared/RateDisclosure.jsx';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 
 export default function EnterpriseOverview() {
@@ -24,7 +25,9 @@ export default function EnterpriseOverview() {
   // fixture on the demo tree. Stat tiles follow the roster data automatically
   // (computeStats([]) → zeros).
   const isAuthenticated = !!useOptionalAppIdentity();
-  const { tot, gpsD, certD, stalled, onTrack, notStarted, tGi, athletesWithGifts, gpsRate, activelyProgressingPct } = computeStats(athletes);
+  const stats = computeStats(athletes);
+  const { tot, gpsD, certD, stalled, onTrack, notStarted, tGi, athletesWithGifts, gpsRate, activelyProgressingPct,
+    consentAware, rateGps, rateActive, rateBaseTotal } = stats;
   const { min: engagementMin, max: engagementMax } = engagementBounds(engagementTimeline);
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeWeek, setActiveWeek] = useState(null);
@@ -84,16 +87,41 @@ export default function EnterpriseOverview() {
       {/* Primary stat grid — each tile drills into a filtered athlete list */}
       <div style={statGridStyle}>
         <StatTile label="Athletes" value={tot} onClick={() => openCategory('all')} />
-        <StatTile label="Actively progressing" value={onTrack} sublabel={`${activelyProgressingPct}% of program`} onClick={() => openCategory('actively-progressing')} />
+        <StatTile
+          label="Actively progressing"
+          value={onTrack}
+          sublabel={consentAware
+            ? (activelyProgressingPct == null ? 'Not tracked' : `${rateActive} of ${rateBaseTotal} tracked`)
+            : `${activelyProgressingPct}% of program`}
+          onClick={() => openCategory('actively-progressing')}
+        />
         <StatTile label="Certified" value={certD} onClick={() => openCategory('certified')} />
         <StatTile label="Not yet active" value={stalled} onClick={() => openCategory('not-yet-active')} />
         <StatTile label="Invited" value={notStarted} onClick={() => openCategory('invited')} />
       </div>
 
-      {/* Supplementary line */}
+      {/* Supplementary line — writable-scoped GPS on the auth tree (FORK 1);
+          demo tree unchanged.
+
+          FORK 3: the gift clause is split out and gated on isAuthenticated, NOT
+          consentAware. gifts_count is written by no path in P-2, so it is a
+          structural 0 for EVERY auth athlete regardless of claim/delegation —
+          a sourced/unsourced question, not a consent question. Gating on
+          consentAware would leave the falsehood standing on a fresh auth roster
+          carrying no `claimed` booleans (which falls through to the third
+          branch). Demo tree renders the same string as before. */}
       <p style={supplementaryStyle}>
-        GPS completed by {gpsD} of {tot} athletes ({gpsRate}%). Total gifts: {tGi} across {athletesWithGifts} athletes.
+        {consentAware
+          ? (rateBaseTotal === 0
+              ? <>GPS completion is not tracked yet — no athlete has delegated record-keeping.</>
+              : <>GPS completed by {rateGps} of {rateBaseTotal} athletes with delegated record-keeping ({gpsRate}%).</>)
+          : <>GPS completed by {gpsD} of {tot} athletes ({gpsRate}%).</>}
+        {' '}
+        {isAuthenticated
+          ? <>Total gifts are not tracked.</>
+          : <>Total gifts: {tGi} across {athletesWithGifts} athletes.</>}
       </p>
+      <RateDisclosure stats={stats} />
 
       {/* Engagement panel. UNSOURCED, not merely empty: no engagement-tracking
           table exists at all (migration 0013 ruled avg_weekly_engagement "not

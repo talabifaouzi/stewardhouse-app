@@ -60,6 +60,32 @@ export function AthletesProvider({ initialState, children }) {
     }
   }, [authenticated]);
 
+  // P-2 Stage D: milestone write-through. Auth tree PUTs to /api/athletes/:id
+  // and replaces the athlete in state by id from the server's returned element;
+  // demo tree merges the patch sync-local (mirror shape — the edit affordance is
+  // authenticated-only, so the demo branch is not reached in practice).
+  const update = useCallback(async (id, patch) => {
+    if (!authenticated) {
+      setAthletes((prev) => prev.map((a) => (a.id === id ? { ...a, ...patch } : a)));
+      return true;
+    }
+    try {
+      const res = await fetch(`/api/athletes/${encodeURIComponent(id)}`, {
+        method: 'PUT', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(patch),
+      });
+      if (!res.ok) throw new Error(await serverError(res, 'Failed to record progression'));
+      const saved = await res.json();
+      setAthletes((prev) => prev.map((a) => (a.id === id ? saved : a)));
+      setWriteError(null);
+      return true;
+    } catch (err) {
+      setWriteError(err.message || 'Failed to record progression');
+      return false;
+    }
+  }, [authenticated]);
+
   const remove = useCallback(async (id) => {
     if (!authenticated) {
       // Demo tree: sync-local splice, no fetch (mirror shape; the Remove
@@ -84,8 +110,8 @@ export function AthletesProvider({ initialState, children }) {
   }, [authenticated]);
 
   const value = useMemo(
-    () => ({ athletes, add, remove, writeError, clearWriteError }),
-    [athletes, add, remove, writeError, clearWriteError],
+    () => ({ athletes, add, update, remove, writeError, clearWriteError }),
+    [athletes, add, update, remove, writeError, clearWriteError],
   );
 
   return (
