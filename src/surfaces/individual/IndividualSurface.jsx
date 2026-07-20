@@ -31,15 +31,29 @@ import GiveScreen from './GiveScreen.jsx';
 import Feedback from './Feedback.jsx';
 import CohortView from './CohortView.jsx';
 
-function getNavItems(basePath) {
-  return [
+function getNavItems(basePath, fixtureIsolated) {
+  const items = [
     { key: 'home', label: 'Home', path: basePath },
     { key: 'plan', label: 'Giving plan', path: `${basePath}/plan` },
     { key: 'discover', label: 'Discover', path: `${basePath}/discover` },
     { key: 'learn', label: 'Learn', path: `${basePath}/learn` },
     { key: 'history', label: 'History', path: `${basePath}/history` },
-    { key: 'team', label: 'Team', path: `${basePath}/team` },
   ];
+
+  // P-3b-2 — dangling-entry-point fix. Team is 100% fixture (SAMPLE_GRANTS /
+  // SAMPLE_EVENTS / ROLES) with no authenticated source, so on the auth tree
+  // the view renders only an absent state. A nav entry is an assertion that
+  // something is there; don't advertise a section with nothing in it (the same
+  // rule that gated the Home cohort callout in P-3a). The route itself stays
+  // registered and degrades honestly if reached by URL or history.
+  //
+  // Appended last, exactly where it sat in the original array, so the demo
+  // tree's nav order is unchanged.
+  if (!fixtureIsolated) {
+    items.push({ key: 'team', label: 'Team', path: `${basePath}/team` });
+  }
+
+  return items;
 }
 
 export default function IndividualSurface() {
@@ -224,7 +238,8 @@ function DashboardLayout() {
     'home';
 
   const basePath = useBasePath();
-  const navItems = getNavItems(basePath);
+  const fixtureIsolated = useFixtureIsolated();
+  const navItems = getNavItems(basePath, fixtureIsolated);
   const appIdentity = useOptionalAppIdentity();
   const { intakeComplete } = useIntake();
 

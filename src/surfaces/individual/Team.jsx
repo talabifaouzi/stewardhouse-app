@@ -3,11 +3,51 @@ import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { SAMPLE_GRANTS, SAMPLE_EVENTS, ROLES } from '../../data/teamData.js';
+import { useFixtureIsolated } from './useFixtureIsolated.js';
 
 export default function Team() {
   const [activeTab, setActiveTab] = useState('overview');
   const [showAccess, setShowAccess] = useState(false);
   const [reminded, setReminded] = useState({});
+  const fixtureIsolated = useFixtureIsolated();
+
+  // P-3b-2 — fixture isolation. This file is 100% fixture: every panel below
+  // derives from SAMPLE_GRANTS / SAMPLE_EVENTS / ROLES, so unlike Learn (which
+  // keeps its lesson catalog) there is nothing here that survives gating.
+  // /api/me emits no grants, commitments, reports, acknowledgments, agreements,
+  // calendar, or delegated-access relation for an individual, so there is
+  // nothing to wire to and the honest state is ABSENCE.
+  //
+  // What this gate stops a signed-in user from seeing as their own: four org
+  // names and $18,500 of grants they never made, dated payment and report
+  // obligations they do not owe, a six-event calendar, and — worst — an Access
+  // Control panel naming "Jordan" and "Sarah" as delegates they never
+  // appointed, under the line "You control who sees what". A §7 names-verbatim
+  // violation of the same shape as P-3a's cohort-mate solicitation.
+  //
+  // Placed BEFORE the fixture read below and before the showAccess branch, so
+  // no fixture value is computed and AccessControl is unreachable on the auth
+  // tree. The three useState hooks above still run unconditionally.
+  //
+  // The route stays reachable by URL and history, so it degrades to an honest
+  // absent state rather than blanking (P-3a precedent). The nav item that
+  // pointed here is gated in IndividualSurface.jsx — Home should not advertise
+  // a section with nothing in it.
+  //
+  // Demo tree: useFixtureIsolated() is false (no AppIdentityProvider mounted)
+  // → the gate is skipped and every panel below renders unchanged.
+  if (fixtureIsolated) {
+    return (
+      <main style={absentMainStyle}>
+        <p style={absentEyebrowStyle}>Your team</p>
+        <Card>
+          <p style={absentTextStyle}>
+            This is where you'll track grant commitments, reports, and shared access.
+          </p>
+        </Card>
+      </main>
+    );
+  }
 
   const grants = SAMPLE_GRANTS;
   const today = new Date();
@@ -488,6 +528,35 @@ function CalendarTab() {
     );
   });
 }
+
+// Absent-state styles (P-3b-2). Deliberately mirror CohortView's absent card
+// rather than reusing this file's EmptyTab: EmptyTab is a bare centered div
+// whose four guards can never fire (the fixture always populates every tab),
+// and consistency across the isolated views is the point. Same token set and
+// same values as CohortView's mainStyle / eyebrowStyle / emptyTextStyle; the
+// 720px max-width matches CohortView and this file's own AccessControl view,
+// not the 880px workspace width, since this is an absent state, not a table.
+const absentMainStyle = {
+  maxWidth: '720px',
+  margin: '0 auto',
+  padding: 'var(--sh-space-8) var(--sh-space-8) var(--sh-space-16)',
+};
+
+const absentEyebrowStyle = {
+  fontSize: '10px',
+  color: 'var(--sh-bronze)',
+  textTransform: 'uppercase',
+  letterSpacing: '0.12em',
+  fontWeight: 600,
+  marginBottom: 'var(--sh-space-2)',
+};
+
+const absentTextStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-muted)',
+  fontStyle: 'italic',
+  lineHeight: 1.6,
+};
 
 function EmptyTab({ text }) {
   return (
