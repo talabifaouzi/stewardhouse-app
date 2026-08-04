@@ -30,6 +30,7 @@ import Team from './Team.jsx';
 import GiveScreen from './GiveScreen.jsx';
 import Feedback from './Feedback.jsx';
 import CohortView from './CohortView.jsx';
+import RecordKeeping from './RecordKeeping.jsx';
 
 function getNavItems(basePath, fixtureIsolated) {
   const items = [
@@ -272,6 +273,7 @@ function DashboardLayout() {
           <Route path="give" element={<GiveScreen />} />
           <Route path="feedback" element={<Feedback />} />
           <Route path="cohort" element={<CohortView />} />
+          <Route path="record-keeping" element={<RecordKeeping />} />
           <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
       </div>
@@ -290,6 +292,11 @@ function IndividualHome() {
   // Same predicate today; different reasons. Keep them apart.
   const appIdentity = useOptionalAppIdentity();
   const fixtureIsolated = useFixtureIsolated();
+  // P-3c — a THIRD distinct question, also not merged with the two above: "is
+  // this signed-in individual a linked athlete?" Answered by real /api/me data
+  // (me.js:137), not by tree-detection, so it is derived here rather than from
+  // either predicate. Null for ordinary individuals and on the demo tree.
+  const athlete = appIdentity?.status === 'ready' ? appIdentity.identity?.athlete : null;
   const [showAllGifts, setShowAllGifts] = useState(false);
   const { answers, gifts, givingStyle, worldLabel, resetIntake, loadDemo, intakeComplete } = useIntake();
 
@@ -469,6 +476,45 @@ function IndividualHome() {
             color: 'var(--sh-text-muted)',
           }}>
             Athletes working on a giving practice together.
+          </p>
+        </Card>
+      )}
+
+      {/* Record-keeping entry line (P-3c) — the only route into the consent
+          control, since getNavItems is deliberately untouched (a single
+          settings card does not warrant top-level nav weight, and nav is
+          shared with the demo tree). Reuses the interactive-Card idiom of the
+          cohort callout directly above.
+
+          Condition is `!!athlete`, NOT `athlete && mode !== null`: an athlete
+          who dismissed the consent interstitial with "Decide later" has a null
+          mode, and gating on mode would strand them with no route back except
+          a typed URL. Unlike the cohort callout, this asserts nothing that
+          could be false — the athlete demonstrably has a record-keeping mode,
+          including "not chosen yet". Null on the demo tree, so Home renders
+          byte-identical there. */}
+      {!!athlete && (
+        <Card
+          interactive
+          onClick={() => navigate(`${basePath}/record-keeping`)}
+          style={{
+            marginBottom: 'var(--sh-space-3)',
+            cursor: 'pointer',
+          }}
+        >
+          <p style={{
+            fontSize: 'var(--sh-text-sm)',
+            fontWeight: 600,
+            color: 'var(--sh-text-primary)',
+            marginBottom: '2px',
+          }}>
+            How your record is managed →
+          </p>
+          <p style={{
+            fontSize: 'var(--sh-text-xs)',
+            color: 'var(--sh-text-muted)',
+          }}>
+            Choose whether you or your program staff keep your record.
           </p>
         </Card>
       )}
