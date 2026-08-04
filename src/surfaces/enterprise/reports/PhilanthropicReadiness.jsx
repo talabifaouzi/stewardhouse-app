@@ -126,7 +126,7 @@ export default function PhilanthropicReadiness() {
 
       {consentAware && (totalAthletes - writable) > 0 && (
         <p style={consentNoteStyle}>
-          Stages beyond Invited require delegated record-keeping. Athletes who manage their own records or have not yet claimed their account remain at Invited here.
+          Only athletes who have delegated record-keeping to the department can have new milestones recorded by staff. Athletes who manage their own records keep any milestones recorded earlier, but their stage will not advance here. Athletes who have not yet claimed their account remain at Invited.
         </p>
       )}
 
