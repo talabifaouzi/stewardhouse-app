@@ -488,11 +488,12 @@ function IndividualHome() {
 
           Condition is `!!athlete`, NOT `athlete && mode !== null`: an athlete
           who dismissed the consent interstitial with "Decide later" has a null
-          mode, and gating on mode would strand them with no route back except
-          a typed URL. Unlike the cohort callout, this asserts nothing that
-          could be false — the athlete demonstrably has a record-keeping mode,
-          including "not chosen yet". Null on the demo tree, so Home renders
-          byte-identical there. */}
+          mode, and gating on mode would strand them with no route back at all.
+          A typed URL does not help: a fresh load remounts this component,
+          resets dismissed, and the interstitial intercepts again. Unlike the
+          cohort callout, this asserts nothing that could be false — the athlete
+          demonstrably has a record-keeping mode, including "not chosen yet".
+          Null on the demo tree, so Home renders byte-identical there. */}
       {!!athlete && (
         <Card
           interactive
