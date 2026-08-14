@@ -3,12 +3,22 @@ import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
 import { Tag } from '../../components/Tag.jsx';
 import { useIntake } from '../../contexts/IntakeContext.jsx';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { CAUSES } from '../../data/intakeData.js';
 import unified from '../../data/unified/index.js';
 import { CAT_META } from '../../data/orgsData.js';
 
 export default function Discover() {
   const { answers: a } = useIntake();
+  // AUTHENTICATED-TREE TEST — deliberately the RAW presence check, NOT
+  // useFixtureIsolated(). That helper's contract is "returns TRUE when fixture
+  // content must NOT render" (useFixtureIsolated.js:7), and here fixture content
+  // DOES render, by ruling: an empty Discover teaches the pilot nothing. Routing
+  // this through the helper would invert its documented meaning. The P-3b-1
+  // decision kept the two predicates separate for exactly this case — its
+  // docblock names "an authenticated tree that legitimately shows sample
+  // content" as the divergence to protect. Do not "fix" this into the helper.
+  const isAuthenticated = !!useOptionalAppIdentity();
   const [expanded, setExpanded] = useState(null);
   const [saved, setSaved] = useState([]);
   const [manualCauses, setManualCauses] = useState([]);
@@ -79,6 +89,25 @@ export default function Discover() {
       }}>
         Organizations {isGPSMode ? 'for you' : ''}
       </h1>
+
+      {/* Placeholder-data caveat. Style carried from the §7 caveat idiom at
+          OperationsSurface.jsx:301-312, reused at OperationsRoster.jsx:240-250.
+          THE CONDITION IS INVERTED relative to both: those render on the DEMO
+          tree, this renders on the AUTHENTICATED tree, because a demo is already
+          understood as demonstrative and a signed-in user is not. Sits below the
+          heading and above every card so it precedes the content it qualifies. */}
+      {isAuthenticated && (
+        <p style={{
+          fontSize: 'var(--sh-text-xs)',
+          color: 'var(--sh-text-muted)',
+          fontStyle: 'italic',
+          marginBottom: 'var(--sh-space-5)',
+          maxWidth: '720px',
+        }}>
+          Organization profiles here are illustrative while live nonprofit data
+          is being connected.
+        </p>
+      )}
 
       {/* GPS subtitle */}
       {isGPSMode && (
@@ -396,58 +425,27 @@ function OrgCard({ org, expanded, onToggle, isSaved, onSave, wantsDetail }) {
           paddingTop: 'var(--sh-space-3)',
           marginTop: 'var(--sh-space-2)',
         }}>
-          <InfoRow label="Executive Director" value={org.extensions.individual.ed} />
+          {/* Executive Director removed in the 2026-08-14 defang (§7 authored
+              org-level content). `led` is a structural descriptor
+              ("Community-led" / "Nationally staffed"), not a named person. */}
           <InfoRow label="Leadership" value={org.extensions.individual.led} />
           <InfoRow label="Operating" value={`${org.extensions.individual.years} years`} />
           <InfoRow label="Who they serve" value={org.extensions.individual.demo} />
 
-          {org.extensions.individual.programs && org.extensions.individual.programs.length > 0 && (
-            <div style={{ margin: 'var(--sh-space-2) 0' }}>
-              <p style={{
-                fontSize: 'var(--sh-text-xs)',
-                fontWeight: 600,
-                color: 'var(--sh-bronze)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.06em',
-                marginBottom: '6px',
-              }}>
-                Programs
-              </p>
-              <div style={{
-                display: 'flex',
-                flexWrap: 'wrap',
-                gap: '4px',
-              }}>
-                {org.extensions.individual.programs.map(p => <Tag key={p}>{p}</Tag>)}
-              </div>
-            </div>
-          )}
+          {/* Programs block removed in the 2026-08-14 defang. The program names
+              were the most identifying content on these records — several read
+              as real organizations' trademarked program names — which made them
+              a sharper instance of the same defect as board size, not a milder
+              one. */}
 
+          {/* Annual budget, Board size and Top funders removed in the 2026-08-14
+              defang — fabricated finances and funder lists attached to records
+              several of which are identifiable by mission language alone. The
+              block now holds only the filings placeholder below; it stays gated
+              on wantsDetail (trust === 'directed') so the directed-trust reader
+              still gets the "more detail exists" signal. */}
           {wantsDetail && (
             <>
-              <InfoRow label="Annual budget" value={org.extensions.individual.budget} />
-              <InfoRow label="Board size" value={org.extensions.individual.boardSize ? `${org.extensions.individual.boardSize} members` : null} />
-              {org.extensions.individual.topFunders && org.extensions.individual.topFunders.length > 0 && (
-                <div style={{ margin: 'var(--sh-space-2) 0' }}>
-                  <p style={{
-                    fontSize: 'var(--sh-text-xs)',
-                    fontWeight: 600,
-                    color: 'var(--sh-bronze)',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.06em',
-                    marginBottom: '6px',
-                  }}>
-                    Top funders
-                  </p>
-                  <p style={{
-                    fontSize: 'var(--sh-text-sm)',
-                    color: 'var(--sh-text-body)',
-                    lineHeight: 1.5,
-                  }}>
-                    {org.extensions.individual.topFunders.join(' · ')}
-                  </p>
-                </div>
-              )}
               <Card tint padding="md" style={{ margin: 'var(--sh-space-2) 0' }}>
                 <p style={{
                   fontSize: 'var(--sh-text-xs)',
@@ -461,7 +459,7 @@ function OrgCard({ org, expanded, onToggle, isSaved, onSave, wantsDetail }) {
                   fontSize: 'var(--sh-text-xs)',
                   color: 'var(--sh-text-muted)',
                 }}>
-                  Full financial filings available when Candid API is connected.
+                  Full financial filings appear here once live nonprofit data is connected.
                 </p>
               </Card>
             </>

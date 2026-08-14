@@ -177,11 +177,10 @@ export function adaptIndividual() {
         foundedYear: o.foundedYear,
         led: o.led,
         badge: o.badge,
-        ed: o.ed,
-        boardSize: o.boardSize,
-        budget: o.budget,
-        programs: o.programs,
-        topFunders: o.topFunders,
+        // DEFANGED 2026-08-14: ed / boardSize / budget / programs / topFunders
+        // were removed from orgsData.js and are no longer carried. NOTE the
+        // name collision — Person.extensions.individual.budget (:132) is the
+        // FUNDER'S OWN giving budget and is untouched; only the ORG budget went.
         demo: o.demo,
       },
     },

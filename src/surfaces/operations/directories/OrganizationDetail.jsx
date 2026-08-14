@@ -89,10 +89,9 @@ export default function OrganizationDetail() {
   const headerLabelId = useId();
   const summaryLabelId = useId();
   const missionLabelId = useId();
-  const programsLabelId = useId();
-  const leadershipLabelId = useId();
+  // programsLabelId / leadershipLabelId / fundersLabelId dropped with their
+  // sections in the 2026-08-14 defang — no orphaned useId() calls left behind.
   const demoLabelId = useId();
-  const fundersLabelId = useId();
   const crLabelId = useId();
   const recordsLabelId = useId();
 
@@ -186,12 +185,8 @@ export default function OrganizationDetail() {
                 <p style={META_VALUE}>{ext.foundedYear}</p>
               </div>
             )}
-            {ext.budget && (
-              <div>
-                <p style={META_LABEL}>Operating budget</p>
-                <p style={META_VALUE}>{ext.budget}</p>
-              </div>
-            )}
+            {/* Operating budget removed in the 2026-08-14 Discover defang —
+                the field is gone from orgsData.js and the individual adapter. */}
           </div>
           {causeChips.length > 0 && (
             <div>
@@ -234,61 +229,14 @@ export default function OrganizationDetail() {
         </div>
       )}
 
-      {/* Programs */}
-      {(ext.programs || []).length > 0 && (
-        <div style={{ marginBottom: 'var(--sh-space-6)' }}>
-          <Card as="section" aria-labelledby={programsLabelId}>
-            <SectionLabel id={programsLabelId}>Programs</SectionLabel>
-            <ul style={{
-              listStyle: 'disc',
-              paddingLeft: 'var(--sh-space-5)',
-              margin: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 'var(--sh-space-1)',
-            }}>
-              {ext.programs.map((p, i) => (
-                <li key={i} style={{
-                  fontSize: 'var(--sh-text-sm)',
-                  color: 'var(--sh-text-primary)',
-                  lineHeight: 1.5,
-                }}>
-                  {p}
-                </li>
-              ))}
-            </ul>
-          </Card>
-        </div>
-      )}
+      {/* Programs section removed in the 2026-08-14 Discover defang — the
+          program names were the most identifying authored content on these
+          records. Field is gone from orgsData.js and the individual adapter. */}
 
-      {/* Leadership — executive director (plain text) + board size */}
-      {(ext.ed || ext.boardSize != null) && (
-        <div style={{ marginBottom: 'var(--sh-space-6)' }}>
-          <Card as="section" aria-labelledby={leadershipLabelId}>
-            <SectionLabel id={leadershipLabelId}>Leadership</SectionLabel>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-              gap: 'var(--sh-space-5)',
-            }}>
-              {ext.ed && (
-                <div>
-                  <p style={META_LABEL}>Executive director</p>
-                  {/* Plain text — never a person stub. Preflight confirmed 0/17 ed
-                      strings match a known person record. No slice-4 retrofit. */}
-                  <p style={META_VALUE}>{ext.ed}</p>
-                </div>
-              )}
-              {ext.boardSize != null && (
-                <div>
-                  <p style={META_LABEL}>Board size</p>
-                  <p style={META_VALUE}>{ext.boardSize}</p>
-                </div>
-              )}
-            </div>
-          </Card>
-        </div>
-      )}
+      {/* Leadership section (executive director + board size) removed in the
+          2026-08-14 Discover defang. Both fields are gone from orgsData.js and
+          the individual adapter, so the section's render condition could never
+          be true; the whole Card goes rather than leaving a dead conditional. */}
 
       {/* Demographic served */}
       {ext.demo && (
@@ -300,21 +248,10 @@ export default function OrganizationDetail() {
         </div>
       )}
 
-      {/* Funder examples the organization shares — fixture order preserved.
-          No numerals, no ordering cues; the header does the de-ranking work
-          (founder ruling D6). */}
-      {(ext.topFunders || []).length > 0 && (
-        <div style={{ marginBottom: 'var(--sh-space-6)' }}>
-          <Card as="section" aria-labelledby={fundersLabelId}>
-            <SectionLabel id={fundersLabelId}>Funder examples the organization shares</SectionLabel>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sh-space-2)' }}>
-              {ext.topFunders.map((f, i) => (
-                <p key={i} style={META_VALUE}>{f}</p>
-              ))}
-            </div>
-          </Card>
-        </div>
-      )}
+      {/* Funder-examples section removed in the 2026-08-14 Discover defang.
+          The de-ranking work the header did (founder ruling D6) is moot with the
+          field gone; it returns with the real-data aggregation if funders are
+          sourced. */}
 
       {/* Connection requests — aggregate only (no record table, no giver names). */}
       <div style={{ marginBottom: 'var(--sh-space-6)' }}>

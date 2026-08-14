@@ -161,8 +161,11 @@
  *                                                       enterprise-adapter pass.
  * @property {SourceSurface} sourceSurface
  * @property {Object} extensions                     Per-source bag (years, foundedYear,
- *                                                   led, badge, ed, boardSize, budget,
- *                                                   programs[], topFunders[], demo, etc.).
+ *                                                   led, badge, demo, etc.).
+ *                                                   ed / boardSize / budget / programs[] /
+ *                                                   topFunders[] were DEFANGED 2026-08-14
+ *                                                   (authored org-level content, §7) and
+ *                                                   are no longer emitted.
  *                                                   years and foundedYear are redundant
  *                                                   (foundedYear = data-now-year − years)
  *                                                   — both populated until the individual-
