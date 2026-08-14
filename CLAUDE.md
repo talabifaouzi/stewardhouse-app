@@ -426,7 +426,20 @@ Every substantive change runs as a **slice**. The rhythm:
     a read-only parity verify (`migrations list --remote` + remote
     `sqlite_master` / `PRAGMA table_info` reads, no mutation) confirmed the
     deltas landed before the branch was merged. Deferral declared, deferral
-    closed, closure verified — that is the whole rule.
+    closed, closure verified — that is the whole rule. **"Local" means a NAMED
+    store (added 2026-08-14).** A migration's local application means nothing
+    until the store it was applied to is identified. See §10 for how: the
+    wrangler startup banner, never a filename and never a sidecar probe driven
+    by a different command than the one whose binding is in question. Where more
+    than one `.sqlite` sits under
+    `.wrangler/state/v3/d1/miniflare-D1DatabaseObject/`, a branch-(b) note must
+    say which one received the migration. **Worked failure (2026-07-16 to
+    2026-08-05):** migrations 0016 + 0017 satisfied this rule completely
+    (deferral declared, applied `--remote` before the bank, parity verified
+    read-only), and every `wrangler pages dev` smoke in that window still ran
+    against a second local store that carried neither. The rule was honored and
+    its LOCAL half was void. §6.10 protects against remote drift; nothing
+    protected against local ambiguity until §10 was corrected.
 11. **Authenticated-surface path audit (full-directory rule).** When
     wiring any existing public demo surface for reuse at an authenticated
     route (e.g. IndividualSurface at both `/individual/*` and
@@ -697,15 +710,78 @@ Five hard-earned lessons from a night of failed browser screening attempts (2026
 
 ---
 
-## 10. Local D1 / migration runbook — lessons (2026-07-20)
+## 10. Local D1 / migration runbook — lessons (2026-07-20, bullet 1 corrected 2026-08-14)
 
-Three techniques from the P-2 Stage A migration work. These concern the LOCAL
-D1 store and destructive schema rebuilds — distinct from §9, which is about
+Three techniques from the P-2 Stage A migration work; bullet 1 corrected
+2026-08-14. These concern the local D1 stores (which one a given invocation
+binds) and destructive schema rebuilds, distinct from §9, which is about
 browser screening of auth-gated surfaces.
 
-- **Wrangler v4 converges local D1 files — identify the live one by sidecar-mtime probe.** More than one candidate `.sqlite` can sit under the local state directory, and the path is not stable across wrangler versions. Do not assume a filename. Touch the store through a real query, then take the file whose sidecar (`-wal` / `-shm`) mtime just moved; that is the file the running Worker is bound to. Applying a migration to the wrong file produces a silent no-op — the schema looks unapplied and the smoke fails for reasons that have nothing to do with the SQL.
+- **Identify the bound local D1 store from wrangler's startup banner.** `env.DB (stewardhouse-pilot)` means the binding was config-resolved. `env.DB (local-DB=stewardhouse-pilot)` means a `--d1` flag is in play and a DIFFERENT store is in use. Read that line before trusting any local store, and never infer the binding from a filename. **Why that line is authoritative:** the `.sqlite` filename under `miniflare-D1DatabaseObject/` is the Durable-Object id for `idFromName()` of the id string the invocation hands miniflare, under the fixed unique key `miniflare-D1DatabaseObject` (`miniflare/dist/src/index.js:85770`; `workers/shared/object-entry.worker.js`), and nothing else. Config-resolved commands (bare `pages dev`, `d1 execute --local`, `d1 migrations apply --local`) all pass `database_id` and converge on one file. A `--d1 BINDING=NAME` flag on `pages dev` does not: `wrangler-dist/cli.js:302057` assigns `database_id: ref`, putting the database NAME into the id slot. Verified empirically 2026-08-11: `8600684c-…` maps to `e7ff1add…`, `stewardhouse-pilot` maps to `7202f096…`. If a sidecar-mtime probe is used at all, it MUST be driven by the command whose binding is in question; a probe run through `d1 execute --local` proves nothing about `pages dev`, because that command and `d1 migrations apply --local` share one code path and their agreement is a tautology. Applying a migration to the wrong file produces a silent no-op: the schema looks unapplied and the smoke fails for reasons that have nothing to do with the SQL.
 - **Apply schema via `node:sqlite`, and run `PRAGMA foreign_keys=OFF` OUTSIDE a transaction.** The pragma is a no-op inside an open transaction and fails silently — SQLite neither errors nor warns. A table-rebuild that relies on it will then drop child rows. Set it first, **guard-assert that it actually took effect**, and only then begin the rebuild. (0016 did exactly this: four inbound child FKs, guard-asserted before DROP, child survival proven on a scratch copy, `foreign_key_check` empty afterward.)
 - **`VACUUM INTO` before any destructive rebuild — never `cp`.** A filesystem copy of a live SQLite database silently loses WAL contents: the copy looks intact and is missing the most recent committed writes. `VACUUM INTO` produces a consistent point-in-time snapshot. Use it for the scratch copy that proves a rebuild is non-destructive before touching the real store.
+
+### Filed — an invocation flag created a persistent second local D1 store (2026-07-16)
+
+On **2026-07-16T18:55:18Z** a second store `7202f096….sqlite` came into
+existence and received every write of the C-3b consent-enforcement milestone
+screen: two `session` rows, a `verification` row, the invite `person`, the
+roster-add `athlete`, a `workshop` and its attendance. Its newest write is
+**2026-07-16T19:10:32.615Z**. It has been frozen since, while migrations 0016
+and 0017 and every subsequent seed went to `e7ff`.
+
+The cause was `--d1 DB=stewardhouse-pilot` on an agent-run `wrangler pages dev`:
+`cli.js:302057` assigns `database_id: ref`, so `idFromName('stewardhouse-pilot')`
+resolves to a different Durable Object than `idFromName('8600684c-…')`. **The
+command itself survives nowhere:** not in `wrangler.toml`, not in
+`package.json` scripts, not in FT's PowerShell history (agent-run background
+commands never reach PSReadLine). Its only trace is a banner line inside a
+`server.log` in an OS-temp scratchpad, which is not version-controlled and is
+subject to cleanup at any time.
+
+The flag came into use mid-day on 2026-07-16. `.staging-server.log` at the repo
+root, last written `2026-07-16T19:18:47Z`, records `env.DB (stewardhouse-pilot)`:
+the config-resolved form, no flag. `7202` was created at 18:55Z the same day.
+Both invocation forms were used within hours of each other, and nothing at the
+time distinguished them.
+
+**What it cost.** The P-2 Stage A record ratified `e7ff` as "the bound store" on
+a sidecar-mtime probe driven by `d1 execute --local`, a probe that measured a
+different command than the one in question, and §10 carried that as a
+wrangler-version property from 2026-07-20 until this correction. The 2026-08-05
+P-3c smoke then failed for roughly an hour (seed backup 15:39Z, diagnosis script
+16:39Z, cleanup 16:41Z) with seed on `e7ff` and server on `7202`, presenting as
+repeated `GET /api/me 200` with a null body, indistinguishable from an expired
+session. Separately, when "did Stage B's R6 assertions run against the
+CHECK-less store?" was asked in August, it could only be answered by inference,
+because `p2_smoke.mjs` had already been lost from the same class of temp
+directory.
+
+**Discipline that would have caught it, cheapest first:**
+
+1. **Read the banner.** Wrangler prints the bound resource at every start.
+   `local-DB=…` versus `stewardhouse-pilot` is a one-line, zero-cost
+   discriminator that sat in `server.log` unread for the whole incident. This
+   alone closes the failure mode.
+2. **A probe must be driven by the command whose binding is in question.** §10's
+   technique was sound; its subject was wrong.
+3. **A seed must assert its target store is the store the server reads,** not
+   hardcode a path and hope. Comparing against the banner, or failing loudly
+   when more than one `.sqlite` exists under `miniflare-D1DatabaseObject/`,
+   turns a silent mismatch into a startup error. `scripts/smoke-p3c-seed.mjs`
+   now does the schema half of this.
+4. **Non-default flags on a long-lived local service belong in a committed
+   script.** A `pages dev` incantation that changes which database the app talks
+   to is a configuration decision and should be as reviewable as
+   `wrangler.toml`.
+5. **An ignored file is invisible to a default repo sweep.** The Grep tool
+   honors `.gitignore`, so `scripts/seed-screen-p2.mjs` (excluded by
+   `.gitignore:19`) never appeared in any ripgrep-based search of the repo, and
+   the false warrant it carried survived four weeks of audits that would
+   otherwise have surfaced it. Any audit trusting the default tool will miss
+   ignored files: search them explicitly, or do not let correction-bearing text
+   live in an ignored path. This is why the file was renamed to
+   `scripts/smoke-p2-screen.mjs`.
 
 ---
 
