@@ -171,7 +171,7 @@ export default function OrganizationDetail() {
               <p style={{
                 ...META_VALUE,
                 color: 'var(--sh-text-secondary)',
-              }}>Pending Candid integration</p>
+              }}>Available once live nonprofit data is connected</p>
             </div>
             {org.geo && (
               <div>

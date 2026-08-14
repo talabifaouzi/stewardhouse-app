@@ -617,11 +617,39 @@ discovery view**.
 ### StewardHouse never authors org-level content
 
 Only structural elements (cause tags, fields, scaffolds). Org profile
-narrative is org-authored or imported (Candid API integration is future).
+narrative is org-authored or imported, NEVER written here.
 Organizations are referenced entities, not platform users — the unclaimed
 tier of the content-sourcing model; org records appear as discovery-catalog
 entries, gift targets, and connection destinations, and the Operations
 Organizations directory is the operator view of those records.
+
+**Ruled import architecture (2026-08-14, superseding "Candid API integration
+is future").** Three sources, ALL REQUIRED, none substituting for another:
+
+1. **ProPublica Nonprofit Explorer API.** The structured 990 record, queried
+   live by EIN. No key, public-domain data.
+2. **IRS bulk data.** Authoritative status and monthly currency. Carries a
+   HARD GATE: a revoked or non-deductible org may not be surfaced at all,
+   checked before the record reaches any view.
+3. **The org's own website.** Current mission and program language in the
+   org's own voice, refreshed quarterly, carrying an inline disclaimer.
+
+**Provenance is per FIELD, not per profile.** A profile mixes all three
+sources, so a single profile-level attribution would be false for most of
+what is on the page.
+
+**Candid is DEFERRED ENTIRELY.** It is revisited only if pilot data proves a
+need, and only with an attorney engaged first. The reason is licensing, not
+data quality: Candid's terms require express written consent for any LLM use
+of their data, which is what made source 3 unbuildable while Candid was the
+plan. Dropping Candid unblocks it. Do NOT design toward Candid, and do not
+introduce seal or tier grammar.
+
+The 2026-08-14 Discover defang (`42851cd`) is the first instalment: five
+authored fields (`ed`, `boardSize`, `budget`, `programs`, `topFunders`) were
+removed from all 17 fixture orgs because authored officers and finances
+attached to identifiable real organizations is the sharpest form of the
+violation this rule exists to prevent.
 
 ---
 

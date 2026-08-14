@@ -229,7 +229,7 @@ export default function GiveScreen() {
           <textarea
             value={purpose}
             onChange={e => setPurpose(e.target.value)}
-            placeholder="What was this gift for? Useful for your own records — e.g. IRS or Candid reporting."
+            placeholder="What was this gift for? Useful for your own records — e.g. IRS reporting."
             style={{ ...inputStyle, minHeight: '60px', resize: 'vertical', fontFamily: 'inherit', marginBottom: 'var(--sh-space-4)' }}
           />
 
