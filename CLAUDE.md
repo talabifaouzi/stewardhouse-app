@@ -207,6 +207,12 @@ Record-level (explicit, not default landing data) —
 **The pilot gate:** full platform functionality across all four surfaces before
 any advisor or athletic-department outreach.
 
+**Acceptance criteria per surface: `docs/pilot-gate-criteria.md`** (ruled
+2026-08-14). That sentence alone carries no criteria, which is why no completion
+figure was defensible. The doc carries the five rulings, the counting method,
+per-surface status, and BOTH figures: capability, which is what the gate tracks,
+and production-usable, reported alongside and never merged into it.
+
 **Gap-review verdict (read-only review, 2026-07-16, HEAD `7eb7ee0`).** The
 platform is not one arc from the gate. The write arcs are genuinely built and
 the gates are disciplined; the *data-isolation seam that makes those writes
@@ -759,6 +765,17 @@ violation this rule exists to prevent.
   charitable-retention-floor confirmation, Clause 6 subpoena posture —
   isolated, do NOT block the build; reviewing counsel confirms in
   parallel.
+- `docs/pilot-gate-criteria.md` — the pilot gate's acceptance criteria, ruled
+  2026-08-14. Five rulings (isolate-vs-caveat by claim subject; caveated counts;
+  honest-but-empty counts; publish both figures; weight by endpoints plus
+  routes), the counting method that makes the denominator reproducible, and a
+  re-score log. Deliberately NOT in CLAUDE.md: §7 sections are LOCKED
+  guardrails, this carries per-item status that changes every slice. First
+  scoring at `e13ea0c`: capability 68/83 = 82% (routes 35/50, endpoints 33/33),
+  production-usable 44/83 = 53%. NOT comparable to the prior 57%, which used a
+  different method; the move is rulings, not progress.
+  One criterion (Enterprise "renders live institution data") is flagged NOT
+  AUDITABLE with a proposed test.
 - `src/data/unified/README.md` — unified data layer internal notes.
 
 ---
