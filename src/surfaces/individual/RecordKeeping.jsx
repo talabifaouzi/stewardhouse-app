@@ -216,6 +216,7 @@ const errorStyle = {
   color: 'var(--sh-bronze-deep)',
   lineHeight: 1.5,
   marginBottom: 'var(--sh-space-4)',
+  overflowWrap: 'break-word',
 };
 
 const confirmedStyle = {
