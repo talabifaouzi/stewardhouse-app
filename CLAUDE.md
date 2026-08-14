@@ -498,6 +498,17 @@ Every substantive change runs as a **slice**. The rhythm:
 13. **Bank rule (agent-prompt-discipline rule).** Agent prints `git diff`
     + exact proposed commit message and waits for FT "Option 1 yes"
     before any commit — diff + message, always.
+14. **"Demo tree byte-identical" is a PER-SLICE ISOLATION PROOF (ruled
+    2026-08-14), not an absolute prohibition on changing shared components.**
+    What the claim demonstrates is that an authenticated-tree change did not
+    LEAK identity or fixture behaviour across to the public demo. That is why
+    it appears on every isolation slice. A deliberate change to a shared
+    component that alters BOTH trees identically is a different thing and does
+    not violate it: nothing leaked, and the demo did not diverge from the real
+    surface. Such a slice simply cannot CLAIM byte-identical, and must say so
+    plainly rather than let the streak break unexplained. First applied to the
+    44px tap-target fix, which moves 11 demo-visible `size="lg"` buttons by 5px
+    on both trees at once.
 
 Stop background shells (dev server, watch loops) at bank time. Use `TaskStop`,
 not `kill`.
@@ -533,6 +544,35 @@ radius / type-size goes through a `--sh-*` token in `src/styles/tokens.css`.
 **No hex literals in components.** SVG icons only (`role="button"` divs get
 the bronze focus-visible ring via global selector). **Zero emoji anywhere
 in the interface.** WCAG AA.
+
+### Tap targets and control sizing (LOCKED 2026-08-14)
+
+**The tap-target standard is 44px, not WCAG 2.5.8's 24px.** This is a
+phone-first product, and the highest-stakes control in it writes a consent
+change with no confirm step. WCAG 2.2 AA would pass every button already;
+that is not the bar. The deferred nav slice inherits this standard.
+
+**`lg` is the TOUCH-PRIMARY size** and is the only one held to 44px, via an
+explicit `minHeight` in `Button.jsx`. Measured on device it computes to 39px
+(padding 20 + border 2 + a 17px UA line box), because browsers force
+`line-height: normal` on form controls and inheritance of `--sh-line-normal`
+never reaches them. `minHeight` rather than a corrected `lineHeight`: a height
+that emerges from three numbers silently re-breaks when a font-size token moves.
+
+**`sm` and `normal` stay non-compliant DELIBERATELY** (~27px / ~32px). They are
+pointer-density controls for inline row actions. Padding a 27px control to 44px
+makes it mostly empty space and it would dominate the rows it sits in. The gap
+between the three sizes is intentional, not an oversight, and should not be
+"fixed" by a later sweep.
+
+**Filed: `/individual/welcome` CTA falls below the fold on a short viewport.**
+Found during the 2026-08-14 device pass, **PRE-EXISTING and not caused by the
+tap-target slice**: measured with `minHeight` forced to 0 it reads the same 746
+either way. At a 640x642 viewport the CTA bottom sits at 746, i.e. 104px below
+the fold, so the first onboarding screen requires a scroll to find its only
+action. The other four onboarding screens are clear at the same height (letter
+587, privacy 535, questions 401, reveal 517). Short-viewport layout defect on
+`Positioning.jsx`; its own slice.
 
 ### Voice & tone (LOCKED)
 

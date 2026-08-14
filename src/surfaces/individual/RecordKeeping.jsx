@@ -226,10 +226,23 @@ const confirmedStyle = {
   marginBottom: 'var(--sh-space-4)',
 };
 
+// Gap between two stacked full-width controls with OPPOSITE meanings and no
+// confirm step. --sh-space-3 (12px), raised from --sh-space-2 (8px).
+//
+// This SETS a precedent rather than following one. The only prior
+// opposed-action site is LessonDetail.jsx:355, also at 8px, and it is
+// materially different: horizontal, inside a modal, with a ghost Cancel that is
+// already visually recessed. Its 8px was under-specified rather than
+// considered, so it is not a precedent to inherit. The two 12px sites in the
+// codebase (Modal.jsx:147, AthleteProfile.jsx:294) are HEADER rows, not action
+// rows, and are not precedent either.
+//
+// Kept in lockstep with IndividualSurface.jsx interstitialActionsStyle: the two
+// consent surfaces present the same choice and must not diverge.
 const actionsStyle = {
   display: 'flex',
   flexDirection: 'column',
-  gap: 'var(--sh-space-2)',
+  gap: 'var(--sh-space-3)',
 };
 
 const fullWidthBtnStyle = {

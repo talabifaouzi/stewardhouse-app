@@ -201,17 +201,65 @@ const interstitialErrorStyle = {
   marginBottom: 'var(--sh-space-4)',
 };
 
+// gap: --sh-space-3 (12px), raised from 8px, in lockstep with RecordKeeping's
+// actionsStyle. See the note there for why this SETS a precedent rather than
+// following one. The two consent surfaces present the same choice and must not
+// diverge.
+//
+// marginBottom: --sh-space-8 (32px), raised from --sh-space-4 (16px). This is
+// the separation from "Decide later" below.
+//
+// MEASURED on device 2026-08-14 at a 640x642 viewport: box-to-box separation
+// between the secondary button and the dismiss control is 32px. The full token
+// survives; nothing eats into it.
+//
+// An earlier version of this comment predicted ~17px here, reasoning that the
+// dismiss control's new 44px minHeight box would extend ~15px above its glyph
+// and consume part of the margin. That was a category error and the measurement
+// falsified it. The mechanism, which the code settles without needing a device:
+// this Card sets no `display`, so the interstitial is normal block flow, and the
+// dismiss has margin '0 auto' (marginTop 0). In normal flow a margin separates
+// adjacent BORDER BOXES, and padding lives inside the border box. Adding padding
+// to the dismiss therefore grew its border box DOWNWARD and moved its glyph down
+// within that box; it could not move the box's top edge, which is pinned exactly
+// 32px below the actions column by this margin. Where the glyph sits inside the
+// dismiss box is a separate question from where the box starts, and only the
+// second one governs tap separation.
+//
+// The same error means the old 16px margin would have given 16px box-to-box,
+// not the ~1px once claimed. So this increase was NOT forced by the padding
+// change. It is a deliberate improvement from 16px to 32px.
+//
+// 32px was RULED over 24px (FT, 2026-08-14) on the measurement, not on
+// arithmetic: it measures clean, it fits without overflow at phone height, and
+// this is the one control in the product where a mis-tap writes a consent change
+// with no confirm step.
 const interstitialActionsStyle = {
   display: 'flex',
   flexDirection: 'column',
-  gap: 'var(--sh-space-2)',
-  marginBottom: 'var(--sh-space-4)',
+  gap: 'var(--sh-space-3)',
+  marginBottom: 'var(--sh-space-8)',
 };
 
 const fullWidthBtnStyle = {
   width: '100%',
 };
 
+// "Decide later": the escape hatch on a consent screen, and the highest-stakes
+// tap target in the product. Measured at 14px on device 2026-08-14: padding 0 +
+// border 0 + an 11px font's ~14px line box, so the tap target WAS the glyph box.
+// A thumb aiming at it and landing high hit a 44px primary directly above that
+// writes a consent choice with no confirm step (:110-133 -> POST
+// /api/athlete-consent). The failure direction was "trying to defer" becoming
+// "committing", on the one screen whose whole purpose is that the choice is the
+// athlete's.
+//
+// The tap area and the visual weight are separable, and only the first changes:
+// padding + minHeight give a 44px box, while --sh-text-xs, --sh-text-muted,
+// italic, the underline, the transparent background, the absent border and the
+// block/auto-margin centring all stay exactly as they were. Horizontal padding
+// widens the hit area; the visible underline stays glyph-width, so nothing about
+// how this reads changes. It remains visually tertiary.
 const interstitialDismissStyle = {
   display: 'block',
   margin: '0 auto',
@@ -223,7 +271,8 @@ const interstitialDismissStyle = {
   textDecoration: 'underline',
   cursor: 'pointer',
   fontFamily: 'inherit',
-  padding: 0,
+  padding: 'var(--sh-space-3) var(--sh-space-5)',
+  minHeight: '44px',
 };
 
 function DashboardLayout() {
