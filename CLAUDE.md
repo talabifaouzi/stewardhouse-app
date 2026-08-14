@@ -571,6 +571,17 @@ makes it mostly empty space and it would dominate the rows it sits in. The gap
 between the three sizes is intentional, not an oversight, and should not be
 "fixed" by a later sweep.
 
+**Filed: advisor stage-label renaming, blocked on the Q7 allowlist.** P-4 removed
+the dead Rename control from `PracticeSettings.jsx` along with the paragraph
+above it that instructed the advisor to use it. The stage labels still display;
+only the ability to change them is gone, and it was never present. Making it
+work is BLOCKED, not merely unbuilt: `practice-profile.js:33` allowlists exactly
+`practiceName`, `advisorTitle` and `practiceFocus`, `:14` warns against casual
+additions, and `:20-22` defers expansion to the Q7-resolution allowlist upgrade.
+Stage renaming therefore depends on that upgrade landing first and cannot be
+picked up as an isolated slice. CLAUDE.md §5 already carries a "Stage Rename
+sibling slice" as deferred; this names its blocker.
+
 **Filed: `/individual/welcome` CTA falls below the fold on a short viewport.**
 Found during the 2026-08-14 device pass, **PRE-EXISTING and not caused by the
 tap-target slice**: measured with `minHeight` forced to 0 it reads the same 746

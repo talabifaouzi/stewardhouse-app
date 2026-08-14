@@ -103,9 +103,23 @@ export function PracticeContentProvider({ children, initialState }) {
     return false;
   }, [authenticated]);
 
+  // `authenticated` is EXPOSED (P-4) so consumer COPY can follow the same
+  // predicate that governs consumer BEHAVIOUR. remove() above genuinely deletes
+  // on the demo tree and genuinely cannot on the authenticated tree, so the copy
+  // describing it has to branch on the same signal or the two drift apart, which
+  // is the defect P-4 repairs.
+  //
+  // Do NOT substitute useOptionalAppIdentity() in a consumer. It happens to
+  // return the same answer today, but it is a different question, and a second
+  // predicate is exactly how copy and behaviour come apart again.
+  //
+  // Note also that Ruling A in docs/pilot-gate-criteria.md does NOT govern here.
+  // Ruling A decides isolate-versus-caveat for FIXTURE CONTENT on the
+  // authenticated tree. This is a BEHAVIOURAL divergence between the two trees,
+  // which is a different question with a different answer.
   const value = useMemo(
-    () => ({ lessons, add, update, remove, writeError, clearWriteError }),
-    [lessons, add, update, remove, writeError, clearWriteError],
+    () => ({ lessons, add, update, remove, writeError, clearWriteError, authenticated }),
+    [lessons, add, update, remove, writeError, clearWriteError, authenticated],
   );
 
   return (

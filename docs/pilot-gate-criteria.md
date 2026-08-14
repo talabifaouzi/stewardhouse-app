@@ -369,6 +369,23 @@ this document.
 | Date | HEAD | Capability | Production-usable | Notes |
 |---|---|---|---|---|
 | 2026-08-14 | `e13ea0c` | 68/83 = 82% | 44/83 = 53% | First scoring under the ruled method (routes 35/50, endpoints 33/33). Gate values as recorded 2026-07-16, NOT re-verified. Enterprise criterion 1 provisional (Gap 2). NOT comparable to the prior 57%, which used a different method. |
+| 2026-08-14 | P-4 | 71/82 = 87% | 44/82 = 54% | P-4. Advisor routes 10/14 → 14/14, endpoints 14/14 → 13/13. Denominator 83 → 82. Gate values still as recorded 2026-07-16, NOT re-verified. |
+
+**Two things about the P-4 row that will be misread if not stated.**
+
+**Capability rose while one unit was DELETED rather than fixed.** Advisor's
+endpoint denominator fell from 14 to 13 because `docs/[id].js` `onRequestPut`
+was removed, not repaired. It scored MET the day before under §2.3. §2.3
+predicted exactly this. Four of the five points came from repairing route units
+(`pipeline` and `settings` no longer offer controls that do not act, the
+LessonEditor unit lands on the server id, `curriculum/:lessonId` no longer
+claims a removal it cannot perform); the fifth came from the denominator
+shrinking.
+
+**Production-usable rose a point with NO change in what a production user can
+do.** The unit count is unchanged at 44. `44/83 = 53.0%` became `44/82 = 53.7%`
+purely because the denominator shrank by the deleted endpoint. Every advisor
+write still returns 403 at `$.advisor.demo_gate = 0`. Nothing became usable.
 
 **Expected at the next re-score, so it is not misread:** P-4 deletes
 `docs/[id].js` PUT, dropping Advisor's endpoint denominator from 14 to 13 and

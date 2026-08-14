@@ -33,7 +33,7 @@ export default function LessonEditor({ mode }) {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const basePath = useBasePath('/advisor', '/app/advisor');
-  const { lessons: practiceLessons, add, update } = usePracticeContent();
+  const { lessons: practiceLessons, add, update, writeError } = usePracticeContent();
 
   // Resolve the source lesson by mode.
   //   fork   — must be a base lesson (cannot fork a fork in this prototype)
@@ -79,7 +79,7 @@ export default function LessonEditor({ mode }) {
   const minutesValid = Number.isFinite(minutesNum) && minutesNum >= 1;
   const canSave = titleValid && minutesValid;
 
-  const handleSaveWith = (targetStatus) => {
+  const handleSaveWith = async (targetStatus) => {
     if (!canSave) return;
     const today = todayIso();
     const afterSave = (publishedId) => {
@@ -89,10 +89,27 @@ export default function LessonEditor({ mode }) {
         navigate(`${basePath}/curriculum/${publishedId}`);
       }
     };
+    // P-4: all three branches AWAIT, and navigate only on success.
+    //
+    // The two `add` branches additionally navigate to the id the SERVER
+    // returned, not the client-minted one. `nextPracticeLessonId()` produces a
+    // local id (pl-00N) which practice-content.js:136 discards for
+    // crypto.randomUUID(), so `afterSave(newId)` sent the advisor to a route
+    // LessonDetail could not resolve and <Navigate replace/> bounced them back
+    // to the library. The context already returned the saved server object
+    // (PracticeContentContext.jsx:66) and the caller was throwing it away.
+    //
+    // The `edit` branch had a different fault with the same shape: its id was
+    // already correct (the lesson exists), but `update` is async and was
+    // un-awaited, so a failed PUT still navigated and showed stale content with
+    // no error. Not in the original filing; found by reading all three branches.
+    //
+    // add()/update() return null on failure and set writeError, which now
+    // renders below. Returning early leaves the advisor on the form with their
+    // input intact.
     if (mode === 'fork') {
-      const newId = nextPracticeLessonId(practiceLessons);
-      add({
-        id: newId,
+      const saved = await add({
+        id: nextPracticeLessonId(practiceLessons),
         kind: 'fork',
         baseId: sourceLesson.id,
         status: targetStatus,
@@ -104,9 +121,10 @@ export default function LessonEditor({ mode }) {
         createdAt: today,
         updatedAt: today,
       });
-      afterSave(newId);
+      if (!saved) return;
+      afterSave(saved.id);
     } else if (mode === 'edit') {
-      update(sourceLesson.id, {
+      const saved = await update(sourceLesson.id, {
         title: trimmedTitle,
         minutes: minutesNum,
         scope,
@@ -114,11 +132,11 @@ export default function LessonEditor({ mode }) {
         summary: summary.trim(),
         status: targetStatus,
       });
+      if (!saved) return;
       afterSave(sourceLesson.id);
     } else if (mode === 'author') {
-      const newId = nextPracticeLessonId(practiceLessons);
-      add({
-        id: newId,
+      const saved = await add({
+        id: nextPracticeLessonId(practiceLessons),
         kind: 'authored',
         baseId: null,
         status: targetStatus,
@@ -130,7 +148,8 @@ export default function LessonEditor({ mode }) {
         createdAt: today,
         updatedAt: today,
       });
-      afterSave(newId);
+      if (!saved) return;
+      afterSave(saved.id);
     }
   };
 
@@ -308,6 +327,21 @@ export default function LessonEditor({ mode }) {
           paddingTop: 'var(--sh-space-5)',
           borderTop: 'var(--sh-border-divider)',
         }}>
+          {/* P-4: server-write failures were silent here. With the advisor
+              demo_gate at 0 every curriculum write 403s, and the editor gave no
+              indication at all. This is DISTINCT from the invalidReason span
+              below, which is client-side field validation; writeError carries
+              what the server said. */}
+          {writeError && (
+            <span role="alert" style={{
+              fontSize: 'var(--sh-text-xs)',
+              color: 'var(--sh-bronze-deep)',
+              lineHeight: 1.5,
+              overflowWrap: 'break-word',
+            }}>
+              {writeError}
+            </span>
+          )}
           {!canSave && (
             <span style={{
               fontSize: 'var(--sh-text-xs)',

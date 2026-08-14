@@ -18,7 +18,14 @@ export default function LessonDetail() {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const basePath = useBasePath('/advisor', '/app/advisor');
-  const { lessons: practiceLessons, remove, update } = usePracticeContent();
+  // `authenticated` comes from the context (P-4), NOT from
+  // useOptionalAppIdentity(). It is the same predicate that governs remove()'s
+  // BEHAVIOUR (PracticeContentContext.jsx:97-104), so the copy describing that
+  // behaviour cannot drift away from it. Ruling A in
+  // docs/pilot-gate-criteria.md governs isolate-versus-caveat for FIXTURE
+  // CONTENT; this is a behavioural divergence between the two trees, a
+  // different question, so Ruling A does not apply here.
+  const { lessons: practiceLessons, remove, update, writeError, authenticated } = usePracticeContent();
 
   // Add-material form state — practice lessons only.
   // Hooks must run unconditionally, so these sit above the early return below.
@@ -66,16 +73,37 @@ export default function LessonDetail() {
     resetForm();
   };
 
-  const discardTitle = lesson?.kind === 'fork'
-    ? 'Discard tailored version'
-    : 'Discard authored lesson';
-  const discardMessage = lesson?.kind === 'fork'
-    ? 'Discard this tailored version? Your edits to it will be lost.'
-    : 'Discard this authored lesson? It will be removed from your library.';
+  // P-4: the modal diverges by TREE, because the underlying capability does.
+  //
+  // Demo tree: remove() genuinely deletes from local state and returns true, so
+  // the confirm copy is accurate and is unchanged.
+  //
+  // Authenticated tree: there is no DELETE endpoint (none in practice-content.js
+  // or practice-content/[id].js; PracticeContentContext.jsx:102 states
+  // additive-only as the design posture, and lesson deletion has no retention
+  // ruling). remove() sets writeError and returns false. The old copy promised
+  // "It will be removed from your library", which is a control stating an action
+  // it does not perform. The TITLE carried the same promise, so it gets a
+  // variant too: "Discard authored lesson" over copy saying discard is
+  // unavailable reads as a broken promise in the heading itself.
+  const discardTitle = authenticated
+    ? 'Discarding is not available yet'
+    : (lesson?.kind === 'fork' ? 'Discard tailored version' : 'Discard authored lesson');
 
-  const handleConfirmDiscard = () => {
+  const discardMessage = authenticated
+    ? 'Removing a lesson from your library is not available yet. This lesson stays where it is.'
+    : (lesson?.kind === 'fork'
+      ? 'Discard this tailored version? Your edits to it will be lost.'
+      : 'Discard this authored lesson? It will be removed from your library.');
+
+  // Awaits and honours the return value. remove() is async and was called
+  // without await, so the navigation raced the failure: the advisor left the
+  // page believing the lesson was gone while it was still in their library.
+  // On false, stay put; writeError renders below.
+  const handleConfirmDiscard = async () => {
+    const removed = await remove(lesson.id);
+    if (!removed) return;
     setDiscardModalOpen(false);
-    remove(lesson.id);
     navigate(`${basePath}/curriculum`);
   };
 
@@ -349,13 +377,35 @@ export default function LessonDetail() {
         }}>
           {discardMessage}
         </p>
+        {writeError && (
+          <p role="alert" style={{
+            fontSize: 'var(--sh-text-sm)',
+            color: 'var(--sh-bronze-deep)',
+            lineHeight: 1.5,
+            marginBottom: 'var(--sh-space-5)',
+            overflowWrap: 'break-word',
+          }}>
+            {writeError}
+          </p>
+        )}
+        {/* The ACTION ROW diverges for the same reason the copy does. On the
+            authenticated tree the modal is informational, so it offers a single
+            Close rather than a Cancel/Discard pair: inviting a press on
+            "Discard" directly under copy saying discard is unavailable would
+            reproduce the defect this slice repairs, one layer down. */}
         <div style={{
           display: 'flex',
           justifyContent: 'flex-end',
           gap: 'var(--sh-space-2)',
         }}>
-          <Button variant="ghost" onClick={() => setDiscardModalOpen(false)}>Cancel</Button>
-          <Button variant="primary" onClick={handleConfirmDiscard}>Discard</Button>
+          {authenticated ? (
+            <Button variant="primary" onClick={() => setDiscardModalOpen(false)}>Close</Button>
+          ) : (
+            <>
+              <Button variant="ghost" onClick={() => setDiscardModalOpen(false)}>Cancel</Button>
+              <Button variant="primary" onClick={handleConfirmDiscard}>Discard</Button>
+            </>
+          )}
         </div>
       </Modal>
     </main>

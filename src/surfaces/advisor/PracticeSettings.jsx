@@ -203,15 +203,16 @@ export default function PracticeSettings() {
           )}
         </Card>
 
+        {/* P-4: the Rename buttons had no onClick on any of the four rows, and
+            the paragraph above them instructed the advisor to use them. Both go
+            together; removing the control while leaving the instruction would
+            leave a Card telling someone to do something with no way to do it.
+            Making Rename WORK is blocked, not merely unbuilt: practice-profile.js
+            allowlists exactly practiceName / advisorTitle / practiceFocus and
+            warns against casual additions, with expansion deferred to the Q7
+            upgrade. The stage labels still display, which is the honest part. */}
         <Card>
           <SectionLabel>Stage labels</SectionLabel>
-          <p style={{
-            fontSize: 'var(--sh-text-sm)',
-            color: 'var(--sh-text-muted)',
-            marginBottom: 'var(--sh-space-4)',
-          }}>
-            Rename if your practice uses different stage language. Renaming applies across your roster.
-          </p>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {stages.map((stage, i) => (
               <DisplayRow
@@ -219,17 +220,24 @@ export default function PracticeSettings() {
                 label={`Stage ${i + 1}`}
                 value={stage}
                 last={i === stages.length - 1}
-                action={<Button variant="ghost" size="sm">Rename</Button>}
               />
             ))}
           </div>
         </Card>
 
+        {/* "Working preferences" lost two of its three rows and is now a single
+            statement about system behaviour, so the Card framing goes with them.
+            "45 minutes" and "America/New_York" were INVENTED values rendered as
+            if they were this advisor's settings, the same defect class as the
+            org fields removed from Discover in 42851cd; a not-yet-configurable
+            hedge would have kept the fabrication on screen. "Quiet by default"
+            is NOT fabricated: it describes the real pipeline default, and Quiet
+            is a locked state in the §7 Section 6 vocabulary. It is relabelled
+            from "Notification preferences", which implied a configurability it
+            does not have, to name the behaviour instead. */}
         <Card>
-          <SectionLabel>Working preferences</SectionLabel>
-          <DisplayRow label="Default session length" value="45 minutes" />
-          <DisplayRow label="Time zone" value="America/New_York" />
-          <DisplayRow label="Notification preferences" value="Quiet by default" last />
+          <SectionLabel>Between-session pipeline</SectionLabel>
+          <DisplayRow label="Default state" value="Quiet by default" last />
         </Card>
 
         <Card tint>

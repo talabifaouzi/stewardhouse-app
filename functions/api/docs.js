@@ -107,4 +107,14 @@ export async function onRequestPost(context) {
   return jsonOk(toDocResponse(row));
 }
 
+// KNOCK-ON, NOTED NOT ACTED ON (P-4, 2026-08-14). docs/[id].js was deleted this
+// slice, and it was the ONLY importer of these two. They stay used internally
+// (:70, :107), so nothing is dead, but two things are now vestigial:
+//   - this export could revert to module-private;
+//   - validateDocBody's `requireAll: false` branch is unreachable, since :70 is
+//     the only remaining caller and passes true.
+// Deliberately left alone. The `requireAll` shape is shared idiom across
+// clients.js, cohorts.js and practice-content.js, each of which has a partner
+// [id].js passing false. Collapsing it here alone would make docs.js the odd
+// one out for no gain. Revisit only if docs ever gain an edit path.
 export { validateDocBody, toDocResponse };
