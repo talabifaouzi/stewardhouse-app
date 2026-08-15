@@ -537,6 +537,48 @@ Every substantive change runs as a **slice**. The rhythm:
     44px tap-target fix, which moves 11 demo-visible `size="lg"` buttons by 5px
     on both trees at once.
 
+    **Standard of proof, and when each tier is enough (added 2026-08-15).** The
+    claim is only worth what verifies it, and there are two tiers.
+
+    **String comparison** extracts each demo string from HEAD and from the
+    working tree and compares bytes. It proves the literal is unchanged. It does
+    NOT prove the demo renders that literal, so it stops one step short and must
+    say so.
+
+    **Render verification** loads the demo route and reads the rendered text. It
+    closes that step.
+
+    **The test. Render is REQUIRED if ANY of these holds:**
+    (a) the demo path is restructured rather than merely added beside;
+    (b) a predicate governing WHICH branch renders is added or changed,
+    including adding a branch where none existed;
+    (c) the claim is load-bearing for an honesty finding (§7, or a §2.5 blocking
+    defect in `docs/pilot-gate-criteria.md`).
+    **String comparison suffices ONLY when none of those holds** and the change
+    is provably additive with the demo branch untouched.
+
+    **Check the render conditions FIRST; they override.** The banner slice was
+    additive with an untouched demo branch, which reads like the string tier, but
+    it added a ternary where no branch had existed, so (b) fires and render was
+    required. Treating the two halves as parallel lists rather than as
+    precedence is how a slice talks itself into the cheaper tier.
+
+    **Worked instance.** The banner slice (`3d51cce`) shipped on the string tier,
+    explicitly flagged in its own commit message as stopping short, and was then
+    verified by render across all four sites with the em-dash intact. That commit
+    message is now HALF-STALE and cannot be edited: it says the proof stops one
+    step short of P-3c's, which is true of the PROOF THAT SHIPPED WITH IT and no
+    longer true of the slice. This is where that correction lives.
+
+    **Self-proving evidence, a pattern worth reaching for.** On
+    `/app/enterprise/compliance` the corrected copy rendered with a REAL
+    PERSISTED AUDIT ROW directly beneath it (2026-08-15 15:00, Diane, the seeded
+    exclusion). When a fix corrects a claim ABOUT PERSISTENCE, the persisted
+    record rendering beside the corrected copy is self-proving: the copy and the
+    data agree in the same viewport, so no separate argument is needed to connect
+    them. Reach for this whenever the corrected claim is about whether something
+    is stored.
+
 Stop background shells (dev server, watch loops) at bank time. Use `TaskStop`,
 not `kill`.
 
