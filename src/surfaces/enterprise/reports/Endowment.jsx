@@ -56,7 +56,7 @@ export default function Endowment() {
       {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Endowment</h1>
       <p style={subtitleStyle}>
-        Current snapshot and forward modeling. Structural details subject to legal review.
+        Current snapshot and forward modeling. Structural details are not final.
       </p>
 
       {/* Phase 1 — Current state */}
@@ -203,10 +203,10 @@ export default function Endowment() {
       <Card tint>
         <div style={noticeHeaderStyle}>
           <SectionLabel>Important notice</SectionLabel>
-          <Tag color="bronze" tracking="loose">REVIEW PENDING</Tag>
+          <Tag color="bronze" tracking="loose">NOT FINAL</Tag>
         </div>
         <p style={noticeBodyStyle}>
-          Illustrative projections only. Not investment advice. Actual outcomes may vary based on market conditions and economic factors. Endowment structure — including tax treatment, distribution mechanism, and governance — is subject to legal review prior to partnership finalization. Consult your financial advisor and legal counsel before relying on these projections for planning purposes.
+          Illustrative projections only. Not investment advice. Actual outcomes may vary based on market conditions and economic factors. Endowment structure, including tax treatment, distribution mechanism, and governance, is not final and may change before any partnership is finalized. Consult your financial advisor and legal counsel before relying on these projections for planning purposes.
         </p>
       </Card>
     </main>
