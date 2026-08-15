@@ -21,9 +21,9 @@ import { Button } from '../../components/Button.jsx';
 // opening ("sends them an invitation right away") now describes real behavior.
 //
 // Email is REQUIRED (C-2) — the invitation cannot send without an address. On
-// success the response carries invite ∈ 'sent' | 'skipped' | 'failed', surfaced
-// here via the CreateInviteModal warning-on-success idiom (a post-submit notice
-// view for 'skipped'/'failed'; 'sent' closes normally).
+// success the response carries invite ∈ 'sent' | 'skipped' | 'skipped-not-individual'
+// | 'failed', surfaced here via the CreateInviteModal warning-on-success idiom (a
+// post-submit notice view for the three non-'sent' values; 'sent' closes normally).
 //
 // Failure surfacing (E-Write-1 fix): the modal renders the provider's
 // writeError (the real server message, e.g. "Not authorized" from the E11
@@ -86,6 +86,12 @@ export default function AddAthleteModal({ isOpen, onClose, onAdd, writeError, cl
     // 'skipped'/'failed' surface a notice — the athlete is enrolled either way.
     if (saved.invite === 'skipped') {
       setNotice({ tone: 'note', text: 'This address already has a StewardHouse invitation — no duplicate email was sent.' });
+    } else if (saved.invite === 'skipped-not-individual') {
+      // The address belongs to a non-athlete account, so the bind was refused
+      // server-side and the athlete stays unclaimed. Deliberately does NOT name
+      // which kind of account: the response must not become an oracle for which
+      // person types exist (same posture as the gate.js messages).
+      setNotice({ tone: 'warn', text: 'Athlete enrolled, but this address already belongs to another StewardHouse account, so it was not linked to this athlete. Check the address if that is unexpected.' });
     } else if (saved.invite === 'failed') {
       setNotice({ tone: 'warn', text: "Athlete enrolled, but the invitation email didn't send. You can re-invite this address from Operations." });
     } else {

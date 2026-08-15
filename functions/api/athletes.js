@@ -32,8 +32,10 @@
 // (type 'individual', keyed by the same normalized invite_email) is minted and
 // a notification email sent, mirroring POST /api/invites. The athlete row is
 // NEVER rolled back for an invite problem; the outcome rides the response as
-// invite ∈ 'sent' | 'skipped' (address already invited) | 'failed' (mint/send
-// error). athlete.person_id stays NULL — the athlete↔person claim bind is C-3.
+// invite ∈ 'sent' | 'skipped' (address already invited) | 'skipped-not-individual'
+// (the address belongs to a non-athlete account; see the type check at the bind
+// below) | 'failed' (mint/send error). athlete.person_id stays NULL — the
+// athlete↔person claim bind is C-3.
 //
 // Response shape: the /api/me roster element (camelCase, activity: []) PLUS a
 // top-level `invite` outcome flag. AthletesProvider.add() splices the roster
@@ -259,13 +261,29 @@ export async function onRequestPost(context) {
         // row, so bind it now. management_mode stays NULL — a NEW enrollment;
         // the athlete's consent choice sets it (never copied from sibling rows).
         // Best-effort: a bind hiccup must not fail the committed athlete-add.
+        //
+        // TYPE CHECK: bind ONLY a type='individual' person. The invite namespace
+        // is flat (idx_person_invite_email is global across all four surfaces),
+        // so this SELECT can match an advisor / staff / ops row whose operator
+        // simply shares the address typed into the roster form. Binding one
+        // would hand a non-athlete account the athlete's consent control
+        // (athlete-consent.js scopes by person_id) and would render a consent
+        // state to staff that the athlete never chose (accessLabel reads
+        // 'Pending choice' / 'Delegated' off this bind). Deny-by-default,
+        // same direction as the C-1 gate: no bind, person_id stays NULL, and
+        // the athlete reads 'Unclaimed', which is true.
         try {
           const existing = await db
             .selectFrom('person')
-            .select(['id', 'auth_user_id'])
+            .select(['id', 'auth_user_id', 'type'])
             .where('invite_email', '=', f.email)
             .executeTakeFirst();
-          if (existing && existing.auth_user_id) {
+          if (existing && existing.type !== 'individual') {
+            // Report rather than no-op silently: the operator typed an address
+            // that belongs to a non-athlete account, and 'skipped' alone would
+            // read as the benign already-invited case.
+            invite = 'skipped-not-individual';
+          } else if (existing && existing.auth_user_id) {
             await db
               .updateTable('athlete')
               .set({ person_id: existing.id })

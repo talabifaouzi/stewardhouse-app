@@ -1,11 +1,23 @@
 // POST /api/athlete-consent — the ATHLETE sets their management_mode (the C-3
 // consent choice) across ALL their linked athlete rows.
 //
-// Written by the ATHLETE ONLY. Auth is getPersonForSession (any signed-in
-// person — NO type/gate check; an athlete's account is type='individual'), and
-// the UPDATE is scoped to `person_id = the session person's id`, so a caller
-// can only ever set their OWN rows. Staff never succeed here: their session
-// person has no athlete rows bound to it → 0 rows → 403.
+// Written by the ATHLETE ONLY. Auth is getPersonForSession (an athlete's account
+// is type='individual'; there is no demo_gate here, since an athlete is not a
+// gated operator), and the UPDATE is scoped to `person_id = the session person`,
+// so a caller can only ever set their OWN rows.
+//
+// TWO independent conditions, deliberately not one: (a) the session person is
+// type='individual', CHECKED below; (b) the UPDATE matches at least one athlete
+// row bound to them. This docblock previously asserted (b) alone, reasoning that
+// "staff never succeed here: their session person has no athlete rows bound to
+// it → 0 rows → 403". That was an assumption about a DIFFERENT endpoint's
+// behaviour, not a check this one performs. It is the same shape as D7, where
+// an orphaned person_id still read 'delegated'. A non-individual person CAN hold
+// a bind (both bind paths now refuse to create one, but a row predating those
+// checks would persist; no migration backfills it), and if one exists this
+// endpoint would let a non-athlete account set an athlete's consent state,
+// unlocking or locking the staff write gates that read management_mode live.
+// Check (a) makes that unreachable regardless of how the bind arose.
 //
 // One choice covers ALL linked rows (FT ruling): a single UPDATE across every
 // athlete row bound to this person (an athlete may be enrolled at more than one
@@ -29,6 +41,14 @@ export async function onRequestPost(context) {
   const db = makeDb(context);
   const { person, error, status } = await getPersonForSession(db, context);
   if (error) return jsonError(error, status);
+
+  // Condition (a) per the docblock. The message is IDENTICAL to the 0-rows 403
+  // below, deliberately: both mean "you have no athlete record to set", and
+  // splitting them would make the response an oracle for which person types
+  // exist. Same non-disclosure posture as the gate.js guards.
+  if (person.type !== 'individual') {
+    return jsonError('No athlete record is linked to this account', 403);
+  }
 
   let body;
   try { body = await context.request.json(); }

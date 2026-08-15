@@ -65,10 +65,27 @@ import { createSender } from './sender.js';
 // person.invite_email). management_mode is untouched (stays NULL — the athlete's
 // consent choice sets it via /api/athlete-consent). Best-effort: called inside
 // the hook's try/catch, so a bind failure never breaks sign-in.
+//
+// TYPE CHECK (twin of the athletes.js bind-at-enroll check): bind ONLY to a
+// type='individual' person. The fresh-person branch hardcodes 'individual', but
+// the CLAIM branch resolves whatever pre-seeded row matched invite_email, which
+// can be an advisor / staff / ops row when that operator's address also sits on
+// an athlete row. The bespoke-type guard above stops the hook CREATING a
+// privileged type; it says nothing about binding an athlete to one. Resolved
+// here rather than at the call sites so both branches are covered by one check.
 async function bindAthleteRows(db, personId, email) {
   if (!personId || typeof email !== 'string') return;
   const normalized = email.trim().toLowerCase();
   if (!normalized) return;
+  const owner = await db
+    .selectFrom('person')
+    .select(['type'])
+    .where('id', '=', personId)
+    .executeTakeFirst();
+  if (!owner || owner.type !== 'individual') {
+    console.log(`[auth/claim] skipped athlete bind for person=${personId} (type=${owner?.type ?? 'unknown'})`);
+    return;
+  }
   const res = await db
     .updateTable('athlete')
     .set({ person_id: personId })
