@@ -32,10 +32,11 @@
 // (type 'individual', keyed by the same normalized invite_email) is minted and
 // a notification email sent, mirroring POST /api/invites. The athlete row is
 // NEVER rolled back for an invite problem; the outcome rides the response as
-// invite ∈ 'sent' | 'skipped' (address already invited) | 'skipped-not-individual'
-// (the address belongs to a non-athlete account; see the type check at the bind
-// below) | 'failed' (mint/send error). athlete.person_id stays NULL — the
-// athlete↔person claim bind is C-3.
+// invite ∈ 'sent' | 'skipped' (address already invited) | 'skipped-other-account'
+// (the address belongs to an account that cannot hold an athlete record; see the
+// type check at the bind below) | 'failed' (mint/send error). The value is named
+// for the outcome, NOT the cause: it must not put a person type in a 200 body.
+// athlete.person_id stays NULL — the athlete↔person claim bind is C-3.
 //
 // Response shape: the /api/me roster element (camelCase, activity: []) PLUS a
 // top-level `invite` outcome flag. AthletesProvider.add() splices the roster
@@ -281,8 +282,11 @@ export async function onRequestPost(context) {
           if (existing && existing.type !== 'individual') {
             // Report rather than no-op silently: the operator typed an address
             // that belongs to a non-athlete account, and 'skipped' alone would
-            // read as the benign already-invited case.
-            invite = 'skipped-not-individual';
+            // read as the benign already-invited case. The value names the
+            // OUTCOME, not the matched type: an earlier spelling embedded
+            // 'individual' and so put a person type in a 200 body, which the
+            // smoke's own non-disclosure assertion caught.
+            invite = 'skipped-other-account';
           } else if (existing && existing.auth_user_id) {
             await db
               .updateTable('athlete')

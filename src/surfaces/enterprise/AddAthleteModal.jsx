@@ -21,7 +21,7 @@ import { Button } from '../../components/Button.jsx';
 // opening ("sends them an invitation right away") now describes real behavior.
 //
 // Email is REQUIRED (C-2) — the invitation cannot send without an address. On
-// success the response carries invite ∈ 'sent' | 'skipped' | 'skipped-not-individual'
+// success the response carries invite ∈ 'sent' | 'skipped' | 'skipped-other-account'
 // | 'failed', surfaced here via the CreateInviteModal warning-on-success idiom (a
 // post-submit notice view for the three non-'sent' values; 'sent' closes normally).
 //
@@ -86,7 +86,7 @@ export default function AddAthleteModal({ isOpen, onClose, onAdd, writeError, cl
     // 'skipped'/'failed' surface a notice — the athlete is enrolled either way.
     if (saved.invite === 'skipped') {
       setNotice({ tone: 'note', text: 'This address already has a StewardHouse invitation — no duplicate email was sent.' });
-    } else if (saved.invite === 'skipped-not-individual') {
+    } else if (saved.invite === 'skipped-other-account') {
       // The address belongs to a non-athlete account, so the bind was refused
       // server-side and the athlete stays unclaimed. Deliberately does NOT name
       // which kind of account: the response must not become an oracle for which

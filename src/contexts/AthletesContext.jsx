@@ -47,7 +47,7 @@ export function AthletesProvider({ initialState, children }) {
       });
       if (!res.ok) throw new Error(await serverError(res, 'Failed to enroll athlete'));
       const saved = await res.json();
-      // C-2: `invite` ('sent'|'skipped'|'skipped-not-individual'|'failed') is a per-request outcome, not
+      // C-2: `invite` ('sent'|'skipped'|'skipped-other-account'|'failed') is a per-request outcome, not
       // a roster field — strip it before splicing, but return the full body so
       // the form can surface the invite outcome.
       const { invite, ...element } = saved;
