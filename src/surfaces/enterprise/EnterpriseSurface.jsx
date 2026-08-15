@@ -16,7 +16,6 @@ import EnterpriseRoster from './EnterpriseRoster.jsx';
 import EnterpriseReports from './EnterpriseReports.jsx';
 import EnterpriseCompliance from './EnterpriseCompliance.jsx';
 import EnterpriseProgram from './EnterpriseProgram.jsx';
-import EnterpriseSetup from './EnterpriseSetup.jsx';
 
 function getNavItems(basePath) {
   return [
@@ -25,7 +24,9 @@ function getNavItems(basePath) {
     { key: 'reports', label: 'Reports', path: `${basePath}/reports` },
     { key: 'compliance', label: 'Compliance', path: `${basePath}/compliance` },
     { key: 'program', label: 'Program', path: `${basePath}/program` },
-    { key: 'setup', label: 'Setup', path: `${basePath}/setup` },
+    // 'setup' removed in P-5. The wizard persisted nothing, so a wizard that
+    // collects an institution's onboarding and discards it is worse than none.
+    // Rebuild when a real institution's onboarding demands it.
   ];
 }
 
@@ -119,7 +120,9 @@ function EnterpriseSurfaceInner() {
     path.includes('/reports') ? 'reports' :
     path.includes('/compliance') ? 'compliance' :
     path.includes('/program') ? 'program' :
-    path.includes('/setup') ? 'setup' :
+    // P-5: the '/setup' branch is gone with the route. A stale /setup URL now
+    // falls through to 'home' here AND to the catch-all <Navigate to={basePath}>
+    // below, so the highlighted nav item and the landed route agree.
     'home';
 
   const { openCompose } = useComms();
@@ -177,7 +180,9 @@ function EnterpriseSurfaceInner() {
           <Route path="reports/*" element={<EnterpriseReports />} />
           <Route path="compliance" element={<EnterpriseCompliance />} />
           <Route path="program" element={<EnterpriseProgram />} />
-          <Route path="setup" element={<EnterpriseSetup />} />
+          {/* P-5 removed <Route path="setup">. /setup now falls to the
+              catch-all below and redirects to the surface root, replacing the
+              history entry so Back does not bounce. */}
           <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
       </div>

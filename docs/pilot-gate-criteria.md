@@ -254,10 +254,11 @@ Routes: `index`, `roster`, `compliance`, `program`, `setup`, plus the six
 | 2 | All write endpoints built and gated as designed | MET (capability) | 9 files reference `requireGatedEnterprise` |
 | 3 | Progression recordable and reflected in reports | MET | `athletes/[id].js:185` |
 | 4 | No report derives from module-level fixture math | MET | P-1 |
-| 5 | `setup` removed or made to persist | **NOT MET** | P-5 not started; `SetupWizard.jsx` 869 lines |
+| 5 | `setup` removed or made to persist | **CEASED TO EXIST** (P-5) | The wizard is gone. This criterion did NOT become met: the thing it measured no longer exists, so the unit left the denominator rather than passing |
 
-**Routes 10/11** (setup out). **Endpoints 10/10.** **Enterprise = 20/21**, with
-criterion 1 unauditable and provisionally scored MET.
+**Routes 10/10** (P-5 removed the `setup` unit entirely; it was the one NOT MET).
+**Endpoints 10/10.** **Enterprise = 20/20**, with criterion 1 unauditable and
+provisionally scored MET.
 
 ### Operations/Admin — 10 routes + 2 endpoints = 12 units
 
@@ -385,6 +386,24 @@ this document.
 |---|---|---|---|---|
 | 2026-08-14 | `e13ea0c` | 68/83 = 82% | 44/83 = 53% | First scoring under the ruled method (routes 35/50, endpoints 33/33). Gate values as recorded 2026-07-16, NOT re-verified. Enterprise criterion 1 provisional (Gap 2). NOT comparable to the prior 57%, which used a different method. |
 | 2026-08-14 | P-4 | 71/82 = 87% | 44/82 = 54% | P-4. Advisor routes 10/14 → 14/14, endpoints 14/14 → 13/13. Denominator 83 → 82. Gate values still as recorded 2026-07-16, NOT re-verified. |
+| 2026-08-15 | P-5 | 71/81 = 88% | 44/81 = 54% | P-5. Enterprise routes 11 → 10; the `setup` unit was removed, not fixed. Denominator 82 → 81. Gate values still as recorded 2026-07-16, NOT re-verified. |
+
+**The P-5 row is a denominator artifact, not progress.** **The numerator did not
+move: 71 before, 71 after.** No capability was built. A unit that was FAILING was
+deleted, so the same 71 met units are now measured against 81 instead of 82.
+
+This is the **MIRROR IMAGE of the P-4 note** above about `docs/[id].js` PUT.
+There, capability FELL by one when a PASSING unit was deleted. Here it RISES by
+one when a FAILING unit is deleted. **Both are denominator artifacts and neither
+is progress.** Read them together or each looks like a trend.
+
+Production-usable reads flat at 54% both rows, which is **rounding, not
+stasis**: 44/82 = 53.7% and 44/81 = 54.3%. The unit count is unchanged at 44,
+and nothing became usable to a production user.
+
+Enterprise criterion 5 did NOT become MET. **It ceased to exist**, because the
+thing it measured is gone. A criterion whose subject is deleted leaves the
+denominator; it does not pass.
 
 **Two things about the P-4 row that will be misread if not stated.**
 

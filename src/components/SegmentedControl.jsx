@@ -1,6 +1,9 @@
 // ENT #48 — Enterprise-scoped shared SegmentedControl. Replaces the two
 // near-identical bordered-jointed segmentButtonStyle helpers at
-// SetupWizard.jsx + Endowment.jsx. Per Cluster I ruling, Advisor's
+// SetupWizard.jsx + Endowment.jsx. (P-5 removed SetupWizard; Endowment remains
+// the enterprise consumer. This component survives with five consumers across
+// three surfaces: DocCreate, LessonEditor, Pipeline, Endowment, GivingModeler.)
+// Per Cluster I ruling, Advisor's
 // LessonEditor (pill) + Pipeline (fused-rectangle) SegmentedControls have
 // deliberately distinct visual treatments and are OUT OF SCOPE; their
 // local copies remain untouched.

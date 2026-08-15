@@ -78,9 +78,24 @@ const DAYS_MATCHED_TO_GAVE = DAYS_MATCHED_TO_VIEWED + DAYS_VIEWED_TO_GAVE;      
 const DAYS_GAVE_TO_ONGOING = 60;
 
 // Real first names from all three adapter sources — compiled from athletes,
-// contacts, advisor clients, individual profile, SetupWizard hardcodes
-// (Sarah Mitchell, Sarah Johnson), and the Operations user (Faouzi).
+// contacts, advisor clients, individual profile, the Operations user (Faouzi),
+// and the former enterprise Setup wizard (Sarah Mitchell, Sarah Johnson).
 // Synthetic first names must not appear in this set.
+//
+// THIS IS A COLLISION GUARD, NOT AN INDEX OF NAMES IN CURRENT CODE. It exists so
+// a synthetic name can never collide with a real-person name that appears
+// ANYWHERE a reader might meet both: git history, an un-torn-down fixture, a
+// screen seed, a backup under .wrangler/backups. Those outlive the code that
+// introduced the name.
+//
+// SO: DO NOT REMOVE AN ENTRY WHEN THE CODE THAT ORIGINATED IT GOES. P-5 deleted
+// the Setup wizard, and 'Sarah' stays precisely because of that rule. Removing
+// it would free the name for synthetic reuse and reintroduce exactly the
+// collision this set prevents. The set only ever grows.
+//
+// synthetic.runChecks ASSERTS against this set (first-name uniqueness within the
+// synthetic bundle, plus non-collision with the real-person set), so an entry
+// removed here can also fail a suite rather than merely degrading the seed.
 const REAL_PERSON_FIRST_NAMES = new Set([
   // enterprise athletes
   'Marcus', 'Aaliyah', 'Devon', 'Jasmine', 'Tyler', 'Keisha', 'Andre', 'Sofia',
@@ -89,7 +104,7 @@ const REAL_PERSON_FIRST_NAMES = new Set([
   'Diane', 'Morgan',
   // advisor clients (Marcus + Jasmine + Jordan overlap with above)
   'Reuben', 'Ezekiel', 'Isaiah', 'Tariq', 'Bree', 'Naomi',
-  // SetupWizard hardcodes
+  // former Setup wizard (removed P-5; the entry STAYS, see the note above)
   'Sarah',
   // operations
   'Faouzi',
