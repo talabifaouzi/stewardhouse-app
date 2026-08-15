@@ -718,3 +718,45 @@ StewardHouse causes.
 Three properties make it something other than a lookup: 18% of records have no
 code; identical codes carry organizations belonging to different causes; and
 the source is single-valued where the destination is multi-valued.
+
+---
+
+## FT rulings (2026-08-15)
+
+Ruled by FT on the findings above. The eight rulings answer the eight forks one
+to one, in order. The forks section is left exactly as it was written; it
+records what was open, and this section records what was decided.
+
+**1. Status gate.** The IRS revocation leg ships with the first org record, or
+no org record surfaces. ProPublica alone is never sufficient. The IRS sources
+are federal government works and carry no terms encumbrance, so this ruling
+does not depend on ruling 5.
+
+**2. NTEE.** No mapping table. Render the NTEE code and its verbatim IRS label,
+with provenance. StewardHouse-assigned causes are dead as an org-record field.
+Cause filtering moves to the funder's own GPS.
+
+**3. `cat`, `led`, `badge`, `demo`.** Removed from the card shape, not rendered
+as honest-absence. A field with no possible source is not absent.
+
+**4. Name.** IRS legal name verbatim. The EIN renders alongside it where
+group-ruling affiliates collide. No composed display name.
+
+**5. ProPublica terms.** UNRESOLVED, and there is no counsel to route it to. No
+lawyer is on staff, retained, or in pipeline; the internal compliance seat is
+an advisory persona and is not clearance. Blocking for any persisted copy of
+ProPublica data. Read-only reconnaissance is unaffected. The next step is a
+direct question to ProPublica about AI and machine-learning use of the data,
+since their terms are silent and they are the party who can answer. If no
+answer is obtained, any decision to proceed is recorded explicitly as a founder
+risk call, not as clearance. Whatever standard is applied here also applies to
+Candid, which was deferred over the same silence.
+
+**6. Mission text.** Orgs surface without it. Honest absence. A usable website
+does not become a precondition for surfacing, because that rule would exclude
+orgs in correlation with size.
+
+**7. Bulk XML route.** Deferred, and unscoped until ruling 5 resolves.
+
+**8. D1 org seed defanged fields.** Clean, as its own slice, scheduled after
+P-6.
