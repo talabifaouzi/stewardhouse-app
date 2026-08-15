@@ -600,11 +600,12 @@ freshest snapshot. The fork: does the first usable version include the IRS
 revocation leg, or does no organization surface at all until it does? There is
 no third option in which ProPublica alone is safe.
 
-**2. NTEE to the nine causes is an act of authorship.** See §4 below for how
-hard. The fork: accept a single NTEE-derived cause and lose the multi-cause
-card that 10 of 17 records use; or treat `causes` as honest-absence and let the
-funder's own GPS do the filtering; or something else. A hand-built NTEE-to-cause
-table is StewardHouse classifying organizations, which is the thing §7 forbids.
+**2. NTEE to the nine causes is an act of authorship.** See "Appendix: the
+taxonomy question" below for how hard. The fork: accept a single NTEE-derived
+cause and lose the multi-cause card that 10 of 17 records use; or treat
+`causes` as honest-absence and let the funder's own GPS do the filtering; or
+something else. A hand-built NTEE-to-cause table is StewardHouse classifying
+organizations, which is the thing §7 forbids.
 
 **3. Four rendered fields have no source at all**: `cat`, `led`, `badge`,
 `demo`. The fork: remove them from the card, keep them as honest-absence, or
