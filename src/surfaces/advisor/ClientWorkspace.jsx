@@ -970,7 +970,7 @@ function PrivateNotesPanel({ client }) {
           fontStyle: 'italic',
           marginBottom: 'var(--sh-space-3)',
         }}>
-          (visible only to you)
+          (visible to you, not to other users)
         </span>
       </div>
 
