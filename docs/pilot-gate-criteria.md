@@ -207,6 +207,21 @@ production). **Individual = 21/22.**
 | 5 | Every write surfaces failure in-form | **NOT MET** | `writeError` unread |
 | 6 | No control claims an action it does not perform | **NOT MET** | `LessonDetail.jsx:78` `remove()` un-awaited; `PracticeContentContext.jsx:97-104` returns false |
 
+**On criterion 5, "every write surfaces failure in-form": it means what it
+says (ruled 2026-08-15, recorded so it is not re-litigated).** P-4 satisfied it
+literally: the failure IS surfaced. The P-4 verification then found that the
+string surfaced is the raw `'Not authorized'` from `gate.js`, identical across
+seven conditions in three surfaces, which tells an advisor neither what happened
+nor what to do. The auditor flagged that criterion 5 might have been scored too
+generously.
+
+**MET stands and is not rescored.** A criterion that smuggles in a quality
+judgment is not auditable: two auditors would score "useful" differently, which
+is precisely the failure mode the counting method in §2 exists to prevent. If
+usefulness is to be measured it needs its OWN criterion with its own test, not
+an unstated qualifier on this one. The underlying defect is real and is filed as
+a named sub-item of P-6 in CLAUDE.md §5.1, where it belongs.
+
 **Routes 10/14.** Out: `pipeline` (no `/api/pipeline` exists), `settings`
 (`PracticeSettings.jsx:222` Rename has no `onClick`), the collapsed LessonEditor
 unit (`add()` un-awaited), and `curriculum/:lessonId` (`LessonDetail.jsx:78`

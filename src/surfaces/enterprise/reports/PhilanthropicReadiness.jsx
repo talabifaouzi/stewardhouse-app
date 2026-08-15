@@ -70,7 +70,7 @@ export default function PhilanthropicReadiness() {
   const basePath = useBasePath('/enterprise', '/app/enterprise');
   const eyebrow = useInstitutionEyebrow();
   const { athletes } = useAthletes();
-  const { exclusions } = useCompliance();
+  const { exclusions, authenticated } = useCompliance();
 
   // Stage buckets over the LIVE roster (provider). Demo tree: the provider's
   // fixture default reproduces the pre-P-1 buckets exactly.
@@ -179,9 +179,20 @@ export default function PhilanthropicReadiness() {
               </>
             )}
           />
+          {/* THE SHARPEST OF THE FOUR SITES. This row sits in a Compliance
+              posture card, which is precisely where an institution looks to
+              decide whether the audit trail can be trusted. Saying it is
+              session-only understated a DURABLE compliance control to the buyer
+              who most needs it accurate: E-Write-4 writes a compliance_audit row
+              inside the same env.DB.batch() as every exclusion add and remove,
+              and /api/me emits enterprise.complianceAudit.
+              `authenticated` comes from useCompliance(), the context that owns
+              that write, NOT from useOptionalAppIdentity(). */}
           <PostureRow
             label="Audit trail"
-            value="Session-only in prototype. Production deployment includes timestamped audit log per exclusion edit."
+            value={authenticated
+              ? 'Exclusion changes are recorded with timestamp, action, and the operator who made them.'
+              : 'Session-only in prototype. Production deployment includes timestamped audit log per exclusion edit.'}
           />
           <PostureRow
             label="Last compliance review"

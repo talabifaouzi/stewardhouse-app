@@ -181,9 +181,22 @@ export function DocumentationProvider({ children, initialState }) {
     }
   }, [authenticated]);
 
+  // `authenticated` is EXPOSED so consumer COPY can follow the same predicate
+  // that governs consumer BEHAVIOUR. addDoc persists to /api/docs on the
+  // authenticated tree and mutates local state only on the demo tree, so copy
+  // describing whether a document survives a refresh has to branch on the same
+  // signal or the two drift apart. Same addition, same reasoning, as P-4 made to
+  // PracticeContentContext.
+  //
+  // Do NOT substitute useOptionalAppIdentity() in a consumer. It returns the
+  // same answer today, but it is a different question, and a second predicate is
+  // how copy and behaviour come apart again. Ruling A in
+  // docs/pilot-gate-criteria.md does not govern here either: it decides
+  // isolate-versus-caveat for FIXTURE CONTENT, and this is a behavioural
+  // divergence between trees.
   const value = useMemo(
-    () => ({ categories, addDoc, addSection, findDocById, writeError, clearWriteError }),
-    [categories, addDoc, addSection, findDocById, writeError, clearWriteError],
+    () => ({ categories, addDoc, addSection, findDocById, writeError, clearWriteError, authenticated }),
+    [categories, addDoc, addSection, findDocById, writeError, clearWriteError, authenticated],
   );
 
   return (

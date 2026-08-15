@@ -16,9 +16,22 @@ export default function EnterpriseCompliance() {
   const eyebrow = useInstitutionEyebrow();
   // Exclusions + audit come from the provider now (E-Write-4). Demo tree: the
   // provider's fixture defaults. Auth tree: the /api/me persisted rows.
+  // TWO PREDICATES LIVE IN THIS FILE, deliberately and not by accident.
+  //
+  //   `authenticated` (below) comes from useCompliance(), the context that owns
+  //   the audit write, and governs the audit-trail COPY. Copy about persistence
+  //   must follow the same signal as the persistence itself, or the two drift.
+  //
+  //   `isAuthenticated` (:33) is the pre-existing raw !!useOptionalAppIdentity()
+  //   test, and continues to govern the exclusion-display and CTA logic it
+  //   already governed.
+  //
+  // They return the same answer today. Converting the raw one was deliberately
+  // NOT done here: it works, and converting it is scope creep on a blocking
+  // honesty fix. The conversion is filed separately (CLAUDE.md §7).
   const {
     exclusions, audit, addExclusion, removeExclusion, addAuditEntry,
-    writeError, clearWriteError,
+    writeError, clearWriteError, authenticated,
   } = useCompliance();
   const [activeExclusion, setActiveExclusion] = useState(null);
   const [exclusionOverrides, setExclusionOverrides] = useState({});
@@ -135,7 +148,14 @@ export default function EnterpriseCompliance() {
       <Card style={{ marginTop: 'var(--sh-space-6)' }}>
         <SectionLabel>Audit trail</SectionLabel>
         <p style={auditContextStyle}>
-          Compliance actions logged with timestamp and reviewer. Production maintains tamper-resistant audit log; prototype shows pre-seeded entries and any in-session edits.
+          {/* Only the final clause was false. The first two sentences are true
+              on both trees and are preserved verbatim: entries do carry a
+              timestamp and reviewer, and tamper-resistance is genuinely a
+              production-hardening item rather than something present today. The
+              demo string is UNCHANGED. */}
+          {authenticated
+            ? 'Compliance actions logged with timestamp and reviewer. Production maintains tamper-resistant audit log; entries here are recorded against your institution and persist across sessions.'
+            : 'Compliance actions logged with timestamp and reviewer. Production maintains tamper-resistant audit log; prototype shows pre-seeded entries and any in-session edits.'}
         </p>
         {/* Manual audit-entry affordance — authenticated tree only (E11-gated). */}
         {isAuthenticated && (

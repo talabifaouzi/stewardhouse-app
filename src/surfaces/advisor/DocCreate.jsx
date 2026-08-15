@@ -8,7 +8,7 @@ import { useBasePath } from '../../contexts/AppIdentityContext.jsx';
 export default function DocCreate() {
   const navigate = useNavigate();
   const basePath = useBasePath('/advisor', '/app/advisor');
-  const { categories, addDoc } = useDocumentation();
+  const { categories, addDoc, authenticated } = useDocumentation();
 
   const [title, setTitle] = useState('');
   const [section, setSection] = useState(categories[0]?.label ?? '');
@@ -77,7 +77,15 @@ export default function DocCreate() {
           lineHeight: 1.55,
           maxWidth: '640px',
         }}>
-          Manual entry only. Anything you add is session-only and won't survive a page refresh.
+          {/* Demo string UNCHANGED and still true there. On the authenticated
+              tree addDoc POSTs to /api/docs (DocumentationContext.jsx:101) and
+              persists, so the old copy denied an action the platform performs.
+              "Manual entry only" survives in both: there is still no import
+              path. Sibling note: Documentation.jsx:131 makes the same claim but
+              is ALREADY gated to the demo tree and is correctly left alone. */}
+          {authenticated
+            ? 'Manual entry only. Documents you add are saved to your practice.'
+            : "Manual entry only. Anything you add is session-only and won't survive a page refresh."}
         </p>
       </div>
 

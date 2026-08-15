@@ -33,7 +33,7 @@ export default function LessonEditor({ mode }) {
   const { lessonId } = useParams();
   const navigate = useNavigate();
   const basePath = useBasePath('/advisor', '/app/advisor');
-  const { lessons: practiceLessons, add, update, writeError } = usePracticeContent();
+  const { lessons: practiceLessons, add, update, writeError, authenticated } = usePracticeContent();
 
   // Resolve the source lesson by mode.
   //   fork   — must be a base lesson (cannot fork a fork in this prototype)
@@ -237,7 +237,17 @@ export default function LessonEditor({ mode }) {
           lineHeight: 1.55,
           maxWidth: '640px',
         }}>
-          Forks, authored lessons, and drafts in this prototype are session-only — they will not survive a page refresh.
+          {/* The demo string is UNCHANGED and stays true there: the
+              unauthenticated branch of add()/update()
+              (PracticeContentContext.jsx:51-53) mutates React state only, so a
+              refresh discards it. On the authenticated tree the same calls POST
+              to /api/practice-content and INSERT into practice_lesson, so the
+              old copy DENIED an action the platform performs. It was accurate
+              when written at fb1fff9 (2026-05-23) and was made false by
+              0f14147 (2026-07-02) without the copy being revisited. */}
+          {authenticated
+            ? 'Lessons you author or fork are saved to your practice.'
+            : 'Forks, authored lessons, and drafts in this prototype are session-only — they will not survive a page refresh.'}
         </p>
       </div>
 

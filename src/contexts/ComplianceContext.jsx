@@ -105,9 +105,21 @@ export function ComplianceProvider({ initialState, children }) {
     }
   }, [authenticated]);
 
+  // `authenticated` is EXPOSED so consumer COPY can follow the same predicate
+  // that governs consumer BEHAVIOUR. Every exclusion add/remove writes a
+  // compliance_audit row inside the same env.DB.batch() on the authenticated
+  // tree (E-Write-4) and mutates local state only on the demo tree, so copy
+  // describing whether the audit trail survives has to branch on the same
+  // signal. Same addition, same reasoning, as P-4 made to
+  // PracticeContentContext.
+  //
+  // Do NOT substitute useOptionalAppIdentity() in a consumer, and note that
+  // Ruling A in docs/pilot-gate-criteria.md does not govern here: it decides
+  // isolate-versus-caveat for FIXTURE CONTENT, and this is a behavioural
+  // divergence between trees.
   const value = useMemo(
-    () => ({ exclusions, audit, addExclusion, removeExclusion, addAuditEntry, writeError, clearWriteError }),
-    [exclusions, audit, addExclusion, removeExclusion, addAuditEntry, writeError, clearWriteError],
+    () => ({ exclusions, audit, addExclusion, removeExclusion, addAuditEntry, writeError, clearWriteError, authenticated }),
+    [exclusions, audit, addExclusion, removeExclusion, addAuditEntry, writeError, clearWriteError, authenticated],
   );
 
   return (

@@ -350,7 +350,28 @@ are never edited to carry status).**
     is UNKNOWN** and must be determined at P-3c scoping; if none exists, the
     build-vs-email-fallback choice is a fresh FT ruling at that point. This is
     a direction, not yet a buildable spec — P-3c starts by scoping it.
-- **P-4 / P-5 / P-6** — not started.
+- **P-4 BANKED** `009eac9` (2026-08-14) — narrow plus three: await/server-id at
+  all THREE LessonEditor branches (the `edit` branch was not in the filing),
+  `writeError` surfaced in LessonEditor and LessonDetail, Discard stopped
+  navigating with tree-divergent copy, `docs/[id].js` PUT deleted, PracticeSettings
+  dead Rename and invented literals removed. Pipeline deliberately excluded and
+  still its own slice. Verified against a running server, eight checks.
+- **P-5 / P-6** — not started.
+- **P-6 sub-item, named so it is not rediscovered: the shared `'Not authorized'`
+  string.** `functions/_lib/gate.js` returns the identical literal from **seven
+  distinct conditions across three surfaces** (`:69` non-advisor, `:85` advisor
+  gate, `:107` non-staff, `:119` enterprise gate, `:146` / `:167` non-ops, `:179`
+  ops gate), so it collapses two orthogonal failures: *wrong account type* and
+  *account not designated for writes*. `jsonError` (`:184-188`) passes it to the
+  client unchanged, which is what P-4's `writeError` surfacing now renders. It
+  tells the advisor neither what happened nor what to do. **Stays inside P-6,
+  UNSPLIT:** improving the string server-side alone is separable and small, but
+  it would leave the advisor discovering the problem by losing a form
+  submission, which is the actual defect. The client can only know before the
+  click once `/api/me` emits gate state, which is P-6's first sub-item and is
+  unstarted. Any change must preserve the gate docblocks' non-disclosure
+  posture: the message must not become an oracle for which types and gates
+  exist.
 
 **Accepted Phase-1 boundary — enterprise gift tracking.** P-2 made every
 surface report `gifts_count` honestly as "Not tracked"; it did not build
@@ -570,6 +591,19 @@ pointer-density controls for inline row actions. Padding a 27px control to 44px
 makes it mostly empty space and it would dominate the rows it sits in. The gap
 between the three sizes is intentional, not an oversight, and should not be
 "fixed" by a later sweep.
+
+**Filed: convert the two raw persistence predicates to their contexts.**
+`Documentation.jsx:13` and `EnterpriseCompliance.jsx:32-33` derive
+`isAuthenticated` from `!!useOptionalAppIdentity()` and use it to govern
+BEHAVIOURAL divergences about persistence. They return the correct answer today
+and are not defects. But the pattern ruled in P-4 is that copy describing a
+behaviour must follow the same predicate that governs the behaviour, which means
+the owning context's `authenticated`, not the identity test: a second predicate
+is how copy and behaviour drift apart. Converting them was deliberately NOT done
+in the banner slice, because it is scope creep on a blocking honesty fix, so
+`EnterpriseCompliance.jsx` now carries both side by side with a comment saying
+why. Small; touches two files; no endpoint, no migration. Does not block the
+pilot gate: nothing is currently false.
 
 **Filed: advisor stage-label renaming, blocked on the Q7 allowlist.** P-4 removed
 the dead Rename control from `PracticeSettings.jsx` along with the paragraph
