@@ -1,0 +1,56 @@
+-- Migration 0018 — client.consent_attested_at (advisor client-consent attestation).
+--
+-- FT ruling: the advisor's representation of client consent becomes an EXPLICIT
+-- ACT WITH A RECORD. Per-client, stored on `client`, checked at creation only.
+-- POST /api/clients requires consentAttested === true in the request body (a
+-- flag, never a stored column) and stamps this column with the create timestamp
+-- on every successful insert, so non-form callers cannot skip the attestation.
+--
+-- This closes the gap named at docs/advisor-persistence-scoping.md:486-491:
+-- "the advisor represents that they have client consent, but StewardHouse's
+-- policy on relying on that representation must be explicit." Until now neither
+-- the act nor the policy existed anywhere in the product.
+--
+-- ATTESTATION, NOT ACKNOWLEDGMENT. The enterprise twin (athlete.consent_
+-- acknowledged_at, migration 0012) records a staff member acknowledging a
+-- consent MODEL whose four claims the code enforces: an invite sends, the
+-- pre-claim record holds name + email only, the athlete chooses self/delegated
+-- at claim, and the record leaves with them. NONE of those four exists on the
+-- advisor side (no invite path per ruling R5, no pre-claim lockdown, no client
+-- account, no client-reachable deletion), so the advisor is not acknowledging a
+-- model. They are attesting to an OFF-PLATFORM conversation StewardHouse did
+-- not observe, mediate, or verify. Hence the column name.
+--
+-- Nullable: rows created outside the attestation flow are not retroactively
+-- asserted. A non-null value means "the owning advisor attested at this ISO
+-- instant"; NULL means no attestation was recorded, NOT that consent was
+-- refused. The same reasoning 0012 gave for consent_acknowledged_at.
+--
+-- THIS COLUMN RECORDS *THAT* AN ATTESTATION OCCURRED, NOT ITS LANGUAGE. The
+-- wording the advisor affirms lives entirely in the UI (ClientRoster.jsx) and
+-- the endpoint's 400 message. A terms of service covering all four surfaces is
+-- PARKED and will be built last; when it lands, the checkbox is expected to
+-- reference its clause. That is a COPY EDIT at three text nodes, NOT a schema
+-- question: no migration, no data change, no re-stamping of existing rows. A
+-- future reader finding a wording mismatch between this column's rows and the
+-- current UI string should expect exactly that, and must not read it as drift.
+--
+-- ZERO PRE-EXISTING ROWS TODAY, AND ONLY FOR ONE REASON. `client` is empty in
+-- every store: 0008_advisor_seed.sql is slim scope and seeds NO client rows
+-- (the 9 fixture clients in src/data/clients.js serve the public demo mount and
+-- never pass through an endpoint), and every advisor write is gated behind
+-- $.advisor.demo_gate === 1, which is 0 or absent on every advisor row in
+-- production and locally. So there is no backfill question and no retroactive-
+-- assertion question at this instant. BOTH STOP BEING TRUE THE MOMENT THE GATE
+-- OPENS FOR ANY ADVISOR. A later slice that finds NULL rows should not assume
+-- they predate this migration; they may equally be rows written by a gated
+-- advisor through a path that skipped the flag.
+--
+-- Additive: ALTER TABLE ADD COLUMN. No rebuild. `client`'s NOT NULL `stage` and
+-- its three inbound ON DELETE CASCADE children (client_session, client_note,
+-- cohort_member) are engaged only by a table rebuild and are untouched here.
+--
+-- LOCAL APPLY ONLY with this slice. The `--remote` apply is a SEPARATE FT STEP
+-- and is named as DEFERRED in the commit message per CLAUDE.md §6.10 branch (b).
+
+ALTER TABLE client ADD COLUMN consent_attested_at TEXT;   -- ISO 8601; NULL = no attestation recorded

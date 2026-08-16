@@ -9,6 +9,13 @@
 // stage is relationship-state (New | Active | Mature | Sunset), NOT lifecycle;
 // enforced by validation.
 //
+// Client-consent attestation (migration 0018): the request MUST carry
+// consentAttested === true. The form gates it client-side; requiring it here
+// means non-form callers cannot skip it. consent_attested_at is stamped with the
+// create timestamp. The attestation is about an OFF-PLATFORM conversation this
+// endpoint cannot observe, so this records THAT the advisor attested, never that
+// consent was verified. Attestation, not enforcement.
+//
 // Nested JSON columns (giving_plan, next_session_agenda, pipeline_state) are
 // small always-replaced-whole per Q8 ruling — accept the whole nested object
 // or null, no partial-path updates.
@@ -147,6 +154,20 @@ export async function onRequestPost(context) {
   const forbidden = rejectRankKeys(body);
   if (forbidden) return jsonError(`Field "${forbidden}" is not permitted`, 400);
 
+  // Client-consent attestation (migration 0018). Required server-side, not just
+  // in the form, so non-form callers cannot skip it. Checked BEFORE the R1 stage
+  // default and before validateClientBody, matching the enterprise order at
+  // athletes.js:164-167: a caller who omits the attestation is told about the
+  // attestation, never about a field.
+  //
+  // Strict === true, so 'yes' / 1 / any truthy value fails. consentAttested is a
+  // request FLAG, never a stored column (athletes.js:58 split); the endpoint
+  // stamps consent_attested_at from nowIso below, so a caller can never write
+  // the timestamp itself.
+  if (body.consentAttested !== true) {
+    return jsonError('Client consent attestation is required to add a client', 400);
+  }
+
   // R1 (docs/client-record-rulings.md): stage defaults to 'New' SERVER-SIDE
   // when omitted. A form-only default breaks future non-form callers (e.g.
   // a CLI ingest tool, a bulk-import script, a partner integration). Do it
@@ -179,6 +200,9 @@ export async function onRequestPost(context) {
         ? JSON.stringify(f.next_session_agenda) : null,
       pipeline_state: f.pipeline_state !== undefined && f.pipeline_state !== null
         ? JSON.stringify(f.pipeline_state) : null,
+      // Migration 0018: server-stamped from the same nowIso as created_at. Never
+      // read off the body; the flag above is what the caller supplies.
+      consent_attested_at: nowIso,
       created_at: nowIso,
       updated_at: nowIso,
     }).execute();

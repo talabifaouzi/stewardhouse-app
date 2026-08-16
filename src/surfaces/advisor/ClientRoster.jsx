@@ -119,17 +119,22 @@ export default function ClientRoster() {
   const [initialsTouched, setInitialsTouched] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
+  // Client-consent attestation (migration 0018). Gates Save; reset on both open
+  // and cancel so a box checked in an abandoned attempt never carries into the
+  // next one. FT named cancelAddClient; openAddClient already resets every other
+  // field in this form and omitting it there would leave the only stale state.
+  const [consentAttested, setConsentAttested] = useState(false);
 
   const derivedInitials = deriveInitials(newName);
   const displayInitials = initialsTouched ? newInitials : derivedInitials;
 
   const openAddClient = () => {
     setNewName(''); setNewInitials(''); setInitialsTouched(false);
-    setSaveError(''); setIsAddingClient(true);
+    setSaveError(''); setConsentAttested(false); setIsAddingClient(true);
   };
   const cancelAddClient = () => {
     setNewName(''); setNewInitials(''); setInitialsTouched(false);
-    setSaveError(''); setIsAddingClient(false);
+    setSaveError(''); setConsentAttested(false); setIsAddingClient(false);
   };
   const onNameChange = (v) => {
     setNewName(v);
@@ -146,7 +151,12 @@ export default function ClientRoster() {
     setSaveError('');
     // R1: only name + initials are submitted. Stage defaults server-side to
     // 'New' when key is omitted. No sport/level/etc — filled through use later.
-    const payload = { name, initials: displayInitials || null };
+    // consentAttested is the 0018 request FLAG, not a client field: the server
+    // stamps consent_attested_at itself and never reads a timestamp off the body.
+    // Sent unconditionally so both trees take one code path; on the demo tree
+    // ClientsContext.add() short-circuits before the fetch and pushes the object
+    // into local state, where the extra key is never read by any renderer.
+    const payload = { name, initials: displayInitials || null, consentAttested: true };
     const result = await add(payload);
     setSaving(false);
     if (!result) { setSaveError('Could not save. Please try again.'); return; }
@@ -237,6 +247,29 @@ export default function ClientRoster() {
                 style={{ ...fieldInputStyle, textAlign: 'center', letterSpacing: '0.04em', fontWeight: 500 }}
               />
             </div>
+
+            {/* Client-consent attestation + handling disclosure (migration 0018).
+                Styles port from AddAthleteModal's consent block; consentBoxStyle's
+                own marginTop/marginBottom are dropped because the parent flex
+                column's gap already spaces siblings. Order matches the enterprise
+                precedent: disclosure paragraph first, checkbox label second.
+                Both halves are SINGLE TEXT NODES so the parked ToS clause
+                reference lands as a copy edit, not a restructure. */}
+            <div style={consentBoxStyle}>
+              <p style={consentTextStyle}>
+                StewardHouse stores what you write and does not parse it, mine it, surface it, or act on it. It does not contact your client. They have no account, cannot see this record, and you cannot delete it from StewardHouse.
+              </p>
+              <label style={consentLabelStyle}>
+                <input
+                  type="checkbox"
+                  checked={consentAttested}
+                  onChange={(e) => setConsentAttested(e.target.checked)}
+                  style={checkboxStyle}
+                />
+                <span>I have my client&rsquo;s agreement to keep this record.</span>
+              </label>
+            </div>
+
             {saveError && (
               <p role="alert" style={{
                 fontSize: 'var(--sh-text-xs)',
@@ -246,7 +279,7 @@ export default function ClientRoster() {
             )}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 'var(--sh-space-2)', flexWrap: 'wrap' }}>
               <Button variant="ghost" onClick={cancelAddClient} disabled={saving}>Cancel</Button>
-              <Button variant="primary" onClick={saveClient} disabled={saving || !newName.trim()}>
+              <Button variant="primary" onClick={saveClient} disabled={saving || !newName.trim() || !consentAttested}>
                 {saving ? 'Saving…' : 'Save'}
               </Button>
             </div>
@@ -511,4 +544,41 @@ const fieldInputStyle = {
   color: 'var(--sh-text-primary)',
   background: 'var(--sh-card)',
   fontFamily: 'inherit',
+};
+
+// Ported verbatim from AddAthleteModal.jsx:191-222 (the E6 consent block), with
+// ONE deliberate omission: consentBoxStyle's marginTop/marginBottom are dropped.
+// There the box sits in a Modal's plain flow and needs its own spacing; here it
+// is a sibling in a flex column whose gap already spaces it, so carrying the
+// margins would double the gap.
+const consentBoxStyle = {
+  padding: 'var(--sh-space-4)',
+  background: 'var(--sh-bg-tint)',
+  border: 'var(--sh-border-thin)',
+  borderRadius: 'var(--sh-radius-md)',
+};
+
+const consentTextStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  marginTop: 0,
+  marginBottom: 'var(--sh-space-3)',
+};
+
+const consentLabelStyle = {
+  display: 'flex',
+  alignItems: 'flex-start',
+  gap: 'var(--sh-space-2)',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  lineHeight: 1.5,
+  cursor: 'pointer',
+};
+
+const checkboxStyle = {
+  marginTop: '3px',
+  accentColor: 'var(--sh-bronze)',
+  flexShrink: 0,
+  cursor: 'pointer',
 };
