@@ -61,10 +61,12 @@ export default function PracticeHome() {
         </h1>
       </div>
 
-      {/* Stat row */}
+      {/* Stat row. Floor wrapped in min() per 88e07ea: a bare 180px floor is a
+          hard minimum and scrolls the PAGE horizontally below it. Above 180px of
+          available width the behaviour is identical. */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
         gap: 'var(--sh-space-4)',
         marginBottom: 'var(--sh-space-10)',
       }}>

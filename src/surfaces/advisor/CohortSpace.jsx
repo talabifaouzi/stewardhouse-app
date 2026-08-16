@@ -164,7 +164,10 @@ export default function CohortSpace() {
       ) : (
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          // Floor wrapped in min() per 88e07ea: a bare 360px floor is a hard
+          // minimum and scrolls the PAGE horizontally below it. Above 360px of
+          // available width the behaviour is identical.
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))',
           gap: 'var(--sh-space-5)',
         }}>
           {cohorts.map(cohort => (

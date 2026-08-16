@@ -113,10 +113,11 @@ export default function ClientWorkspace() {
           375px. Wrapping it in min() makes the floor conditional on the
           container, so above 360px of available width the behaviour is
           identical and below it the track shrinks to fit.
-          FILED, NOT FIXED HERE: CohortSpace.jsx:167 carries the bare
-          minmax(360px, 1fr) floor and has exactly that page-overflow defect
-          live today. PracticeHome.jsx:67 uses a 180px floor, so it overflows
-          only below a 244px viewport. Both are separate slices. */}
+          The two sibling advisor floors named as filed when this landed,
+          CohortSpace.jsx and PracticeHome.jsx, were converted in the same way
+          in the following slice; the advisor surface now carries no bare pixel
+          floor. Bare floors remain OUTSIDE this surface (enterprise, operations
+          and landing); those are separate slices. */}
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))',
@@ -878,6 +879,16 @@ const sessionLabelStyle = {
   textTransform: 'uppercase',
   letterSpacing: '0.06em',
 };
+// Handling disclosure (migration 0018). Matches AddAthleteModal's
+// consentTextStyle so the same sentence reads identically at both of its sites;
+// marginBottom carries the space the create form gets from its box padding.
+const disclosureStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  lineHeight: 1.6,
+  marginTop: 0,
+  marginBottom: 'var(--sh-space-4)',
+};
 const sessionFormActionsStyle = {
   display: 'flex',
   justifyContent: 'flex-end',
@@ -996,6 +1007,22 @@ function PrivateNotesPanel({ client }) {
           (visible to you, not to other users)
         </span>
       </div>
+
+      {/* Handling disclosure (migration 0018). The attestation half is a
+          create-time act and lives at ClientRoster; here the disclosure renders
+          ALONE, with no checkbox. It sits before the writing surface, matching
+          the create form where the disclosure precedes the act.
+          Deferred out of 4c6eada and unblocked by 88e07ea: the notes column had
+          about 28px of text width at 320px, so the sentence could not render
+          legibly here until the workspace grid stacked.
+          The visibility line above is kept unchanged and the one-clause overlap
+          with "cannot see this record" is ruled acceptable: that line answers
+          who among users reads it, this answers what the platform does with it
+          and what the client can and cannot do. Single text node so the parked
+          ToS clause reference is a copy edit, not a restructure. */}
+      <p style={disclosureStyle}>
+        StewardHouse stores what you write and does not parse it, mine it, surface it, or act on it. It does not contact your client. They have no account, cannot see this record, and you cannot delete it from StewardHouse.
+      </p>
 
       <div style={{ marginBottom: 'var(--sh-space-5)' }}>
         <textarea
