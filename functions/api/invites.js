@@ -7,7 +7,11 @@
 // the ops person row with $.ops.demo_gate=true (its own --remote step).
 //
 // Export is onRequestPost ONLY — CF Pages auto-405s GET/PUT/DELETE. There is
-// no invite edit/delete path in this slice.
+// no invite EDIT path. The DELETE path is a SIBLING ROUTE, not this one:
+// functions/api/invites/[id].js handles DELETE /api/invites/:id (withdraw an
+// unclaimed invite, releasing its address from idx_person_invite_email). A
+// DELETE against this collection route still 405s, so the sentence above is
+// unchanged and remains true.
 //
 // Request body (JSON): { email, type, displayName }
 //   - email: required; NORMALIZED trim().toLowerCase() and must contain '@'.
