@@ -93,10 +93,33 @@ export default function ClientWorkspace() {
         firstName={client.name.split(' ')[0]}
       />
 
-      {/* Workspace columns */}
+      {/* Workspace columns.
+          The previous template was 'minmax(0, 2fr) minmax(0, 1fr)', which gave
+          the second column about 28px of TEXT width at 320px: 320 minus 64 main
+          padding minus 24 gap, divided 1:2, minus 48 Card padding. Every text
+          element in the notes panel overflowed there, including the Private
+          notes label, the visibility line, the textarea placeholder and every
+          saved note. That template was character-for-character identical to the
+          one fixed as QA-037 at OperationsSurface.jsx:315; the same layout was
+          corrected on one surface and not the other.
+          This uses INTRINSIC SIZING rather than a breakpoint. No class, no
+          media query, no !important, no matchMedia hook, and no pixel threshold
+          that can drift out of sync with the content as panels change.
+          auto-fit collapses the empty track, so the two panels share the row
+          rather than leaving a gap.
+          The floor is min(100%, 360px), NOT a bare 360px. A bare floor is a
+          HARD minimum: at a 256px container the track is still 360px and the
+          PAGE scrolls horizontally, by 104px at a 320px viewport and 49px at
+          375px. Wrapping it in min() makes the floor conditional on the
+          container, so above 360px of available width the behaviour is
+          identical and below it the track shrinks to fit.
+          FILED, NOT FIXED HERE: CohortSpace.jsx:167 carries the bare
+          minmax(360px, 1fr) floor and has exactly that page-overflow defect
+          live today. PracticeHome.jsx:67 uses a 180px floor, so it overflows
+          only below a 244px viewport. Both are separate slices. */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 360px), 1fr))',
         gap: 'var(--sh-space-6)',
         alignItems: 'start',
         marginTop: 'var(--sh-space-6)',
