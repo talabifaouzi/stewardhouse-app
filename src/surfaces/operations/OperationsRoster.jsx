@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useId, useState } from 'react';
 import { Card } from '../../components/Card.jsx';
 import { Button } from '../../components/Button.jsx';
+import { Modal } from '../../components/Modal.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { DEMO_ROSTER } from '../../data/opsFixtures.js';
 import CreateInviteModal from './CreateInviteModal.jsx';
@@ -115,7 +116,27 @@ const FOOTNOTE_STYLE = {
 // Shared table for both modes. rows: [{ key, type, displayName, inviteEmail,
 // claimed (bool), sourceSurface, createdAt }]. inviteEmail null renders "—";
 // createdAt null renders "—".
-function RosterTable({ rows }) {
+//
+// INTERACTIVE ROWS (authenticated tree only). onRowAction + rowAriaLabel are
+// OPTIONAL; DemoAccounts passes neither, so `interactive` is false there and the
+// spread below contributes nothing. Guarded on typeof === 'function' rather than
+// truthiness, per DataTable.jsx:20-27.
+//
+// The applied set is DataTable.jsx:44-66 verbatim in intent: tabIndex 0,
+// aria-label, onClick, onKeyDown for Enter and Space with preventDefault (Space
+// would otherwise scroll the page), hover handlers, cursor, hover background and
+// transition. role="row" is PRESERVED with NO role="button" override, per the
+// WAI-ARIA tabular-data practice DataTable.jsx:17-18 cites.
+//
+// PER-ROW, NOT PER-TABLE. DataTable's `interactive` is table-wide; here a row is
+// interactive only when NOT claimed, because DELETE /api/invites/:id refuses a
+// claimed row with 409. Offering an action that is guaranteed to be refused is
+// worse than offering none. Self-delete needs no separate rule: the session
+// person is necessarily claimed, so suppressing on claimed suppresses self.
+function RosterTable({ rows, onRowAction, rowAriaLabel }) {
+  const interactive = typeof onRowAction === 'function';
+  const [hoveredKey, setHoveredKey] = useState(null);
+
   return (
     <div style={{ overflowX: 'auto' }}>
       <div role="table" aria-label="Accounts" style={{ minWidth: '680px' }}>
@@ -127,10 +148,28 @@ function RosterTable({ rows }) {
           <div role="columnheader">Source</div>
           <div role="columnheader">Added</div>
         </div>
-        {rows.map((r, i) => (
+        {rows.map((r, i) => {
+          const rowInteractive = interactive && !r.claimed;
+          const rowProps = rowInteractive
+            ? {
+                tabIndex: 0,
+                'aria-label': rowAriaLabel ? rowAriaLabel(r) : undefined,
+                onClick: () => onRowAction(r),
+                onKeyDown: (e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onRowAction(r);
+                  }
+                },
+                onMouseEnter: () => setHoveredKey(r.key),
+                onMouseLeave: () => setHoveredKey(null),
+              }
+            : {};
+          return (
           <div
             role="row"
             key={r.key}
+            {...rowProps}
             style={{
               display: 'grid',
               gridTemplateColumns: GRID_COLUMNS,
@@ -140,6 +179,13 @@ function RosterTable({ rows }) {
               fontSize: 'var(--sh-text-sm)',
               color: 'var(--sh-text-body)',
               alignItems: 'center',
+              // Merged, not replacing: a non-interactive row spreads an empty
+              // object here and its style stays byte-identical to before.
+              ...(rowInteractive ? {
+                cursor: 'pointer',
+                background: hoveredKey === r.key ? 'var(--sh-bg-tint)' : undefined,
+                transition: 'background 150ms ease',
+              } : {}),
             }}
           >
             <div role="cell">{typeLabel(r.type)}</div>
@@ -156,11 +202,88 @@ function RosterTable({ rows }) {
             <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{titleCase(r.sourceSurface)}</div>
             <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{formatAdded(r.createdAt)}</div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
 }
+
+// Withdraw-invite confirm. Opened DIRECTLY from a row, so it is TWO deep, the
+// same depth CreateInviteModal already exercises from the page CTA. There is no
+// detail modal behind it: a detail view would have shown only the six fields
+// already visible in the row, and would have made this the first three-deep
+// stack in Operations hosting an irreversible action.
+//
+// Because nothing renders behind it, the copy carries the record itself. The
+// AthleteProfile idiom (:70-83) transfers for the in-flight flag and re-entry
+// guard, but NOT for the success path: there is no parent to close, so success
+// clears the pending record and the row disappearing from the table is the
+// confirmation.
+//
+// COPY CONSTRAINTS, all load-bearing. It names the record (two invites can share
+// a display name, never an address). It states the action is irreversible. It
+// states the address is released, which is the point of the slice. It states
+// nothing else is destroyed, which is TRUE by construction: all thirteen inbound
+// FKs to person are empty on an unclaimed row. It avoids the word "account" for
+// an unclaimed row, because there is no account (the endpoint reserves that word
+// for the claimed case it refuses). And it says plainly that nobody is notified,
+// because the delete sends nothing.
+function WithdrawInviteConfirm({ record, onCancel, onConfirm, writeError }) {
+  const [removing, setRemoving] = useState(false);
+
+  const handleConfirm = async () => {
+    if (removing) return;      // re-entry guard, AthleteProfile:71
+    setRemoving(true);
+    const ok = await onConfirm(record);
+    // On success the parent clears `record`, which unmounts this modal; there is
+    // no setState to run here. On failure, drop the in-flight flag and stay open
+    // so writeError is readable.
+    if (!ok) setRemoving(false);
+  };
+
+  return (
+    <Modal isOpen={!!record} onClose={onCancel} title="Withdraw invite">
+      <p style={CONFIRM_BODY_STYLE}>
+        Withdraw the invitation to {record?.displayName} at {record?.inviteEmail}?
+        An unclaimed invitation has nothing else stored against it, so nothing
+        else is removed. The address is released and can be invited again.
+        No message is sent to them. This cannot be undone.
+      </p>
+      {writeError && <p style={CONFIRM_ERROR_STYLE}>{writeError}</p>}
+      <div style={CONFIRM_FOOTER_STYLE}>
+        <Button variant="ghost" size="sm" onClick={onCancel} disabled={removing}>
+          Cancel
+        </Button>
+        <Button variant="primary" size="sm" onClick={handleConfirm} disabled={removing}>
+          {removing ? 'Withdrawing…' : 'Withdraw invite'}
+        </Button>
+      </div>
+    </Modal>
+  );
+}
+
+const CONFIRM_BODY_STYLE = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  lineHeight: 1.6,
+  marginTop: 0,
+  marginBottom: 'var(--sh-space-4)',
+};
+
+const CONFIRM_ERROR_STYLE = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-secondary)',
+  fontStyle: 'italic',
+  marginBottom: 'var(--sh-space-3)',
+};
+
+const CONFIRM_FOOTER_STYLE = {
+  display: 'flex',
+  justifyContent: 'flex-end',
+  gap: 'var(--sh-space-2)',
+  flexWrap: 'wrap',
+};
 
 function Footnote() {
   // No dead-click drill (aggregate-default guardrail): per-account detail
@@ -266,6 +389,19 @@ function AuthenticatedAccounts({ headingId }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [writeError, setWriteError] = useState(null);
   const clearWriteError = useCallback(() => setWriteError(null), []);
+  // Pending withdraw: the ROW OBJECT or null, not a boolean and not a key. The
+  // confirm renders the display name and invite email in its copy, and a key
+  // would have to be looked up in state.rows at exactly the moment the row is
+  // being removed from it.
+  const [pendingWithdraw, setPendingWithdraw] = useState(null);
+  // Delete-scoped writeError, NOT shared with create. A shared slot would let a
+  // failed create and a failed withdraw write the same place, and whichever
+  // fired last would render in whichever modal happened to be open.
+  const [withdrawError, setWithdrawError] = useState(null);
+  // Focus target for the success path, see openWithdraw / withdrawInvite below.
+  // Button spreads ...props onto the <button> (Button.jsx:105) but does NOT
+  // forwardRef, so this is an id lookup rather than a ref.
+  const ctaId = useId();
 
   useEffect(() => {
     let cancelled = false;
@@ -304,8 +440,53 @@ function AuthenticatedAccounts({ headingId }) {
     }
   }, []);
 
+  // Withdraw an unclaimed invite. Returns true on success so the confirm can
+  // keep its in-flight flag set through the unmount.
+  const withdrawInvite = useCallback(async (record) => {
+    setWithdrawError(null);
+    try {
+      const res = await fetch(`/api/invites/${encodeURIComponent(record.key)}`, {
+        method: 'DELETE', credentials: 'include',
+      });
+      if (!res.ok) throw new Error(await serverError(res, 'Failed to withdraw invite'));
+      // No refetch, matching createInvite: filter by key. On the auth tree
+      // toRow keys on the person id, which is also the route parameter.
+      setState((prev) => ({ ...prev, rows: prev.rows.filter((r) => r.key !== record.key) }));
+      setPendingWithdraw(null);
+      // FOCUS: Modal.jsx:36-47 captured the ROW as its trigger at open time and
+      // focuses it again in its unmount cleanup. That row is being removed in
+      // this same update, so the restore targets a detached node: no throw (the
+      // guard at :46 checks for a focus method) but focus silently falls to
+      // <body>. Modal's cleanup runs synchronously during the commit that
+      // unmounts it, so this rAF lands AFTER it and wins. The CTA is the target
+      // because it is the only control guaranteed to exist at that moment: it
+      // renders in PageHeader regardless of row count, so it survives even the
+      // deletion of the last row, when the table itself is replaced by the
+      // empty state.
+      requestAnimationFrame(() => {
+        const el = document.getElementById(ctaId);
+        if (el) el.focus();
+      });
+      return true;
+    } catch (err) {
+      setWithdrawError(err.message || 'Failed to withdraw invite');
+      return false;
+    }
+  }, [ctaId]);
+
+  // Only one of the two modals is ever open: each opener clears the other.
+  const openCreate = useCallback(() => {
+    setPendingWithdraw(null);
+    setModalOpen(true);
+  }, []);
+  const openWithdraw = useCallback((row) => {
+    setModalOpen(false);
+    setWithdrawError(null);
+    setPendingWithdraw(row);
+  }, []);
+
   const cta = (
-    <Button variant="primary" size="sm" onClick={() => setModalOpen(true)}>
+    <Button id={ctaId} variant="primary" size="sm" onClick={openCreate}>
       Create invite
     </Button>
   );
@@ -335,7 +516,11 @@ function AuthenticatedAccounts({ headingId }) {
             <CountLine>
               {state.rows.length} account{state.rows.length === 1 ? '' : 's'} and invite{state.rows.length === 1 ? '' : 's'} across all four surfaces
             </CountLine>
-            <RosterTable rows={state.rows} />
+            <RosterTable
+              rows={state.rows}
+              onRowAction={openWithdraw}
+              rowAriaLabel={(r) => `Withdraw the invitation to ${r.displayName}`}
+            />
             <Footnote />
           </>
         )}
@@ -347,6 +532,13 @@ function AuthenticatedAccounts({ headingId }) {
         onCreate={createInvite}
         writeError={writeError}
         clearWriteError={clearWriteError}
+      />
+
+      <WithdrawInviteConfirm
+        record={pendingWithdraw}
+        onCancel={() => setPendingWithdraw(null)}
+        onConfirm={withdrawInvite}
+        writeError={withdrawError}
       />
     </main>
   );
