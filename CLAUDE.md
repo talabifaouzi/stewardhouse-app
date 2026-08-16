@@ -452,6 +452,17 @@ Every substantive change runs as a **slice**. The rhythm:
    `qa-audit-operations` are reference-only and remain on the local clone +
    origin indefinitely. Findings flow into fix-bundle slices that branch off
    `main`, not off the audit branch.
+   **BULK-PRUNE HAZARD (recorded 2026-08-16).** Never delete an audit branch
+   with a `git branch --merged` sweep. `--merged main` LISTS
+   `qa-audit-enterprise`, because every one of its commits is reachable from
+   `main` (tip `c74058a`, an ancestor, 0 commits ahead), so it appears in the
+   same output as genuinely merged slice branches and a sweep would take it.
+   `qa-audit-advisor` and `qa-audit-operations` report as unmerged and would
+   survive that sweep BY ACCIDENT, not by protection. So a bulk prune deletes
+   exactly one of the three audit branches and LOOKS like it worked: the two
+   survivors read as evidence that audit branches were left alone. All three,
+   including `qa-audit-advisor` (which postdates the sentence above), are
+   deleted BY NAME ONLY, and in practice never.
 10. **Migration discipline (local-then-remote rule).** Any commit that ships a
     `migrations/NNNN_*.sql` file must either (a) include the corresponding
     `wrangler d1 migrations apply --remote` step in the same ship operation,
