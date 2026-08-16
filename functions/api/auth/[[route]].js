@@ -20,12 +20,23 @@
 // An email is allowed through when EITHER
 //   (a) an auth_user already exists for it  — a RETURNING sign-in; existing
 //       accounts must always be able to sign in, gate or no gate; OR
-//   (b) a person row carries it as invite_email — an INVITED (pre-seeded)
-//       account, claimable on first verify by the auth.js (c) hook.
+//   (b) a person row carries it as invite_email AND that invite has not
+//       EXPIRED (Slice A: 30 days from person.created_at) — an INVITED
+//       (pre-seeded) account, claimable on first verify by the auth.js (c) hook.
 // Neither present → unknown email → refuse: no link sent, no auth_user, no
 // verification row created. The 403 body mirrors better-auth's own
 // disableSignUp error shape ({ code: 'new_user_signup_disabled' }) so
 // SignIn.jsx's existing ERROR_MESSAGES copy renders unchanged.
+//
+// AN EXPIRED ADDRESS RECEIVES THAT SAME 403, BYTE-IDENTICAL. This is the only
+// gate in the product facing UNAUTHENTICATED callers, so a distinct expired
+// code would turn it into an enumeration oracle: anyone able to POST an email
+// could learn whether that address was ever invited to StewardHouse, which for
+// a private platform with named pilot participants is a membership disclosure.
+// The cost is real and accepted: a lapsed invitee is told sign-up is not open
+// rather than that their invitation expired. Their recourse is the operator who
+// invited them, who can now withdraw the stale row and re-invite (the delete
+// path shipped at 1c9d69d + cd2f41b, which is what unblocked this slice).
 //
 // Everything else — get-session, the magic-link VERIFY callback, sign-out —
 // passes straight through to better-auth with the original request intact.
@@ -36,7 +47,7 @@
 // (allow) from unknown-new (refuse); disableSignUp cannot.
 // ─────────────────────────────────────────────────────────────────────────
 
-import { makeAuth } from '../../_lib/auth.js';
+import { makeAuth, inviteCutoffIso } from '../../_lib/auth.js';
 
 const MAGIC_LINK_SIGNIN_PATH = '/api/auth/sign-in/magic-link';
 
@@ -65,12 +76,28 @@ export async function onRequest(context) {
     // Only gate when we can read an email. An unparseable/absent email falls
     // through to better-auth's own validation (which 400s) — never sends.
     if (email) {
+      // Slice A expiry, site (1). Only the PERSON branch gains the predicate.
+      //
+      // The auth_user branch is UNTOUCHED on purpose: an auth_user row exists
+      // only after a successful first verify, so a claimed account is not an
+      // invite, it is an account. Expiring it would be a session-lifetime
+      // policy, which the ruling does not touch. This also means someone who
+      // claims on day 29 keeps access: expiry is a property of the INVITATION,
+      // not of the person.
+      //
+      // NULL created_at passes. Eleven rows predate migration 0014, which
+      // deliberately did not backfill them, and one is a real deliverable
+      // address. A DECISION, not an oversight: unknown age is not expiry.
+      // See INVITE_EXPIRY_DAYS in functions/_lib/auth.js for the full reasoning
+      // and for why the claim hook repeats this predicate.
+      const cutoff = inviteCutoffIso();
       const allowed = await context.env.DB
         .prepare(
           'SELECT 1 AS ok FROM auth_user WHERE email = ? ' +
-          'UNION ALL SELECT 1 AS ok FROM person WHERE invite_email = ? LIMIT 1'
+          'UNION ALL SELECT 1 AS ok FROM person ' +
+          'WHERE invite_email = ? AND (created_at IS NULL OR created_at > ?) LIMIT 1'
         )
-        .bind(email, email)
+        .bind(email, email, cutoff)
         .first();
 
       if (!allowed) {

@@ -57,6 +57,41 @@ import { Kysely } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import { createSender } from './sender.js';
 
+// ─────────────────────────────────────────────────────────────────────────
+// INVITE EXPIRY (Slice A). FT ruling: an unclaimed invite expires 30 days
+// after person.created_at. Before this, an unclaimed row lived forever and its
+// address could request a magic link indefinitely.
+//
+// A MODULE CONSTANT, deliberately, not an env var and not a column.
+//   NOT an env var: §11 records that production env config lives in the
+//   Cloudflare Pages dashboard, is not repo-readable, and DRIFTS SILENTLY. A
+//   window that differed between local and production would be invisible and
+//   would fail exactly the way RESEND_API_KEY did, with nothing erroring.
+//   NOT a column: a window is POLICY, not a record of what happened. Migration
+//   0018's docblock draws the same line for consent_attested_at, which records
+//   THAT an attestation occurred and never the language of it.
+//
+// TWO enforcement sites share this one value, and they must agree:
+//   (1) the pre-send allowlist, functions/api/auth/[[route]].js
+//   (2) the claim hook's UPDATE, below
+// Site (1) alone would leave a window: a link requested on day 29 is valid for
+// five minutes and its verify NEVER re-consults the allowlist, so a click just
+// past midnight on day 30 would still claim. Site (2) closes it.
+//
+// NULL created_at is treated as LIVE, not expired. ELEVEN rows predate
+// migration 0014, which deliberately did not backfill them, and one of them is
+// FT's own staff test identity on a real deliverable address. Locking out a
+// real person to enforce a policy against four .invalid demo seeds is the wrong
+// trade. This is a DECISION, not an oversight: a NULL date means the age is
+// unknown, and an unknown age is not evidence of expiry.
+export const INVITE_EXPIRY_DAYS = 30;
+
+/** ISO instant before which an invite is expired. Rows at or older than this fail. */
+export function inviteCutoffIso(nowMs = Date.now()) {
+  return new Date(nowMs - INVITE_EXPIRY_DAYS * 24 * 60 * 60 * 1000).toISOString();
+}
+// ─────────────────────────────────────────────────────────────────────────
+
 // C-3a: bind an athlete's institutional record(s) to their claimed person.
 // athlete.person_id FKs person.id (not auth_user.id), and an athlete may hold
 // rows at multiple institutions (no UNIQUE on athlete.email) — one person, many
@@ -199,11 +234,26 @@ export function makeAuth(env) {
               let claimed = 0;
 
               if (user.email) {
+                // Slice A expiry, site (2). The same 30-day predicate the
+                // pre-send allowlist applies, repeated here to close the
+                // outstanding-link window: a link requested on day 29 stays
+                // valid for five minutes and its verify never re-consults the
+                // allowlist, so without this a click just past the boundary
+                // would still claim an expired invite.
+                //
+                // NULL created_at is LIVE, not expired: the age is unknown, and
+                // an unknown age is not evidence of expiry. See the constant's
+                // docblock for why the eleven pre-0014 rows are not locked out.
+                const cutoff = inviteCutoffIso();
                 const claim = await db
                   .updateTable('person')
                   .set({ auth_user_id: user.id })
                   .where('auth_user_id', 'is', null)
                   .where('invite_email', '=', user.email)
+                  .where((eb) => eb.or([
+                    eb('created_at', 'is', null),
+                    eb('created_at', '>', cutoff),
+                  ]))
                   .executeTakeFirst();
 
                 claimed = Number(claim?.numUpdatedRows ?? 0n);
