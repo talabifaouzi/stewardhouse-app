@@ -76,7 +76,8 @@ export async function onRequest(context) {
     // Only gate when we can read an email. An unparseable/absent email falls
     // through to better-auth's own validation (which 400s) — never sends.
     if (email) {
-      // Slice A expiry, site (1). Only the PERSON branch gains the predicate.
+      // Expiry, the ONLY enforcement site. Only the PERSON branch carries the
+      // predicate.
       //
       // The auth_user branch is UNTOUCHED on purpose: an auth_user row exists
       // only after a successful first verify, so a claimed account is not an
@@ -88,8 +89,9 @@ export async function onRequest(context) {
       // NULL created_at passes. Eleven rows predate migration 0014, which
       // deliberately did not backfill them, and one is a real deliverable
       // address. A DECISION, not an oversight: unknown age is not expiry.
-      // See INVITE_EXPIRY_DAYS in functions/_lib/auth.js for the full reasoning
-      // and for why the claim hook repeats this predicate.
+      // See INVITE_EXPIRY_DAYS in functions/_lib/auth.js for the full
+      // reasoning, including why the claim hook does NOT repeat this predicate
+      // and absorbs the send-to-verify window instead.
       const cutoff = inviteCutoffIso();
       const allowed = await context.env.DB
         .prepare(

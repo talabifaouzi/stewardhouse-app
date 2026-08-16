@@ -71,19 +71,32 @@ import { createSender } from './sender.js';
 //   0018's docblock draws the same line for consent_attested_at, which records
 //   THAT an attestation occurred and never the language of it.
 //
-// TWO enforcement sites share this one value, and they must agree:
-//   (1) the pre-send allowlist, functions/api/auth/[[route]].js
-//   (2) the claim hook's UPDATE, below
-// Site (1) alone would leave a window: a link requested on day 29 is valid for
-// five minutes and its verify NEVER re-consults the allowlist, so a click just
-// past midnight on day 30 would still claim. Site (2) closes it.
+// ONE enforcement site, not two: the pre-send allowlist in
+// functions/api/auth/[[route]].js. The claim hook below does NOT repeat this
+// predicate, and that is deliberate.
 //
-// NULL created_at is treated as LIVE, not expired. ELEVEN rows predate
-// migration 0014, which deliberately did not backfill them, and one of them is
-// FT's own staff test identity on a real deliverable address. Locking out a
-// real person to enforce a policy against four .invalid demo seeds is the wrong
-// trade. This is a DECISION, not an oversight: a NULL date means the age is
-// unknown, and an unknown age is not evidence of expiry.
+// THE SEND-TO-VERIFY WINDOW IS LEFT OPEN ON PURPOSE AND ABSORBED BY THE CLAIM.
+// A link requested on day 29 stays valid after its row crosses day 30, and the
+// verify never re-consults the allowlist, so the claim lands slightly past the
+// boundary. The overshoot is BOUNDED by the magic link's own lifetime:
+// expiresIn is 300 seconds (the magicLink plugin below) and better-auth
+// enforces it on consume, so it can never exceed five minutes.
+//
+// Refusing that claim, which is what shipped at 311773c, was worse. It left
+// the invitee with no claim AND an auth_user anyway, and the fresh-person
+// branch turned that into an orphan 'New user' individual which NO re-invite
+// could recover: the after hook fires only on user creation and never
+// re-fires, so a withdrawn-and-reissued invite is never claimed. Confirmed
+// empirically before this change. Five minutes of slack at the boundary costs
+// less than an unrecoverable account.
+//
+// NULL created_at is treated as LIVE, not expired. This now applies to SITE 1
+// ONLY, there being no other site. ELEVEN rows predate migration 0014, which
+// deliberately did not backfill them, and one of them is FT's own staff test
+// identity on a real deliverable address. Locking out a real person to enforce
+// a policy against four .invalid demo seeds is the wrong trade. This is a
+// DECISION, not an oversight: a NULL date means the age is unknown, and an
+// unknown age is not evidence of expiry.
 export const INVITE_EXPIRY_DAYS = 30;
 
 /** ISO instant before which an invite is expired. Rows at or older than this fail. */
@@ -195,10 +208,33 @@ export function makeAuth(env) {
         create: {
           // Claim-or-create person on first sign-in.
           //
-          // POST-COMMIT: better-auth queues `create.after` after the
-          // adapter's INSERT returns; with D1+Kysely (no transaction
-          // wrapper) the queue resolves to immediate execution, so the
-          // auth_user row IS durable when this body runs.
+          // HOOK TIMING, both halves, because they are OPPOSITE and the
+          // difference is what makes `before` able to refuse at all.
+          //
+          // `create.before` runs INLINE, inside createWithHooks, AHEAD of the
+          // adapter INSERT. That is exactly why returning false prevents the
+          // row: createWithHooks returns null, createUser returns null, and
+          // magic-link's verify takes its `failed_to_create_user` redirect.
+          // Nothing has been written at that point, so there is nothing to
+          // undo.
+          //
+          // `create.after` is QUEUED, not immediate. auth.handler wraps the
+          // whole router in runWithAdapter, so queueAfterTransactionHook finds
+          // a store and pushes onto pendingHooks instead of running inline,
+          // and those drain only after handler(request) resolves. This body
+          // therefore runs AFTER the entire verify endpoint has finished, past
+          // createSession and past setSessionCookie. An earlier version of
+          // this comment claimed the queue resolved to immediate execution;
+          // that was wrong, and it mattered, because it implied an after hook
+          // could still influence the response. It cannot: it runs after the
+          // response is built and its return value is discarded.
+          //
+          // NO TRANSACTION wraps any of this, and that is a property of the
+          // CALL SITE rather than of D1 or Kysely: internalAdapter.createUser
+          // is unwrapped, while createOAuthUser and /sign-up/email both use
+          // runWithTransaction. The durability conclusion is unchanged and in
+          // fact stronger than the old wording claimed: the auth_user row is
+          // committed well before this body runs.
           //
           // ONCE-PER-EMAIL: magic-link's verify calls `createUser` only
           // when `findUserByEmail` returns nothing. Re-sign-ins skip
@@ -221,39 +257,83 @@ export function makeAuth(env) {
           // up" AND "which row do they claim". Do NOT broaden to arbitrary
           // matching — the allowlist gate depends on this exact key.
           //
-          // FRESH-PERSON BRANCH left OPEN, not closed belt-and-braces:
-          // with the pre-send gate in place it is reachable only for an
-          // allowlisted email, so it can no longer mint an unknown-email
-          // account. Closing it would strand an allowlisted individual
-          // whose invite_email claim missed (it would leave person=null).
-          // Leaving it open keeps claim-or-create graceful. FUTURE-HARDEN:
-          // if a non-magic-link signup method is ever added, that path
-          // must be gated too, or re-add an allowlist re-check here.
+          // FRESH-PERSON BRANCH IS NOW CLOSED, by the `before` hook below.
+          // It used to stay open on the reasoning that a claim-miss should
+          // degrade gracefully. That reasoning was wrong in one specific way,
+          // confirmed empirically before this change: a claim-miss did not
+          // degrade, it minted an orphan 'New user' individual holding the
+          // invitee's address, and no re-invite could recover it. An operator
+          // could withdraw the stale row and create a fresh live one, both
+          // endpoints returning success, and the invitee would still sign in
+          // as the orphan forever, because `createUser` never fires twice for
+          // an address that already has an auth_user and this hook only runs
+          // on user creation. An unclaimable signup is now REFUSED instead.
+          //
+          // The branch below survives for one residual case: a row that passed
+          // the before check and lost its claim in the microseconds since. That
+          // still yields an orphan, but no ordinary sequence reaches it.
+          //
+          // COMPLEMENT INVARIANT, and the reason both hooks live in one block
+          // where a reader cannot change one without seeing the other: the
+          // before predicate and the claim UPDATE MUST stay exact complements
+          // over the same two columns, invite_email and auth_user_id. Break it
+          // and it breaks in one of two directions. Before too permissive
+          // reopens the orphan this slice closed. Before too strict refuses a
+          // real invitee whose row would have claimed cleanly. So add nothing
+          // to either without adding it to both: no expiry term (site 1 owns
+          // expiry, see INVITE_EXPIRY_DAYS), no soft_deleted_at filter, and no
+          // re-normalizing of user.email, which better-auth lowercased before
+          // either hook saw it.
+          //
+          // HISTORICAL NOTE: 311773c's commit message states that the claim
+          // hook repeats the allowlist predicate to close the outstanding-link
+          // window. That was true of what shipped and this makes it false of
+          // the tree. The message stands as an accurate record of that slice.
+          // ───────────────────────────────────────────────────────────────
+          // Refuse a first-time sign-in with no claimable invite row. The two
+          // terms below are the exact complement of the claim UPDATE in
+          // `after`; see COMPLEMENT INVARIANT above before touching either.
+          //
+          // NOT WRAPPED in try/catch, deliberately. This is a gate decision,
+          // and an unreadable database must not be read as "no invite", which
+          // would be indistinguishable in the logs from a real refusal, nor as
+          // "invite present", which would reopen the orphan. Letting it throw
+          // fails closed (no row is written, since the INSERT is downstream)
+          // and surfaces as an error line in the deployment tail.
+          before: async (user) => {
+            // No address means nothing to claim. Refuse rather than fall
+            // through: the old behaviour here was the fresh-person branch.
+            if (!user.email) return false;
+
+            const claimable = await db
+              .selectFrom('person')
+              .select(['id'])
+              .where('invite_email', '=', user.email)
+              .where('auth_user_id', 'is', null)
+              .executeTakeFirst();
+
+            if (claimable) return;
+
+            // Address deliberately not logged. The after hook logs auth_user
+            // ids, and there is no id yet at this point.
+            console.log('[auth/claim] refused createUser: no claimable invite');
+            return false;
+          },
+
           after: async (user) => {
             try {
               let claimed = 0;
 
               if (user.email) {
-                // Slice A expiry, site (2). The same 30-day predicate the
-                // pre-send allowlist applies, repeated here to close the
-                // outstanding-link window: a link requested on day 29 stays
-                // valid for five minutes and its verify never re-consults the
-                // allowlist, so without this a click just past the boundary
-                // would still claim an expired invite.
-                //
-                // NULL created_at is LIVE, not expired: the age is unknown, and
-                // an unknown age is not evidence of expiry. See the constant's
-                // docblock for why the eleven pre-0014 rows are not locked out.
-                const cutoff = inviteCutoffIso();
+                // NO EXPIRY TERM. Expiry is enforced once, at the pre-send
+                // allowlist; see INVITE_EXPIRY_DAYS for why the send-to-verify
+                // window is left open and absorbed here. These two terms are
+                // the exact complement of the `before` predicate above.
                 const claim = await db
                   .updateTable('person')
                   .set({ auth_user_id: user.id })
                   .where('auth_user_id', 'is', null)
                   .where('invite_email', '=', user.email)
-                  .where((eb) => eb.or([
-                    eb('created_at', 'is', null),
-                    eb('created_at', '>', cutoff),
-                  ]))
                   .executeTakeFirst();
 
                 claimed = Number(claim?.numUpdatedRows ?? 0n);
