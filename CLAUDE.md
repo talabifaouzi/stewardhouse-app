@@ -533,6 +533,36 @@ Every substantive change runs as a **slice**. The rhythm:
     what that would risk: four inbound child FKs, a `PRAGMA foreign_keys=OFF`
     that is a silent no-op inside a transaction, and child rows dropped with no
     error raised. The safety here came from the migration, not from the command.
+    **FT RULING 2026-08-17: REMOTE MIGRATION APPLIES ARE FT-RUN-ONLY. The agent
+    NEVER runs `wrangler d1 migrations apply --remote`.** A remote migration apply
+    IS a remote D1 write, and `docs/enterprise-provisioning-runbook.md`:43-46
+    already ruled that "every `--remote` write is **[FT-only]** per the
+    account-tied remote-write protocol". That runbook and this section DISAGREED
+    until now: §6.10 governed WHETHER a migration reached remote and said nothing
+    about WHO ran it, so an agent-run apply broke no rule written here while
+    breaking one written there. This paragraph closes that gap rather than
+    creating a new constraint.
+    **Procedure, matching the runbook's shape**, in which `[agent-ok]` and
+    `[FT-only]` steps never share a shell. (1) `[agent-ok]` the agent prepares and
+    banks the migration locally, and states plainly in its report that the remote
+    apply is PENDING, which is the branch (b) deferral note above. (2) FT types
+    `/exit`. (3) `[FT-only]` FT runs
+    `PS> npx wrangler d1 migrations apply stewardhouse-pilot --remote` and answers
+    the confirmation prompt. (4) `[FT-only]` FT runs
+    `PS> npx wrangler d1 migrations list stewardhouse-pilot --remote` and confirms
+    it reports `No migrations to apply!`. (5) FT relaunches with `claude`.
+    (6) `[agent-ok]` the agent then performs a read-only verification pass.
+    **Why the split matters, both halves of it.** The confirmation prompt is the
+    human step the command was designed around, and an agent shell answers it
+    without a human, per the hazard above. FT running the CLOSURE CHECK as well
+    means the write and the proof of the write do not both happen in the same
+    shell, which is precisely the property the 0018 episode lacked. The agent's
+    read-only pass at step (6) is still expected and still useful; it simply is
+    not the thing that establishes the write landed.
+    **The 0018 apply on 2026-08-17 was agent-run and PREDATES this ruling. It is
+    NOT a precedent.** The hazard paragraph above explains why it was safe, and
+    that reason is entirely a property of the migration rather than of the
+    process: one additive `ALTER TABLE ADD COLUMN` against a zero-row table.
 11. **Authenticated-surface path audit (full-directory rule).** When
     wiring any existing public demo surface for reuse at an authenticated
     route (e.g. IndividualSurface at both `/individual/*` and
