@@ -264,7 +264,12 @@ export default function InstitutionsDirectory() {
             No institutions match this filter.
           </p>
         ) : (
-          <div role="table" aria-label="Institutions">
+          <div style={{ overflowX: 'auto' }}>
+            {/* Overflow containment per OperationsRoster.jsx:141-142. 603 = sum of
+                per-column legible minimums + gaps + row padding, NOT a proportional
+                fr derivation; accepts fr compression as Roster's chosen 680 does,
+                and Roster's 680 is not derived so it is not the value to reuse. */}
+          <div role="table" aria-label="Institutions" style={{ minWidth: '603px' }}>
             <div role="row" style={{
               display: 'grid',
               gridTemplateColumns: GRID_COLUMNS,
@@ -348,6 +353,7 @@ export default function InstitutionsDirectory() {
                 </div>
               );
             })}
+          </div>
           </div>
         )}
       </Card>

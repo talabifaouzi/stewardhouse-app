@@ -272,7 +272,13 @@ export default function IndividualsDirectory() {
             No individuals match this filter.
           </p>
         ) : (
-          <div role="table" aria-label="Individuals">
+          <div style={{ overflowX: 'auto' }}>
+            {/* Overflow containment per OperationsRoster.jsx:141-142. 460 = sum of
+                per-column legible minimums + gaps + row padding, NOT a proportional
+                fr derivation, so it accepts fr compression as Roster's chosen 680
+                does. Roster's 680 is itself not derived and would be wrong here: it
+                would over-scroll this five-column table by 220px for no gain. */}
+          <div role="table" aria-label="Individuals" style={{ minWidth: '460px' }}>
             <div role="row" style={{
               display: 'grid',
               gridTemplateColumns: GRID_COLUMNS,
@@ -357,6 +363,7 @@ export default function IndividualsDirectory() {
                 </div>
               );
             })}
+          </div>
           </div>
         )}
 

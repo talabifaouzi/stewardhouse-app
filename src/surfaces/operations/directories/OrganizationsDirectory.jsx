@@ -373,7 +373,13 @@ export default function OrganizationsDirectory() {
             No organizations match this filter.
           </p>
         ) : (
-          <div role="table" aria-label="Organizations">
+          <div style={{ overflowX: 'auto' }}>
+            {/* Overflow containment per OperationsRoster.jsx:141-142. 589 = sum of
+                per-column legible minimums + gaps + row padding, NOT a proportional
+                fr derivation; accepts fr compression as Roster's chosen 680 does.
+                Mission alone takes 186 of it, and Roster's 680 is not derived so it
+                is not the value to reuse. */}
+          <div role="table" aria-label="Organizations" style={{ minWidth: '589px' }}>
             <div role="row" style={{
               display: 'grid',
               gridTemplateColumns: GRID_COLUMNS,
@@ -449,6 +455,7 @@ export default function OrganizationsDirectory() {
                 </div>
               );
             })}
+          </div>
           </div>
         )}
       </Card>

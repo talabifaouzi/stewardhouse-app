@@ -276,7 +276,13 @@ export default function AdvisorPracticesDirectory() {
             No advisor practices match this filter.
           </p>
         ) : (
-          <div role="table" aria-label="Advisor practices">
+          <div style={{ overflowX: 'auto' }}>
+            {/* Overflow containment per OperationsRoster.jsx:141-142. 699 = sum of
+                per-column legible minimums + gaps + row padding, NOT a proportional
+                fr derivation; accepts fr compression as Roster's chosen 680 does.
+                Highest of the four because its practice-name median is 32 chars,
+                and Roster's 680 is not derived so it is not the value to reuse. */}
+          <div role="table" aria-label="Advisor practices" style={{ minWidth: '699px' }}>
             <div role="row" style={{
               display: 'grid',
               gridTemplateColumns: GRID_COLUMNS,
@@ -360,6 +366,7 @@ export default function AdvisorPracticesDirectory() {
                 </div>
               );
             })}
+          </div>
           </div>
         )}
       </Card>
