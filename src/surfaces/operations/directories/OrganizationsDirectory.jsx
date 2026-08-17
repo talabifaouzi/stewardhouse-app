@@ -212,6 +212,20 @@ export default function OrganizationsDirectory() {
         Organization records referenced across the platform — discovery catalog entries, gift targets, and connection destinations. Organizations are not platform users.
       </p>
 
+      {/* §7 demonstrative caveat, matching the Overview idiom at
+          OperationsSurface.jsx:303-312. TREE-INVARIANT by ruling: this view
+          reads the synthetic seed on both trees, so it carries no predicate. */}
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        fontStyle: 'italic',
+        marginBottom: 'var(--sh-space-5)',
+        maxWidth: '720px',
+      }}>
+        What follows is demonstrative, drawn from the synthetic seed, not live
+        platform records.
+      </p>
+
       <Card>
         {!inOverrideMode && (
           <>

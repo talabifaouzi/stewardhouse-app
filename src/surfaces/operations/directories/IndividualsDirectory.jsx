@@ -158,7 +158,21 @@ export default function IndividualsDirectory() {
         color: 'var(--sh-text-secondary)',
         marginBottom: 'var(--sh-space-8)',
       }}>
-        Every individual on the platform across all four sources. Search by name; filter by source.
+        Individual records across all four sources. Search by name; filter by source.
+      </p>
+
+      {/* §7 demonstrative caveat, matching the Overview idiom at
+          OperationsSurface.jsx:303-312. TREE-INVARIANT by ruling: this view
+          reads the synthetic seed on both trees, so it carries no predicate. */}
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        fontStyle: 'italic',
+        marginBottom: 'var(--sh-space-5)',
+        maxWidth: '720px',
+      }}>
+        What follows is demonstrative, drawn from the synthetic seed, not live
+        platform records.
       </p>
 
       <Card>

@@ -173,6 +173,22 @@ export default function IndividualDetail() {
     >
       <BackLink to={backTo} label={DIR_LABEL} />
 
+      {/* §7 demonstrative caveat, matching the Overview idiom at
+          OperationsSurface.jsx:303-312. Sits ABOVE the header because the
+          record name in the h1 is itself seed content. TREE-INVARIANT by
+          ruling: this view reads the synthetic seed on both trees, so it
+          carries no predicate. */}
+      <p style={{
+        fontSize: 'var(--sh-text-xs)',
+        color: 'var(--sh-text-muted)',
+        fontStyle: 'italic',
+        marginBottom: 'var(--sh-space-5)',
+        maxWidth: '720px',
+      }}>
+        What follows is demonstrative, drawn from the synthetic seed, not live
+        platform records.
+      </p>
+
       {/* Header */}
       <div style={{ marginBottom: 'var(--sh-space-8)' }}>
         <div style={{
