@@ -21,14 +21,20 @@
 //     an address at send time by matching person.invite_email, and the claim
 //     hook claims the row by the same key — a case/whitespace drift here would
 //     silently break BOTH the allowlist and the claim. Same key, one shape.
-//   - type: required, ∈ individual | staff | advisor | ops (ALLOWED_TYPES,
-//     mirrors seed-invites.mjs).
+//   - type: required, ∈ individual | staff | advisor (ALLOWED_TYPES). This set
+//     is NARROWER than seed-invites.mjs by exactly one value: 'ops' is refused
+//     here by the ops-minting guard below, so CLI provisioning stays the only
+//     path that mints an ops row.
 //   - displayName: required, non-empty. A real name at insert time is
 //     mandatory (browser-screening runbook §9 — a bespoke row without one
 //     renders "New user" in Chrome).
 //
 // source_surface is DERIVED from type server-side, NEVER client-supplied:
-//   individual→individual, advisor→advisor, staff→enterprise, ops→operations.
+//   individual→individual, advisor→advisor, staff→enterprise.
+//   There is deliberately NO ops entry: see the ops-minting guard below. With
+//   the mapping absent, re-adding 'ops' to ALLOWED_TYPES and dropping the guard
+//   branch fails LOUDLY rather than writing a row with an undefined
+//   source_surface, so the guard cannot be undone by halves.
 //
 // Row written = the seed-invites.mjs 10-column shape (auth_user_id NULL,
 // initials NULL, extensions '{"<surface>":{}}', soft_deleted_at/deletion_state
@@ -38,6 +44,7 @@
 //   No session:               401, { error: 'Not signed in' }
 //   Session, no person:       403, { error: 'No account found for session' }
 //   Session, non-ops/no gate: 403, { error: 'Not authorized' }
+//   type 'ops':               403, { error: 'ops accounts cannot be created through this endpoint' }
 //   Invalid body:             400, { error: '<reason>' }
 //   Duplicate invite_email:   409, { error: 'This address has already been invited.' }
 //   Success:                  201, the GET /api/roster element shape + createdAt
@@ -50,14 +57,19 @@ import { makeDb, requireGatedOps, rejectRankKeys, jsonError, jsonOk } from '../_
 import { createSender } from '../_lib/sender.js';
 import { buildInviteEmail } from '../_lib/inviteEmail.js';
 
-const ALLOWED_TYPES = new Set(['individual', 'staff', 'advisor', 'ops']);
+// API-mintable types. 'ops' is DELIBERATELY ABSENT: see the ops-minting guard
+// in onRequestPost. Do not re-add it here without reading that comment first.
+const ALLOWED_TYPES = new Set(['individual', 'staff', 'advisor']);
 
 // type → source_surface. Server-derived; the client never supplies it.
+// No 'ops' entry: see the ops-minting guard in onRequestPost. Do not re-add it
+// here without reading that comment first. The absence is LOAD-BEARING, not an
+// omission: it makes this map the last line of the guard rather than a lookup
+// table, so a partial undo throws instead of writing an undefined surface.
 const SOURCE_SURFACE_FOR_TYPE = {
   individual: 'individual',
   advisor: 'advisor',
   staff: 'enterprise',
-  ops: 'operations',
 };
 
 export async function onRequestPost(context) {
@@ -78,6 +90,30 @@ export async function onRequestPost(context) {
   if (!displayName) return jsonError('A display name is required', 400);
 
   const type = body.type;
+  // OPS-MINTING GUARD. requireOps (gate.js) authorizes a FULL-FIDELITY,
+  // unredacted operator view on TYPE ALONE, and its Q6 note justifies that
+  // solely by ops being FT-exclusive. A gated ops operator minting a second
+  // ops account would void that precondition silently, widening who can read
+  // every person row without anything recording that it happened. So the API
+  // refuses the type outright and CLI provisioning (scripts/seed-invites.mjs,
+  // which is unchanged and still mints ops rows) stays the only path.
+  //
+  // This runs BEFORE the ALLOWED_TYPES test on purpose. 'ops' is absent from
+  // that set too, so the generic branch would already reject it, but it would
+  // read as an unknown-type typo rather than as a boundary someone chose.
+  //
+  // THREE mechanisms refuse this type, and that is deliberate: the branch here,
+  // the absence from ALLOWED_TYPES, and the absence from SOURCE_SURFACE_FOR_TYPE.
+  // Removing any one alone still refuses. Removing the first two still throws at
+  // the map rather than writing a row with an undefined source_surface, so the
+  // failure mode of a careless undo is loud rather than a silently mistyped row.
+  //
+  // 403 rather than 400 because the caller is authenticated, gated, and sending
+  // a well-formed request; what fails is permission to perform this particular
+  // creation, not the shape of the ask.
+  if (type === 'ops') {
+    return jsonError('ops accounts cannot be created through this endpoint', 403);
+  }
   if (!ALLOWED_TYPES.has(type)) {
     return jsonError(`type must be one of ${[...ALLOWED_TYPES].join(', ')}`, 400);
   }

@@ -126,11 +126,21 @@ export async function requireOps(db, context) {
   // docs/operations-roster-scoping.md, Q5). Session → person → type === 'ops'.
   //
   // TYPE-ONLY, NO demo_gate — deliberately lighter than the requireGatedEnterprise
-  // and requireGatedAdvisor twins. Ops accounts are inherently FT-exclusive (the auth
+  // and requireGatedAdvisor twins. Ops accounts are FT-exclusive (the auth
   // claim hook only ever mints type='individual'; scripts/seed-invites.mjs is
   // the sole path that mints an 'ops' person row), so being ops-typed IS the
-  // gate for the READ. The FUTURE invite WRITE endpoint gets a separate
-  // $.ops.demo_gate twin (the requireGated* pattern) — the read does not.
+  // gate for the READ. The invite WRITE endpoint has its own $.ops.demo_gate
+  // twin, requireGatedOps below (the requireGated* pattern); the read does not.
+  //
+  // THE SOLE-PATH CLAIM IS ENFORCED, NOT ASSUMED. It stopped being true when
+  // POST /api/invites shipped at e3804bd, which this docblock described as
+  // future work two lines above while resting on a premise that endpoint had
+  // already broken: a gated ops operator could mint another ops account, and
+  // nothing recorded it. The ops-minting guard in functions/api/invites.js
+  // restores it by refusing type 'ops' there (403), which is what makes the
+  // sentence above load-bearing again rather than merely asserted. If that
+  // guard is ever removed, this justification goes with it and the Q6 posture
+  // below must be re-ruled BEFORE a second ops account exists.
   //
   // Q6: this authorizes a FULL-FIDELITY operator view (real names, emails,
   // invite/bound status, no redaction). That is valid ONLY while ops is FT

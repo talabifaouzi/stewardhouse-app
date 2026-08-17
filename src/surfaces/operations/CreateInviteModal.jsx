@@ -9,9 +9,15 @@ import { Button } from '../../components/Button.jsx';
 // canSubmit gating, the real server message surfaced via writeError, form
 // contents preserved on failure.
 //
-// Type display labels follow the naming ruling (ops → "Admin"); the SUBMITTED
-// value stays the raw enum ('ops'). source_surface is derived server-side from
-// type — the form never sends it.
+// Type display labels follow the naming ruling; the SUBMITTED value stays the
+// raw enum. source_surface is derived server-side from type; the form never
+// sends it.
+//
+// 'ops' is NOT offered (ops-minting guard). The server refuses that type at
+// functions/api/invites.js with a 403, and that refusal is the boundary; this
+// omission only governs whether an operator is ever shown the choice. Removing
+// one without the other leaves either a select offering something the endpoint
+// rejects, or an endpoint open to anything that can post to it.
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -19,7 +25,6 @@ const TYPE_OPTIONS = [
   { value: 'individual', label: 'Individual' },
   { value: 'advisor', label: 'Advisor' },
   { value: 'staff', label: 'Staff' }, // bootstrap-only; canonical staff provisioning = docs/enterprise-provisioning-runbook.md
-  { value: 'ops', label: 'Admin' },
 ];
 
 const BLANK = { displayName: '', email: '', type: 'individual' };
