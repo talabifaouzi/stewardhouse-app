@@ -50,9 +50,20 @@ applied to it. Consequences already determined:
 - **Discover is COMPLETE at `42851cd`.** Third-party records, defanged and
   caveated. The three-source import architecture (CLAUDE.md §7) is a data-quality
   upgrade, not a gate item.
-- **The nine Operations directory routes are third-party records**, so caveat is
-  the correct response and P-6's directory work is COPY CHANGES, not a live-data
-  build.
+- **The eight Operations directory and detail routes are third-party records**,
+  so caveat is the correct response and P-6's directory work is COPY CHANGES,
+  not a live-data build.
+
+  **Count corrected 2026-08-17: it is EIGHT, not nine.** This bullet said "nine"
+  from the first drafting, and the error propagated into criterion 2's evidence
+  cell and into the Operations route arithmetic in §3. Operations has ten routes;
+  four directories plus four detail routes is eight, and the remaining two are
+  the Overview index and Accounts. **FT ruled the Overview index route MET.**
+  Nothing on record gives a reason for it to be NOT MET, `OperationsSurface.jsx`
+  :303-312 satisfies the §2.4 test on its face, and criterion 3 cannot be the
+  disqualifier because the Accounts route inherits the same shell defect and has
+  been scored MET in every row of the log. So the ninth unit was never a
+  caveat-work unit; it was a miscount.
 
 ### Ruling C — honest-but-empty COUNTS as complete
 
@@ -265,13 +276,34 @@ provisionally scored MET.
 | # | Criterion | Status | Evidence |
 |---|---|---|---|
 | 1 | Accounts/roster live, invites send | MET | `roster.js`, `invites.js`; `$.ops.demo_gate = 1` |
-| 2 | Every directory/detail route reads live data or carries a caveat | **NOT MET** | 9 routes read synthetic `unified`; no caveat (§2.4 test) |
+| 2 | Every directory/detail route reads live data or carries a caveat | MET | All 8 caveated at `f26c77a`, verified by render (§2.4 test) |
 | 3 | `/api/me` emits an `ops` block so `userRole` is real | **NOT MET** | `OperationsSurface.jsx:219` hardcodes null |
 | 4 | A gated ops user cannot silently mint another ops account | **NOT MET** | `CreateInviteModal.jsx` four-type select |
 | 5 | Invite failure recoverable | **NOT MET** | `invites.js:9-10` |
 | 6 | No invite copy contradicts what the endpoint does | **NOT MET** | `CreateInviteModal.jsx:102` "No email is sent" vs `invites.js` which sends |
 
-**Routes 1/10.** **Endpoints 2/2.** **Operations = 3/12.**
+**Routes 10/10.** **Endpoints 2/2.** **Operations = 12/12.**
+
+**Why the route figure reads 10/10 while criteria 4, 5 and 6 are still NOT MET,
+and the ruling that settles it.** Those three are defects on the Accounts route,
+which criterion 1 scores and which the instrument has counted MET in every row
+of the log. They do not add or remove route units, so they do not move the
+figure. **§2.5 read strictly is CORRECT**: a filed HONESTY defect blocks, and
+criterion 6 is an honesty defect on that route, since the invite copy says no
+email is sent and one is sent.
+
+**RULED 2026-08-17: Accounts stays MET for the `f26c77a` row.** Flipping a unit
+that scored MET in three prior rows, with criterion 6 already failing in every
+one of them, would be RE-ADJUDICATION rather than correction, and a re-score
+records what CHANGED. Criterion 6 did not change at `f26c77a`.
+
+**Accounts flips to NOT MET at the NEXT re-score if the `CreateInviteModal`
+contradiction is still live then.** That makes the outcome contingent on the FIX
+rather than on an interpretation, which is the point of ruling it now instead of
+leaving it open for a future auditor to reopen. The figures it would produce:
+Routes 9/10, Operations 11/12, capability 79/81, production-usable 52/81. Fixing
+the copy before the next re-score keeps Accounts MET and costs nothing; leaving
+it costs one unit.
 
 ### Shared infrastructure — 2 endpoints
 
@@ -387,6 +419,31 @@ this document.
 | 2026-08-14 | `e13ea0c` | 68/83 = 82% | 44/83 = 53% | First scoring under the ruled method (routes 35/50, endpoints 33/33). Gate values as recorded 2026-07-16, NOT re-verified. Enterprise criterion 1 provisional (Gap 2). NOT comparable to the prior 57%, which used a different method. |
 | 2026-08-14 | P-4 | 71/82 = 87% | 44/82 = 54% | P-4. Advisor routes 10/14 → 14/14, endpoints 14/14 → 13/13. Denominator 83 → 82. Gate values still as recorded 2026-07-16, NOT re-verified. |
 | 2026-08-15 | P-5 | 71/81 = 88% | 44/81 = 54% | P-5. Enterprise routes 11 → 10; the `setup` unit was removed, not fixed. Denominator 82 → 81. Gate values still as recorded 2026-07-16, NOT re-verified. |
+| 2026-08-17 | `f26c77a` | 80/81 = 99% | 53/81 = 65% | The caveat slice, plus the nine-versus-eight correction. Operations routes 1/10 → 10/10 and Operations 3/12 → 12/12. Eight units from `f26c77a` (a §2.4 caveat on every directory and detail route, and three "Every X on the platform" claims removed); one unit from FT's ruling that the Overview index route was always MET and Ruling B had miscounted. Denominator unchanged at 81. Gate values still as recorded 2026-07-16, NOT re-verified. Accounts scored MET per the §3 ruling of 2026-08-17: it stays MET here because criterion 6 did not change at `f26c77a`, and it flips to NOT MET at the next re-score if the `CreateInviteModal` contradiction is still live then, which would give 79/81 and 52/81. |
+
+**The `f26c77a` row is the FIRST in this log where the numerator moved because
+code was written.** Every prior row moved for a method change, a denominator
+artifact, or both, and each carries a note saying so. This one is eight units of
+shipped work plus one unit of correction, against an unchanged denominator.
+
+**Separate the two, because they are not the same kind of thing.** Eight units
+came from `f26c77a`: every Operations directory and detail route now carries a
+§2.4-compliant caveat, and the three false completeness claims are gone. That is
+capability, and it was verified BY RENDER on all eight routes rather than
+accepted on structural proof, the first slice on this project where that was
+possible. The ninth unit came from FT ruling the Overview index route MET. No
+code was written for it and none was needed: the route already satisfied §2.4,
+and Ruling B had counted eight routes as nine. **A correction that RAISES the
+numerator is the same class of artifact as one that lowers it** (see the P-4 note
+below on `docs/[id].js` PUT), and it must not be read as a ninth unit of work.
+
+**Production-usable moved by the same nine units**, 44 to 53, because Operations
+writes are live at `$.ops.demo_gate = 1` and caveat copy needs no gate. The gap
+in §4 is smaller but unchanged in CAUSE: it is still the two zero gates on
+advisor and enterprise. Gate values are carried forward from 2026-07-16 and were
+NOT re-verified, per §2.6. Note that re-verifying them is no longer a step the
+agent can take on its own: a `--remote` read falls under CLAUDE.md §6.15's
+remote-command rule and is FT's.
 
 **The P-5 row is a denominator artifact, not progress.** **The numerator did not
 move: 71 before, 71 after.** No capability was built. A unit that was FAILING was
@@ -424,10 +481,16 @@ write still returns 403 at `$.advisor.demo_gate = 0`. Nothing became usable.
 **Expected at the next re-score, so it is not misread:** P-4 deletes
 `docs/[id].js` PUT, dropping Advisor's endpoint denominator from 14 to 13 and
 capability by one unit with no defect fixed (§2.3). P-4 also repairs up to four
-Advisor route units, and P-6's caveat work can move up to nine Operations route
+Advisor route units, and P-6's caveat work can move up to eight Operations route
 units. P-5 removes the `setup` route, dropping Enterprise's denominator from 11
 to 10 while removing a NOT MET unit, which RAISES the percentage without new
 capability.
+
+**All three of those have now happened** (P-4, P-5, and P-6's caveat work at
+`f26c77a`), so this paragraph is a record of predictions that came true, not a
+list of pending items. It is kept because each prediction is the reasoning behind
+a row above, and because the eight-versus-nine figure in it was corrected here
+rather than silently.
 
 **A re-score must:** re-verify every status against the tree rather than
 carrying it forward; re-verify gate values against remote D1 read-only before
