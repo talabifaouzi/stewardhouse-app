@@ -780,6 +780,37 @@ action. The other four onboarding screens are clear at the same height (letter
 587, privacy 535, questions 401, reveal 517). Short-viewport layout defect on
 `Positioning.jsx`; its own slice.
 
+**CLOSED 2026-08-17: the four Operations directory rows are NOT a keyboard
+defect.** The item filed during the withdraw slice (`onClick` on `role="row"`
+with zero `tabIndex` and zero `onKeyDown`, so rows read as unreachable by
+keyboard) is **CLOSED, not deferred**.
+
+The mechanism is that the row was never the only path. Each directory puts a
+`Link` in its lead cell (`IndividualsDirectory.jsx:327`,
+`InstitutionsDirectory.jsx:323`, `AdvisorPracticesDirectory.jsx:336`,
+`OrganizationsDirectory.jsx:431`, each inside a `role="cell"`), and each
+`onRowClick` opens with `if (e.target.closest('a')) return;`
+(`:63`, `:47`, `:58`, `:91`) before navigating to the SAME destination
+the `Link` points at. So the `Link` is the accessible primitive and the row
+`onClick` is a mouse convenience widening the hit area to the full row. Adding
+`tabIndex` would insert a SECOND tab stop per row pointing where the adjacent
+link already points, which is a cost rather than a fix.
+
+`OperationsRoster.jsx:155-163` is NOT a counter-example, even though it carries
+the full keyboard pattern. Its rows contain no link, so there `tabIndex` is the
+ONLY keyboard path rather than a duplicate of one.
+
+What remains true and is deliberately NOT being fixed: each row carries
+`cursor: 'pointer'` and a full-width hover background that only a pointer can
+use, and the row has no accessible name. A sighted mouse user is told the whole
+row is clickable; a keyboard user is not. That is a cosmetic asymmetry over an
+already-reachable destination, not an access barrier.
+
+**TRIGGER TO WATCH.** A future audit grepping for `onClick` without `tabIndex`
+will re-flag these four files, because the grep cannot see the lead-cell `Link`
+or the `closest('a')` guard. This entry is what closes that loop: read it before
+filing them again.
+
 ### Voice & tone (LOCKED)
 
 Quiet, editorial. Closer to Aesop or The Atlantic than a consumer app.
