@@ -659,22 +659,29 @@ Every substantive change runs as a **slice**. The rhythm:
     required. Treating the two halves as parallel lists rather than as
     precedence is how a slice talks itself into the cheaper tier.
 
-    **WHO PERFORMS THE RENDER (amended 2026-08-15).** The three conditions above
-    are UNCHANGED; this changes who decides, not what triggers. When any of them
-    fires, **the agent does NOT open a browser.** §9 Rule 1 is a standing
-    prohibition on browser automation for this project, and it removed the only
-    means the agent had of producing a render. So on a firing condition the
-    agent: states plainly that render verification is indicated, NAMES which of
-    (a) / (b) / (c) fired, offers the structural proof actually available
-    (single occurrence of the string in the built bundle, plus the element
-    sitting outside every conditional, plus the shared route or component both
-    trees mount through), and **STOPS for FT's decision.** Shipping on the
-    lesser tier is FT's call, not the agent's, and it is recorded as such.
-    **This is already the worked pattern.** `c23ecc7` (Endowment copy) and
-    `61e5f96` (private-notes visibility line) both shipped with the
-    AUTHENTICATED-tree half resting on structural proof, with the limitation
-    stated plainly in the report rather than implied. Neither claimed more than
-    it had. The amendment makes that the rule instead of a habit.
+    **WHO PERFORMS THE RENDER (amended 2026-08-15, amended again 2026-08-17).**
+    The three conditions above are UNCHANGED; this changes who decides, not what
+    triggers. **The agent MAY perform the render itself, under §9's scoped
+    browser rule.** This supersedes the 2026-08-15 form of this paragraph, which
+    said the agent does not open a browser because §9 prohibited browser
+    automation outright. §9 now PERMITS navigating directly to an explicit
+    localhost preview port or to `steward-house.org` and reading only that page,
+    so on a firing condition the agent renders the named route and reports what
+    it saw. **The agent STOPS for FT only when the render would require
+    something §9's scoped rule FORBIDS** (a tab-context or tab-creation call,
+    `createIfEmpty`, another origin, or reading any page other than the target).
+    In that case it states plainly that render verification is indicated, NAMES
+    which of (a) / (b) / (c) fired, offers the structural proof actually
+    available (single occurrence of the string in the built bundle, plus the
+    element sitting outside every conditional, plus the shared route or
+    component both trees mount through), and leaves the decision to FT.
+    Shipping on the lesser tier stays FT's call, not the agent's.
+    **The worked pattern predates the render being available.** `c23ecc7`
+    (Endowment copy) and `61e5f96` (private-notes visibility line) both shipped
+    with the AUTHENTICATED-tree half resting on structural proof, with the
+    limitation stated plainly in the report rather than implied. Neither claimed
+    more than it had. That remains the right posture wherever the scoped rule
+    cannot reach the tree in question.
 
     **Worked instance.** The banner slice (`3d51cce`) shipped on the string tier,
     explicitly flagged in its own commit message as stopping short, and was then
@@ -709,8 +716,10 @@ Every substantive change runs as a **slice**. The rhythm:
     that writes to production. Remote migration applies are already FT-run-only
     per the ruling recorded in §6.10; this extends the same posture to every
     remote write.
-    (4) **Any browser automation**, per the §9 standing rule, which auto mode
-    does not override.
+    (4) **Any browser automation beyond what §9's scoped rule PERMITS.** §9
+    allows navigating directly to a localhost preview port or to
+    `steward-house.org` and reading only that page; everything it forbids needs
+    FT, and auto mode overrides neither half.
 
     **The reasoning.** These four are irreversible or production-facing, and the
     cost of one wrong automatic execution exceeds the cumulative cost of asking.
@@ -1045,7 +1054,7 @@ Five hard-earned lessons from a night of failed browser screening attempts (2026
 - **`localhost` vs `127.0.0.1` origin stranding.** `BETTER_AUTH_URL` in `.dev.vars` is `http://localhost:8788`. Better-auth's magic-link verify sets the session cookie on whichever origin served the verify request, then 302-redirects to `BETTER_AUTH_URL`. If FT clicked a link at `127.0.0.1:8788`, the cookie stuck to `127.0.0.1` but the redirect sent her to `localhost:8788` — different origin, no cookie carried, AppShell's `/api/me` returned null, bounce to `/signin`. **Always hand FT URLs on the SAME host as `BETTER_AUTH_URL`.** For local screening: use `localhost:8788` everywhere, never `127.0.0.1:8788`.
 - **Resend test sender (`onboarding@resend.dev`) delivers only to the registered address.** Plus-alias variants of the account owner's email (e.g. `talabifaouzi+morgan@gmail.com`) are treated as different addresses and rejected — `POST /api/auth/sign-in/magic-link` returns 500 because the sender throws. **Production invites REQUIRE a verified domain sender** — Resend's test sender is not a viable path for onboarding real pilot users. Verified domain needs to land before the first real invite goes out. **UPDATE (superseded 2026-07-15, invite-email slice):** this caveat is now STALE for the running environments — the verified domain sender has landed. Local `.dev.vars` `FROM_EMAIL=signin@steward-house.org` (a verified `steward-house.org` sender, not `onboarding@resend.dev`), and FT empirically delivered plus-address links on production 2026-07-15, so production is a verified sender too. The exact **production** `FROM_EMAIL` is a Cloudflare Pages dashboard var (NOT in `wrangler.toml`, not repo-readable) — confirm it reads `signin@steward-house.org` there before the first real external invite. (`.dev.vars.example` still shows the old `onboarding@resend.dev` placeholder — a stale template, harmless.) **See §11 (2026-07-20 incident):** production sender config lives in the Cloudflare Pages dashboard, is NOT repo-readable, and **drifts silently** — `RESEND_API_KEY` there fell out of sync with the active Resend key and took production sign-in down for ~5 days with no signal. A green local `.dev.vars` proves nothing about production.
 - **Hand-forged cookies fail in the browser even when curl accepts them.** Better-auth sets `HttpOnly` + `SameSite=Lax` + secure-when-https attributes. DevTools cookie paste bypasses those attributes; more commonly, DevTools re-encodes `%2F`/`%3D` in the pasted value (turning `%2F` into `%252F`), and the pasted-in domain (`localhost` vs `127.0.0.1`) rarely matches the origin FT actually browses. **Never hand FT raw cookie values. Use either the real magic-link flow (email) or code-path-minted verification-row URLs.** Cookie surgery is a curl-only tool.
-- **STANDING RULE: no browser automation on this project.** Added 2026-08-15. Browser automation runs inside FT's LIVE Chrome session, not a sandbox, so it has whatever access that session has. During the `88e07ea` work a tab-context call opened a new tab, and Chrome's new-tab page surfaced FT's own most-visited tiles; from the outside that was indistinguishable from the agent having navigated somewhere it should not. **Do not launch, connect to, or navigate Chrome for any reason.** Measurements come from SOURCE: token values from `tokens.css`, container arithmetic from the layout chain, character counts from the string itself. If a real render is genuinely required, SAY SO AND STOP rather than opening a browser; that is a decision for FT, not a step to take. Note that structural proof (single occurrence in the built bundle, plus the element sitting outside every conditional) has carried every copy slice on this project and is the EXPECTED tier, not a fallback.
+- **STANDING RULE: browser automation is PERMITTED under a scoped rule.** Ruled 2026-08-17, SUPERSEDING the blanket prohibition added at `1f76708` (2026-08-15). That prohibition is RETIRED and is not restated anywhere; a reader finding language that forbids browser use outright is reading something stale. **What the incident actually was, recorded precisely because the old rule was written wider than its finding.** During the `88e07ea` work a tab-context call with `createIfEmpty` opened a fresh Chrome tab, and Chrome's new-tab page rendered FT's own most-visited tiles. Nothing was read from those tiles, and no page other than the localhost preview was navigated to. **The defect was the tab-creation call, not browser use.** **PERMITTED:** navigating directly to an explicit localhost preview port or to `steward-house.org`, and reading only that page. **FORBIDDEN:** any tab-context or tab-creation call, `createIfEmpty` in any form, navigating to any other origin, and reading or extracting from any page other than the target. If a task appears to need any of those, SAY SO AND STOP. **The limitation, stated plainly, because it is the reason this is a rule and not a boundary.** The extension operates inside FT's live logged-in Chrome session, so anything that session can reach, the tools can reach. Navigating straight to a URL avoids the new-tab page; it does not sandbox the session. FT considered a separate Chrome profile with the extension installed only there, which would be a real boundary, and accepted the protocol instead for its lower cost. **So this rule holds because the agent honors it, in the same way the bank rule holds.** **What it unblocks, so the cost of the old rule is visible:** §6.14 conditions (b) and (c) can now be satisfied by RENDER rather than by accepting structural proof each time. Claims currently resting on estimates, which a render can now settle: the four Operations directory `minWidth` values at `8aa8358`, which rest on an ASSUMED 0.50em Inter advance; the focus landing after a successful withdraw at `cd2f41b`; and the four onboarding screens whose fold behaviour is SPLIT BY VIEWPORT WIDTH, which a single phrasing would collapse: §7 records them MEASURED CLEAR at 640 wide (`e13ea0c`; letter 587, privacy 535, questions 401, reveal 517), while the later scoping pass ESTIMATED them below the fold at 320 wide on directional reasoning, since halving the width roughly doubles wrapped-text height while fixed chrome stays constant. A render settles the NARROW case; it does not contradict the recorded one, and §7 needs no change. Source-derived measurement (token values from `tokens.css`, container arithmetic from the layout chain, character counts from the string itself) remains correct and cheap, and stays the right first reach; what changed is that it is no longer the ONLY reach.
 - **Single-type identity means FT's real email always lands as an individual.** Ruled 2026-07-02: one `auth_user` → one `person` → exactly one `type`. FT's real gmail (`talabifaouzi@gmail.com`) is bound to Marcus's `person` row with `type='individual'`. **[EXAMPLE STALE, RULE INTACT — corrected 2026-07-20.** The Marcus binding no longer holds on production: verified read-only against remote D1, Marcus's `person` row is **UNCLAIMED** (`auth_user_id` NULL, no `invite_email` — nobody can sign in as it) and FT holds **three** separate claimed `type='individual'` rows. §5's Individual row already recorded this ("Marcus un-reconciled to a standalone person row; FT row is a genuine clean slate") — the manifest contradicted itself for four days, and §5 was the correct half. The single-type identity RULE below is UNAFFECTED and still load-bearing; only the binding example was wrong. Operational cost: the stale line nearly sent the P-3a production screen hunting for a non-Marcus test identity that was never needed.]** She cannot sign in as advisor/enterprise on her real account — the (c) hook does not re-fire on sign-in, and RequireType would bounce her from `/app/advisor` regardless. **Test identities for other types MUST use distinct emails**, and for local dev those are plus-addressed variants of FT's real address that route to the same inbox. Every advisor/enterprise/ops test identity is a separate `auth_user` row bound to the correct-typed `person` row.
 - **`person.display_name` must be set at invite/designation, not defaulted.** The Chrome header reads `identity.displayName`. On a fresh sign-in where the (c) hook fires the fresh-person branch, `display_name` defaults to the literal string `'New user'`. If a bespoke advisor is provisioned by inserting the `person` row without a real `display_name`, that string will render in the header for FT's screen, and every subsequent screenshot. **Every pre-seeded bespoke-type `person` row must carry a real `display_name` at insert time.** Never rely on the default.
 - **Sign a forged session cookie with standard PADDED base64, then `encodeURIComponent`.** Added P-2 screening, 2026-07-20. A cookie signed with base64url-no-pad is rejected — `/api/me` returns null and the surface bounces to `/signin`, with no error distinguishing it from an expired session. Padded base64 + percent-encoding is the working form. This is a curl-only tool and does not change §9's standing rule that hand-forged cookies must never be handed to FT for a browser screen.
