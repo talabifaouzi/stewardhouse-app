@@ -738,8 +738,39 @@ Every substantive change runs as a **slice**. The rhythm:
     instructions in this document, and this rule says so explicitly so a future
     session cannot infer that a granted tool call is a granted decision.
 
-Stop background shells (dev server, watch loops) at bank time. Use `TaskStop`,
-not `kill`.
+Stop background shells (dev server, watch loops) at bank time, and LAUNCH them
+as tracked background tasks so `TaskStop` applies at all. `TaskStop` is the
+first reach, never `kill`.
+
+**`TaskStop` success is NOT evidence the port is free (corrected 2026-08-17).**
+The sentence above assumed that stopping the tracked task stops what it spawned.
+For `wrangler pages dev` it does not. In the ops-guard smoke `TaskStop` reported
+`Successfully stopped task`, killed the tracked parent, and left the whole tree
+running: `npx`, `wrangler.js`, the miniflare node process, and TWO `workerd`
+children still holding port 8788. **A smoke must VERIFY teardown rather than
+report it: zero listeners on the port and zero `workerd` processes, observed.**
+Whatever survives is then stopped by PID, children first, after confirming by
+command line that each one belongs to this repo. Processes you did not start are
+left alone and named in the report instead.
+
+**This is the §10 double-store incident arriving by a different route.** There
+the hazard was a second D1 store nobody knew was bound; here it is a second
+server nobody knew was listening. Both were invisible to the command that was
+supposed to have handled it, both would have been caught by observing the
+resource directly, and both hand the NEXT run a failure that has nothing to do
+with the code under test.
+
+**A diagnostic must count the DELTA it claims to count, scoped to its case, or
+be labelled as an absolute.** A label that counts more than the case created is
+a false report waiting to happen. **Reproduction:** the ops-guard smoke printed
+`non-seed ops rows created by case 5: 1`. Case 5 created nothing. The query
+counted every ops-typed row outside the seed prefix, and the 1 was a
+pre-existing local row that predated the smoke. Reported as printed, it would
+have read as the guard failing in exactly the way case 5 exists to rule out. The
+adjacent check `case5 rows written: 0` was the accurate one and the PK diff
+against the backup confirmed it, so the smoke was right and only its own label
+was wrong. That is the dangerous shape: a correct run that reports a failure it
+did not have.
 
 ---
 
@@ -1059,7 +1090,7 @@ violation this rule exists to prevent.
 
 ## 9. Browser screening runbook — lessons (2026-07-02)
 
-Five hard-earned lessons from a night of failed browser screening attempts (2026-07-02), plus three findings added 2026-07-20 (two session-minting, from P-2 screening; one log-reading, from the §11 auth incident), plus four STANDING RULES added 2026-08-15 and 2026-08-16 (browser automation; build-output reading; JSX identifier resolution; bundler coverage of `functions/`). Any future FT-facing browser screen of an auth-gated surface must respect these, and the four standing rules bind every slice, screening or not:
+Five hard-earned lessons from a night of failed browser screening attempts (2026-07-02), plus three findings added 2026-07-20 (two session-minting, from P-2 screening; one log-reading, from the §11 auth incident), plus five STANDING RULES added 2026-08-15, 2026-08-16 and 2026-08-17 (browser automation; build-output reading; JSX identifier resolution; bundler coverage of `functions/`; smokes never send real mail). Any future FT-facing browser screen of an auth-gated surface must respect these, and the five standing rules bind every slice, screening or not:
 
 - **`localhost` vs `127.0.0.1` origin stranding.** `BETTER_AUTH_URL` in `.dev.vars` is `http://localhost:8788`. Better-auth's magic-link verify sets the session cookie on whichever origin served the verify request, then 302-redirects to `BETTER_AUTH_URL`. If FT clicked a link at `127.0.0.1:8788`, the cookie stuck to `127.0.0.1` but the redirect sent her to `localhost:8788` — different origin, no cookie carried, AppShell's `/api/me` returned null, bounce to `/signin`. **Always hand FT URLs on the SAME host as `BETTER_AUTH_URL`.** For local screening: use `localhost:8788` everywhere, never `127.0.0.1:8788`.
 - **Resend test sender (`onboarding@resend.dev`) delivers only to the registered address.** Plus-alias variants of the account owner's email (e.g. `talabifaouzi+morgan@gmail.com`) are treated as different addresses and rejected — `POST /api/auth/sign-in/magic-link` returns 500 because the sender throws. **Production invites REQUIRE a verified domain sender** — Resend's test sender is not a viable path for onboarding real pilot users. Verified domain needs to land before the first real invite goes out. **UPDATE (superseded 2026-07-15, invite-email slice):** this caveat is now STALE for the running environments — the verified domain sender has landed. Local `.dev.vars` `FROM_EMAIL=signin@steward-house.org` (a verified `steward-house.org` sender, not `onboarding@resend.dev`), and FT empirically delivered plus-address links on production 2026-07-15, so production is a verified sender too. The exact **production** `FROM_EMAIL` is a Cloudflare Pages dashboard var (NOT in `wrangler.toml`, not repo-readable) — confirm it reads `signin@steward-house.org` there before the first real external invite. (`.dev.vars.example` still shows the old `onboarding@resend.dev` placeholder — a stale template, harmless.) **See §11 (2026-07-20 incident):** production sender config lives in the Cloudflare Pages dashboard, is NOT repo-readable, and **drifts silently** — `RESEND_API_KEY` there fell out of sync with the active Resend key and took production sign-in down for ~5 days with no signal. A green local `.dev.vars` proves nothing about production.
@@ -1074,6 +1105,7 @@ Five hard-earned lessons from a night of failed browser screening attempts (2026
 - **STANDING RULE: never verify a build from a truncated tail.** Added 2026-08-15. During the `494aa4f` work a build check ran `npm run build 2>&1 | tail -2`, which cut off a real esbuild failure and printed only the trailing stack frames; the agent read that as fine and moved past a BROKEN build. **Build verification reads enough output to see a failure, and a passing claim requires the actual result rather than a truncated view.** `tail -2` and `tail -3` are too short: an esbuild error puts the message ABOVE a stack trace, so the tail shows frames while the diagnosis scrolls past. Filter the noise instead of trimming the output (`grep -v "^    at "`), or read enough lines to reach the verdict line. Same principle as the deployment-tail rule above: absence of error lines is what success looks like, and **you cannot observe an absence in output you did not read.**
 - **STANDING RULE: a green build does not prove the module runs. Confirm every JSX identifier resolves.** Added 2026-08-15, immediately after the rule above because it is the failure that rule does NOT catch. **An undefined JSX identifier compiles.** `<Modal>` transforms to `jsx(Modal, …)`, and esbuild does not scope-check that `Modal` is bound, so a missing import produces a **clean build** and a **`ReferenceError` at first render of that branch**. Reproduction, this slice: the withdraw-invite confirm was written with `<Modal>` and **`Modal` was never imported**; `npm run build` reported 168 modules transformed and `✓ built in 3.79s`, and the failure would have surfaced only when an operator clicked a roster row. **Verification must therefore confirm that every JSX identifier in a changed file resolves to an import or a local definition**, which is a one-line check (collect `/<([A-Z][A-Za-z0-9]*)/`, collect the import bindings and `function [A-Z]…` declarations, diff the sets). This bites hardest on a branch the demo tree never renders, because nothing exercises it until the gated path is reached.
 - **STANDING RULE: `npm run build` does not verify `functions/`. Run the bundler that actually covers the code you changed.** Added 2026-08-16. `npm run build` is `vite build`, which bundles `src/` only. **Every Pages Function, every `_lib` module, and every endpoint is INVISIBLE to it**, so a green `npm run build` says nothing about whether server code compiles or loads. **The check for `functions/` is the wrangler bundle: either `npx wrangler pages functions build --outdir <dir>`, or a real `npx wrangler pages dev` start reading `wrangler.toml`.** Both print `Compiled Worker successfully`, and that line, not vite's, is the one that covers server code. **This gap was live for several slices before it was noticed**, including the invite delete endpoint (`1c9d69d`) and the expiry predicate (`311773c`). Both shipped "build clean" against a bundler that never read them, and both are the sharpest possible case: each touched ONLY `functions/` files, so the green build was bundling an entirely unchanged `src/` and reporting success about work it had not seen. **This is the third rule in the same family**, after reading output in full and confirming identifiers resolve. All three are about a green signal that does not mean what it appears to mean: the first is a signal you did not read, the second a signal that cannot see the defect, and this one a signal computed over different files entirely. Ask what the tool actually consumed before treating its verdict as verification.
+- **STANDING RULE: smokes NEVER send real mail.** Added 2026-08-17. Any smoke that can reach a send path must override `SENDER_PROVIDER` BEFORE the first request, so a send is suppressed rather than attempted. **Reproduction:** the ops-guard smoke omitted it. Case 2 posted a valid `type:'advisor'` invite, `POST /api/invites` returned `emailSent:true`, and **Resend ACCEPTED a send to `case2-advisor@opsguard-smoke.invalid` and returned a message id.** A live outbound call was dispatched to a nonexistent domain and will bounce. **The `.invalid` TLD is NOT a guarantee the sender refuses the request**, and that assumption is precisely what made the omission feel safe: the address looks self-evidently undeliverable, so nothing seems to be at stake. Deliverability is the recipient mail system's problem and is decided long after the API call; the call itself happens regardless, against the real account, counting against real quota. **How the override behaves TODAY, which must be read before relying on it, because it works by accident rather than by design.** There is NO noop provider: `sender.js:24-31` accepts `'resend'` and `'cf-email'` only and THROWS `Unknown SENDER_PROVIDER` on anything else. An unrecognised value therefore suppresses the send by throwing inside `createSender`, BEFORE any network call, which is the right outcome reached through an error path. That is safe on the two invite paths, which wrap the send: `invites.js:184-198` catches and returns `emailSent:false` with the row standing, and `athletes.js` sends at `:308-310` inside a wider try whose catch at `:322-325` sets `invite:'failed'` with the athlete row standing. **It BREAKS the magic-link path**, which is unwrapped: `auth.js:399` calls `createSender` inside `sendMagicLink` with no try/catch, so the throw escapes and sign-in returns 500, which is the §11 failure chain exactly. A smoke that exercises sign-in therefore cannot use this override, and building a real noop provider is the proper fix, a code change no slice has made. **Citation corrected in passing:** §11 cites `auth.js:275` for the unwrapped send; at `537cc08` the send is `auth.js:420` and the `createSender` call is `:399`.
 
 ---
 
