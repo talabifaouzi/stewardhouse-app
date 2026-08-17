@@ -691,6 +691,33 @@ Every substantive change runs as a **slice**. The rhythm:
     data agree in the same viewport, so no separate argument is needed to connect
     them. Reach for this whenever the corrected claim is about whether something
     is stored.
+15. **PERMISSION MODE DOES NOT RELAX ANY PROTOCOL RULE (FT-ruled 2026-08-17).**
+    Claude Code now defaults to auto mode, which executes tool calls the agent
+    assesses as lower-risk without a permission prompt. **Auto mode is KEPT.**
+    What changes is that the irreversible categories are stated here explicitly
+    instead of being left to the permission layer, which never enforced them in
+    the first place. The protocol has always lived in this document; that was
+    implicit until now.
+
+    **Four categories require explicit FT approval regardless of permission
+    mode, and auto mode granting a tool call is NOT approval:**
+    (1) **Any commit.** The bank rule (§6.13) stands: print the full diff and
+    the exact proposed commit message, then STOP and wait for FT's explicit
+    approval.
+    (2) **Any push to origin.**
+    (3) **Any remote command:** `wrangler --remote` in any form, and any command
+    that writes to production. Remote migration applies are already FT-run-only
+    per the ruling recorded in §6.10; this extends the same posture to every
+    remote write.
+    (4) **Any browser automation**, per the §9 standing rule, which auto mode
+    does not override.
+
+    **The reasoning.** These four are irreversible or production-facing, and the
+    cost of one wrong automatic execution exceeds the cumulative cost of asking.
+    Auto mode is kept because read-only investigation benefits from it, and
+    because the protocol gates were never permission prompts. They are
+    instructions in this document, and this rule says so explicitly so a future
+    session cannot infer that a granted tool call is a granted decision.
 
 Stop background shells (dev server, watch loops) at bank time. Use `TaskStop`,
 not `kill`.
