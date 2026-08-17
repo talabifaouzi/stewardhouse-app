@@ -118,7 +118,7 @@ console.log(`[seed-invites] Validated ${rows.length} invitee row(s) from ${ROSTE
 
 // Batch creation timestamp. All rows in this run are inserted in one statement
 // at one instant, so they share a single ISO 8601 stamp — the same value shape
-// the API path writes per request (functions/api/invites.js:89,103:
+// the API path writes per request (functions/api/invites.js:93:
 // `const nowIso = new Date().toISOString()`). Before this, created_at was
 // omitted; migration 0014 added the column with NO DEFAULT, so CLI-seeded rows
 // landed NULL and rendered "—" in the roster "Added" column while form-created

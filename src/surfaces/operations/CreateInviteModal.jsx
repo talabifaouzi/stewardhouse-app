@@ -99,9 +99,10 @@ export default function CreateInviteModal({ isOpen, onClose, onCreate, writeErro
       </Field>
 
       <p style={cautionStyle}>
-        The invite adds this address to the sign-in allowlist. No email is sent
-        now — the person signs in when they choose, and their first sign-in
-        claims this record.
+        The invite adds this address to the sign-in allowlist and sends a
+        notification email to it. The email is not a sign-in link: the person
+        signs in when they choose, and their first sign-in claims this record.
+        Delivery is reported once the invite is created.
       </p>
 
       {writeError && <p style={formErrorStyle}>{writeError}</p>}
