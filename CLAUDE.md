@@ -403,11 +403,16 @@ per-institution step per `docs/enterprise-provisioning-runbook.md` §3(e), and
 is **never run for test rows**. P-6 makes the UI honest about the gate; it does
 not set it.
 
-**Production gate state (migrations re-verified against remote D1 2026-07-20;
+**Production gate state (migrations re-verified against remote D1 2026-08-17;
 gate values verified 2026-07-16 and UNCHANGED — P-2 touched no gate).** All
-**17** migrations applied `--remote` (count re-derived from `migrations/`,
-`0001`–`0017` contiguous — the prior "All 15" was correct at the time and is
-superseded by 0016 + 0017, not corrected). `$.ops.demo_gate=1` on one ops row —
+**18** migrations applied `--remote`, newest `0018_client_consent_attested.sql`
+(count re-derived from `migrations/`, `0001`–`0018` contiguous — the prior
+"All 17" was correct at the time and is superseded by 0018, not corrected).
+**Local and remote AGREE at 18**, on the same newest name, and `client` carries
+`consent_attested_at` on BOTH: nullable `TEXT`, no default, appended at `cid=15`,
+zero rows. Verified read-only 2026-08-17, immediately after the 0018 apply closed
+`4c6eada`'s declared §6.10 branch (b) deferral; that apply carries its own hazard
+note at §6.10. `$.ops.demo_gate=1` on one ops row —
 **Operations writes are LIVE**. `$.advisor.demo_gate=0` on all advisor rows and
 `$.enterprise.demo_gate=0` on all staff rows — **advisor and enterprise writes
 403 in production today**. Re-verify with a read-only aggregate SELECT over
@@ -495,6 +500,39 @@ Every substantive change runs as a **slice**. The rhythm:
     against a second local store that carried neither. The rule was honored and
     its LOCAL half was void. §6.10 protects against remote drift; nothing
     protected against local ambiguity until §10 was corrected.
+    **NON-INTERACTIVE APPLY HAZARD (recorded 2026-08-17): an agent-run
+    `--remote` apply SELF-CONFIRMS against production.** `wrangler d1 migrations
+    apply --remote` prints the pending list and then asks for confirmation,
+    warning that the database may be unavailable during the migration. In a shell
+    with no stdin it takes its documented non-interactive path and auto-answers
+    yes, printing `Using fallback value in non-interactive context: yes`. The
+    warning is addressed to a human and gets answered without one.
+    **What happened, precisely.** FT ran the 0018 apply interactively. The prompt
+    went unanswered and the command exited having applied NOTHING, while having
+    already printed the migration name, which read as success. Remote sat at 17
+    migrations with `client` missing `consent_attested_at`, and that was
+    discovered only because a later read-only pass queried the column and got
+    `no such column`. The agent then ran the same command in its own shell, where
+    it auto-confirmed and applied. **The agent also ran the closure check in that
+    same shell. FT ran neither the successful apply nor the verification.** Both
+    the write to production and the proof that it landed happened agent-side,
+    with no human step between them. That is the part to weigh before reading
+    this as a success story.
+    **The verification rule.** A remote apply is verified by `wrangler d1
+    migrations list --remote` reporting `No migrations to apply!`, NEVER by the
+    apply output alone. The apply prints a migration name in BOTH the applied and
+    the abandoned case, so its output cannot distinguish them. That list command
+    is the closure evidence this rule requires, and it was exactly the step
+    missing from the first attempt.
+    **Why this one was safe, and why that does not generalize.** 0018 was a
+    single additive `ALTER TABLE client ADD COLUMN` against a zero-row table, so
+    the blast radius was nil, and the post-apply audit confirmed the only delta
+    was the added column with no index, FK, CHECK, DEFAULT or trigger lost. A
+    TABLE-REBUILD migration would auto-confirm IDENTICALLY, with no extra prompt
+    and no difference in output shape. §10's 0016 rebuild hazard is the shape of
+    what that would risk: four inbound child FKs, a `PRAGMA foreign_keys=OFF`
+    that is a silent no-op inside a transaction, and child rows dropped with no
+    error raised. The safety here came from the migration, not from the command.
 11. **Authenticated-surface path audit (full-directory rule).** When
     wiring any existing public demo surface for reuse at an authenticated
     route (e.g. IndividualSurface at both `/individual/*` and
