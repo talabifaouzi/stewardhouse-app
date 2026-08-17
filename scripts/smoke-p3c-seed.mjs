@@ -69,6 +69,28 @@ if (!OUT) {
 const INST = '04000000-0000-4000-8000-000000000010';
 const DIANE_AUTH_USER = 'au-diane-staging';
 
+// Expected schema baseline, ONE place per script so a shipped migration is a
+// one-line update rather than four scattered literals. Bumped 2026-08-17 from
+// 17 to 18: migration 0018_client_consent_attested.sql shipped in 4c6eada and
+// both P-3c smoke scripts still asserted 17, so both aborted on the correct
+// store while reporting it as the wrong one.
+//
+// RULED 2026-08-17 (FT): KEEP THE LITERAL. Do NOT derive this count from
+// migrations/ at runtime, and do NOT add a derived check alongside it.
+//
+// A derived count would pin the store only to the CURRENT TREE. This script
+// asserts specific facts about 0016 (the enrollment_status CHECK) and 0017
+// (gifts_count nullability), so derivation would pass GREEN on a tree whose
+// schema has outrun those assertions, and the smoke would be checking stale
+// facts while reporting success. The literal is what makes an outdated smoke
+// detectable at all. Running both checks with two distinct messages was
+// considered and rejected: more machinery than a scratch smoke warrants.
+//
+// Staleness is therefore handled by the ABORT MESSAGE below, which names both
+// causes so a count mismatch is never mistaken for a binding problem. That is
+// the whole mitigation, and it is deliberate rather than a compromise.
+const EXPECTED_MIGRATIONS = 18;
+
 const now = Date.now();
 const nowIso = new Date(now).toISOString();
 const exp = now + 7 * 24 * 3600 * 1000;
@@ -77,7 +99,7 @@ const db = new DatabaseSync(DBF);
 db.exec('PRAGMA foreign_keys = ON');
 
 // --- guard: refuse to seed the wrong store -----------------------------------
-// The whole point of this slice. If the file we opened is not the 17-migration
+// The whole point of this slice. If the file we opened is not the expected
 // store, we are on 7202 (or something unknown) and the smoke is void.
 {
   const migs = db.prepare('SELECT COUNT(*) AS n FROM d1_migrations').get().n;
@@ -88,14 +110,24 @@ db.exec('PRAGMA foreign_keys = ON');
   //   bare / qualified-bare -> "near \"notnull\": syntax error"
   //   "notnull" / [notnull] / `notnull` / SELECT * -> OK
   const giftsNotNull = db.prepare(`SELECT "notnull" AS nn FROM pragma_table_info('cohort_period_snapshot') WHERE name='gifts_count'`).get().nn;
-  const ok = migs === 17 && /CHECK \(enrollment_status/i.test(ddl) && giftsNotNull === 0;
+  const ok = migs === EXPECTED_MIGRATIONS && /CHECK \(enrollment_status/i.test(ddl) && giftsNotNull === 0;
   if (!ok) {
-    console.error('ABORT — this is not the 17-migration store.');
-    console.error(`  migrations=${migs} (expect 17)  0016 CHECK=${/CHECK \(enrollment_status/i.test(ddl)}  0017 gifts_count nullable=${giftsNotNull === 0}`);
+    console.error('ABORT store fingerprint mismatch. This is NOT necessarily the wrong store.');
+    console.error(`  migrations=${migs} (expect ${EXPECTED_MIGRATIONS})  0016 CHECK=${/CHECK \(enrollment_status/i.test(ddl)}  0017 gifts_count nullable=${giftsNotNull === 0}`);
+    console.error('  A COUNT mismatch has two causes and they need OPPOSITE fixes:');
+    console.error('    (a) WRONG STORE bound. The §10 hazard this guard exists for. Read the');
+    console.error('        wrangler banner: `env.DB (stewardhouse-pilot)` is config-resolved and');
+    console.error('        correct; `env.DB (local-DB=stewardhouse-pilot)` means a --d1 flag has');
+    console.error('        selected a different file. Do NOT edit this script.');
+    console.error('    (b) STALE GUARD. A migration shipped after this script was last touched.');
+    console.error(`        Check: ls migrations/*.sql | wc -l. If that reads ${migs}, the store is`);
+    console.error('        right and EXPECTED_MIGRATIONS is behind. Bump it; do not hunt a binding.');
+    console.error('  A CHECK or nullability mismatch is different: that is schema drift, not either');
+    console.error('  of the above, and means the store predates 0016/0017.');
     db.close();
     process.exit(1);
   }
-  console.log(`store fingerprint OK: 17 migrations, 0016 CHECK present, 0017 applied`);
+  console.log(`store fingerprint OK: ${EXPECTED_MIGRATIONS} migrations, 0016 CHECK present, 0017 applied`);
 }
 
 // --- backup FIRST — VACUUM INTO, never cp (§10) -------------------------------

@@ -93,6 +93,27 @@ const TRIP = {
   migrations: 15,
 };
 
+// Expected schema baseline for the CHOSEN store (e7ff), distinct from TRIP,
+// which describes the untouched 7202 store. ONE place per script, so a shipped
+// migration is a one-line update rather than six scattered literals.
+//
+// Bumped 2026-08-17 from 17 to 18: migration 0018_client_consent_attested.sql
+// shipped in 4c6eada while both P-3c smoke scripts still asserted 17. The guard
+// therefore aborted on the CORRECT store and named it the wrong one, which is
+// the §10 confusion the guard exists to remove rather than create.
+//
+// TRIP.migrations stays 15. Verified 2026-08-17: 7202 holds 15 migrations,
+// newest 0015_athlete_management_mode.sql. That store has been frozen since
+// 2026-07-16 and is expected to stay behind, so it is NOT bumped with this one.
+// The two numbers moving independently is the point of the tripwire.
+//
+// See EXPECTED_MIGRATIONS in scripts/smoke-p3c-seed.mjs for the 2026-08-17
+// ruling that this stays a LITERAL and is never derived from migrations/.
+const EXPECTED = {
+  migrations: 18,
+  lastMigration: '0018_client_consent_attested.sql',
+};
+
 let failures = 0;
 const log = (s) => console.log(s);
 function ok(name, cond, detail = '') {
@@ -139,7 +160,7 @@ if (candidates.length === 1) {
 }
 const STORE = `${D1DIR}/${storeFile}`;
 
-// (P3) Schema fingerprint — the chosen store must BE the 17-migration store.
+// (P3) Schema fingerprint — the chosen store must BE the expected store.
 // Independent of the banner: if these disagree, stop, do not reconcile by guess.
 {
   const db = new DatabaseSync(STORE, { readOnly: true });
@@ -150,14 +171,23 @@ const STORE = `${D1DIR}/${storeFile}`;
   const nn = db.prepare(`SELECT "notnull" AS nn FROM pragma_table_info('cohort_period_snapshot') WHERE name='gifts_count'`).get().nn;
   db.close();
   const hasCheck = /CHECK \(enrollment_status/i.test(ddl);
-  if (migs !== 17 || !hasCheck || nn !== 0) {
-    die(`chosen store is not the 17-migration store: migrations=${migs} (expect 17), `
-      + `0016 CHECK=${hasCheck}, 0017 nullable=${nn === 0}`);
+  if (migs !== EXPECTED.migrations || !hasCheck || nn !== 0) {
+    // A COUNT mismatch means EITHER the wrong store is bound (the §10 hazard,
+    // read the wrangler banner: `local-DB=…` means a --d1 flag chose another
+    // file) OR this guard is stale because a migration shipped after it was
+    // last touched (check `ls migrations/*.sql | wc -l`; if it equals the count
+    // below, bump EXPECTED.migrations and do not hunt a binding problem).
+    // A CHECK or nullability mismatch is neither: that is a store predating
+    // 0016/0017.
+    die(`chosen store fingerprint mismatch, NOT necessarily the wrong store: `
+      + `migrations=${migs} (expect ${EXPECTED.migrations}), `
+      + `0016 CHECK=${hasCheck}, 0017 nullable=${nn === 0}. `
+      + `Count mismatch => wrong store OR stale guard; compare against migrations/.`);
   }
   if (!storeFile.startsWith(E7FF.slice(0, 8))) {
     log(`  WARN  store fingerprint matches but filename is not ${E7FF.slice(0, 8)}… — proceeding on fingerprint`);
   }
-  log('  PASS  store fingerprint: 17 migrations, 0016 CHECK, 0017 applied');
+  log(`  PASS  store fingerprint: ${EXPECTED.migrations} migrations, 0016 CHECK, 0017 applied`);
 }
 
 // (P4) Cookie files present. Values are read but NEVER printed (§6.12).
@@ -343,9 +373,10 @@ log('\n=== TEARDOWN ===');
 
 log('\n=== BASELINE VERIFICATION ===');
 const one = (sql) => q(sql)[0];
-ok('migrations == 17', one('SELECT COUNT(*) AS n FROM d1_migrations').n === 17);
-ok("last migration == 0017_snapshot_gifts_nullable.sql",
-  one('SELECT MAX(name) AS mx FROM d1_migrations').mx === '0017_snapshot_gifts_nullable.sql');
+ok(`migrations == ${EXPECTED.migrations}`,
+  one('SELECT COUNT(*) AS n FROM d1_migrations').n === EXPECTED.migrations);
+ok(`last migration == ${EXPECTED.lastMigration}`,
+  one('SELECT MAX(name) AS mx FROM d1_migrations').mx === EXPECTED.lastMigration);
 ok('athlete == 0', one('SELECT COUNT(*) AS n FROM athlete').n === 0);
 ok('workshop == 0', one('SELECT COUNT(*) AS n FROM workshop').n === 0);
 ok('workshop_attendance == 0', one('SELECT COUNT(*) AS n FROM workshop_attendance').n === 0);
