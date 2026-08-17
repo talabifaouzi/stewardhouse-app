@@ -130,7 +130,16 @@ export default function Landing() {
         {/* Surface picker */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+          // Floor wrapped in min() per 88e07ea: identical at or above 280px, and
+          // below it the track shrinks to fit rather than overflowing the page
+          // sideways.
+          //
+          // THE ONLY CONFIRMED OVERFLOW ON A PUBLIC UNAUTHENTICATED SURFACE. A
+          // 280px floor in a 256px container at a 320px viewport (the flat
+          // --sh-space-8 padding costs 64px), so 24px of page overflow. That is
+          // arithmetic with no content-dependent term: unlike the fr-track grids
+          // elsewhere in the repo it needs no min-content measurement to confirm.
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
           gap: 'var(--sh-space-5)',
           width: '100%',
           maxWidth: '880px',

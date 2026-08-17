@@ -377,7 +377,9 @@ function OperationsHome() {
           their previous form — no role, no tabindex, no pointer cursor. */}
       <div style={{
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+        // Floor wrapped in min() per 88e07ea: identical at or above 220px, and
+        // below it the track shrinks to fit rather than overflowing the page.
+        gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
         gap: 'var(--sh-space-4)',
         marginBottom: 'var(--sh-space-8)',
       }}>
@@ -428,7 +430,9 @@ function OperationsHome() {
         <SectionLabel id={compositionLabelId}>Platform composition</SectionLabel>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          // Floor wrapped in min() per 88e07ea: identical at or above 180px, and
+          // below it the track shrinks to fit rather than overflowing the page.
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
           gap: 'var(--sh-space-4)',
         }}>
           <Stat

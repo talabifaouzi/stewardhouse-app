@@ -184,7 +184,9 @@ export default function InstitutionDetail() {
           <SectionLabel id={contractLabelId}>Contract</SectionLabel>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            // Floor wrapped in min() per 88e07ea: identical at or above 180px,
+            // and below it the track shrinks rather than overflowing.
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
             gap: 'var(--sh-space-5)',
           }}>
             <div>

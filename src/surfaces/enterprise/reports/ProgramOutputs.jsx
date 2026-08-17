@@ -334,7 +334,9 @@ const notTrackedStyle = {
 
 const statGridStyle = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+  // Floor wrapped in min() per 88e07ea: identical at or above 220px, and below
+  // it the track shrinks to fit rather than overflowing the page sideways.
+  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
   gap: 'var(--sh-space-4)',
   marginTop: 'var(--sh-space-3)',
 };

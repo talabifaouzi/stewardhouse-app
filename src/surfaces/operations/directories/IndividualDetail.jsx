@@ -251,7 +251,9 @@ export default function IndividualDetail() {
             (person.contact?.email || person.contact?.phone) ? (
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+                // Floor wrapped in min() per 88e07ea: identical at or above
+                // 220px, and below it the track shrinks rather than overflowing.
+                gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 220px), 1fr))',
                 gap: 'var(--sh-space-5)',
               }}>
                 <div>
@@ -629,7 +631,9 @@ function ProfileSection({ person, ext, labelId }) {
           {/* Grid of single-value extension fields */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+            // Floor wrapped in min() per 88e07ea: identical at or above 180px,
+            // and below it the track shrinks rather than overflowing.
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
             gap: 'var(--sh-space-5)',
           }}>
             {ext.sport && (

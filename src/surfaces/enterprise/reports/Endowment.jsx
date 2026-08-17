@@ -276,7 +276,9 @@ const asOfStyle = {
 
 const statRowStyle = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+  // Floor wrapped in min() per 88e07ea: identical at or above 180px, and below
+  // it the track shrinks to fit rather than overflowing the page sideways.
+  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
   gap: 'var(--sh-space-4)',
   marginTop: 'var(--sh-space-3)',
   marginBottom: 'var(--sh-space-4)',

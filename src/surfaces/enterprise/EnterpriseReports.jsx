@@ -76,7 +76,9 @@ const titleStyle = {
 
 const gridStyle = {
   display: 'grid',
-  gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+  // Floor wrapped in min() per 88e07ea: identical at or above 280px, and below
+  // it the track shrinks to fit rather than overflowing the page sideways.
+  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 280px), 1fr))',
   gap: 'var(--sh-space-4)',
 };
 
