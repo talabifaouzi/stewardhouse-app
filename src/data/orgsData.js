@@ -47,18 +47,3 @@ export const ORGS = [
   // FAITH
   { id: 17, name: 'Common Ground Interfaith', mission: 'Building bridges across religious and cultural divides through campus-based dialogue and service programs.', causes: ['faith', 'education'], geo: 'National', cat: 'established', years: 18, foundedYear: 2008, led: 'Nationally staffed', badge: 'Interfaith bridge-building', demo: 'College students and faculty, 500+ campuses' },
 ];
-
-export const CAT_META = {
-  established: {
-    label: 'Established',
-    desc: "Deep track records. They've been doing this work longer than most.",
-  },
-  community: {
-    label: 'Community-Rooted',
-    desc: "Led by the community, for the community. Trust you can't buy.",
-  },
-  emerging: {
-    label: 'Emerging',
-    desc: 'New organizations doing bold work. Your support helps them grow.',
-  },
-};

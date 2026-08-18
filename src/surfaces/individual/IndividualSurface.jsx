@@ -24,7 +24,7 @@ import GPSReveal from './GPSReveal.jsx';
 import Positioning from './Positioning.jsx';
 import Plan from './Plan.jsx';
 import History from './History.jsx';
-import Discover from './Discover.jsx';
+import DiscoverUnavailable from './DiscoverUnavailable.jsx';
 import Learn from './Learn.jsx';
 import Team from './Team.jsx';
 import GiveScreen from './GiveScreen.jsx';
@@ -35,6 +35,13 @@ function getNavItems(basePath, fixtureIsolated) {
   const items = [
     { key: 'home', label: 'Home', path: basePath },
     { key: 'plan', label: 'Giving plan', path: `${basePath}/plan` },
+    // Discover's browsable surface was removed (see DiscoverUnavailable.jsx).
+    // The NAV ITEM STAYS, which is not in tension with the Team rule below.
+    // Team is hidden because there is nothing to say about it: the view would
+    // render an absent state and the nav entry would be an assertion that
+    // something is there. Discover's route renders an explanation of why it is
+    // empty and what replaces it, which is CONTENT rather than an empty
+    // assertion. The Team rule stands where it applies.
     { key: 'discover', label: 'Discover', path: `${basePath}/discover` },
     { key: 'learn', label: 'Learn', path: `${basePath}/learn` },
     { key: 'history', label: 'History', path: `${basePath}/history` },
@@ -314,7 +321,7 @@ function DashboardLayout() {
         <Routes>
           <Route index element={<IndividualHome />} />
           <Route path="plan" element={<Plan />} />
-          <Route path="discover" element={<Discover />} />
+          <Route path="discover" element={<DiscoverUnavailable />} />
           <Route path="learn" element={<Learn />} />
           <Route path="history" element={<History />} />
           <Route path="team" element={<Team />} />
@@ -392,12 +399,11 @@ function IndividualHome() {
     tone: 'learn',
   });
 
-  paths.push({
-    title: 'Explore organizations',
-    desc: `See what's out there — matched to ${causeLabels[0]?.label?.toLowerCase() || 'what you care about'}.`,
-    action: () => navigate(`${basePath}/discover`),
-    tone: 'act',
-  });
+  // The 'Explore organizations' path card is REMOVED with the browsable
+  // Discover surface. It promised results "matched to" the funder's first
+  // intake cause, and org-side causes are dead as a filterable field per
+  // ruling 2 of docs/propublica-spike-findings.md, so nothing can match. The
+  // nav item still reaches the route; what goes is the promise, not the door.
 
   if (hasGifts) {
     paths.push({
