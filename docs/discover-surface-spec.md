@@ -122,10 +122,11 @@ Six things in the current page do not survive.
 | Matched-cause tags (`Discover.jsx:417`) | Same field, same ruling |
 
 **Also to be removed with them:** `CAT_META` (`orgsData.js:51-64`) is orphaned,
-since its only consumers are `Discover.jsx:9` and `:227`; and `scoreOrg`
-(`orgsData.js:67-77`) is an exported org-ranking function commented "Higher =
-better match" with ZERO consumers, which would survive an edit confined to
-`Discover.jsx`.
+since its only consumers are `Discover.jsx:9` and `:227`. `scoreOrg`, an
+exported org-ranking function commented "Higher = better match" that carried
+the same weights and had zero consumers, was DELETED separately once this spec
+recorded it: it sat in the fixture module and would have survived any removal
+confined to `Discover.jsx`.
 
 **Two copy sites assert what the removed mechanism did**, and are wrong the
 moment it is gone. `IndividualSurface.jsx:395-400`, the Home card, promises

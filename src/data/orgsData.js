@@ -62,17 +62,3 @@ export const CAT_META = {
     desc: 'New organizations doing bold work. Your support helps them grow.',
   },
 };
-
-// Score an org against a user's GPS. Higher = better match.
-export function scoreOrg(org, userCauses, userGeo) {
-  let score = 0;
-  // Cause overlap is the heaviest signal
-  for (const cause of userCauses) {
-    if (org.causes.includes(cause)) score += 3;
-  }
-  // Geographic alignment — exact match
-  if (userGeo && org.geo === userGeo) score += 2;
-  // National orgs work for anyone
-  if (org.geo === 'National') score += 1;
-  return score;
-}

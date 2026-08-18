@@ -1042,6 +1042,55 @@ Keep the two ADJACENT in the QA pass rather than merging them, because they
 share one property that is worth testing once: both were seen only through this
 tooling against a local dev server.
 
+**Filed: two §7 orderings from the 2026-08-18 platform-wide scan, plus the
+scan's own boundary.** The scan was prompted by the Discover score and swept
+every sort, every score token and every `.slice(0, N)` in `src/`. It found four
+things. Two shipped as fixes: the Discover score, cutoff and sort (recorded in
+`docs/discover-surface-spec.md`), and `scoreOrg`, an exported org-ranking
+function with zero consumers, DELETED in this slice. The other two are recorded
+here because nothing else in the repo holds them.
+
+**(a) UNRULED: `EnterpriseRoster.jsx:65-69` orders athletes by journey status,
+best first.** It sorts on `STATUS_PRIORITY[statusFor(a)]`
+(`athleteStatus.js:12-18`: Certified 1, Actively progressing 2, Not yet active
+3, Outreach paused 4, Invited 5), with `localeCompare` only as a tiebreak. §7
+permits severity that rates an ISSUE's triage urgency and "never a
+participant"; this rates the participant, through a constant named priority.
+It is a DEFENSIBLE OPERATIONAL ORDERING and it is not obviously inside the
+permission §7 grants, which is why it is filed unruled rather than as a defect.
+**What a ruling would have to decide:** whether ordering people by a status
+each of them holds is materially different from ranking them, since the status
+itself is a fact of the record rather than an assessment; whether the harm §7
+guards against is the ORDER a staff member sees or the JUDGMENT it implies;
+and, if the ordering stands, whether the constant should stop being called
+priority, since the name is doing rhetorical work the data does not support.
+
+**(b) PROBABLY FINE, recorded so a future scan does not rediscover it as
+novel: `ProgramOutputs.jsx:73` orders recipient organizations by dollars.** It
+sorts `b.totalAmount - a.totalAmount`. The figure comes from the INSTITUTION'S
+OWN GIFT RECORD rather than from any StewardHouse assessment, so it orders orgs
+by a fact the institution already holds about its own giving. That is the same
+shape as `History.jsx:67`, where a funder's own orgs are ordered by their own
+totals. Filed rather than dismissed because "a list of organizations sorted
+high to low" is exactly the pattern a scan should stop on, and the next reader
+deserves the reasoning rather than having to re-derive it.
+
+**The scan's BOUNDARY, which is the useful part.** Every other sort in the tree
+is chronological or alphabetical. Every `.slice(0, N)` is initials, string
+truncation, ISO date slicing, a column subset, a show-all toggle, or the next
+four sessions chronologically. **No other cutoff-by-computed-value exists.** A
+later scan can start from that and look only for what is new.
+
+**The ASYMMETRY the scan exposed, which outlasts all four findings.**
+`rejectRankKeys` (`functions/_lib/gate.js:62`, key set at `:57-60`: rank,
+score, priority, suggestion, suggested, ordering, progression) enforces the
+no-ranking rule on what gets **STORED**, at every participant write path.
+**NOTHING enforces it on what gets COMPUTED and RENDERED**, which is where all
+four findings sit: the Discover score was computed at render from fixture
+fields and never written anywhere, and would have passed the write guard
+untouched because it never reached it. The guardrail is real and it is enforced
+in one layer only.
+
 **CLOSED 2026-08-17: the four Operations directory rows are NOT a keyboard
 defect.** The item filed during the withdraw slice (`onClick` on `role="row"`
 with zero `tabIndex` and zero `onKeyDown`, so rows read as unreachable by
