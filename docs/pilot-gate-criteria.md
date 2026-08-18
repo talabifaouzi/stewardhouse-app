@@ -221,13 +221,23 @@ learned; this paragraph is where the correction lives.
 | 3 | No route renders another person's data | MET | `useFixtureIsolated()` called at 10 sites (was 5; `bce9044` added Team's) |
 | 4 | `discover` applies Ruling A's correct response | MET | Defanged `42851cd`; caveat `Discover.jsx:99,107` |
 | 5 | `learn`, `team`, `cohort` honest | MET (Ruling C) | Isolated |
-| 6 | `feedback` persists or is removed | **NOT MET** | No `/api/*` call in `Feedback.jsx` |
+| 6 | `feedback` persists or is removed | MET (by REMOVAL) | `fbc1a9a` deleted `Feedback.jsx` and its three references; the route unit is gone rather than earned, see below |
 | 7 | Touch targets meet the §7 44px standard | MET | `Button.jsx` `lg` `minHeight: '44px'`; measured 44px |
 | 8 | Every CTA reachable at phone height | MET (Ruling 2.5) | `/individual/welcome` below-fold is accepted debt |
 
-**Routes 14/15** (feedback out). **Endpoints 7/7** (`athlete-consent` 1, `gifts`
-2, `intake` 1, `scenarios` 2, `scenarios/[id]` 1; all ungated and live in
-production). **Individual = 21/22.**
+**Routes 14/14** (feedback REMOVED at `fbc1a9a`, so the unit is gone from the
+denominator rather than met; it was 14/15 with feedback out). **Endpoints 7/7**
+(`athlete-consent` 1, `gifts` 2, `intake` 1, `scenarios` 2, `scenarios/[id]` 1;
+all ungated and live in production). **Individual = 21/21.**
+
+**Criterion 6 was met by removal, and the unit count cannot show what that
+bought.** The scoring change is subtraction: one route unit leaves the
+denominator, the numerator does not move, and the percentage rises. What the
+slice actually did was retire four honesty defects that were live on the
+authenticated tree, and take a third-party relay plus a personal email address
+out of the production bundle. The bundle assertion was made before and after:
+`formsubmit.co` and the founder's address each appeared once at `e908964` and
+zero times after. None of that is a unit.
 
 ### Advisor — 14 routes + 13 endpoints = 27 units
 
@@ -503,14 +513,15 @@ this document.
 | 2026-08-17 | `f26c77a` | 80/81 = 99% | 53/81 = 65% | The caveat slice, plus the nine-versus-eight correction. Operations routes 1/10 → 10/10 and Operations 3/12 → 12/12. Eight units from `f26c77a` (a §2.4 caveat on every directory and detail route, and three "Every X on the platform" claims removed); one unit from FT's ruling that the Overview index route was always MET and Ruling B had miscounted. Denominator unchanged at 81. Gate values still as recorded 2026-07-16, NOT re-verified. Accounts scored MET per the §3 ruling of 2026-08-17: it stays MET here because criterion 6 did not change at `f26c77a`, and it flips to NOT MET at the next re-score if the `CreateInviteModal` contradiction is still live then, which would give 79/81 and 52/81. |
 | 2026-08-17 | `87f36f0` | 80/82 = 98% | 57/82 = 70% | **Full re-verification of every §3 status against the tree**, as the re-score rule requires, not only the two Operations closures that prompted it. Denominator 81 → 82: `DELETE /api/invites/:id` (`1c9d69d`) is a THIRD Operations endpoint, so Operations 12/12 → 13/13. Advisor 27 → 26, a CORRECTION rather than a regression: `pipeline` was never met and the P-4 row overstated its routes as 14/14. Criteria 4 (`537cc08`) and 6 (`5fa42c9`) closed and moved NO unit directly; what they did was resolve the contingent Accounts ruling in the MET direction. §3's Advisor and Enterprise headers were stale and are corrected here. Gate values VERIFIED against remote D1 2026-08-17 by FT, read-only aggregate, soft-deleted excluded (agent-run `--remote` is barred by CLAUDE.md §6.15), so 57/82 stands on current evidence rather than on figures carried from 2026-07-16. All three claims hold. The advisor and enterprise gates read NULL rather than the `0` recorded until now, which changes no behaviour because every gate check is a strict `!== 1`; see §2.6. |
 | 2026-08-18 | `1632fbf` | 80/82 = 98% | 57/82 = 70% | P-6 slice 1: the `/api/me` ops block (`ops.writesEnabled`) and the four type-rejection messages. **NO unit moved, and that is the correct outcome rather than a scoring miss.** Criterion 3 flips NOT MET to MET, but it is a defect on the Accounts route that criterion 1 already scores, and `me.js` is shared infrastructure already at 2/2, so neither denominator nor numerator changes. Capability and production-usable are both unchanged from `87f36f0`. What the slice bought is CORRECTNESS, not reach: an ungated ops operator is now told before the click that invite creation and withdrawal are unavailable, instead of discovering it by losing a modal and a form to a 403. Criterion 3 is scored on a narrowed reading, recorded at §3, because `userRole` stays null by FT ruling. Gate values unchanged since the 2026-08-17 FT read. |
+| 2026-08-18 | `fbc1a9a` | 80/81 = 99% | 57/81 = 70% | Feedback route REMOVED, not persisted. Individual routes 14/15 → 14/14, Individual 21/22 → 21/21. Denominator 82 → 81. **This is the P-5 pattern: the unit was removed, not fixed**, so both numerators are unchanged and the percentage rises without capability being built. Read it as subtraction. What it bought sits outside the instrument: four honesty defects retired (a false transit claim, an unconsented behavioral block, a silent clipboard write, and a success state that rendered on failure), plus `formsubmit.co` and a personal email address gone from the production bundle, verified one to zero each. Gate values unchanged since the 2026-08-17 FT read. |
 
 **Two consecutive rows now show a flat numerator, and they are flat for
 DIFFERENT reasons.** The `87f36f0` row was flat because two opposite movements
-cancelled. This row is flat because nothing moved at all: the instrument has no
-unit for "a control that fails honestly instead of silently". That is a real
-limitation and not a defect in the slice. **If two rows in a row can show a
-week of work as zero, the numerator is not the thing to read; the components
-and these notes are.**
+cancelled. The `1632fbf` row is flat because nothing moved at all: the
+instrument has no unit for "a control that fails honestly instead of silently".
+That is a real limitation and not a defect in the slice. **If two rows in a row
+can show a week of work as zero, the numerator is not the thing to read; the
+components and these notes are.**
 
 **The `87f36f0` row is mostly a CORRECTION row, and the flat numerator hides
 that.** Capability reads 80 before and 80 after, which looks like nothing
