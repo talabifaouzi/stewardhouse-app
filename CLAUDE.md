@@ -1010,6 +1010,38 @@ persistence predicates, and the advisor stage-label rename blocked on the Q7
 allowlist. All four are observation-grade items waiting on a pass rather than
 on a decision.
 
+**CLOSED 2026-08-18: no modal opens through the BROWSER-AUTOMATION HARNESS,
+and the code is CORRECT.** During the P-7 slice 1 render, neither the
+WorkshopDetail modal nor the roster's AthleteProfile modal opened, across four
+attempts by element ref and by coordinate, with no console errors. It
+reproduced at HEAD with the slice stashed, so it was not caused by that work.
+**FT then clicked an athlete row on the demo tree at `/enterprise/roster` in
+Chrome on 2026-08-17 and the profile modal opened over the page.** That is the
+observation that closes it: the product is fine and the harness is the thing
+that cannot click. The standing limit this implies is recorded in §9.
+
+**The code evidence, kept because it is what made the conclusion safe rather
+than merely hopeful.** `Modal.jsx:80` returns null while `isOpen` is false and
+`:92` renders `role="dialog"` when true, so an ABSENT dialog node in the
+accessibility tree means the governing state never changed. It rules out the
+harder possibility, a modal that mounted but rendered invisibly, which would
+have been a real defect. Every enterprise modal holds its OWN local state (ten
+sites across five files, `activeWorkshop`, `activeAthlete`, `addOpen` and so
+on), so one broken hook cannot explain all of them. `ModalStackProvider` wraps
+everything at `main.jsx:11-17` and could not be the cause even if it were
+absent, since `ModalStackContext.jsx:11-16` supplies no-op defaults and the
+stack is consulted only AFTER the `isOpen` guard. Nothing in the modal path has
+changed since `8ecdaf3` (2026-06-17), and the FT milestone screen of
+2026-07-16 exercised both `AddAthleteModal` and the WorkshopDetail attendance
+editor successfully, which is after every change to that path.
+
+**The calendar line-break observation above is PROBABLY UNRELATED.** Different
+layer and different mechanism: text wrapping rather than event delivery, and
+the calendar rendered correctly in every screenshot taken during this work.
+Keep the two ADJACENT in the QA pass rather than merging them, because they
+share one property that is worth testing once: both were seen only through this
+tooling against a local dev server.
+
 **CLOSED 2026-08-17: the four Operations directory rows are NOT a keyboard
 defect.** The item filed during the withdraw slice (`onClick` on `role="row"`
 with zero `tabIndex` and zero `onKeyDown`, so rows read as unreachable by
@@ -1261,6 +1293,35 @@ Five hard-earned lessons from a night of failed browser screening attempts (2026
 - **Resend test sender (`onboarding@resend.dev`) delivers only to the registered address.** Plus-alias variants of the account owner's email (e.g. `talabifaouzi+morgan@gmail.com`) are treated as different addresses and rejected — `POST /api/auth/sign-in/magic-link` returns 500 because the sender throws. **Production invites REQUIRE a verified domain sender** — Resend's test sender is not a viable path for onboarding real pilot users. Verified domain needs to land before the first real invite goes out. **UPDATE (superseded 2026-07-15, invite-email slice):** this caveat is now STALE for the running environments — the verified domain sender has landed. Local `.dev.vars` `FROM_EMAIL=signin@steward-house.org` (a verified `steward-house.org` sender, not `onboarding@resend.dev`), and FT empirically delivered plus-address links on production 2026-07-15, so production is a verified sender too. The exact **production** `FROM_EMAIL` is a Cloudflare Pages dashboard var (NOT in `wrangler.toml`, not repo-readable) — confirm it reads `signin@steward-house.org` there before the first real external invite. (`.dev.vars.example` still shows the old `onboarding@resend.dev` placeholder — a stale template, harmless.) **See §11 (2026-07-20 incident):** production sender config lives in the Cloudflare Pages dashboard, is NOT repo-readable, and **drifts silently** — `RESEND_API_KEY` there fell out of sync with the active Resend key and took production sign-in down for ~5 days with no signal. A green local `.dev.vars` proves nothing about production.
 - **Hand-forged cookies fail in the browser even when curl accepts them.** Better-auth sets `HttpOnly` + `SameSite=Lax` + secure-when-https attributes. DevTools cookie paste bypasses those attributes; more commonly, DevTools re-encodes `%2F`/`%3D` in the pasted value (turning `%2F` into `%252F`), and the pasted-in domain (`localhost` vs `127.0.0.1`) rarely matches the origin FT actually browses. **Never hand FT raw cookie values. Use either the real magic-link flow (email) or code-path-minted verification-row URLs.** Cookie surgery is a curl-only tool.
 - **STANDING RULE: browser automation is PERMITTED under a scoped rule.** Ruled 2026-08-17, SUPERSEDING the blanket prohibition added at `1f76708` (2026-08-15). That prohibition is RETIRED and is not restated anywhere; a reader finding language that forbids browser use outright is reading something stale. **What the incident actually was, recorded precisely because the old rule was written wider than its finding.** During the `88e07ea` work a tab-context call with `createIfEmpty` opened a fresh Chrome tab, and Chrome's new-tab page rendered FT's own most-visited tiles. Nothing was read from those tiles, and no page other than the localhost preview was navigated to. **The defect was the tab-creation call, not browser use.** **PERMITTED:** navigating directly to an explicit localhost preview port or to `steward-house.org`, and reading only that page, INCLUDING a tab-context call with `createIfEmpty: false` where that is required to obtain a `tabId`. **FORBIDDEN:** any tab-creation call beyond the one carve-out below, navigating to any other origin, and reading or extracting from any page other than the target. If a task appears to need any of those, SAY SO AND STOP. **THE ONE CARVE-OUT (added 2026-08-17, third pass).** `createIfEmpty: true` is PERMITTED **once per session**, only when `tabs_context_mcp{createIfEmpty: false}` has already returned no group, and only as the FIRST STEP toward navigating to a permitted url. Three conditions bind it and ALL must hold: the agent navigates to the permitted url IMMEDIATELY after, in the same sequence, with nothing in between; the agent NEVER reads, extracts from, screenshots, or reports on the created tab before that navigation; and the agent REPORTS in its findings that it created a tab group, so the call is visible rather than silent. Any further tab-creation call in the same session stays forbidden. **Why this is the containment and not a loosening:** the `88e07ea` incident was not that a tab was created, it was that a new-tab page RENDERED FT's browsing data and that was indistinguishable from the agent having navigated somewhere it should not. Navigating immediately and never reading the intermediate state removes the OBSERVATION, which is the part that mattered. **AMENDED 2026-08-17, on the rule's FIRST USE, and the amendment narrows the prohibition to THE FLAG rather than the tool.** As first written the FORBIDDEN list named "any tab-context or tab-creation call, `createIfEmpty` in any form", which forbade the only mechanism by which a PERMITTED url can be reached: `navigate` auto-calls `tabs_context_mcp{createIfEmpty:true}` when `tabId` is omitted, and needs a `tabId` from that same tool when it is not, while `get_page_text` needs one too. The rule therefore permitted a destination and blocked every route to it. **The agent stopped and reported the conflict rather than picking the reading that let it proceed**, which is the behaviour this rule wants and is why the gap surfaced as a question instead of as a violation. What actually caused the `88e07ea` incident was `createIfEmpty: true`, which created a fresh tab and rendered FT's most-visited tiles on Chrome's new-tab page; `createIfEmpty: false` creates nothing and surfaces no new-tab page, so the risk lives in the flag and the prohibition now sits there. **The limitation, stated plainly, because it is the reason this is a rule and not a boundary.** The extension operates inside FT's live logged-in Chrome session, so anything that session can reach, the tools can reach. Navigating straight to a URL avoids the new-tab page; it does not sandbox the session. FT considered a separate Chrome profile with the extension installed only there, which would be a real boundary, and accepted the protocol instead for its lower cost. **So this rule holds because the agent honors it, in the same way the bank rule holds.** **What it unblocks, so the cost of the old rule is visible:** §6.14 conditions (b) and (c) can now be satisfied by RENDER rather than by accepting structural proof each time. Claims currently resting on estimates, which a render can now settle: the four Operations directory `minWidth` values at `8aa8358`, which rest on an ASSUMED 0.50em Inter advance; the focus landing after a successful withdraw at `cd2f41b`; and the four onboarding screens whose fold behaviour is SPLIT BY VIEWPORT WIDTH, which a single phrasing would collapse: §7 records them MEASURED CLEAR at 640 wide (`e13ea0c`; letter 587, privacy 535, questions 401, reveal 517), while the later scoping pass ESTIMATED them below the fold at 320 wide on directional reasoning, since halving the width roughly doubles wrapped-text height while fixed chrome stays constant. A render settles the NARROW case; it does not contradict the recorded one, and §7 needs no change. Source-derived measurement (token values from `tokens.css`, container arithmetic from the layout chain, character counts from the string itself) remains correct and cheap, and stays the right first reach; what changed is that it is no longer the ONLY reach.
+- **STANDING LIMIT ON THE SCOPED RULE: the harness can NAVIGATE and READ; it
+  cannot reliably CLICK.** Added 2026-08-18. The rule above says what the agent
+  is PERMITTED to do; this says what it can actually accomplish, which is a
+  smaller set. Across a full session every navigation worked and **every
+  interaction reported success and changed nothing**: clicks by element ref and
+  by coordinate, on two surfaces, alike. The product was not at fault, and FT
+  clicking the same control in Chrome opened the modal (§7, CLOSED 2026-08-18).
+  **Candidate mechanism, offered as a LEAD and not a conclusion:** the tool
+  reports a viewport of 2133x1120 while returning screenshots at 1530x803, a
+  ratio of about 1.39, so a click resolved through screenshot space would land
+  well off target and produce exactly this signature, success reported against
+  empty space.
+  **THE CONSEQUENCE, WHICH IS THE PART THAT BINDS.** Any slice whose change is
+  reachable only THROUGH a click ships at build-plus-structural-proof, NOT at
+  render, and must say so rather than let a §6.14 firing condition look
+  satisfied. **Render verifies what a page SHOWS ON LOAD, not what it DOES when
+  used.** That distinction was implicit in §6.14 and is now explicit, because
+  the two are easy to conflate when a render technically ran. **P-7 slice 1
+  (`a8191c1`) is the worked example** and recorded it in its own commit body:
+  the gated attendance row is behind a modal, so its appearance is unverified,
+  while what DID render on load (the roster Access column resolving all four
+  states, and `RateDisclosure` naming one of five athletes as recordable) is
+  reported as exactly that and no more.
+  **What would distinguish the mechanism, if anyone wants to:** FT clicking the
+  same control, which is now DONE for modals and is what closed it; a
+  programmatic `element.click()` rather than a synthetic pointer event, which
+  would separate event delivery from handler and state but sits OUTSIDE §9's
+  permitted set; or the deployed build, which separates the dev server from the
+  app but not the harness from either.
 - **Single-type identity means FT's real email always lands as an individual.** Ruled 2026-07-02: one `auth_user` → one `person` → exactly one `type`. FT's real gmail (`talabifaouzi@gmail.com`) is bound to Marcus's `person` row with `type='individual'`. **[EXAMPLE STALE, RULE INTACT — corrected 2026-07-20.** The Marcus binding no longer holds on production: verified read-only against remote D1, Marcus's `person` row is **UNCLAIMED** (`auth_user_id` NULL, no `invite_email` — nobody can sign in as it) and FT holds **three** separate claimed `type='individual'` rows. §5's Individual row already recorded this ("Marcus un-reconciled to a standalone person row; FT row is a genuine clean slate") — the manifest contradicted itself for four days, and §5 was the correct half. The single-type identity RULE below is UNAFFECTED and still load-bearing; only the binding example was wrong. Operational cost: the stale line nearly sent the P-3a production screen hunting for a non-Marcus test identity that was never needed.]** She cannot sign in as advisor/enterprise on her real account — the (c) hook does not re-fire on sign-in, and RequireType would bounce her from `/app/advisor` regardless. **Test identities for other types MUST use distinct emails**, and for local dev those are plus-addressed variants of FT's real address that route to the same inbox. Every advisor/enterprise/ops test identity is a separate `auth_user` row bound to the correct-typed `person` row.
 - **`person.display_name` must be set at invite/designation, not defaulted.** The Chrome header reads `identity.displayName`. On a fresh sign-in where the (c) hook fires the fresh-person branch, `display_name` defaults to the literal string `'New user'`. If a bespoke advisor is provisioned by inserting the `person` row without a real `display_name`, that string will render in the header for FT's screen, and every subsequent screenshot. **Every pre-seeded bespoke-type `person` row must carry a real `display_name` at insert time.** Never rely on the default.
 - **Sign a forged session cookie with standard PADDED base64, then `encodeURIComponent`.** Added P-2 screening, 2026-07-20. A cookie signed with base64url-no-pad is rejected — `/api/me` returns null and the surface bounces to `/signin`, with no error distinguishing it from an expired session. Padded base64 + percent-encoding is the working form. This is a curl-only tool and does not change §9's standing rule that hand-forged cookies must never be handed to FT for a browser screen.
