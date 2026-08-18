@@ -323,12 +323,29 @@ provisionally scored MET.
 |---|---|---|---|
 | 1 | Accounts/roster live, invites send | MET | `roster.js`, `invites.js`; `$.ops.demo_gate = 1` verified against remote D1 2026-08-17 |
 | 2 | Every directory/detail route reads live data or carries a caveat | MET | All 8 caveated at `f26c77a`, verified by render (§2.4 test) |
-| 3 | `/api/me` emits an `ops` block so `userRole` is real | **NOT MET** | `OperationsSurface.jsx:219` hardcodes null; a case-insensitive grep for `ops` in `me.js` returns only `workshops` |
+| 3 | `/api/me` emits an `ops` block so `userRole` is real | MET (see the reading below) | `1632fbf`; `me.js:544-561` emits `ops.writesEnabled`, spread at `:574`; consumed at `OperationsRoster.jsx:403`; verified by render on an ungated ops session |
 | 4 | A gated ops user cannot silently mint another ops account | MET | `537cc08`; `invites.js` refuses type `ops` with 403, `ALLOWED_TYPES` and `SOURCE_SURFACE_FOR_TYPE` both drop it, select reduced to three options. Smoked 2026-08-17, 16 of 16 assertions |
 | 5 | Invite failure recoverable | **NOT MET** | Withdraw shipped (`1c9d69d`, `cd2f41b`) but there is still no resend and no edit; see below |
 | 6 | No invite copy contradicts what the endpoint does | MET | `5fa42c9`; the caution now says an email is sent and names delivery as reported after creation |
 
 **Routes 10/10.** **Endpoints 3/3.** **Operations = 13/13.**
+
+**Criterion 3 is scored MET on a NARROWER reading than its wording, and the
+narrowing is recorded rather than assumed.** The criterion says the block is
+emitted "so `userRole` is real". The block shipped at `1632fbf` and `userRole`
+is still null: FT ruled it stays null because ops has no relational source for
+a role title, no `institution_contact` equivalent to join, and the seeded
+`$.operations.role` at `migrations/0005_demo_roster.sql:25` is read by nothing
+(`OperationsSurface.jsx:211-230` carries the reasoning). What the criterion was
+FILED for is the emission and the honest UI it enables, and both exist. Giving
+`userRole` a value needs a new source and a fresh passthrough ruling, which is
+not this criterion and is not filed anywhere as one.
+
+**Criterion 3 moved NO unit, for the same reason criteria 4 and 6 did not.** It
+is a defect on the Accounts route, which criterion 1 scores and which the
+instrument has counted MET in every row of the log, and `me.js` is shared
+infrastructure already scored 2/2 at §3. Operations was 13/13 before this slice
+and is 13/13 after it.
 
 **Criterion 5 stays NOT MET, and the reason is worth stating precisely because
 two thirds of the finding did close.** `DELETE /api/invites/:id` (`1c9d69d`) and
@@ -485,6 +502,15 @@ this document.
 | 2026-08-15 | P-5 | 71/81 = 88% | 44/81 = 54% | P-5. Enterprise routes 11 → 10; the `setup` unit was removed, not fixed. Denominator 82 → 81. Gate values still as recorded 2026-07-16, NOT re-verified. |
 | 2026-08-17 | `f26c77a` | 80/81 = 99% | 53/81 = 65% | The caveat slice, plus the nine-versus-eight correction. Operations routes 1/10 → 10/10 and Operations 3/12 → 12/12. Eight units from `f26c77a` (a §2.4 caveat on every directory and detail route, and three "Every X on the platform" claims removed); one unit from FT's ruling that the Overview index route was always MET and Ruling B had miscounted. Denominator unchanged at 81. Gate values still as recorded 2026-07-16, NOT re-verified. Accounts scored MET per the §3 ruling of 2026-08-17: it stays MET here because criterion 6 did not change at `f26c77a`, and it flips to NOT MET at the next re-score if the `CreateInviteModal` contradiction is still live then, which would give 79/81 and 52/81. |
 | 2026-08-17 | `87f36f0` | 80/82 = 98% | 57/82 = 70% | **Full re-verification of every §3 status against the tree**, as the re-score rule requires, not only the two Operations closures that prompted it. Denominator 81 → 82: `DELETE /api/invites/:id` (`1c9d69d`) is a THIRD Operations endpoint, so Operations 12/12 → 13/13. Advisor 27 → 26, a CORRECTION rather than a regression: `pipeline` was never met and the P-4 row overstated its routes as 14/14. Criteria 4 (`537cc08`) and 6 (`5fa42c9`) closed and moved NO unit directly; what they did was resolve the contingent Accounts ruling in the MET direction. §3's Advisor and Enterprise headers were stale and are corrected here. Gate values VERIFIED against remote D1 2026-08-17 by FT, read-only aggregate, soft-deleted excluded (agent-run `--remote` is barred by CLAUDE.md §6.15), so 57/82 stands on current evidence rather than on figures carried from 2026-07-16. All three claims hold. The advisor and enterprise gates read NULL rather than the `0` recorded until now, which changes no behaviour because every gate check is a strict `!== 1`; see §2.6. |
+| 2026-08-18 | `1632fbf` | 80/82 = 98% | 57/82 = 70% | P-6 slice 1: the `/api/me` ops block (`ops.writesEnabled`) and the four type-rejection messages. **NO unit moved, and that is the correct outcome rather than a scoring miss.** Criterion 3 flips NOT MET to MET, but it is a defect on the Accounts route that criterion 1 already scores, and `me.js` is shared infrastructure already at 2/2, so neither denominator nor numerator changes. Capability and production-usable are both unchanged from `87f36f0`. What the slice bought is CORRECTNESS, not reach: an ungated ops operator is now told before the click that invite creation and withdrawal are unavailable, instead of discovering it by losing a modal and a form to a 403. Criterion 3 is scored on a narrowed reading, recorded at §3, because `userRole` stays null by FT ruling. Gate values unchanged since the 2026-08-17 FT read. |
+
+**Two consecutive rows now show a flat numerator, and they are flat for
+DIFFERENT reasons.** The `87f36f0` row was flat because two opposite movements
+cancelled. This row is flat because nothing moved at all: the instrument has no
+unit for "a control that fails honestly instead of silently". That is a real
+limitation and not a defect in the slice. **If two rows in a row can show a
+week of work as zero, the numerator is not the thing to read; the components
+and these notes are.**
 
 **The `87f36f0` row is mostly a CORRECTION row, and the flat numerator hides
 that.** Capability reads 80 before and 80 after, which looks like nothing
