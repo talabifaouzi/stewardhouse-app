@@ -256,10 +256,17 @@ connecting IRS data would not restore it.
 
 ## The dependency, stated plainly
 
-**The facets need BMF ingest, and that is the WHOLE of the blocker.** The four
-facets read BMF `CITY`, `STATE`, `REVENUE_AMT` and `RULING`. IRS bulk files are
-federal government works carrying no terms encumbrance, which ruling 1 recorded
-from the start.
+**The facets need the BMF load, and that is the WHOLE of the v1 dependency.**
+Geography reads BMF `CITY` and `STATE`, recognition era reads BMF `RULING`, and
+the card's name and city come from the same load, so **the BMF alone yields
+three of the four facets**. The total expenses band reads the 990 XML instead
+and waits on a second and much larger ingest, per the source ruling at `:38`.
+IRS bulk files are federal government works carrying no terms encumbrance,
+which ruling 1 recorded from the start.
+
+**The build plan is `docs/bmf-load-scoping.md`** (2026-08-18, nothing built):
+the migration, the table shape, the swap, the script, what proves each step,
+and the four items left open.
 
 **No terms question stands in the way, and an earlier version of this section
 said one did.** It described the facets as waiting on an ingest that waited on
@@ -270,12 +277,31 @@ anyway, since that ruling gated a persisted copy of PROPUBLICA data
 specifically. Ruling 7's deferral condition is met and the bulk XML route is
 unblocked, still unscoped.
 
-**What actually blocks the facets is the ingest itself: there is no scheduled
-process in this project, and never has been.** Every write path shipped so far
-is request-driven, a funder or an operator pressing a control. A monthly BMF
-refresh is a different shape of thing, with a schedule, a failure mode nobody
-is watching, and a staleness question of its own. That is the work, and naming
-it is more useful than naming a permission that was already granted.
+**v1 is a MANUAL, FT-RUN LOAD WITH NO SCHEDULE, and the absence of a scheduled
+process was ruled acceptable for v1 rather than left as a gap.** An earlier
+version of this section named the missing schedule as the blocker and called it
+"the work". That overstated it: a monthly refresh is not on the v1 path at all,
+so the project having no scheduled process, which is true and always has been,
+does not block anything here.
+
+**What makes a manual load honest is the four-part load stamp**, one row per
+source, with the surface rendering the source date. A funder is then told when
+the data was pulled, so the page describes a known moment rather than implying
+a currency it does not have.
+
+**What the manual path COSTS, stated without softening: the deductibility
+signal is exactly as stale as the last run.** Ruling 1 makes the status gate
+load-bearing, so an organization whose exemption was revoked after the last
+load keeps surfacing as though it were current, and a funder can act on it.
+Nothing detects this between runs, because nothing is watching. That is the
+price of no schedule, and it is a correctness cost rather than a freshness
+inconvenience.
+
+**UNRULED, and recorded as open: whether a staleness threshold should revert
+Discover to the unavailable state.** The stamp makes the age of the data
+knowable, which is what such a threshold would need. Whether some age should
+stop the surface rendering results at all, and what that age is, has not been
+ruled and is deliberately not resolved here.
 
 **The removal already shipped SEPARATELY, at `65f2a28`.** An earlier version of
 this section argued the removal and the facet build had to ship together, on
