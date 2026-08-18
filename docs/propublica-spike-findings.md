@@ -742,21 +742,72 @@ as honest-absence. A field with no possible source is not absent.
 **4. Name.** IRS legal name verbatim. The EIN renders alongside it where
 group-ruling affiliates collide. No composed display name.
 
-**5. ProPublica terms.** UNRESOLVED, and there is no counsel to route it to. No
-lawyer is on staff, retained, or in pipeline; the internal compliance seat is
-an advisory persona and is not clearance. Blocking for any persisted copy of
-ProPublica data. Read-only reconnaissance is unaffected. The next step is a
-direct question to ProPublica about AI and machine-learning use of the data,
-since their terms are silent and they are the party who can answer. If no
-answer is obtained, any decision to proceed is recorded explicitly as a founder
-risk call, not as clearance. Whatever standard is applied here also applies to
-Candid, which was deferred over the same silence.
+**5. ProPublica terms. RESOLVED 2026-08-17.** Andrea at ProPublica answered
+directly: the data in the Nonprofit Explorer API is all public IRS data that
+can be downloaded directly from the IRS, so StewardHouse may store or use it
+however it sees fit.
+
+**The reasoning is DURABLE, not permissive, and the distinction matters more
+than the permission.** ProPublica is not granting a licence it would be free to
+revoke; it is declining to claim rights it does not hold, because the
+underlying records are public federal work. The AI and machine-learning silence
+that made this ruling blocking stops mattering for the same reason: there is no
+proprietary layer for the terms to have been silent about. An answer that
+rested on goodwill would have needed re-asking; this one does not.
+
+**What it does NOT do:** it does not touch ruling 1. ProPublica remains never
+sufficient alone, for accuracy reasons that have nothing to do with terms.
+
+**The Candid comparison now has an answer, written down rather than inferred.**
+This ruling previously said whatever standard applied here also applied to
+Candid, which was deferred over the same silence. It does NOT transfer.
+ProPublica cleared because the data underneath it is public federal record.
+Candid's is not: their corpus carries their own research and enrichment, so the
+consent requirement in their terms is a claim about material they do hold.
+Candid stays deferred on its own terms, and this ruling is not a precedent for
+it.
+
+**FRESHNESS, and it is NEW information the spike could not have found.** In the
+same reply Andrea volunteered, unprompted, that the API is no longer in active
+development and runs roughly a year behind ProPublica's own front end, because
+it reads a table that was deprecated when they rebuilt their data structures.
+Nothing in the API surface or its documentation says this, and no amount of
+sampling would have established it.
+
+**What it explains, and what it does not.** The spike found 39 of 40
+IRS-auto-revoked organizations still served, 31 of them asserting
+`status=1, deduct=1` (`:324-328`), and attributed it to retention: the fault
+is retention, not the BMF (`:338`). A year of lag is a plausible ADDITIONAL or
+ALTERNATIVE mechanism for the same observation, and it was not available to
+the spike as a hypothesis. It does not settle the question, and one recorded
+observation sits against a simple lag explanation: a targeted sample of eight
+recent revocations came back with ProPublica's freshest snapshot stamp,
+`current_2026_07_21` (`:330-332`). A stamp records when their copy refreshed,
+not how current the table underneath it is, so the two can coexist. Recorded
+as unresolved between the mechanisms rather than decided.
+
+**Ruling 1 is UNCHANGED either way, and that is the load-bearing point.** A
+year-stale deductibility assertion is exactly as wrong to an athlete deciding
+where to give as a permanently stale one. The IRS revocation leg still ships
+with the first org record or no org record surfaces.
 
 **6. Mission text.** Orgs surface without it. Honest absence. A usable website
 does not become a precondition for surfacing, because that rule would exclude
 orgs in correlation with size.
 
 **7. Bulk XML route.** Deferred, and unscoped until ruling 5 resolves.
+**RULING 5 HAS NOW RESOLVED (2026-08-17), so the condition on this deferral is
+met.** The route is unblocked and still unscoped; nothing about scoping it
+happened automatically when the block lifted.
+
+**And a correction that predates the resolution: BMF INGEST WAS NEVER BLOCKED
+BY RULING 5.** Ruling 1 already recorded that the IRS sources are federal
+government works carrying no terms encumbrance, and said in terms that it does
+not depend on ruling 5. The four Discover facets read BMF `CITY`, `STATE`,
+`REVENUE_AMT` and `RULING`, all of which sat outside the block the whole time.
+Any line describing the ingest as waiting on a terms question was wrong when
+written, not merely stale now. What ruling 5 gated was a persisted copy of
+PROPUBLICA data specifically, which is a narrower thing than the ingest.
 
 **8. D1 org seed defanged fields.** Clean, as its own slice, scheduled after
 P-6.

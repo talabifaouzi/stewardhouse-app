@@ -137,20 +137,29 @@ connecting IRS data would not restore it.
 
 ## The dependency, stated plainly
 
-**The facets need BMF ingest.** Ruling 7 (`:759`) defers the bulk XML route and
-leaves it unscoped until ruling 5 resolves. **Ruling 5 (`:745`) is UNRESOLVED**
-and has no counsel to route it to; it blocks any persisted copy of ProPublica
-data, and its standard applies to Candid for the same reason.
+**The facets need BMF ingest, and that is the WHOLE of the blocker.** The four
+facets read BMF `CITY`, `STATE`, `REVENUE_AMT` and `RULING`. IRS bulk files are
+federal government works carrying no terms encumbrance, which ruling 1 recorded
+from the start.
 
-**The removal and the facet build must ship together, or Discover has no
-organizing principle in the interim.** Removing the score, the cutoff and the
-sort with nothing in their place leaves all 17 fixture orgs in arbitrary order
-behind a cause gate that no longer filters, under copy that describes a matching
-page. That is not a reduced surface; it is an incoherent one.
+**No terms question stands in the way, and an earlier version of this section
+said one did.** It described the facets as waiting on an ingest that waited on
+an unresolved terms question. That was wrong on both halves. Ruling 5 RESOLVED
+on 2026-08-17, ProPublica confirming the API serves public IRS data that may be
+stored and used freely; and BMF ingest was never inside ruling 5's scope
+anyway, since that ruling gated a persisted copy of PROPUBLICA data
+specifically. Ruling 7's deferral condition is met and the bulk XML route is
+unblocked, still unscoped.
 
-**The tension this creates is real and belongs to FT, not to a slice.** The §7
-violation is live on a real surface today and does not wait on IRS work, while
-the replacement waits on an ingest that waits on an unresolved terms question.
-The narrower alternative, removing the mechanism and letting Discover be
-explicitly unavailable rather than silently arbitrary, is the shape P-5 and the
-feedback removal both took.
+**What actually blocks the facets is the ingest itself: there is no scheduled
+process in this project, and never has been.** Every write path shipped so far
+is request-driven, a funder or an operator pressing a control. A monthly BMF
+refresh is a different shape of thing, with a schedule, a failure mode nobody
+is watching, and a staleness question of its own. That is the work, and naming
+it is more useful than naming a permission that was already granted.
+
+**The removal already shipped SEPARATELY, at `65f2a28`.** An earlier version of
+this section argued the removal and the facet build had to ship together, on
+the grounds that removal alone leaves the page incoherent. FT ruled otherwise
+and the page is now explicitly unavailable rather than silently arbitrary,
+which is the shape P-5 and the feedback removal both took.
