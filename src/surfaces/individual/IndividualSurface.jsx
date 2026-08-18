@@ -28,7 +28,6 @@ import Discover from './Discover.jsx';
 import Learn from './Learn.jsx';
 import Team from './Team.jsx';
 import GiveScreen from './GiveScreen.jsx';
-import Feedback from './Feedback.jsx';
 import CohortView from './CohortView.jsx';
 import RecordKeeping from './RecordKeeping.jsx';
 
@@ -320,7 +319,6 @@ function DashboardLayout() {
           <Route path="history" element={<History />} />
           <Route path="team" element={<Team />} />
           <Route path="give" element={<GiveScreen />} />
-          <Route path="feedback" element={<Feedback />} />
           <Route path="cohort" element={<CohortView />} />
           <Route path="record-keeping" element={<RecordKeeping />} />
           <Route path="*" element={<Navigate to={basePath} replace />} />
@@ -730,32 +728,6 @@ function IndividualHome() {
           >
             {fundingSpotlight.source}
           </a>
-        </p>
-      </Card>
-
-      {/* Share feedback */}
-      <Card
-        interactive
-        onClick={() => navigate(`${basePath}/feedback`)}
-        style={{
-          marginTop: 'var(--sh-space-3)',
-          marginBottom: 'var(--sh-space-3)',
-          cursor: 'pointer',
-        }}
-      >
-        <p style={{
-          fontSize: 'var(--sh-text-sm)',
-          fontWeight: 600,
-          color: 'var(--sh-text-primary)',
-          marginBottom: '2px',
-        }}>
-          Share feedback
-        </p>
-        <p style={{
-          fontSize: 'var(--sh-text-xs)',
-          color: 'var(--sh-text-muted)',
-        }}>
-          Help us build StewardHouse right — takes 2 minutes
         </p>
       </Card>
 
