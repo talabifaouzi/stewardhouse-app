@@ -208,10 +208,26 @@ export default function OperationsSurface() {
   // fixture. useOptionalAppIdentity() is null on the demo tree (no AppShell
   // provider) and carries the identity on the authenticated tree.
   //
-  // userRole is null on the authenticated tree because /api/me does not yet
-  // emit an ops-specific block (no roleTitle) — Chrome shows the real name
-  // without a role. When O-3's roster endpoint / ops identity block lands, an
-  // ops register can populate here the way enterprise reads roleTitle.
+  // userRole stays null on the authenticated tree, and there is no pending
+  // trigger that will change it. The earlier note here promised a register
+  // "when O-3's roster endpoint / ops identity block lands"; O-3 landed at
+  // 2fe0aad and the ops block landed with P-6 slice 1, so that condition has
+  // fired and the conclusion still holds for a different reason.
+  //
+  // WHAT IS MISSING IS A RELATIONAL SOURCE, not a block to carry it. Ops has
+  // no institution_contact equivalent, so there is no joined row to read a
+  // title from. A seeded $.operations.role does exist (Reese Donovan,
+  // migrations/0005_demo_roster.sql:25) and is read by NOTHING: a repo-wide
+  // search for $.operations finds zero consumers. That is deliberate rather
+  // than an oversight. Enterprise carries the same shape of seeded title and
+  // me.js:361-368 explains why the join is preferred over it, and the ops
+  // block emits one derived boolean about the caller's own gate, which is a
+  // narrower thing than shipping a $.<surface>.* string to the client.
+  //
+  // So Chrome shows the real name and no role line — that is Chrome's own
+  // null guard, not something this file suppresses. The demo tree keeps
+  // CURRENT_OPS_USER.role. Giving the authenticated tree a role means adding
+  // a source and ruling on the passthrough, not wiring up what already exists.
   const appIdentity = useOptionalAppIdentity();
   const isAuthenticated = !!appIdentity;
   const authenticatedName = appIdentity?.identity?.displayName ?? null;

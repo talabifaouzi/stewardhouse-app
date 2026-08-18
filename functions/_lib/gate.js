@@ -26,6 +26,29 @@
 // fast + surface the exact key. Strengthens the DDL-comment invariant into
 // runtime rejection at every write path in this slice; matches the Parker
 // invariant hardened in every table's DDL (see migrations/0007).
+//
+// TYPE-REJECTION MESSAGES (P-6 slice 1) ARE DIAGNOSTIC, NOT OPERATOR-FACING.
+// The four wrong-type rejections below are effectively unreachable through the
+// UI: App.jsx:35-65 wraps all four /app surfaces in RequireType, so a signed-in
+// user is bounced client-side before they can call a foreign surface's endpoint.
+// Reaching one means a direct API call or a routing bug, so the reader is
+// someone holding a response they did not expect, not an operator mid-task.
+//
+// Each names the RESOURCE, which the caller already knows because they called
+// it, and attributes the refusal to the account's TYPE rather than to a
+// designation. None names the type that WOULD be served: the caller's own type
+// discloses nothing new, while the required one would make the response an
+// oracle for the type taxonomy. requireOps and requireGatedOps share one
+// message because they test the identical condition on the identical type and
+// differ only in read versus write. The wording names BOTH because ops is the
+// one surface whose type guards a read gate AND a write gate, so naming only
+// one of them would be wrong at the other call site.
+//
+// The THREE gate rejections keep the shared 'Not authorized' literal and are
+// P-6 slice 2, still bound by the unsplit ruling in CLAUDE.md §5.1. Do not
+// sweep them in with these: a gate rejection is about designation, and telling
+// a correctly-typed caller their designation is missing is only useful once
+// /api/me emits that surface's gate state, which today it does for ops alone.
 
 import { Kysely, sql } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
@@ -66,7 +89,7 @@ export async function requireGatedAdvisor(db, context) {
   if (resolved.error) return resolved;
   const { person } = resolved;
   if (person.type !== 'advisor') {
-    return { error: 'Not authorized', status: 403 };
+    return { error: 'This account type cannot write practice records', status: 403 };
   }
   // Read the demo_gate flag directly via json_extract — reading it back from
   // the row we already fetched would require parsing extensions JSON on every
@@ -104,7 +127,7 @@ export async function requireGatedEnterprise(db, context) {
   if (resolved.error) return resolved;
   const { person } = resolved;
   if (person.type !== 'staff') {
-    return { error: 'Not authorized', status: 403 };
+    return { error: 'This account type cannot write institution records', status: 403 };
   }
   const gateRow = await db
     .selectFrom('person')
@@ -153,7 +176,7 @@ export async function requireOps(db, context) {
   if (resolved.error) return resolved;
   const { person } = resolved;
   if (person.type !== 'ops') {
-    return { error: 'Not authorized', status: 403 };
+    return { error: 'This account type cannot read or write platform records', status: 403 };
   }
   return { person };
 }
@@ -174,7 +197,7 @@ export async function requireGatedOps(db, context) {
   if (resolved.error) return resolved;
   const { person } = resolved;
   if (person.type !== 'ops') {
-    return { error: 'Not authorized', status: 403 };
+    return { error: 'This account type cannot read or write platform records', status: 403 };
   }
   const gateRow = await db
     .selectFrom('person')

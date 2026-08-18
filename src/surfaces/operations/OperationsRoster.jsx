@@ -347,6 +347,16 @@ const PAGE_STYLE = {
   padding: 'var(--sh-space-10) var(--sh-space-8) var(--sh-space-16)',
 };
 
+// The CTA slot when this account cannot write. --sh-text-secondary, not
+// --sh-text-muted, for the same contrast reason as QA-021.
+const CTA_NOTE_STYLE = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  margin: 0,
+  maxWidth: '220px',
+  textAlign: 'right',
+};
+
 // Demo mode: the DEMO_ROSTER fixture, under the §7 caveat. Fixture createdAt
 // dates are synthetic like the rest of the fixture.
 function DemoAccounts({ headingId }) {
@@ -385,6 +395,12 @@ function DemoAccounts({ headingId }) {
 // Loading / error (no retry loop) / empty / rows. New invites splice into
 // sorted position without a refetch.
 function AuthenticatedAccounts({ headingId }) {
+  // Gate state for THIS account, from /api/me's ops block (P-6 slice 1).
+  // Strict === true: the key is ABSENT for non-ops types and the whole block
+  // is absent before the emission lands, and neither absence should read as
+  // permission. This only decides what the header OFFERS; the server stays
+  // the authority, and requireGatedOps still refuses the write either way.
+  const writesEnabled = useOptionalAppIdentity()?.identity?.ops?.writesEnabled === true;
   const [state, setState] = useState({ status: 'loading', rows: [] });
   const [modalOpen, setModalOpen] = useState(false);
   const [writeError, setWriteError] = useState(null);
@@ -462,7 +478,10 @@ function AuthenticatedAccounts({ headingId }) {
       // because it is the only control guaranteed to exist at that moment: it
       // renders in PageHeader regardless of row count, so it survives even the
       // deletion of the last row, when the table itself is replaced by the
-      // empty state.
+      // empty state. When writesEnabled is false the CTA is a line rather than
+      // a button and getElementById misses, which the `if (el)` below absorbs;
+      // that path is unreachable anyway, since the withdraw this follows is
+      // itself requireGatedOps and cannot have succeeded.
       requestAnimationFrame(() => {
         const el = document.getElementById(ctaId);
         if (el) el.focus();
@@ -485,10 +504,22 @@ function AuthenticatedAccounts({ headingId }) {
     setPendingWithdraw(row);
   }, []);
 
-  const cta = (
+  // §7 aggregate-default guardrail: a control with no real target renders an
+  // explanatory line, never a dead click. An ungated ops account cannot create
+  // an invite, so offering the button would spend the operator a modal and a
+  // form to reach a 403. The line occupies the same reserved PageHeader slot,
+  // which already tolerates any node including null, so PageHeader and the
+  // demo branch are untouched. It names withdrawal too, because the row action
+  // below is behind the SAME gate and this is the only line explaining why
+  // neither is offered.
+  const cta = writesEnabled ? (
     <Button id={ctaId} variant="primary" size="sm" onClick={openCreate}>
       Create invite
     </Button>
+  ) : (
+    <p style={CTA_NOTE_STYLE}>
+      Invite creation and withdrawal are not enabled for this account.
+    </p>
   );
 
   return (
@@ -516,10 +547,19 @@ function AuthenticatedAccounts({ headingId }) {
             <CountLine>
               {state.rows.length} account{state.rows.length === 1 ? '' : 's'} and invite{state.rows.length === 1 ? '' : 's'} across all four surfaces
             </CountLine>
+            {/* Withdraw is requireGatedOps, the SAME gate as create, so the row
+                action is gated the same way. Passing no onRowAction takes the
+                RosterTable path DemoAccounts already uses: rowProps becomes {},
+                so the row loses tabIndex, aria-label, onClick, keydown and the
+                pointer/hover affordance, and its style stays byte-identical.
+                Every cell still renders, so the record reads as present and
+                un-actionable rather than missing. */}
             <RosterTable
               rows={state.rows}
-              onRowAction={openWithdraw}
-              rowAriaLabel={(r) => `Withdraw the invitation to ${r.displayName}`}
+              onRowAction={writesEnabled ? openWithdraw : undefined}
+              rowAriaLabel={writesEnabled
+                ? ((r) => `Withdraw the invitation to ${r.displayName}`)
+                : undefined}
             />
             <Footnote />
           </>

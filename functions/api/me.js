@@ -28,7 +28,7 @@
 // sign-in, so this shouldn't happen in practice, but callers must not assume person
 // is always present.
 
-import { Kysely } from 'kysely';
+import { Kysely, sql } from 'kysely';
 import { D1Dialect } from 'kysely-d1';
 import { makeAuth } from '../_lib/auth.js';
 import { ATHLETE_ELEMENT_COLUMNS, toAthleteElement } from './athletes.js';
@@ -521,6 +521,45 @@ export async function onRequest(context) {
     };
   }
 
+  // Operations/ops identity block (P-6 slice 1). ONE derived boolean, never
+  // the blob: the FT ruling of 2026-08-17 permits emitting gate state as a
+  // purpose-built boolean describing only the REQUESTING account's own
+  // standing, and that is not the $.<surface>.* passthrough the advisor
+  // docblock above and the enterprise docblock forbid. It is not a secret
+  // from the account it describes, which learns it the instant it attempts a
+  // write, and it discloses nothing about other accounts, other types, or the
+  // storage representation. The key is spread conditionally below, so it is
+  // ABSENT rather than null for the other three types: an advisor's /api/me
+  // gains no evidence that an ops gate exists at all.
+  //
+  // READ IT THE WAY THE GATE READS IT. This must predict requireGatedOps
+  // (gate.js:180-190) exactly, so it uses the SAME json_extract + strict
+  // === 1, not a JSON.parse of the person.extensions already in hand.
+  // SQLite json_extract returns integer 1 for a JSON `true` AND for a JSON
+  // 1, so a JS `parsed.ops.demo_gate === 1` would report false where the
+  // gate passes, and the operator would be told they cannot write while the
+  // write succeeds. The duplicated predicate is deliberate: gate.js owns the
+  // four require* helpers and slice 1 does not extract a shared reader.
+  // If the gate's predicate ever moves, this must move with it.
+  let ops = null;
+  if (person?.type === 'ops') {
+    const gateRow = await db
+      .selectFrom('person')
+      .select(() => [
+        sql`json_extract(extensions, '$.ops.demo_gate')`.as('gate'),
+      ])
+      .where('id', '=', person.id)
+      .executeTakeFirst();
+    ops = {
+      // True iff this account's own invite writes will be accepted. Governs
+      // BOTH gated ops endpoints (POST /api/invites, DELETE /api/invites/:id);
+      // GET /api/roster is requireOps, type-only, and needs no counterpart
+      // here because an ops user reading this has already passed it.
+      // Named for the caller's capability, not for the flag that backs it.
+      writesEnabled: !!gateRow && gateRow.gate === 1,
+    };
+  }
+
   const body = {
     user: { email: session.user.email },
     person: person ? {
@@ -532,6 +571,7 @@ export async function onRequest(context) {
       ...(linkedAthlete && { athlete: linkedAthlete }),
       ...(advisor && { advisor }),
       ...(enterprise && { enterprise }),
+      ...(ops && { ops }),
     } : null,
   };
 
