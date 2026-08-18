@@ -159,8 +159,18 @@ export default function AthleteProfile({ isOpen, onClose, athlete, onSendReminde
                 value={athlete.certified ? `Awarded ${formatDate(athlete.certDate)}` : 'Not yet awarded'}
                 last
               />
+              {/* P-7 slice 1: say the STATE, never a cause. The prior copy read
+                  "the athlete manages this account", which is true of Self-managed
+                  and FALSE of the other two states this branch also covers: a
+                  Pending-choice athlete has not chosen, and an Unclaimed athlete has
+                  never signed in and manages nothing. accessLabel is the same
+                  resolver the roster Access column and the gated attendance rows
+                  use, so the three cannot drift. */}
               {canEdit && !isWritable && (
-                <p style={notDelegatedStyle}>Record-keeping not delegated — the athlete manages this account.</p>
+                <p style={notDelegatedStyle}>
+                  {accessLabel(athlete)} — staff can record progress only once
+                  record-keeping is delegated.
+                </p>
               )}
             </>
           )}

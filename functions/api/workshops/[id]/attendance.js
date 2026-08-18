@@ -157,6 +157,19 @@ export async function onRequestPut(context) {
   // reads management_mode='delegated' but is no longer claim-backed — staff must
   // not write against it. management_mode must be 'delegated' EXACTLY AND
   // person_id must be set.
+  // P-7 slice 1 (2026-08-18) NOTE, COMMENT ONLY. THIS BRANCH IS NOT DEAD CODE.
+  // WorkshopDetail now gates each attendance row on the same predicate this
+  // check enforces, and OMITS ungated athletes from the batch, so a correctly
+  // gated client never submits one and this 403 is unreachable through the UI.
+  // It remains the authority, and must not be removed as unused, against:
+  //   - a direct API call, which owes the UI nothing;
+  //   - a stale client cached from before the gate shipped;
+  //   - the genuine race, where an athlete flips their mode between the moment
+  //     the roster rendered and the moment Save is pressed. The client reads a
+  //     mount-time copy (/api/me is fetch-once) and cannot close that window;
+  //     only this check can, which is why the server predicate is the one that
+  //     decides and the client gate is an affordance, never an authority.
+  // Reject-whole-batch is likewise unchanged: it is what makes the race safe.
   const notDelegated = validAthletes
     .filter((a) => a.management_mode !== 'delegated' || a.person_id == null)
     .map((a) => a.id);

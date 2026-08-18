@@ -3,6 +3,7 @@ import { Card } from './Card.jsx';
 import { SectionLabel } from './SectionLabel.jsx';
 import { Modal } from './Modal.jsx';
 import { Button } from './Button.jsx';
+import { accessLabel } from '../surfaces/enterprise/shared/athleteStatus.js';
 import { formatDate } from '../utils/formatDate.js';
 
 // Single-workshop detail modal. Five sections: header meta (date + facilitator
@@ -53,12 +54,27 @@ export default function WorkshopDetail({
   // Roster for the editor (active athletes, Sunset already excluded upstream).
   const rosterSorted = [...roster].sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
+  // P-7 slice 1, the missing attendance gate. This is the SAME predicate as
+  // AthleteProfile.jsx:53, enterpriseStats.js:37 and the server's own check at
+  // attendance.js:161, and both fields ride the roster objects already passed
+  // in (athletes.js:108-109 emits managementMode and claimed on every element).
+  //
+  // Why per-row and not the whole editor: the roster is in hand, so gating a
+  // row costs one branch and keeps the workshop recordable for the athletes
+  // who HAVE delegated. Gating the editor would punish the whole roster for
+  // one athlete's choice. This is wrong on FIRST LOAD with a perfectly fresh
+  // roster, not a staleness bug: before this, the editor was offered for
+  // Self-managed, Pending choice and Unclaimed athletes on every load.
+  const canRecord = (a) => a.claimed === true && a.managementMode === 'delegated';
+  const recordable = rosterSorted.filter(canRecord);
+
   const enterEdit = () => {
     // Seed one draft row per active athlete: existing attendance when present,
     // else attended=false / empty note (Q3 default-false-until-toggled).
     const existing = Object.fromEntries(attendance.map((a) => [a.athleteId, a]));
     const seed = {};
-    for (const a of roster) {
+    // Recordable only: a gated row has no controls, so it has no draft state.
+    for (const a of recordable) {
       const rec = existing[a.id];
       seed[a.id] = { attended: rec ? !!rec.attended : false, note: rec?.note ?? '' };
     }
@@ -78,9 +94,20 @@ export default function WorkshopDetail({
     if (saving) return;
     setSaving(true);
     if (clearWriteError) clearWriteError();
-    // Q3: full-roster batch — one record per active athlete, attended default
-    // false, note only when non-empty.
-    const records = rosterSorted.map((a) => {
+    // Q3 built one record per ACTIVE athlete, attended default false. P-7 slice
+    // 1 narrows that to the RECORDABLE athletes: a gated athlete is OMITTED
+    // from the batch, never submitted as attended:false.
+    //
+    // Omission, not false, because the two mean different things. A staff
+    // member who cannot edit a row has OBSERVED NOTHING about that athlete,
+    // and attended:false asserts an absence nobody recorded. The distinction
+    // is load-bearing at the storage layer: the upsert
+    // (attendance.js:178-188, ON CONFLICT DO UPDATE on the composite key)
+    // PRESERVES an omitted athlete's prior row rather than clearing it, so
+    // omitting is genuinely "no new observation" and not a silent delete.
+    // Anything recorded while they were delegated survives their flip, which
+    // is the same retain-frozen posture as the P-3c R2 ruling.
+    const records = recordable.map((a) => {
       const d = draft[a.id] || { attended: false, note: '' };
       const rec = { athleteId: a.id, attended: !!d.attended };
       const note = (d.note || '').trim();
@@ -117,11 +144,34 @@ export default function WorkshopDetail({
           <SectionLabel>Attendance</SectionLabel>
           {editing ? (
             <>
+              {/* One explanation for the whole list rather than a sentence per
+                  gated row: the per-row line names the STATE, this names the
+                  rule. Says what is true of the account, never why. */}
               <p style={editIntroStyle}>
-                Mark who attended. Unchecked counts as absent; add a note for context.
+                {recordable.length === 0
+                  ? 'No one on this roster has delegated record-keeping, so attendance cannot be recorded here.'
+                  : 'Mark who attended. Unchecked counts as absent; add a note for context. Athletes who have not delegated record-keeping are listed without controls and are left out of what you save.'}
               </p>
               <ul style={listResetStyle}>
                 {rosterSorted.map((a) => {
+                  // Gated rows keep the athlete VISIBLE with the same name and
+                  // sport in the same row shell, and lose only the two controls.
+                  // The RosterTable precedent (OperationsRoster.jsx:152,167):
+                  // remove the affordance, keep the record, so the row reads as
+                  // an athlete who cannot be edited rather than one who is
+                  // missing. accessLabel is the shared four-state resolver, so
+                  // this line and the roster Access column can never disagree.
+                  if (!canRecord(a)) {
+                    return (
+                      <li key={a.id} style={editRowStyle}>
+                        <div style={gatedRowStyle}>
+                          <span style={editNameStyle}>{a.name}</span>
+                          <span style={attendanceMetaStyle}>{a.sport}</span>
+                        </div>
+                        <p style={gatedStateStyle}>{accessLabel(a)}</p>
+                      </li>
+                    );
+                  }
                   const d = draft[a.id] || { attended: false, note: '' };
                   return (
                     <li key={a.id} style={editRowStyle}>
@@ -149,7 +199,11 @@ export default function WorkshopDetail({
               {writeError && <p style={formErrorStyle}>{writeError}</p>}
               <div style={editFooterStyle}>
                 <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>Cancel</Button>
-                <Button variant="primary" size="sm" onClick={handleSave} disabled={saving}>
+                {/* validateRecords (attendance.js:57-59) rejects an empty array
+                    with a 400 the staff member could not act on, and with every
+                    row gated the batch IS empty. Disable rather than let them
+                    reach that; the intro above says why. Endpoint unchanged. */}
+                <Button variant="primary" size="sm" onClick={handleSave} disabled={saving || recordable.length === 0}>
                   {saving ? 'Saving…' : 'Save attendance'}
                 </Button>
               </div>
@@ -319,6 +373,23 @@ const editIntroStyle = {
   lineHeight: 1.6,
   marginTop: 'var(--sh-space-3)',
   marginBottom: 'var(--sh-space-3)',
+};
+
+// Gated-row name line: the same two spans as the editable row's label, minus
+// the checkbox, so the athlete sits at the same measure either way.
+const gatedRowStyle = {
+  display: 'flex',
+  alignItems: 'baseline',
+  gap: 'var(--sh-space-2)',
+};
+
+// --sh-text-secondary, not --sh-text-muted: this is the only thing telling a
+// staff member why a row has no controls, so it is not decoration (QA-021).
+const gatedStateStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-secondary)',
+  letterSpacing: '0.02em',
+  margin: 0,
 };
 
 const editRowStyle = {
