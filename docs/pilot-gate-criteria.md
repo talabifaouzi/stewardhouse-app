@@ -119,6 +119,12 @@ Two auditors must reach the same denominator. These are the unit rules.
 Total exported handlers at HEAD: **35** (`grep -rn "export async function
 onRequest" functions/api/ | wc -l`).
 
+**Re-derived 2026-08-17 at `87f36f0`: still 35, but by coincidence rather than
+by stasis.** P-4 deleted `docs/[id].js` `onRequestPut` and `1c9d69d` added
+`invites/[id].js` `onRequestDelete`, so the total is unchanged while the
+per-surface split moved: Advisor 14 to 13, Operations 2 to 3. A re-score that
+checked only the total would have missed both.
+
 `auth/[[route]].js` and `me.js` are SHARED INFRASTRUCTURE serving all four
 surfaces. They are scored once, separately, and excluded from per-surface
 denominators.
@@ -196,7 +202,7 @@ aggregate SELECT before reporting a production-usable figure.
 |---|---|---|---|
 | 1 | Onboarding (5 routes) completes and persists intake | MET | `Questions.jsx:21` POST `/api/intake` |
 | 2 | Home, plan, give, history, record-keeping live | MET | `GiveScreen.jsx:84`, `GivingModeler.jsx:133,84`, `RecordKeeping.jsx:64` |
-| 3 | No route renders another person's data | MET | `useFixtureIsolated()` called at 5 sites |
+| 3 | No route renders another person's data | MET | `useFixtureIsolated()` called at 10 sites (was 5; `bce9044` added Team's) |
 | 4 | `discover` applies Ruling A's correct response | MET | Defanged `42851cd`; caveat `Discover.jsx:99,107` |
 | 5 | `learn`, `team`, `cohort` honest | MET (Ruling C) | Isolated |
 | 6 | `feedback` persists or is removed | **NOT MET** | No `/api/*` call in `Feedback.jsx` |
@@ -207,16 +213,24 @@ aggregate SELECT before reporting a production-usable figure.
 2, `intake` 1, `scenarios` 2, `scenarios/[id]` 1; all ungated and live in
 production). **Individual = 21/22.**
 
-### Advisor — 14 routes + 14 endpoints = 28 units
+### Advisor — 14 routes + 13 endpoints = 27 units
+
+**This table was STALE from P-4 until the 2026-08-17 re-verification.** Criteria
+4, 5 and 6 read NOT MET while P-4 had fixed all three at `009eac9`, and the
+denominator still counted the `docs/[id]` PUT that P-4 deleted. The table
+contradicted its OWN prose below, which has said since 2026-08-15 that criterion
+5's "MET stands and is not rescored". The re-score log rows were updated at the
+time and this table was not, which is exactly the drift §6's re-score rule
+exists to catch.
 
 | # | Criterion | Status | Evidence |
 |---|---|---|---|
-| 1 | All routes render a real advisor's own practice data | MET | Reads ungated, `me.js:133` |
-| 2 | All write endpoints built and gated as designed | MET (capability, Ruling D) | 13 files reference `requireGatedAdvisor` |
-| 3 | No route offers a control that persists nothing | **NOT MET** | `Pipeline.jsx` (no `/api/pipeline`); `PracticeSettings.jsx:222` Rename has no `onClick` |
-| 4 | Curriculum authoring lands on the created lesson | **NOT MET** | `LessonEditor.jsx:94,120` call `add({…})` without `await` |
-| 5 | Every write surfaces failure in-form | **NOT MET** | `writeError` unread |
-| 6 | No control claims an action it does not perform | **NOT MET** | `LessonDetail.jsx:78` `remove()` un-awaited; `PracticeContentContext.jsx:97-104` returns false |
+| 1 | All routes render a real advisor's own practice data | MET | Reads ungated, `me.js:142` (was cited `:133`, which is now the athlete-mode line) |
+| 2 | All write endpoints built and gated as designed | MET (capability, Ruling D) | 12 files reference `requireGatedAdvisor` (was 13; `docs/[id].js` deleted by P-4) |
+| 3 | No route offers a control that persists nothing | **NOT MET** | `Pipeline.jsx:46-52` `handleSave` sets local state only; no `/api/pipeline` exists. The `PracticeSettings` half of this finding is CLOSED: P-4 removed the dead Rename control |
+| 4 | Curriculum authoring lands on the created lesson | MET | P-4 `009eac9`; `await add()` at all three `LessonEditor` branches |
+| 5 | Every write surfaces failure in-form | MET | P-4; `writeError` read in both `LessonEditor` and `LessonDetail` |
+| 6 | No control claims an action it does not perform | MET | P-4; Discard no longer navigates, and the dead Rename is gone |
 
 **On criterion 5, "every write surfaces failure in-form": it means what it
 says (ruled 2026-08-15, recorded so it is not re-litigated).** P-4 satisfied it
@@ -233,12 +247,20 @@ usefulness is to be measured it needs its OWN criterion with its own test, not
 an unstated qualifier on this one. The underlying defect is real and is filed as
 a named sub-item of P-6 in CLAUDE.md §5.1, where it belongs.
 
-**Routes 10/14.** Out: `pipeline` (no `/api/pipeline` exists), `settings`
-(`PracticeSettings.jsx:222` Rename has no `onClick`), the collapsed LessonEditor
-unit (`add()` un-awaited), and `curriculum/:lessonId` (`LessonDetail.jsx:78`
-`remove()` un-awaited against a modal that promises removal).
+**Routes 13/14.** Out: `pipeline` ALONE. P-4 closed the other three (`settings`,
+the collapsed LessonEditor unit, and `curriculum/:lessonId`).
 
-Two readings were considered and REJECTED, recorded so they are not re-litigated:
+**The P-4 row in §6 says routes went 10/14 to 14/14. That was one unit too
+generous and is corrected here, not there.** P-4 deliberately excluded Pipeline,
+which CLAUDE.md's P-4 entry states plainly ("Pipeline deliberately excluded and
+still its own slice"), so the correct figure was 13/14. Verified against the tree
+2026-08-17: `Pipeline.jsx:46-52` `handleSave` writes React state and nothing
+else, and `functions/api/pipeline.js` does not exist. The historical row is left
+as written because the log records what was reported at the time; this line is
+where the correction lives.
+
+Two readings were considered and REJECTED, recorded so they are not re-litigated.
+**Both are now HISTORICAL: P-4 fixed `settings`, so neither reading is live.**
 
 - **Also failing `curriculum`, the library route.** Rejected: it renders
   correctly and reads live practice content. Its only fault is hosting entry
@@ -251,13 +273,16 @@ Two readings were considered and REJECTED, recorded so they are not re-litigated
   between auditors, which is the failure mode the counting method exists to
   prevent.
 
-**Endpoints 14/14** (`docs/[id]` PUT scores MET per §2.3). **Advisor = 24/28.**
+**Endpoints 13/13** (`docs/[id]` PUT was deleted by P-4, so it no longer scores
+at all; §2.3's note predicted exactly this). **Advisor = 26/27.**
 
-### Enterprise — 11 routes + 10 endpoints = 21 units
+### Enterprise — 10 routes + 10 endpoints = 20 units
 
-Routes: `index`, `roster`, `compliance`, `program`, `setup`, plus the six
+Routes: `index`, `roster`, `compliance`, `program`, plus the six
 `EnterpriseReports` destinations (`index`, `summary`, `cohort`, `readiness`,
-`program-outputs`, `endowment`).
+`program-outputs`, `endowment`). **`setup` is GONE (P-5) and the header figure
+above was stale at 11 routes / 21 units until 2026-08-17**, while the totals
+below already read 10/10 and 20/20.
 
 | # | Criterion | Status | Evidence |
 |---|---|---|---|
@@ -271,39 +296,58 @@ Routes: `index`, `roster`, `compliance`, `program`, `setup`, plus the six
 **Endpoints 10/10.** **Enterprise = 20/20**, with criterion 1 unauditable and
 provisionally scored MET.
 
-### Operations/Admin — 10 routes + 2 endpoints = 12 units
+### Operations/Admin — 10 routes + 3 endpoints = 13 units
+
+**The endpoint count rose from 2 to 3**, not by a scoring change but because
+`DELETE /api/invites/:id` shipped at `1c9d69d`. The three are `roster.js`
+`onRequestGet`, `invites.js` `onRequestPost`, and `invites/[id].js`
+`onRequestDelete`.
 
 | # | Criterion | Status | Evidence |
 |---|---|---|---|
-| 1 | Accounts/roster live, invites send | MET | `roster.js`, `invites.js`; `$.ops.demo_gate = 1` |
+| 1 | Accounts/roster live, invites send | MET | `roster.js`, `invites.js`; `$.ops.demo_gate = 1` as recorded 2026-07-16, NOT re-verified |
 | 2 | Every directory/detail route reads live data or carries a caveat | MET | All 8 caveated at `f26c77a`, verified by render (§2.4 test) |
-| 3 | `/api/me` emits an `ops` block so `userRole` is real | **NOT MET** | `OperationsSurface.jsx:219` hardcodes null |
-| 4 | A gated ops user cannot silently mint another ops account | **NOT MET** | `CreateInviteModal.jsx` four-type select |
-| 5 | Invite failure recoverable | **NOT MET** | `invites.js:9-10` |
-| 6 | No invite copy contradicts what the endpoint does | **NOT MET** | `CreateInviteModal.jsx:102` "No email is sent" vs `invites.js` which sends |
+| 3 | `/api/me` emits an `ops` block so `userRole` is real | **NOT MET** | `OperationsSurface.jsx:219` hardcodes null; a case-insensitive grep for `ops` in `me.js` returns only `workshops` |
+| 4 | A gated ops user cannot silently mint another ops account | MET | `537cc08`; `invites.js` refuses type `ops` with 403, `ALLOWED_TYPES` and `SOURCE_SURFACE_FOR_TYPE` both drop it, select reduced to three options. Smoked 2026-08-17, 16 of 16 assertions |
+| 5 | Invite failure recoverable | **NOT MET** | Withdraw shipped (`1c9d69d`, `cd2f41b`) but there is still no resend and no edit; see below |
+| 6 | No invite copy contradicts what the endpoint does | MET | `5fa42c9`; the caution now says an email is sent and names delivery as reported after creation |
 
-**Routes 10/10.** **Endpoints 2/2.** **Operations = 12/12.**
+**Routes 10/10.** **Endpoints 3/3.** **Operations = 13/13.**
 
-**Why the route figure reads 10/10 while criteria 4, 5 and 6 are still NOT MET,
-and the ruling that settles it.** Those three are defects on the Accounts route,
-which criterion 1 scores and which the instrument has counted MET in every row
-of the log. They do not add or remove route units, so they do not move the
-figure. **§2.5 read strictly is CORRECT**: a filed HONESTY defect blocks, and
-criterion 6 is an honesty defect on that route, since the invite copy says no
-email is sent and one is sent.
+**Criterion 5 stays NOT MET, and the reason is worth stating precisely because
+two thirds of the finding did close.** `DELETE /api/invites/:id` (`1c9d69d`) and
+the Accounts-view affordance (`cd2f41b`) gave the operator a revoke path, so the
+original filing's "no resend / edit / revoke path" is stale in its revoke third.
+Resend and edit still do not exist. **Withdraw-and-recreate is NOT a resend**: it
+deletes the row and mints a new one with a new id and a new `created_at`, rather
+than retrying delivery against the existing invite. So the criterion's actual
+subject, a failed send being recoverable, is untouched. `invites.js:143-145`
+documents the no-retry posture and the catch at `:162-164` swallows the failure,
+leaving `emailSent:false` as the only trace. The filing's old citation
+`invites.js:9-10` no longer points at that text and has been replaced above.
 
-**RULED 2026-08-17: Accounts stays MET for the `f26c77a` row.** Flipping a unit
-that scored MET in three prior rows, with criterion 6 already failing in every
-one of them, would be RE-ADJUDICATION rather than correction, and a re-score
-records what CHANGED. Criterion 6 did not change at `f26c77a`.
+**Why the route figure reads 10/10 while criterion 5 is still NOT MET.** It is a
+defect on the Accounts route, which criterion 1 scores and which the instrument
+has counted MET in every row of the log. It does not add or remove a route unit.
+Under §2.5 it does not block either: a missing resend leaves the route usable and
+does not make it dishonest, since nothing in the UI claims a failed send can be
+retried. Criteria 4 and 6, which DID bear on this, are now MET.
 
-**Accounts flips to NOT MET at the NEXT re-score if the `CreateInviteModal`
-contradiction is still live then.** That makes the outcome contingent on the FIX
-rather than on an interpretation, which is the point of ruling it now instead of
-leaving it open for a future auditor to reopen. The figures it would produce:
-Routes 9/10, Operations 11/12, capability 79/81, production-usable 52/81. Fixing
-the copy before the next re-score keeps Accounts MET and costs nothing; leaving
-it costs one unit.
+**THE CONTINGENT RULING OF 2026-08-17 IS RESOLVED, AND IT DID NOT FIRE.** The
+ruling was: Accounts stays MET for the `f26c77a` row, and flips to NOT MET at the
+next re-score **if the `CreateInviteModal` contradiction is still live then**.
+That was deliberately keyed to the FIX rather than to an interpretation. At this
+re-score the condition is FALSE. `5fa42c9` corrected the caution copy, so the
+§2.5 honesty defect that would have flipped the unit no longer exists: the
+pre-submit caution now says a notification email is sent and that delivery is
+reported once the invite is created, which agrees with both post-submit notices
+including the failure variant. A repo-wide grep finds no remaining string
+claiming no email is sent.
+
+**So Accounts stays MET, by the ruling operating as designed rather than by it
+being set aside.** The figures the flip would have produced (Routes 9/10,
+Operations 11/12) are not reached. This is the outcome the contingent form was
+written to make possible: a fix, not an argument, decided it.
 
 ### Shared infrastructure — 2 endpoints
 
@@ -315,6 +359,10 @@ denominators.
 ## 4. The figures
 
 ### Capability (the gate figure)
+
+**These are the `e13ea0c` figures from the first scoring and are NOT current.**
+§4 is a snapshot of 2026-08-14, kept because the decomposition below explains the
+method. **The current figures live in the §6 re-score log**, newest row last.
 
 ```
 Individual     21 / 22
@@ -420,6 +468,29 @@ this document.
 | 2026-08-14 | P-4 | 71/82 = 87% | 44/82 = 54% | P-4. Advisor routes 10/14 → 14/14, endpoints 14/14 → 13/13. Denominator 83 → 82. Gate values still as recorded 2026-07-16, NOT re-verified. |
 | 2026-08-15 | P-5 | 71/81 = 88% | 44/81 = 54% | P-5. Enterprise routes 11 → 10; the `setup` unit was removed, not fixed. Denominator 82 → 81. Gate values still as recorded 2026-07-16, NOT re-verified. |
 | 2026-08-17 | `f26c77a` | 80/81 = 99% | 53/81 = 65% | The caveat slice, plus the nine-versus-eight correction. Operations routes 1/10 → 10/10 and Operations 3/12 → 12/12. Eight units from `f26c77a` (a §2.4 caveat on every directory and detail route, and three "Every X on the platform" claims removed); one unit from FT's ruling that the Overview index route was always MET and Ruling B had miscounted. Denominator unchanged at 81. Gate values still as recorded 2026-07-16, NOT re-verified. Accounts scored MET per the §3 ruling of 2026-08-17: it stays MET here because criterion 6 did not change at `f26c77a`, and it flips to NOT MET at the next re-score if the `CreateInviteModal` contradiction is still live then, which would give 79/81 and 52/81. |
+| 2026-08-17 | `87f36f0` | 80/82 = 98% | 57/82 = 70% | **Full re-verification of every §3 status against the tree**, as the re-score rule requires, not only the two Operations closures that prompted it. Denominator 81 → 82: `DELETE /api/invites/:id` (`1c9d69d`) is a THIRD Operations endpoint, so Operations 12/12 → 13/13. Advisor 27 → 26, a CORRECTION rather than a regression: `pipeline` was never met and the P-4 row overstated its routes as 14/14. Criteria 4 (`537cc08`) and 6 (`5fa42c9`) closed and moved NO unit directly; what they did was resolve the contingent Accounts ruling in the MET direction. §3's Advisor and Enterprise headers were stale and are corrected here. Gate values still as recorded 2026-07-16, NOT re-verified, and no longer verifiable by the agent (CLAUDE.md §6.15). |
+
+**The `87f36f0` row is mostly a CORRECTION row, and the flat numerator hides
+that.** Capability reads 80 before and 80 after, which looks like nothing
+happened. Two opposite movements cancelled: Advisor lost one unit that was never
+earned (`pipeline`), and Operations gained one that was (the third endpoint).
+Read the components, never the total, on this row.
+
+**What the two closures actually bought, since neither moved a unit.** Criterion
+4 (`537cc08`, the ops-minting guard) and criterion 6 (`5fa42c9`, the invite
+caution) are both defects on the Accounts route, which was already scored MET, so
+closing them adds nothing to the numerator. Their effect was to make the
+contingent Accounts ruling resolve in the MET direction instead of costing a
+unit. **A fix that prevents a loss is worth exactly as much as one that produces
+a gain, and this instrument shows it as zero.** That is a limitation of
+unit-counting worth knowing when reading any row.
+
+**Production-usable moved 53 to 57, and THREE of those four units are a
+correction, not new reach.** Advisor goes 10 to 13 because P-4's route repairs
+were production-visible from the day they shipped, since advisor reads are
+ungated, and the P-4 row's note that "nothing became usable" was wrong about
+that. Only the fourth unit, the new Operations endpoint, is new. The two zero
+gates on advisor and enterprise still account for the whole remaining spread.
 
 **The `f26c77a` row is the FIRST in this log where the numerator moved because
 code was written.** Every prior row moved for a method change, a denominator
