@@ -55,6 +55,15 @@ Revenue includes program fees and investment income. Conflating revenue with
 budget is a known vendor error in this space and is the error this naming rule
 exists to prevent.
 
+**MEASURED 2026-08-18, and the BMF cannot carry this facet.** `REVENUE_AMT` is
+blank on 569,235 of 1,957,340 rows and filed as exactly zero on 825,946 more,
+so **71% of the national file has no usable figure**. The five bands do not
+divide the remainder either: of the 1,388,105 that filed something, 84.2% fall
+in "under 350K" and 59.5% filed exactly zero. **The financial facts moved to the
+990 XML**, which is why FT reversed ruling 7 the same day. See the financial
+section below and `propublica-spike-findings.md` ruling 7. This band definition
+and its naming rule stand; what changed is the source it reads.
+
 ### 3. Recognition era
 
 Source: BMF `RULING` (`:391`). **Labeled recognition, never age.**
@@ -80,6 +89,61 @@ character in 4-character codes as undetermined (`:659-660`).
 Deferred until the verbatim label source is identified. Two shape facts to carry
 forward: 18% of a 500-record sample had no NTEE code at all (`:680`), and NTEE
 assigns exactly one code per org (`:707`).
+
+## Financial fields, from the 990 XML
+
+FT-ruled 2026-08-18, after the route was measured. Four rulings. The
+measurements behind them are in `propublica-spike-findings.md` ruling 7.
+
+### 1. Mission uses MissionDesc
+
+**`MissionDesc`, not `ActivityOrMissionDesc`.** This is a DECISION rather than
+a detail: both are present on 7,155 of 7,180 full 990s and **they disagree on
+2,325 of them, 32.5%**. `MissionDesc` is the organization's own statement of
+purpose in the standard field. Recorded so the other one is not picked later by
+someone who finds it first and has no way to know a choice was made.
+
+### 2. Which year: most recent TAX year
+
+**Most recent TAX year per EIN, never most recent submission.** Batches are
+organized by submission date, not tax year, so one batch already spans four tax
+years (2022 through 2025) and 501 of 11,738 EINs in it appear more than once,
+up to four times. **The card names the tax year**, not when the filing arrived.
+A funder reading a figure needs to know which year it describes; the submission
+date describes our pipeline, not the organization.
+
+### 3. Element stability across years is UNMEASURED
+
+**A known unknown, deferred rather than answered.** Documents carry a
+`returnVersion` attribute and the measurement covered ONE batch of ONE year.
+Whether the element names hold across 2022 to 2026 is **not established**. v1
+loads one year, so the question does not bite yet. **It bites on any multi-year
+ingest**, which is exactly where a silent mapping failure would produce missing
+figures rather than an error.
+
+### 4. The sparse card is not a deficient card
+
+**Roughly half of organizations file a 990-N and produce no XML at all**:
+975,549 of the 1,957,340 in the BMF, 49.8%, with 829,302 filing one in 2023 or
+later.
+
+**Their card must NOT render empty financial fields or dashes.** It states what
+the filing type MEANS: this organization files a 990-N postcard, gross receipts
+under $50,000, and the IRS collects no financial detail at that size. **That is
+a complete card about a small organization, not an incomplete card about an
+unknown one.**
+
+**The reasoning, which is the same one this project has spent its slices
+applying.** Filling the gap would make StewardHouse assert what the federal
+record does not contain. Dashes and empty fields imply a missing value where
+there is no value to miss, which is the defect pattern behind the Discover
+removal, the feedback removal and the gift-counter honesty work.
+
+**The surface-level consequence.** The asymmetry between the two card shapes is
+only a problem if a funder meets both without explanation. **So the surface says
+up front that roughly half of US nonprofits file a postcard rather than a full
+return.** Said once, at the top, it makes the sparse card legible as a fact
+about small organizations rather than as a failure of the product.
 
 ## Results
 

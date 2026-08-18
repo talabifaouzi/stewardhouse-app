@@ -375,6 +375,24 @@ It states 1,957,340 records posted Aug 11 2026 but **states no recurring
 cadence** in the fetched content. A search result asserted "monthly, on the 2nd
 Tuesday of the month"; that is **UNVERIFIED** against the primary page.
 
+**THE SIX FILES ARE NOT SIX REGIONS, and taking the naming at face value
+double-loads 4,906 organizations** (measured 2026-08-18, all six downloaded
+and intersected). `eo4.csv` is EXACTLY `eo_xx` plus `eo_pr`: 2,391 + 2,515 =
+4,906 EINs, every one of them present in one of those two files, ZERO unique
+to `eo4`, and none overlapping `eo1`/`eo2`/`eo3`.
+
+**So the load takes `{eo1, eo2, eo3, eo4}` OR `{eo1, eo2, eo3, eo_xx,
+eo_pr}`, never all six.** Both unions come to **1,957,340**, which matches the
+IRS stated count on the page above exactly. Loading all six yields 1,962,246
+rows and 4,906 EINs repeated twice.
+
+**EIN is unique nationally and can serve as the primary key.** Across the
+correct file set: 1,957,340 rows, 1,957,340 distinct EINs, zero duplicates,
+zero malformed rows, and all five headers matching the 28 columns exactly.
+**Re-assert uniqueness on every load rather than assuming it**; this is one
+snapshot. Note also that the group-ruling collision recorded elsewhere in this
+doc is about shared NAMES, not shared EINs, and the two are now measured apart.
+
 **Which file serves the status gate.** Both, and they answer different
 questions. The **BMF** answers "is this organization currently recognized",
 by presence or absence, and it carries `DEDUCTIBILITY` and `STATUS` columns.
@@ -808,6 +826,100 @@ not depend on ruling 5. The four Discover facets read BMF `CITY`, `STATE`,
 Any line describing the ingest as waiting on a terms question was wrong when
 written, not merely stale now. What ruling 5 gated was a persisted copy of
 PROPUBLICA data specifically, which is a narrower thing than the ingest.
+
+**RULING 7 IS REVERSED, FT 2026-08-18. The bulk XML route is IN.** This is
+recorded as a REVERSAL rather than as a scoping update, because the original
+ruling deferred the route and this undoes that.
+
+**What changed is not the terms answer; it is that the BMF revenue facet died
+on measurement.** The national file was measured 2026-08-18: `REVENUE_AMT` is
+blank on 569,235 rows and filed as exactly zero on 825,946 more, so **71% of
+1,957,340 organizations carry no usable revenue figure**. BMF supplies
+geography, recognition era, name and city, and nothing financial. Every
+financial fact the surface wants lives in the XML, which is why a route that
+was optional in July is load-bearing now.
+
+**RETRIEVAL, re-confirmed 2026-08-18.** Both per-filing routes are still
+closed: the S3 object 404s and ProPublica's download-xml 403s. **Bulk is the
+only route.** `index_2026.csv` returns 200 at 42,987,660 B and
+`2026_TEOS_XML_01A.zip` returns 200 at 71,497,607 B, both byte-identical to
+the July measurement. **Newest year available is 2026; `index_2027.csv` is
+404.** Index sizes by year: 2022 72,228,246 B, 2023 77,519,435 B, 2024
+91,056,866 B, 2026 42,987,660 B. 2025 returns 200 but the server would not
+give a length to HEAD or to a range request, so it is NOT measured rather than
+estimated.
+
+**THE SPIKE UNDERSOLD THE ROUTE, and this is the correction that matters
+most.** It measured mission and `FormationYr` on 990-EZ and 990-PF, found zero
+for both, and concluded the small tier supplies nothing. That conclusion was
+right about those two fields and **it never measured financials.** Measured
+across 12,245 real documents in one batch:
+
+| Field | 990 (n=7,180) | 990-EZ (n=3,687) | 990-PF (n=1,057) |
+|---|---|---|---|
+| Total expenses | 100% | **98.1%** | **100%** |
+| Contributions received | 100% | **83.0%** | 45.3% |
+| Grants made | 100% | 43.5% | **100%** |
+| `FormationYr` | 93.0% | **0%** | **0%** |
+| Mission text | 100% | **0%** | **0%** |
+
+990-T (n=321) supplies none of them. **So the FINANCIAL card populates for the
+great majority of everything that files an XML at all**, while mission and
+founding year remain full-990 only.
+
+**THE SPIKE UNDERSTATED THE SIZE.** A complete year is **15 batch zips
+totalling 4,131,545,759 B = 3.94 GB compressed**, roughly **708,000
+documents**. Batches range from 56,507,372 B to 521,158,638 B, so **the 71 MB
+batch sampled in July is among the smallest of fifteen** and reading it as
+typical understates a year by roughly ten times.
+
+**Measured cost for one year:** download about 9 minutes, unzip about 50
+minutes, parse about 14 minutes, **about 73 minutes total and DOMINATED BY
+UNZIP**, which is the part no parsing improvement touches. Transient
+uncompressed working set about 20 GB, never needed all at once if batches are
+processed one at a time. Per-document figures from that batch: 12,245
+documents, 371,552,883 B uncompressed, mean 30,343 B, parse **1.157 ms per
+document** at 864 documents per second.
+
+**THE COVERAGE SKEW IS THE DECISIVE NUMBER.** The 990-N e-Postcard file holds
+1,541,624 EINs, one row per organization. Intersected with the current BMF:
+**975,549 organizations in the file have filed a 990-N, which is 49.8% of all
+1,957,340**, and 829,302 of them filed one in 2023 or later. **No XML exists
+for them at any level.** Form type is the size proxy, so the fields are richest
+exactly where organizations are largest and absent exactly where they are
+smallest.
+
+**Both sources fail the SAME tier**, which is the thing to carry forward: BMF
+revenue is blank or zero on 71%, and XML does not exist for 50%. The XML route
+does not rescue the population the revenue facet lost; it populates a card for
+the larger half.
+
+**THREE FIELD MAPPINGS, because element names differ completely across form
+types with no shared vocabulary.** Discovered by vocabulary scan, not assumed:
+
+| Field | 990 | 990-EZ | 990-PF |
+|---|---|---|---|
+| Contributions received | `CYContributionsGrantsAmt` | `ContributionsGiftsGrantsEtcAmt` | sparse, no single reliable element |
+| Total expenses | `CYTotalExpensesAmt` | `TotalExpensesAmt` | `TotalExpensesRevAndExpnssAmt` |
+| Grants made | `CYGrantsAndSimilarPaidAmt` | `GrantsAndSimilarAmountsPaidAmt` | `ContriPaidRevAndExpnssAmt` |
+| Founding year | `FormationYr` | absent | absent |
+
+**The mission ambiguity this doc left open is now measured, and the financial
+fields do NOT share it.** Of 7,180 full 990s, 7,155 carry BOTH
+`ActivityOrMissionDesc` and `MissionDesc`, and **2,325 of those differ, 32.5%**.
+Each financial field resolves to a single element per form type. The surface
+ruling on which mission field to use is in `docs/discover-surface-spec.md`.
+
+**Joining to a BMF row is EIN, and it is clean.** Present on 100% of the
+12,245 documents, 100% nine characters, matching the BMF zero-padded format,
+no normalization needed.
+
+**One caveat on every per-document and coverage figure above:** they come from
+ONE batch of ONE year, chosen because it is the batch July sampled. It is also
+among the smallest of fifteen, and the 58.6 / 30.1 / 8.6 / 2.6 type mix is not
+established across the year. The transfer, batch-count and 990-N figures are
+enumerated and solid; the per-document ones rest on 12,245 real documents from
+a single sample.
 
 **8. D1 org seed defanged fields.** Clean, as its own slice, scheduled after
 P-6.
