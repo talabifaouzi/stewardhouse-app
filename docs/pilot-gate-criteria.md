@@ -186,11 +186,27 @@ or unusable.**
 
 ### 2.6 Gate values
 
-Gate values used below are **as recorded 2026-07-16** in CLAUDE.md §5.1:
-`$.advisor.demo_gate = 0` on all advisor rows, `$.enterprise.demo_gate = 0` on
-all staff rows, `$.ops.demo_gate = 1` on one ops row. **Remote D1 was NOT
-queried for this scoring.** Any re-score MUST re-verify them with a read-only
-aggregate SELECT before reporting a production-usable figure.
+Gate values were **verified against remote D1 on 2026-08-17** by FT, with a
+read-only aggregate SELECT over `person`, soft-deleted rows excluded. FT ran it
+rather than the agent because every `--remote` command is FT-only per CLAUDE.md
+§6.15. All three claims this scoring rests on hold: no advisor row and no staff
+row carries a gate, and `$.ops.demo_gate = 1` on exactly one of the two ops
+rows, which is what the FT-exclusivity premise assumes and is now verified
+rather than asserted. Any re-score MUST re-verify them the same way before
+reporting a production-usable figure.
+
+**Correction from that same read: the advisor and enterprise gates are NULL,
+never set, not `0`.** This document and CLAUDE.md §5.1 both recorded `0`.
+**The behaviour is UNCHANGED and this is not a defect:** all three gate checks
+are strict (`gate.js:84`, `:118`, `:188` each test `gateRow.gate !== 1`), so a
+NULL and a `0` fail identically and every advisor and enterprise write returns
+403 either way. What was wrong was only the claim that a value had been set.
+`0` asserts a deliberate designation-to-off the database does not evidence;
+never-set is what is true. Historical entries in the §6 log and the commentary
+under them, and the §4 snapshot, keep `0` as reported at the time (the live
+instance is at §6, under the 2026-08-14 P-4 row), per this document's
+convention that a log records what was reported rather than what was later
+learned; this paragraph is where the correction lives.
 
 ---
 
@@ -305,7 +321,7 @@ provisionally scored MET.
 
 | # | Criterion | Status | Evidence |
 |---|---|---|---|
-| 1 | Accounts/roster live, invites send | MET | `roster.js`, `invites.js`; `$.ops.demo_gate = 1` as recorded 2026-07-16, NOT re-verified |
+| 1 | Accounts/roster live, invites send | MET | `roster.js`, `invites.js`; `$.ops.demo_gate = 1` verified against remote D1 2026-08-17 |
 | 2 | Every directory/detail route reads live data or carries a caveat | MET | All 8 caveated at `f26c77a`, verified by render (§2.4 test) |
 | 3 | `/api/me` emits an `ops` block so `userRole` is real | **NOT MET** | `OperationsSurface.jsx:219` hardcodes null; a case-insensitive grep for `ops` in `me.js` returns only `workshops` |
 | 4 | A gated ops user cannot silently mint another ops account | MET | `537cc08`; `invites.js` refuses type `ops` with 403, `ALLOWED_TYPES` and `SOURCE_SURFACE_FOR_TYPE` both drop it, select reduced to three options. Smoked 2026-08-17, 16 of 16 assertions |
@@ -468,7 +484,7 @@ this document.
 | 2026-08-14 | P-4 | 71/82 = 87% | 44/82 = 54% | P-4. Advisor routes 10/14 → 14/14, endpoints 14/14 → 13/13. Denominator 83 → 82. Gate values still as recorded 2026-07-16, NOT re-verified. |
 | 2026-08-15 | P-5 | 71/81 = 88% | 44/81 = 54% | P-5. Enterprise routes 11 → 10; the `setup` unit was removed, not fixed. Denominator 82 → 81. Gate values still as recorded 2026-07-16, NOT re-verified. |
 | 2026-08-17 | `f26c77a` | 80/81 = 99% | 53/81 = 65% | The caveat slice, plus the nine-versus-eight correction. Operations routes 1/10 → 10/10 and Operations 3/12 → 12/12. Eight units from `f26c77a` (a §2.4 caveat on every directory and detail route, and three "Every X on the platform" claims removed); one unit from FT's ruling that the Overview index route was always MET and Ruling B had miscounted. Denominator unchanged at 81. Gate values still as recorded 2026-07-16, NOT re-verified. Accounts scored MET per the §3 ruling of 2026-08-17: it stays MET here because criterion 6 did not change at `f26c77a`, and it flips to NOT MET at the next re-score if the `CreateInviteModal` contradiction is still live then, which would give 79/81 and 52/81. |
-| 2026-08-17 | `87f36f0` | 80/82 = 98% | 57/82 = 70% | **Full re-verification of every §3 status against the tree**, as the re-score rule requires, not only the two Operations closures that prompted it. Denominator 81 → 82: `DELETE /api/invites/:id` (`1c9d69d`) is a THIRD Operations endpoint, so Operations 12/12 → 13/13. Advisor 27 → 26, a CORRECTION rather than a regression: `pipeline` was never met and the P-4 row overstated its routes as 14/14. Criteria 4 (`537cc08`) and 6 (`5fa42c9`) closed and moved NO unit directly; what they did was resolve the contingent Accounts ruling in the MET direction. §3's Advisor and Enterprise headers were stale and are corrected here. Gate values still as recorded 2026-07-16, NOT re-verified, and no longer verifiable by the agent (CLAUDE.md §6.15). |
+| 2026-08-17 | `87f36f0` | 80/82 = 98% | 57/82 = 70% | **Full re-verification of every §3 status against the tree**, as the re-score rule requires, not only the two Operations closures that prompted it. Denominator 81 → 82: `DELETE /api/invites/:id` (`1c9d69d`) is a THIRD Operations endpoint, so Operations 12/12 → 13/13. Advisor 27 → 26, a CORRECTION rather than a regression: `pipeline` was never met and the P-4 row overstated its routes as 14/14. Criteria 4 (`537cc08`) and 6 (`5fa42c9`) closed and moved NO unit directly; what they did was resolve the contingent Accounts ruling in the MET direction. §3's Advisor and Enterprise headers were stale and are corrected here. Gate values VERIFIED against remote D1 2026-08-17 by FT, read-only aggregate, soft-deleted excluded (agent-run `--remote` is barred by CLAUDE.md §6.15), so 57/82 stands on current evidence rather than on figures carried from 2026-07-16. All three claims hold. The advisor and enterprise gates read NULL rather than the `0` recorded until now, which changes no behaviour because every gate check is a strict `!== 1`; see §2.6. |
 
 **The `87f36f0` row is mostly a CORRECTION row, and the flat numerator hides
 that.** Capability reads 80 before and 80 after, which looks like nothing
