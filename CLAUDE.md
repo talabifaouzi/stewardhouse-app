@@ -925,6 +925,33 @@ action. The other four onboarding screens are clear at the same height (letter
 587, privacy 535, questions 401, reveal 517). Short-viewport layout defect on
 `Positioning.jsx`; its own slice.
 
+**Filed: line breaks intermittently missing on the enterprise/program
+calendar. BANKED FOR A FULL-PLATFORM QA PASS, not recorded as a live
+defect.** Observed 2026-08-17 on localhost only, so it may be a local
+rendering artifact rather than anything in the tree. This entry deliberately
+does not claim otherwise, and no investigation was run: it is a filing, by
+ruling, not a diagnosis.
+
+**What is NOT known, said plainly so a later reader does not inherit this as
+established.** Whether it reproduces at all. Whether it appears in a deployed
+build or only under the dev server. What conditions trigger it. It was seen,
+not reproduced, not diagnosed, and no pattern was established, so there is no
+frequency, no trigger, and no affected-view list to hand on.
+
+**Starting point for the QA pass, verified against the tree.** The component
+is `src/components/WorkshopCalendar.jsx:33`, and enterprise/program mounts it
+at TWO call sites in the same ternary: `EnterpriseProgram.jsx:136` (the
+authenticated branch, workshops present) and `:142` (the demo branch). That
+split matters for whoever picks this up, because which branch the observation
+came from is itself unknown, and the two render the same component from
+different data. Establish reproduction before reading either file.
+
+**Siblings already filed for that pass, so it is not scheduled alone:** the
+`/individual/welcome` short-viewport CTA immediately above, the two raw
+persistence predicates, and the advisor stage-label rename blocked on the Q7
+allowlist. All four are observation-grade items waiting on a pass rather than
+on a decision.
+
 **CLOSED 2026-08-17: the four Operations directory rows are NOT a keyboard
 defect.** The item filed during the withdraw slice (`onClick` on `role="row"`
 with zero `tabIndex` and zero `onKeyDown`, so rows read as unreachable by
