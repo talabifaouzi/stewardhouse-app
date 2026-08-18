@@ -921,5 +921,60 @@ established across the year. The transfer, batch-count and 990-N figures are
 enumerated and solid; the per-document ones rest on 12,245 real documents from
 a single sample.
 
+**THAT CAVEAT WAS WARRANTED, and the mix has since been measured across three
+batches (2026-08-18). IT DOES NOT HOLD.** 01A (71 MB), 03A (259 MB) and 05A
+(521 MB) were chosen to span the compressed size range, giving **144,888
+documents, 11.8x the single-batch sample**:
+
+| Batch | docs | 990 | 990-EZ | 990-PF | 990-T |
+|---|---|---|---|---|---|
+| 01A | 12,245 | 58.6% | 30.1% | **8.6%** | 2.6% |
+| 03A | 48,471 | 46.2% | 36.9% | 14.5% | 2.4% |
+| 05A | 84,172 | 43.1% | 28.6% | **25.0%** | 3.2% |
+| **Combined** | **144,888** | **45.5%** | **31.5%** | **20.1%** | **2.9%** |
+
+**990-PF nearly TRIPLES across batches and full-990 falls 15 points.** So
+**every ALL-FILERS figure from the single-batch pass is invalidated**, because
+each was weighted by a mix that does not generalize. Read the per-type rows in
+the coverage table above, not its aggregate.
+
+**What was and was NOT re-measured, so this is not read as broader than it is.**
+Re-measured across three batches: the type mix, total-expenses and
+contributions values, band distributions and concentration. **NOT re-measured:
+the field-coverage percentages in the table above** (100 / 98.1 / 100 and so
+on). Those remain single-batch. They are per-TYPE rather than all-filers, so
+the mix finding does not invalidate them, but it does not confirm them either.
+
+**Percentiles, combined across the three batches.** Total expenses, all filers
+(n=139,310): p10 9K, p25 43K, p50 **126K**, p75 514K, p90 2.89M, p95 8.84M,
+p99 64.56M. Contributions received (n=115,943): p10 0, p25 5K, p50 **60K**,
+p75 274K, p90 1.49M, p95 4.24M, p99 25.20M.
+
+**The middle is stable and the tail is not.** The all-filers expenses median
+ran 202K / 117K / 123K across batches, so **the single-batch median was 60%
+high**. p99 ran 39.85M / 38.30M / 93.20M, and for full 990s 58.98M / 71.26M /
+236.38M, a four-fold spread driven by which very large organizations happened
+to be sampled. The band ruling in `docs/discover-surface-spec.md` keeps every
+boundary at or below p90 for exactly this reason.
+
+**THE 05A ZIP IS MALFORMED, and an automated load would mishandle it.** The
+`2026_TEOS_XML_05A.zip` central directory reports **76 extra bytes**. `unzip`
+warns, compensates, **extracts all 84,172 members correctly, and then EXITS 3**.
+A load treating a non-zero exit as failure would discard a complete batch.
+**Check the extracted member count against the zip directory rather than
+trusting the exit code.** One of three batches sampled had this defect, so it
+is not a rarity to design around later.
+
+**WHAT THREE BATCHES STILL DO NOT ESTABLISH.** Twelve of the fifteen 2026
+batches are unmeasured, including 05B at 513 MB. 2022 through 2025 are
+unmeasured entirely. Whether the mix STABILIZES is unknown: it moved
+substantially across all three and three points cannot show convergence. WHY it
+moves is untested; batches are submission-ordered so filing deadlines by fiscal
+year end are the plausible driver, and that is inference. The tail above p90
+rests on sampling. The 990-PF contributions cell is still the thinnest at
+12,371 records with 45.3% field coverage and **remains unusable as a facet**.
+And nothing here reaches the 990-N half of the sector, which no amount of batch
+sampling can, because those organizations file no XML at all.
+
 **8. D1 org seed defanged fields.** Clean, as its own slice, scheduled after
 P-6.

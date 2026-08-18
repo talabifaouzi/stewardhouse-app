@@ -35,12 +35,41 @@ back to them and is reversible in one click. The distinction from a
 StewardHouse-chosen default is the visibility and the reversibility together:
 a prefill the funder cannot see or cannot clear would be us deciding.
 
-### 2. Revenue band
+### 2. Total expenses band
 
-Source: BMF `REVENUE_AMT` (`:393`).
+Source: the 990 XML, which carries a DIFFERENT element per form type:
+`CYTotalExpensesAmt` (990), `TotalExpensesAmt` (990-EZ),
+`TotalExpensesRevAndExpnssAmt` (990-PF). See the three field mappings in
+`propublica-spike-findings.md` ruling 7. NOT BMF `REVENUE_AMT`, which this
+facet read until 2026-08-18 and which the measurement below retired.
 
-Five bands: under 350K, 350K to 1M, 1M to 5M, 5M to 10M, 10M+. Each carries
-descriptive copy.
+**SUPERSEDED 2026-08-18. The bands are now on TOTAL EXPENSES: under 50K, 50K
+to 200K, 200K to 1M, 1M to 10M, 10M+.** FT deferred the boundaries to Claude
+pending measurement; this is that ruling. The superseded set is kept below
+because the reasoning attached to it still applies, and because a reader who
+meets the old boundaries elsewhere needs to know they were replaced rather
+than mistyped.
+
+The superseded five: under 350K, 350K to 1M, 1M to 5M, 5M to 10M, 10M+. Each
+carries descriptive copy.
+
+**Why they were replaced: they were set before any measurement.** 350K sits
+near p85 on total expenses, so the bottom band held **69.7%** of filers while
+5M to 10M held **2.7%**. One band answered most of the population and another
+was too small to be worth choosing. Measured against **139,310 records across
+three batches**, the new set divides **27.9 / 32.0 / 22.3 / 13.1 / 4.6**.
+
+**All five boundaries sit at or below p90, deliberately.** Batch-to-batch p99
+varied FOUR-FOLD (39.85M, 38.30M, 93.20M) while the middle of the distribution
+stayed stable. A boundary above p90 would rest on which large organizations
+happened to fall in the sampled batches, which is not a property of the sector.
+
+**The constraint, which is a fact about filing thresholds rather than about
+the boundaries.** The bands discriminate across the whole population and
+POORLY WITHIN form types. On 990-EZ, **98.6% fall in the bottom two bands** and
+the top two hold 8 and 1 organizations. On 990-PF, 75.6% sit in the bottom two.
+No boundary set can fix that, because the form an organization files is itself
+determined by its size.
 
 **Ruled ALLOWED because a band is a StewardHouse-defined CATEGORY, not a claim
 about any organization.** The category exists before any org is placed in it,
@@ -50,10 +79,18 @@ and placement is arithmetic on a filed figure rather than an assessment.
 the bottom band.** Absent is not zero, and folding it into the lowest band would
 assert a fact the record does not carry.
 
-**The card names the field as TOTAL REVENUE PER IRS FILING, never budget.**
-Revenue includes program fees and investment income. Conflating revenue with
-budget is a known vendor error in this space and is the error this naming rule
-exists to prevent.
+**The card names the field as TOTAL EXPENSES PER IRS FILING, WITH THE TAX
+YEAR, and never budget.** The never-say-budget rule STANDS; only its rationale
+changed with the field (ruled 2026-08-18).
+
+**It previously stood because revenue is not budget**: revenue includes program
+fees and investment income, and conflating the two is a known vendor error in
+this space. **Total expenses is closer, and still is not budget.** A budget is
+PLANNED and expenses are ACTUAL, so a card saying budget about a filed figure
+asserts something the 990 does not contain: what the organization intended to
+spend, rather than what it reported spending. Naming the tax year is part of
+the same rule, because an actual figure without its period invites reading a
+past year as a present state.
 
 **MEASURED 2026-08-18, and the BMF cannot carry this facet.** `REVENUE_AMT` is
 blank on 569,235 of 1,957,340 rows and filed as exactly zero on 825,946 more,
@@ -61,8 +98,25 @@ so **71% of the national file has no usable figure**. The five bands do not
 divide the remainder either: of the 1,388,105 that filed something, 84.2% fall
 in "under 350K" and 59.5% filed exactly zero. **The financial facts moved to the
 990 XML**, which is why FT reversed ruling 7 the same day. See the financial
-section below and `propublica-spike-findings.md` ruling 7. This band definition
-and its naming rule stand; what changed is the source it reads.
+section below and `propublica-spike-findings.md` ruling 7. Those two BMF
+figures are national and stand; what changed is the source this facet reads,
+and then the boundaries themselves.
+
+**CONCENTRATION, worth surfacing on its own terms rather than only as band
+sizing.** Against the new bands, 139,310 records, 746.07B in total expenses:
+
+| Band | Orgs | % orgs | Dollars | % dollars |
+|---|---|---|---|---|
+| under 50K | 38,897 | 27.9% | 735.2M | **0.1%** |
+| 50K to 200K | 44,648 | 32.0% | 4.75B | 0.6% |
+| 200K to 1M | 31,076 | 22.3% | 14.02B | 1.9% |
+| 1M to 10M | 18,294 | 13.1% | 59.29B | 7.9% |
+| 10M+ | 6,395 | **4.6%** | 667.28B | **89.4%** |
+
+**82.2% of organizations account for 2.6% of spending; 4.6% account for
+89.4%.** It **SHARPENED at 12x the sample rather than softening**, and it does
+not depend on where the boundaries land: any cut of this distribution shows the
+same shape. This is sector structure, not an artifact of the facet.
 
 ### 3. Recognition era
 
@@ -153,7 +207,8 @@ about small organizations rather than as a failure of the product.
 results, not as a footnote.** A funder must be able to see what they are looking
 at and what was excluded without hunting for it.
 
-**Revenue band and recognition era open EMPTY. Geography opens PREFILLED.**
+**Total expenses band and recognition era open EMPTY. Geography opens
+PREFILLED.**
 
 ## Set membership: the load-bearing judgment
 

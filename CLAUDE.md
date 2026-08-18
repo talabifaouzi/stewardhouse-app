@@ -1255,12 +1255,13 @@ violation this rule exists to prevent.
 (FT-ruled 2026-08-17). The rulings above and the eight in
 `docs/propublica-spike-findings.md` describe the RECORD; that doc describes what
 a funder DOES on Discover: four combinable facets (geography prefilled from the
-funder's GPS, revenue band, recognition era, NTEE deferred), alphabetical
+funder's GPS, total expenses band, recognition era, NTEE deferred), alphabetical
 results with the count leading and the cut stated at the same visual weight, the
 set-membership rule that separates a statable mechanical cut from a curated one,
 and what it replaces in the current page. Read it before touching Discover: the
-page scores and ranks today, which §7 forbids, and the removal and the facet
-build must ship together or the surface has no organizing principle in between.
+page NO LONGER scores or ranks, which `65f2a28` removed, and it renders an
+explicit unavailable state instead, so the facet build lands INTO that state
+rather than shipping alongside a removal.
 
 ---
 
