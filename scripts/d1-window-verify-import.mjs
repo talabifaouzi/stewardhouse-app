@@ -1,6 +1,6 @@
 // D1 IMPORT-WINDOW EXPERIMENT - PHASE 0 IMPORT VERIFIER
 //
-// Part of the experiment that settles open item 1 in `docs/bmf-load-scoping.md`.
+// Part of the experiment recorded in section 12 of `docs/bmf-load-scoping.md`.
 // Proves the generated file is loadable and profile-faithful before anyone
 // considers spending a remote import on it.
 //

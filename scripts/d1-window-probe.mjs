@@ -1,6 +1,6 @@
 // D1 IMPORT-WINDOW EXPERIMENT - READ PROBE
 //
-// Part of the experiment that settles open item 1 in `docs/bmf-load-scoping.md`.
+// Part of the experiment recorded in section 12 of `docs/bmf-load-scoping.md`.
 // Samples a database while an import runs, so the window can be bounded and its
 // mode classified.
 //

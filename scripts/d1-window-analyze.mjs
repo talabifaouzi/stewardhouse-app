@@ -1,6 +1,6 @@
 // D1 IMPORT-WINDOW EXPERIMENT - PROBE LOG ANALYSIS
 //
-// Part of the experiment that settles open item 1 in `docs/bmf-load-scoping.md`.
+// Part of the experiment recorded in section 12 of `docs/bmf-load-scoping.md`.
 // Reduces a probe log to baseline latency, t_degrade, t_recover, window
 // duration, and mode (fail / queue / stale-read / none).
 //

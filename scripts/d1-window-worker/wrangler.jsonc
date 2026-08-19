@@ -7,8 +7,10 @@
   // filename here means the two can never be confused at a glance, and no
   // invocation from the wrong directory silently binds the wrong database.
   //
-  // The database below is a THROWAWAY created 2026-08-19 and scheduled for
-  // deletion in section 11 of `docs/bmf-load-scoping.md`.
+  // The database below was a THROWAWAY created 2026-08-19 and DELETED the same
+  // day. Section 11 of `docs/bmf-load-scoping.md` records that teardown as
+  // DISCHARGED, and the `database_id` is now DEAD: reusing this Worker means
+  // creating a new throwaway database and replacing it.
   "name": "bmf-window-probe-worker",
   "main": "src/index.js",
   "compatibility_date": "2025-09-01",
@@ -16,6 +18,7 @@
     {
       "binding": "DB",
       "database_name": "bmf-window-probe",
+      // DELETED 2026-08-19. Replace with a new throwaway before any deploy.
       "database_id": "fb498c9d-0650-44c2-9a43-5090aa3c71b3"
     }
   ]

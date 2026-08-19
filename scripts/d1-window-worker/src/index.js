@@ -1,6 +1,6 @@
 // D1 IMPORT-WINDOW EXPERIMENT - PROBE WORKER
 //
-// Option B of the experiment that settles open item 1 in
+// Option B of the experiment recorded in section 12 of
 // `docs/bmf-load-scoping.md`. Reads through the `env.DB` BINDING rather than the
 // public `/query` REST path, because the binding is what section 1's blast radius
 // is about: every Pages Function in this project reaches D1 the same way.
@@ -9,8 +9,8 @@
 // RUN: [FT-only] to deploy. Local `wrangler dev` against this config is
 // [agent-ok] and touches no remote resource.
 //
-// TEMPORARY. This Worker and the `bmf-window-probe` database are both scheduled
-// for deletion in section 11 of that doc, on completion OR abandonment.
+// TORN DOWN. This Worker and the `bmf-window-probe` database were both DELETED
+// on 2026-08-19. Section 11 of that doc records the teardown as DISCHARGED.
 //
 // NO AUTH, NO GATE, deliberately. It reads synthetic rows in a throwaway store
 // and holds nothing worth gating. It must never be bound to `stewardhouse-pilot`.

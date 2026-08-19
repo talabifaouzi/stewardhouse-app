@@ -1,6 +1,6 @@
 // D1 IMPORT-WINDOW EXPERIMENT - GENERATOR
 //
-// Part of the experiment that settles open item 1 in `docs/bmf-load-scoping.md`:
+// Part of the experiment recorded in section 12 of `docs/bmf-load-scoping.md`:
 // does a D1 import make concurrent reads QUEUE or FAIL, and how long is the
 // window. The experiment is DESIGNED, not ruled and not scheduled.
 //
