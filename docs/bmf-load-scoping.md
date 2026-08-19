@@ -134,38 +134,83 @@ Following the `idx_{table}_{column}` convention used throughout the tree:
 combinations are common, and nobody has that data because the surface does not
 exist. Over-indexing 1.96M rows costs storage and load time on every replace-all.
 
+### Index build timing, measured
+
+**The `CREATE INDEX` open item is CLOSED, and its failure branch did not fire.**
+Every index was built AFTER the data was loaded, against all 1,957,340 rows, and
+each was run at least twice so that no figure rests on a single cold-cache
+reading.
+
+| Index | Run 1 | Run 2 | Run 3 |
+|---|---:|---:|---:|
+| `UNIQUE (ein)` | **729.0 ms** | 673.1 ms | |
+| `(state, city)` | **1379.2 ms** | 1351.1 ms | |
+| `(ruling)` | **702.7 ms** | 680.6 ms | |
+| `(name)` | **1596.4 ms** | 1510.8 ms | 1524.9 ms |
+
+Run 1 is cold and the later runs are warm; the spread is 4 to 8 percent.
+
+**The worst case is `NAME` at 1596.4 ms, which is 5.3% of the 30-second query
+duration in section 8, or 18.8x headroom.** Nothing approaches the limit.
+
+**Supporting wall-clock, for scale rather than as a limit test.** Loading all
+1,957,340 rows took **9,742 ms**, and load plus all four indexes end to end took
+**14.15 s**, itself under 30 seconds, though that total is not what the limit
+governs.
+
+**THIS IS A LOCAL FLOOR, NOT A D1 MEASUREMENT.** Six things it does not
+establish, recorded so the number is never read as more than it is:
+
+1. **Different execution path.** This ran through `node:sqlite` on a dev machine
+   directly against the store file, not through D1's query path.
+2. **Whether D1 meters `CREATE INDEX` against query duration at all is
+   UNVERIFIED**, as is the instant from which it would start counting.
+3. **Different storage substrate.** Local is a dev SSD with its own page cache;
+   D1 is backed by durable object storage.
+4. **The remote path builds these indexes server-side inside the R2 import**
+   described in section 7, not as a statement a client issues and times.
+5. **Single-threaded contention.** Section 8 records D1 as single-threaded. This
+   run had the file to itself; a production import contends with live traffic.
+6. **Cold start.** Even run 1 was warm from the load that had just written the
+   file. A remote import starts genuinely cold.
+
+**So the honest reading is that 1.6 seconds sits far enough under 30 that a
+roughly nineteen-fold environmental penalty would be needed to breach it. That
+makes the risk low. Low risk is not zero risk, and this number does not make it
+zero.**
+
 ### Peak storage, measured
 
-**The former open item 1 is CLOSED.**
+**The peak-storage open item is CLOSED.**
 
-| Quantity | Figure | Kind |
-|---|---|---|
-| Per-row payload, over all 1,957,340 rows | **64.240 bytes** | measured |
-| Table at 0.95 fill | ~**141 MiB** | arithmetic |
-| Four indexes | ~**180 MiB** | arithmetic |
-| One copy | ~**321 MiB** | arithmetic |
-| Peak, aside plus live | ~**642 MiB** | arithmetic |
-| Range across plausible fill factors | **610 to 880 MiB** | arithmetic |
+| Quantity | Measured | Projected | Kind |
+|---|---:|---:|---|
+| Per-row payload, over all 1,957,340 rows | **64.240 bytes** | | measured |
+| Table | **132.84 MiB** | ~141 MiB | measured |
+| `UNIQUE (ein)` | **33.70 MiB** | ~36 MiB | measured |
+| `(state, city)` | **38.84 MiB** | ~41 MiB | measured |
+| `(ruling)` | **22.45 MiB** | ~24 MiB | measured |
+| `(name)` | **74.34 MiB** | ~79 MiB | measured |
+| One copy | **302.57 MiB** | ~321 MiB | measured |
+| Peak, aside plus live | ~**605 MiB** | ~642 MiB | 2x the measured copy |
 
-**The per-row figure is a measurement. Everything below it is arithmetic on top
-of that measurement**, and the distinction is not pedantry: the index projections
-in particular assume index shapes that do not exist yet, since section 1 records
-that the right composite is not knowable until the surface exists. **The only
-thing that closes them is `PRAGMA page_count` on a built table**, which cannot be
-run before the load this doc plans.
+**These are now measurements, taken by `PRAGMA page_count` at `page_size` 4096 on
+a table built from the five ruled files.** The projections are kept beside them
+because the comparison is the useful part: **every figure came in 5.7 to 6.9
+percent under projection**, which is a systematic bias rather than noise in any
+one line. The projections erred consistently, and on the safe side.
 
-**One figure in this table does not reproduce from the one above it, and the gap
-is recorded rather than closed.** 64.240 bytes x 1,957,340 rows is **119.91 MiB**
-of payload, and 0.95 fill gives **126.2 MiB**. The **141 MiB** figure therefore
-implies roughly **7.5 bytes per row of SQLite row overhead** beyond the measured
-payload, which the source measurement did not state. **Neither figure is adjusted
-here.** This is an unreconciled arithmetic gap rather than a correction, and it
-closes the same way the rest of the table does, by `PRAGMA page_count` on a
-built table.
+**The 141 MiB gap this section previously recorded as unreconciled is CLOSED by
+measurement.** The table measures **132.84 MiB** against the projected 141, so
+the projection ran 8.2 MiB high. Measured storage is **71.17 bytes per row**
+against the 64.240-byte measured payload, which puts real SQLite row overhead at
+**6.93 bytes per row**, not the roughly 7.5 the gap had inferred. **The gap is
+closed by measurement rather than still standing open**, which is exactly what
+the earlier paragraph said would be required to close it.
 
 **The ceiling is 10 GB per database on Workers Paid**, so peak sits roughly
-sixteen times inside it. **Storage does not constrain either swap option**, which
-is the gate the former open item 2 was waiting on.
+seventeen times inside it. **Storage does not constrain either swap option**,
+which is the gate the swap design fork was waiting on.
 
 ### The stamp table
 
@@ -221,6 +266,21 @@ progress signal, or a partial-failure state, because neither ever needed one.
 **The file-set check comes FIRST.** Taking all six double-loads 4,906
 organizations, and the symptom is a duplicate-key failure far downstream from
 the cause.
+
+**Identifying the bound local store comes BEFORE any of it.** Two `.sqlite` files
+sit under `.wrangler/state/v3/d1/miniflare-D1DatabaseObject/`, and applying work
+to the wrong one is a silent no-op. The wrangler startup banner gives the MODE:
+`env.DB (stewardhouse-pilot)` is config-resolved, while `env.DB (local-DB=...)`
+means a `--d1` flag is in play and a different store is bound.
+
+**The lazy-open probe does NOT work, recorded so the next session does not retry
+it.** Miniflare opens D1 lazily, so watching a running `pages dev` for a `-shm`
+or `-wal` sidecar proves nothing: neither `GET /api/me` nor `GET /api/roster`
+with a bogus session cookie caused either store to open a sidecar. **The probe
+that works is the mtime delta across a config-resolved `d1 execute --local`
+write.** Measured 2026-08-19: one such write moved `e7ff1add...` and left
+`7202f096...` untouched, which is what identified the bound store for the timing
+run above.
 
 ## 4. Failure modes and what each leaves standing
 
@@ -370,8 +430,11 @@ Section 2 says roughly 152 MB; the figure carried alongside the 5 GB limit is
 about 190 MB. Both are far inside the limit, so nothing turns on it here, and
 neither is reconciled in this doc.
 
-**The 30-second limit is not comfortable at this scale.** It is what open item 1
-below turns on.
+**The 30-second limit is now MEASURED against rather than reasoned about.**
+Section 1 records the four index builds and the worst is 5.3% of it. The earlier
+text here said the limit was not comfortable at this scale and pointed at an open
+item; that item is closed and the measurement, with its six stated limits, is in
+section 1.
 
 ## 9. Time Travel restore is DISQUALIFIED, not a backstop
 
@@ -433,24 +496,12 @@ the fourth waits on a second and much larger ingest.
 Recorded as open. None of these is resolved here and none carries a
 recommendation.
 
-**Two items from the previous list are CLOSED and are not restated as open**:
-peak storage, closed in section 1, and the swap design fork, closed in section 1
-with a binding constraint. The two that survive keep their substance and are
-renumbered 4 and 5.
+**Three items from earlier lists are CLOSED and are not restated as open**: peak
+storage and the swap design fork, both closed in section 1, and the `CREATE
+INDEX` timing, closed in section 1 by measurement. The rest keep their substance
+and are renumbered 1 through 5.
 
-### 1. `CREATE INDEX` on `NAME` against the 30-second limit at 1,957,340 rows
-
-**UNMEASURED, and it is the item that can invalidate the shape of the load.** The
-`NAME` index is the ordering index section 1 calls the likeliest source of
-slowness at this row count, and building it is a single statement against 1.96M
-rows under the 30-second query duration in section 8.
-
-**If it exceeds, single-file is impossible**, and what that calls for is
-restructuring the load rather than choosing a different swap. Recorded that way
-deliberately, because the failure points at the chunking and not at section 1's
-fork, which is closed.
-
-### 2. Availability during the load
+### 1. Availability during the load
 
 The import takes **the whole database offline**, not just Discover, on wrangler's
 own warning in section 7. **Operations writes are live in production.** So the
@@ -459,14 +510,14 @@ import runs, and nobody has decided what that costs or when it may run.
 
 **UNRULED.**
 
-### 3. Whether the import rollback is a transaction or a compensating replay
+### 2. Whether the import rollback is a transaction or a compensating replay
 
 Section 7 records the CLI's claim that a failed import returns the database to
 its original state. **Which mechanism delivers that is unknown**, and the two
 differ exactly where it matters: a transaction cannot leave residue, while a
 compensating replay can fail partway through its own compensation.
 
-### 4. Whether `REVENUE_AMT` serves any v1 query
+### 3. Whether `REVENUE_AMT` serves any v1 query
 
 The expenses facet reads the XML, so it is not obvious that `REVENUE_AMT` is
 used by anything in v1. It is one of the seven ruled columns and is loaded
@@ -483,7 +534,7 @@ regardless.
 The first includes the second. They answer different questions and appear in
 different places in this doc deliberately.
 
-### 5. Whether absence-from-BMF is the entire revocation and deductibility signal
+### 4. Whether absence-from-BMF is the entire revocation and deductibility signal
 
 Ruling 1 makes BMF presence load-bearing: revoked organizations were measured
 absent from the BMF. Whether that absence is the WHOLE gate, or whether the
@@ -498,9 +549,9 @@ deductibility gate. Section 1's binding constraint removes that state, so the
 question no longer arises in that form. The gate question itself, above, is
 untouched by it.
 
-### 6. Whether retained Time Travel history counts toward the 10 GB ceiling
+### 5. Whether retained Time Travel history counts toward the 10 GB ceiling
 
-Section 1 puts peak at roughly sixteen times inside the ceiling, which is
+Section 1 puts peak at roughly seventeen times inside the ceiling, which is
 comfortable only if the ceiling counts what section 1 counts. **A replace-all of
 1.96M rows generates a large amount of history**, and whether retention of it is
 billed against the same 10 GB is unknown.
