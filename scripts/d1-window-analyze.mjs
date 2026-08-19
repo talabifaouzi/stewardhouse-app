@@ -51,6 +51,17 @@ const s = readFileSync(FILE, 'utf8').trim().split('\n').filter(Boolean).map((l) 
 s.sort((a, b) => a.dispatchTs - b.dispatchTs);
 const pct = (a, p) => { if (!a.length) return null; const v = [...a].sort((x, y) => x - y); return v[Math.min(v.length - 1, Math.floor(p * v.length))]; };
 
+// The window edges are each uncertain by up to one sampling gap, so the bound is
+// the LARGEST observed gap, not a constant. This field used to emit a hardcoded
+// 1000, which understated a 200 ms run by 5x in output that gets pasted into docs.
+// Observed rather than the configured --interval: the probe achieved 197-218 ms
+// against a 200 ms setting, so the configured value is a claim and this is a
+// measurement.
+const gaps = [];
+for (let i = 1; i < s.length; i++) gaps.push(s[i].dispatchTs - s[i - 1].dispatchTs);
+const gapP50 = gaps.length ? pct(gaps, 0.5) : null;
+const gapMax = gaps.length ? Math.max(...gaps) : null;
+
 // Baseline: successful samples strictly BEFORE the import began. If the window is not
 // supplied, fall back to samples before the first anomaly of any kind.
 const preIdx = IMP_S !== null ? s.filter((r) => r.dispatchTs < IMP_S) : s.slice(0, Math.max(1, Math.floor(s.length * 0.2)));
@@ -99,6 +110,7 @@ console.log(JSON.stringify({
   firstAnomaly: anomalies.length ? { kind: anomalies[0].kind, at: iso(anomalies[0].dispatchTs), error: anomalies[0].error, latencyMs: anomalies[0].latencyMs, count: anomalies[0].count } : null,
   tDegrade: iso(tDegrade), tRecover: iso(tRecover),
   windowMs: tDegrade !== null && tRecover !== null ? tRecover - tDegrade : null,
-  windowBoundedBySampleIntervalMs: 1000,
+  observedSampleIntervalMs: { p50: gapP50, max: gapMax },
+  windowBoundedBySampleIntervalMs: gapMax,
   staleDetectionEnabled: IMP_S !== null && IMP_E !== null,
 }, null, 2));
