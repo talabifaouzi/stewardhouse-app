@@ -815,8 +815,9 @@ back to all-CRLF. Only the first would have failed loudly.
 Unchanged by three runs, and stated as the design stated them:
 
 - **One table, against the pilot's 29.** Whether the error is per-database or
-  per-table is **exactly as unknown as after run 1**, and a single-table database
-  cannot answer it.
+  per-table is **NARROWED but NOT SETTLED**. The narrowing came free from the
+  banked logs and from Cloudflare's own documentation and is recorded in the
+  subsection below; the experiment that would settle it is ruled NOT RUN.
 - **No concurrent traffic.** The probe was the only reader, while the pilot
   serves auth, `/api/me` and Operations at the same time.
 - **Nothing about the failure path.** All four imports succeeded, so the rollback
@@ -825,6 +826,100 @@ Unchanged by three runs, and stated as the design stated them:
   basis for a p99 or a worst case.
 - **One time of day, one region, one colo.** All three ran within 19 minutes, all
   ENAM and EWR. No diurnal or placement variation.
+
+### The scope question: NARROWED without an experiment, and NOT run
+
+**RULED 2026-08-19: the per-database-versus-per-table experiment is NOT run.**
+Two findings came free from designing it, and together they narrow the question
+far enough that the build the experiment would need stopped being proportionate.
+**The reasoning is recorded in full, including the evidentiary standard, because
+the working assumption at the end rests on documentation rather than on a
+measurement and must never be cited as though it were measured.**
+
+**FINDING 1: THE BANKED LOGS ALREADY RULE OUT THE NARROWEST READING.** Runs A, B
+and C used the `aside-swap` shape, in which the overwhelming majority of the
+import's duration is `INSERT`s into `bmf_aside`. The probe read `bmf`, a
+DIFFERENT table, and **it failed for the ENTIRE window** rather than only across
+the closing `DROP` and `RENAME`. **That rules out "the import locks only the
+table it is currently writing."**
+
+**What survives is two hypotheses, and the banked data CANNOT separate them**: a
+whole-database lock, or a lock over the union of tables the file NAMES. `bmf`
+sits in that union either way, because the file drops it. **All four banked runs
+are blind to the difference for that same reason**, so no reanalysis of the
+existing logs can close this.
+
+**FINDING 2: CLOUDFLARE'S OWN SDK DOCBLOCK SAYS PER-DATABASE.** In the shipped
+`wrangler` 4.111.0 bundle, the Cloudflare API SDK's docblock on the D1 import
+method reads, at `node_modules/wrangler/wrangler-dist/cli.js:69285-69287`, the
+method itself being at `:69301`:
+
+> Generates a temporary URL for uploading an SQL file to, then instructing the D1
+> to import it and polling it for status updates. **Imports block the D1 for
+> their duration.**
+
+The REST path it posts to is `d1/database/${databaseId}/import`: **scoped to a
+DATABASE, with no table parameter anywhere in it.** The sibling `export` docblock
+uses the same database-level language.
+
+**AND THE GREP-VERIFIED NEGATIVE, which is the half that decides where the answer
+can live at all.** The string `long-running import` appears in **ZERO** files
+under `node_modules/`. The error every probe recorded therefore comes from the
+SERVICE and not from the client, **so its scope cannot be determined by reading
+client code**. That is why finding 2 is documentation rather than source: source
+was looked for and is not there.
+
+**Line numbers into a bundled file are version-specific.** Both citations are
+against `wrangler` 4.111.0, the same version section 7 is sourced to. An upgrade
+may move them. The strings are stable and are the thing to grep for.
+
+#### The evidentiary standard, stated without softening
+
+**This docblock is the SAME CLASS OF ARTIFACT as the rollback guarantee**, which
+section 7 calls "the most load-bearing unverified fact in this plan" and declines
+to treat as settled: it is "printed by the client before the import runs, so it
+is a claim about what the service does rather than an observation of it."
+
+**It is arguably WEAKER.** The rollback string is at least emitted by the code
+path that runs the import. This is generated SDK documentation attached to a
+method signature, one further remove from the service again.
+
+**Accepting one while distrusting the other would be two standards for two
+sentences printed by the same binary.** That is the whole of the standard, and it
+is recorded here so that nothing downstream can quietly promote finding 2 into a
+measurement.
+
+#### Why the experiment is not run
+
+**The documentation asserts the PESSIMISTIC case, which this plan already
+assumes.** So the experiment would not test whether the situation is as bad as
+feared. **It would test whether D1 is BETTER than its own documentation**,
+against first-party text saying it is not.
+
+**That is a low prior against a real build:** a new throwaway database, a Worker
+rewrite carrying a second route and a rotating lookup key, a third generator
+shape, three seeded tables including a 50,000-row session stand-in, two
+concurrent probe processes, and one to three remote runs each carrying their own
+teardown obligation.
+
+**And it would test READS ONLY, which is the part most likely to be misread as a
+rescue.** Sign-in has a read half and a write half: the invite-allowlist read at
+`functions/api/auth/[[route]].js:96-103`, and better-auth's `verification` row
+INSERT. **A clean read result would rescue `/api/me` and the allowlist without
+establishing that sign-in completes.** Covering the write half means writing
+during an import, which is a different question and may perturb the thing being
+measured.
+
+#### The working assumption
+
+**PER-DATABASE, on DOCUMENTARY rather than MEASURED evidence, with the standard
+above attached.** Every availability consequence in this section is stated on
+that assumption, and it is to be cited AS an assumption wherever it is relied on.
+
+**Asking Cloudflare directly is cheaper than the experiment and no less
+authoritative than the docblock**, both being the vendor describing its own
+service rather than the service being observed. **That is the route if this is to
+be settled** without the build above.
 
 **FILED, and created by this renumbering:** five files under
 `scripts/d1-window-*` and `scripts/d1-window-worker/` cite "open item 1" in
@@ -906,6 +1001,33 @@ Section 1 puts peak at roughly seventeen times inside the ceiling, which is
 comfortable only if the ceiling counts what section 1 counts. **A replace-all of
 1.96M rows generates a large amount of history**, and whether retention of it is
 billed against the same 10 GB is unknown.
+
+### 5. Whether the import FAIL is per-database or per-table
+
+**ADDED 2026-08-19 and NOT one of the earlier list's items**, so the preamble
+above still correctly describes the four it renumbered.
+
+**NARROWED, NOT CLOSED.** Section 12 carries the two findings that narrowed it
+and the ruling that the experiment is not run. What now stands: the banked logs
+rule out a lock on only the table being written, and Cloudflare's own SDK
+docblock says imports block the database. What does not: neither is an
+observation of the service, and the banked runs cannot separate a whole-database
+lock from a lock over the union of tables the import file names.
+
+**WHAT WOULD CLOSE IT.** One remote run against a throwaway database in which the
+import file names NO table the probe reads: an `aside-only` shape that creates
+and fills an aside table and then stops, with the probe reading a table absent
+from the file. That removes the union ambiguity the banked runs cannot escape. A
+FAIL on that read closes it as per-database on a single run. **A CLEAN read needs
+a second run and two positive controls**, because under that shape nothing the
+probe can see changes, so a void import and a genuine clean result look
+identical.
+
+**IT WOULD STILL NOT COVER WRITES.** Sign-in's `verification` INSERT is a
+separate question, and a read-only result must not be read as covering it.
+
+**A vendor answer would close it to the same standard as the docblock**, and no
+further.
 
 ## Provenance note on section 5
 
