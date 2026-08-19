@@ -494,40 +494,95 @@ should start from the spec rather than from what was there, and the name
 name and city for the card. **The expenses facet reads the XML, not the BMF**, so
 the fourth waits on a second and much larger ingest.
 
-## 11. Live experiment artifacts, and the obligation to delete them
+## 11. Live experiment artifacts, and the obligation to delete them: DISCHARGED
 
-**One of these exists on the Cloudflare account RIGHT NOW and bills for stored
-bytes.** Both are scaffolding for the availability experiment rather than part of
-the build, and nothing in the plan depends on either surviving.
+**BOTH ARTIFACTS WERE DELETED ON 2026-08-19. Nothing from this experiment exists
+on the Cloudflare account, and nothing bills.** This section is kept as the
+record of an obligation that was real and was met, not as live work. It also
+carries a correction to one of the teardown commands it originally recorded,
+which is the part worth reading if these steps are ever needed again.
 
 | Artifact | Identifier | State |
 |---|---|---|
-| D1 database `bmf-window-probe` | `fb498c9d-0650-44c2-9a43-5090aa3c71b3`, region ENAM, created 2026-08-19 | **EXISTS.** Empty today; holds 1,957,340 synthetic rows during a run |
-| Probe Worker `bmf-window-probe-worker`, public and unauthenticated, bound to that database | source at `scripts/d1-window-worker/` | **NOT DEPLOYED.** Source exists; the deployment arrives with phase 3 |
+| D1 database `bmf-window-probe` | `fb498c9d-0650-44c2-9a43-5090aa3c71b3`, region ENAM, created 2026-08-19 | **DELETED** 2026-08-19. Held 1,957,340 synthetic rows at the end of the last run |
+| Probe Worker `bmf-window-probe-worker`, public and unauthenticated, bound to that database | source at `scripts/d1-window-worker/`, still committed | **DELETED** 2026-08-19. The deployment is gone; the source is not |
 
-**BOTH ARE TEMPORARY AND MUST BE DELETED**, whether the experiment concludes or
-is abandoned.
+### What was run, and what it printed
 
-**Teardown is `[FT-only]`**, because every `--remote` write is FT-run per
-CLAUDE.md §6.15:
+**Both deletions were `[FT-only]` and were FT-run**, because every `--remote`
+write is FT-run per CLAUDE.md §6.15. Neither was issued from an agent shell,
+which is the condition CLAUDE.md §6.10 records as turning a confirmation prompt
+into an auto-answered yes.
+
+**The database.** `npx wrangler d1 delete bmf-window-probe` prompted before
+acting, and **the prompt named both the name and the UUID**
+`fb498c9d-0650-44c2-9a43-5090aa3c71b3`, so the confirmation was answered against
+an identified resource rather than a bare yes. It reported
+`Deleted 'bmf-window-probe' successfully.`
+
+**The Worker.** `npx wrangler delete --config scripts/d1-window-worker/wrangler.jsonc`
+prompted and **named `bmf-window-probe-worker` before confirmation**. It reported
+`Successfully deleted bmf-window-probe-worker`.
+
+**NEITHER DELETE CARRIED A SKIP FLAG.** No `-y`, no `--skip-confirmation`, no
+`--force`. Both prompts were answered by a human, which is what the paragraph
+below asked for.
+
+### THE CORRECTION: the Worker delete command recorded here was WRONG
+
+**This section originally recorded the Worker deletion as
+`npx wrangler delete --name bmf-window-probe-worker`. THAT COMMAND FAILS from
+the repo root**, and it fails for a reason worth keeping:
+
+> It looks like you've run a Workers-specific command in a Pages project. For
+> Pages, please run `wrangler pages project delete` instead.
+
+**Wrangler read `wrangler.toml`, found the Pages project, and resolved the
+command against `stewardhouse-app` rather than against the probe Worker.** The
+`--name` flag names a Worker; it does not tell wrangler which project's config to
+load, and config resolution happens first.
+
+**The working form names the CONFIG, not the Worker:**
 
 ```sh
-npx wrangler d1 delete bmf-window-probe
-npx wrangler d1 list
+npx wrangler delete --config scripts/d1-window-worker/wrangler.jsonc
 ```
 
-**The Worker is `bmf-window-probe-worker`**, source at
-`scripts/d1-window-worker/`. It is deleted, and its absence verified, by:
+**This is the dangerous class of defect, and it is worth naming precisely: a
+teardown command that resolves against the wrong project.** A delete that
+silently picked up the repo's own config is a delete aimed at the production
+project.
 
-```sh
-npx wrangler delete --name bmf-window-probe-worker
-npx wrangler deployments list --name bmf-window-probe-worker
-```
+**What prevented that was WRANGLER'S OWN REFUSAL**, not a check written into
+this doc, not the confirmation prompt, and not the reader. The tool declined a
+Workers command inside a Pages project and said so in plain language. **Do not
+read that as a general protection.** It fired because the two project TYPES
+differ. A wrong-config delete between two resources of the SAME type has no such
+guard, and would have reached the confirmation prompt with the wrong name
+already filled in, at which point naming the resource in the prompt is the only
+thing left standing between the reader and the wrong deletion.
 
-**The second command is the absence check, and its exact behaviour against a
-deleted Worker is UNVERIFIED** because nothing has been deployed yet. Confirm
-what it prints before relying on it, the same way the `d1 list` half was
-confirmed.
+**If these steps are ever needed again, the `--config` form is the one.**
+
+### What verified the deletions, and what did not
+
+**The database deletion is verified BY TWO THINGS.** The CLI reporting
+`Deleted 'bmf-window-probe' successfully.`, AND `npx wrangler d1 list` now
+returning only `stewardhouse-pilot` (`8600684c-…`). This is the
+apply-versus-list distinction from CLAUDE.md §6.10, and it held: a command's own
+output cannot be the proof that it worked, because it names the resource on the
+successful and the abandoned path alike. **The list was run, and the name is
+gone.**
+
+**The Worker deletion rests on ONE thing, its own output.** This section
+recorded `npx wrangler deployments list --name bmf-window-probe-worker` as the
+absence check and flagged its behaviour against a deleted Worker as UNVERIFIED.
+**It was never run, so it is still unverified**, and by this section's own
+standard that leaves the Worker's removal on the weaker of the two forms of
+evidence. Nothing suggests it did not work. The point is only that the second
+check exists so that nothing has to be inferred, and here something was.
+
+### The paragraphs that governed the teardown, kept as written
 
 **DO NOT PASS THE SKIP FLAG.** `d1 delete` takes `-y` / `--skip-confirmation`
 and `wrangler delete` takes `--force`; the flags differ, the hazard does not.
@@ -537,19 +592,43 @@ a human looks like: a `--remote` apply auto-answered yes in a shell with no
 stdin, printing `Using fallback value in non-interactive context: yes`. A delete
 is irreversible in a way that an additive migration is not.
 
-**DELETION IS VERIFIED BY TWO THINGS, NOT ONE.** The CLI reporting
-`Deleted 'bmf-window-probe' successfully.`, AND the name absent from
-`wrangler d1 list`. This is the apply-versus-list distinction from §6.10: a
-command's own output cannot be the proof that it worked, because it names the
-resource on the successful and the abandoned path alike. The Worker's equivalent
-list check should be confirmed when the Worker exists rather than guessed at
-here.
-
 **ABANDONMENT REQUIRES THE SAME TEARDOWN AS COMPLETION.** An experiment that is
 never ruled, or ruled against, leaves both artifacts standing and billing
 precisely as a finished one would. **The likeliest way these survive is that
 nobody decides anything**, and that is the case in which no one is reading a
-phase list, which is why the obligation is recorded here instead.
+phase list, which is why the obligation was recorded here rather than there.
+
+### The Worker SOURCE is still committed, and what to do with it
+
+**`scripts/d1-window-worker/` remains in the repo** (`wrangler.jsonc` plus
+`src/index.js`) although the deployment it describes no longer exists. Its
+`database_id` names `fb498c9d-0650-44c2-9a43-5090aa3c71b3`, **a database that
+has been deleted**, and two docblocks inside it (`src/index.js:13`,
+`wrangler.jsonc:11`) cite this section's teardown obligation as still pending.
+
+**RECOMMENDED: KEEP IT, and add a note recording that the binding is dead.** Not
+acted on here, and not a docs change.
+
+The reasoning, so it can be overruled on the merits. **Open item 1, the rollback
+question, is still open**, and it is open precisely because every import
+succeeded, so the failure path was never exercised. Answering it needs this
+apparatus again, and rebuilding a probe Worker to re-ask one question is a poor
+trade against keeping two small files. **Deleting the source also strands the
+four `scripts/d1-window-*` scripts**, which are committed, are the rest of the
+same harness, and are not under discussion.
+
+**What makes KEEP-AS-IS the wrong option rather than KEEP.** A committed config
+carrying a live-looking UUID that resolves to nothing is the same shape as every
+stale citation this project keeps cataloguing: it reads as current until someone
+runs it. A reader reaching for it would deploy a Worker bound to a database that
+is not there, and the failure would surface as a D1 error rather than as
+`this was torn down`. **One line in the config saying the id is dead and must be
+replaced turns a trap into a starting point.**
+
+**REMOVE is defensible, and is the option to pick if open item 1 is ruled by
+reasoning rather than by measurement**, since the apparatus then has no second
+use and git history holds it either way. It is not recommended today because
+that ruling has not been made.
 
 ## 12. The import window, MEASURED
 
