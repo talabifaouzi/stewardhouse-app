@@ -1109,9 +1109,10 @@ rather than shipping alongside a removal.
 nothing built). The two docs above describe the record and the surface; that one
 turns the rulings into a plan against the tree: migration 0019 as a new table
 rather than the curated `org` one, the swap and the finding that
-DROP-then-RENAME is not atomic, the script shape and its agent-ok / FT-only
-split, and four items left explicitly open, including a swap design fork gated
-on an unmeasured storage figure.
+DROP-then-RENAME IS atomic when both ship in one `d1 execute --file` invocation,
+the non-atomicity having been a property of issuing two statements as two
+invocations, the script shape and its agent-ok / FT-only split, and six items
+left explicitly open.
 
 ---
 
