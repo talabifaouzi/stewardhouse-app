@@ -190,3 +190,20 @@ already-reachable destination, not an access barrier.
 will re-flag these four files, because the grep cannot see the lead-cell `Link`
 or the `closest('a')` guard. This entry is what closes that loop: read it before
 filing them again.
+
+**Filed: `AppShell.jsx` cannot express "the fetch failed", so ANY 5xx reads as
+logged out.** `AppShell.jsx:63-64` calls `res.json()` on the `/api/me` response
+with no `res.ok` check, and both failure shapes converge on one state: an
+unparseable error body rejects into the `.catch` at `:87-88`, a parseable one
+falls to the `else` at `:83-85`, and either way `setStatus('unauthenticated')`
+runs and `:133-134` renders `<Navigate to="/signin" replace />`. **All four
+authenticated surfaces sit under this single shell** (`App.jsx:30`), with their
+`RequireType` guards nested inside it, so the redirect fires before any of them
+render and one failed fetch signs a user out of all four at once. **PRE-EXISTING,
+and it fires on ANY 5xx** rather than on any particular cause. It shows a
+signed-in user the signed-out state, which is wrong rather than merely unhelpful;
+whether that reaches the pilot gate's blocking bar is not ruled here. Surfaced by
+the BMF availability work, where a D1 import makes `/api/me` return 500, and
+ruled OUT of that arc at `docs/bmf-load-scoping.md` section 13: the shell gains a
+third status so a failed fetch renders a retry state rather than a redirect.
+Touches one file. No endpoint, no migration.

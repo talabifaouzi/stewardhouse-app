@@ -720,8 +720,9 @@ import against the pilot database:
 the import.** The demo tree is unaffected, because it reads fixtures rather
 than D1.
 
-**This doc does not rule on what to do about it.** The availability decision is
-FT's and goes to the team.
+**This section does not rule on what to do about it.** It went to the team, and
+**section 13 carries the ruling**, together with the four positions the room did
+not agree on.
 
 ### The tighter measurement, run
 
@@ -938,6 +939,108 @@ count reads as an inventory when it is not one. All seven sites are fixed, and
 no replacement names an open-item number: five point at section 12, and the two
 in `d1-window-analyze.mjs` name the rollback question directly.
 
+## 13. The availability ruling
+
+**FT RULING 2026-08-19, made with the advisory team.** Section 12 measured the
+window and deliberately did not rule on it. This is the ruling, **recorded with
+its dissent intact rather than as a consensus**, because the disagreements are
+not the same disagreement and flattening them would lose what each one gates.
+
+**DEFER-TO-TEAM. The room converged, independently, on a finding that was NOT one
+of the three options in the packet.**
+
+### The root cause is not the import
+
+**`AppShell.jsx:64` calls `res.json()` with no `res.ok` check**, so a 500 from
+`/api/me` converges on `setStatus('unauthenticated')` and renders
+`<Navigate to="/signin" replace />` at `:133-134`. Both failure shapes reach the
+same state: an unparseable error body rejects into the `.catch` at `:87-88`, and
+a parseable one falls to the `else` at `:83-85`.
+
+**D1 being unavailable does not have to mean "logged out."** It means a fetch
+failed. **The shell has no way to express that**, so it expresses the only other
+thing it knows.
+
+**Every seat reached this independently**, which is why it is recorded as the
+finding rather than as an aside. The packet framed the question as which storage
+arrangement to buy. The room answered that the storage arrangement is not what
+makes the outage look like a logout.
+
+### RULED: the shell gains a third status
+
+**A D1 failure renders a RETRY state, not a redirect.** Already-signed-in users
+see a stalled surface for the duration of the window and then recover.
+
+**The affected population collapses** to whoever hits sign-in inside a roughly
+15-second window on a refresh cadence, rather than every signed-in user across
+all four surfaces at once.
+
+### RULED: option (a), accept the window, AFTER the shell fix
+
+**No second database.** The ordering is load-bearing: the window is accepted ON
+the shell fix, not instead of it.
+
+**A second D1 database is PERMANENT OPERATIONAL OVERHEAD.** Two migration
+lineages, two local stores, two remote stores. It converts section 10's
+double-store incident from a post-mortem into a STANDING CONDITION, and that cost
+is paid daily, by a one-person build, to avoid an event that currently costs
+zero.
+
+**Alex's finding, recorded because it is the argument that decided it:** option
+(b) RELOCATES the window onto the directory rather than removing it. The import
+still blocks its own database, and that database is the one a funder is reading
+when they browse nonprofits.
+
+### RULED: option (c), leaving D1, is REJECTED
+
+**Nobody defended it**, and the packet's accounting went unchallenged: it
+discards the migration, the table shape, the atomicity finding and the entire
+measurement arc.
+
+### The disagreement, as four positions rather than one
+
+**These are not the same position and none reduces to another.**
+
+**Parker, on the rollback path.** Availability cannot be ruled responsibly while
+the rollback path is untested. **The failure path gates the LOAD ITSELF rather
+than the window:** a load that cannot be shown to roll back cleanly is a
+different risk from one that is briefly unavailable, and the second does not
+subsume the first.
+
+**Parker, on manufactured ambiguity.** Accepting the window means GENERATING, ON
+A SCHEDULE, an event indistinguishable from the July five-day silent auth outage.
+`SignIn.jsx:99-102` renders the identical string for both, and no observability
+distinguishes them. **This is a SECOND position, not a restatement of the first:**
+it survives even if the rollback path is proven.
+
+**Aisha and James, on pricing.** The database decision should be DEFERRED until
+there is a user count to price it against. This does not dispute the ruling; it
+disputes that now is when it should be made.
+
+**Jordan, on where the question belongs.** "What does a pilot user see during a
+load" should be a PILOT GATE CRITERION rather than an infrastructure question,
+which moves it out of this doc and into `docs/pilot-gate-criteria.md`.
+
+### RULED as gating the LOAD, not the window
+
+**Two preconditions on any production BMF load.** Both are Parker's condition,
+and both are ACCEPTED:
+
+1. **The rollback path**, open item 1 below, must be closed.
+2. **The observability gap** must be closed. It is filed in CLAUDE.md section 11
+   as the auth-observability open item: magic-link sends stamp nothing, there is
+   no health check, and the July outage therefore ran silently for five days.
+
+**Neither gates the WINDOW, and that distinction is the ruling.** The window is
+accepted. The load waits on these two.
+
+### FILED, as LEAVING this arc
+
+**The `AppShell.jsx:64` defect is PRE-EXISTING and fires on ANY 5xx**, not only
+during an import. It outlives this ruling, it is not part of the BMF build, and
+it gets its own slice. **Filed at `docs/filed-defects.md`**, so it is found by
+someone fixing the shell rather than only by someone loading the BMF.
+
 ## Open items
 
 Recorded as open. None of these is resolved here and none carries a
@@ -962,6 +1065,12 @@ still differ exactly where it matters: a transaction cannot leave residue, while
 a compensating replay can fail partway through its own compensation.
 
 **Success path proven. Failure path untested.**
+
+**GATING, as of the section 13 ruling.** This is now a PRECONDITION ON THE
+PRODUCTION LOAD rather than only an open question. Section 13 records it as
+Parker's condition, accepted: the failure path gates the load itself rather than
+the window, and a load that cannot be shown to roll back cleanly is a different
+risk from one that is briefly unavailable.
 
 ### 2. Whether `REVENUE_AMT` serves any v1 query
 
