@@ -502,7 +502,7 @@ the build, and nothing in the plan depends on either surviving.
 | Artifact | Identifier | State |
 |---|---|---|
 | D1 database `bmf-window-probe` | `fb498c9d-0650-44c2-9a43-5090aa3c71b3`, region ENAM, created 2026-08-19 | **EXISTS.** Empty today; holds 1,957,340 synthetic rows during a run |
-| Probe Worker, public and unauthenticated, bound to that database | name not yet chosen | **ARRIVES WITH PHASE 3.** Does not exist yet |
+| Probe Worker `bmf-window-probe-worker`, public and unauthenticated, bound to that database | source at `scripts/d1-window-worker/` | **NOT DEPLOYED.** Source exists; the deployment arrives with phase 3 |
 
 **BOTH ARE TEMPORARY AND MUST BE DELETED**, whether the experiment concludes or
 is abandoned.
@@ -515,10 +515,18 @@ npx wrangler d1 delete bmf-window-probe
 npx wrangler d1 list
 ```
 
-The Worker, once it exists, is deleted by `npx wrangler delete --name <its
-name>`. **That name is deliberately absent from the table above**: it has not
-been created, and inventing one would put a false identifier in a teardown
-record.
+**The Worker is `bmf-window-probe-worker`**, source at
+`scripts/d1-window-worker/`. It is deleted, and its absence verified, by:
+
+```sh
+npx wrangler delete --name bmf-window-probe-worker
+npx wrangler deployments list --name bmf-window-probe-worker
+```
+
+**The second command is the absence check, and its exact behaviour against a
+deleted Worker is UNVERIFIED** because nothing has been deployed yet. Confirm
+what it prints before relying on it, the same way the `d1 list` half was
+confirmed.
 
 **DO NOT PASS THE SKIP FLAG.** `d1 delete` takes `-y` / `--skip-confirmation`
 and `wrangler delete` takes `--force`; the flags differ, the hazard does not.

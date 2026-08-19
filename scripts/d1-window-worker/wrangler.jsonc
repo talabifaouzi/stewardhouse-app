@@ -1,0 +1,22 @@
+{
+  // D1 IMPORT-WINDOW EXPERIMENT - probe Worker config.
+  //
+  // DELIBERATELY `.jsonc`, NOT `wrangler.toml`. The repo root has exactly one
+  // `wrangler.toml` declaring exactly one [[d1_databases]] block for
+  // `stewardhouse-pilot`, and it must keep declaring exactly one. A different
+  // filename here means the two can never be confused at a glance, and no
+  // invocation from the wrong directory silently binds the wrong database.
+  //
+  // The database below is a THROWAWAY created 2026-08-19 and scheduled for
+  // deletion in section 11 of `docs/bmf-load-scoping.md`.
+  "name": "bmf-window-probe-worker",
+  "main": "src/index.js",
+  "compatibility_date": "2025-09-01",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "bmf-window-probe",
+      "database_id": "fb498c9d-0650-44c2-9a43-5090aa3c71b3"
+    }
+  ]
+}
