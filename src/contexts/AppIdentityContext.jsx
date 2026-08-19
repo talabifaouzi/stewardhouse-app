@@ -6,7 +6,11 @@ import { Navigate, useLocation } from 'react-router-dom';
 // to know who's signed in and what type of user they are — the dispatcher,
 // Chrome (for display), and any future type-specific surface.
 //
-// status: 'loading' | 'ready' | 'unauthenticated'
+// status: 'loading' | 'ready' | 'unauthenticated' | 'unavailable'
+// 'unavailable' is the /api/me failure state (AppShell's retry panel). It
+// never reaches a consumer of this context: AppShell early-returns on it
+// without mounting this provider, so it appears in the contract for
+// completeness rather than because anything downstream can observe it.
 // identity: { type, displayName, email, intake, gifts, scenarios, athlete?, advisor?, enterprise? } | null — only non-null when status is 'ready'; advisor sub-block present only when type='advisor', enterprise sub-block only when type='staff'; athlete sub-block present only for an individual who is also a linked athlete (C-3b consent state)
 
 const AppIdentityContext = createContext(null);
@@ -90,8 +94,9 @@ export function useOptionalAppIdentity() {
 // established.
 //
 // Loading branch is defensive-only. AppShell's own gate does not render
-// <Outlet /> while status is 'loading' — it renders "Checking your
-// session…" and blocks all descendants — so this branch is unreachable
+// <Outlet /> while status is anything other than 'ready' — it renders
+// "Checking your session…", the /api/me retry panel, or a redirect, and
+// blocks all descendants in each case — so this branch is unreachable
 // today. It stays as a documented safety net in case AppShell's gating
 // logic ever changes; a premature Navigate on an in-flight /api/me
 // would bounce valid users.

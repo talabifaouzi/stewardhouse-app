@@ -1041,6 +1041,34 @@ during an import. It outlives this ruling, it is not part of the BMF build, and
 it gets its own slice. **Filed at `docs/filed-defects.md`**, so it is found by
 someone fixing the shell rather than only by someone loading the BMF.
 
+### THE CORRECTION: the affected population is smaller than the phrasing implies
+
+**Recorded here rather than by editing the ruling above**, which records what a
+room decided and is not the agent's to revise. The finding is right; what
+follows is what the tree does.
+
+**`/api/me` is fetched once per mount and there is no refetch path**, so a
+signed-in user already looking at a rendered surface is UNAFFECTED by the shell.
+Their identity is in memory and nothing re-checks it. What breaks for them is
+WRITES: each one 500s through its own context and surfaces as a `writeError` in
+the form that issued it, which is a different failure from being bounced to
+`/signin`.
+
+**The shell defect therefore fires only on MOUNT.** Three ways in: a fresh load,
+a hard navigation into `/app/*`, and the bfcache reload at
+`AppShell.jsx:203-209` (`:109-115` before the slice that fixed this), which
+deliberately re-mounts the shell on a back-forward restore.
+
+**So "every signed-in user across all four surfaces at once" is the population
+that would MOUNT inside the window, not the population signed in during it.**
+That narrows who meets the false logout, and it narrows it in the same direction
+the ruling already moved.
+
+**The ruling's decision is UNAFFECTED.** The shell still expressed a failed
+fetch as a logout, that was still wrong on every one of those three entry paths,
+and the fix is the same fix. A smaller population meeting a false logout is
+still meeting a false logout.
+
 ## Open items
 
 Recorded as open. None of these is resolved here and none carries a
