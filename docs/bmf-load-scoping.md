@@ -403,7 +403,8 @@ question.
 - **On starting:** "This process may take some time, during which your D1
   database will be unavailable to serve queries." It appears as a confirmation
   prompt when interactive and as a warning otherwise. **The whole database, not
-  the BMF table.**
+  the BMF table.** Section 12 records what that means when measured: reads
+  FAIL with an explicit error, they do not queue.
 - **On failure:** "Note: if the execution fails to complete, your DB will return
   to its original state and you can safely retry."
 
@@ -496,7 +497,7 @@ the fourth waits on a second and much larger ingest.
 ## 11. Live experiment artifacts, and the obligation to delete them
 
 **One of these exists on the Cloudflare account RIGHT NOW and bills for stored
-bytes.** Both are scaffolding for the open item 1 experiment rather than part of
+bytes.** Both are scaffolding for the availability experiment rather than part of
 the build, and nothing in the plan depends on either surviving.
 
 | Artifact | Identifier | State |
@@ -550,33 +551,95 @@ precisely as a finished one would. **The likeliest way these survive is that
 nobody decides anything**, and that is the case in which no one is reading a
 phase list, which is why the obligation is recorded here instead.
 
+## 12. The import window, MEASURED
+
+**The experiment ran. The availability question is CLOSED, and the answer is the
+bad one.**
+
+**MODE: FAIL.** Not queue, not stale-read. Reads during the import returned an
+explicit `D1_ERROR: Currently processing a long-running import.` at **127 ms**,
+near baseline latency. That is exactly the fail signature the design specified:
+an error returned at baseline speed, rather than a slow call that eventually
+succeeds.
+
+| Measurement | Figure |
+|---|---|
+| Window | **15,044 ms**, bounded to plus or minus 1 s by the 1 s sample interval |
+| Failed samples | **15 consecutive**, out of 97 |
+| Import, server-side | **14,435.65 ms**, 5,548 queries, 1,957,340 rows written |
+| Database size after | **141.18 MB** (141,176,832 bytes) |
+| Baseline latency | p50 **43 ms** over 19 samples |
+| Post-import latency | p50 **~130 ms**, same `count(*)` against 1.96M rows |
+| Placement | `served_by_region` ENAM, colo EWR, `total_attempts` 1 |
+
+**NO STALENESS.** Reads went `count:0`, then error, then `count:1957340`, with no
+stale or partial value anywhere in the tail. The third outcome the probe was
+built to detect did not occur.
+
+**WHAT THIS MEANS FOR `stewardhouse-pilot`, stated without softening.** During an
+import against the pilot database:
+
+- **`/api/me` returns 500.** `me.js:43` calls `getSession` with no try/catch at
+  that level, so a D1 throw escapes the handler.
+- **The client reads that as logged out.** `AppShell.jsx:64` calls `res.json()`
+  with no `res.ok` check, so the 500 body fails to parse, lands in the `.catch`
+  at `:87-88`, sets `unauthenticated`, and renders
+  `<Navigate to="/signin" replace />` at `:133-134`.
+- **Sign-in fails too.** Magic-link writes its verification row through the same
+  binding, so the sign-in page returns its 5xx catch-all.
+
+**Every signed-in user is logged out and cannot log back in, for the duration of
+the import.** The demo tree is unaffected, because it reads fixtures rather
+than D1.
+
+**This doc does not rule on what to do about it.** The availability decision is
+FT's and goes to the team.
+
+### What the measurement does NOT establish
+
+Unchanged by the result, and stated as the design stated them:
+
+- **One table, against the pilot's 29.** Whether the error is per-database or
+  per-table remains unknown, and a single-table database cannot answer it.
+- **No concurrent traffic.** The pilot serves auth, `/api/me` and Operations at
+  the same time; contention was not reproduced.
+- **One sample, not a bound.** 15,044 ms is a single observation, and duration
+  will vary with load on Cloudflare's side.
+- **A fresh database**, with no Time Travel history, no accumulated bookmarks and
+  no prior imports.
+
+**FILED, and created by this renumbering:** five files under
+`scripts/d1-window-*` and `scripts/d1-window-worker/` cite "open item 1" in
+their docblocks, which now points at a different item. Those are code and were
+out of scope for this docs pass. The phrase to correct is "the experiment that
+settles open item 1".
+
 ## Open items
 
 Recorded as open. None of these is resolved here and none carries a
 recommendation.
 
-**Three items from earlier lists are CLOSED and are not restated as open**: peak
-storage and the swap design fork, both closed in section 1, and the `CREATE
-INDEX` timing, closed in section 1 by measurement. The rest keep their substance
-and are renumbered 1 through 5.
+**Four items from earlier lists are CLOSED and are not restated as open**: peak
+storage, the swap design fork and the `CREATE INDEX` timing, all closed in
+section 1, and availability during the load, closed in section 12 by
+measurement. The rest keep their substance and are renumbered 1 through 4.
 
-### 1. Availability during the load
+### 1. Whether the import rollback is a transaction or a compensating replay
 
-The import takes **the whole database offline**, not just Discover, on wrangler's
-own warning in section 7. **Operations writes are live in production.** So the
-load makes the platform unavailable to an operator mid-invite for as long as the
-import runs, and nobody has decided what that costs or when it may run.
+**NARROWED by the measurement in section 12, and the limit is precise.** The
+import committed ATOMICALLY on the success path: the row count was exact, no
+partial table was ever visible, and a read taken during the window returned an
+error rather than a prefix. **That establishes the SUCCESS path is atomic.**
 
-**UNRULED.**
+**It does NOT test the rollback claim, because nothing failed.** Section 7
+records the CLI asserting that a failed import returns the database to its
+original state, and the run gave it no failure to exercise. The two mechanisms
+still differ exactly where it matters: a transaction cannot leave residue, while
+a compensating replay can fail partway through its own compensation.
 
-### 2. Whether the import rollback is a transaction or a compensating replay
+**Success path proven. Failure path untested.**
 
-Section 7 records the CLI's claim that a failed import returns the database to
-its original state. **Which mechanism delivers that is unknown**, and the two
-differ exactly where it matters: a transaction cannot leave residue, while a
-compensating replay can fail partway through its own compensation.
-
-### 3. Whether `REVENUE_AMT` serves any v1 query
+### 2. Whether `REVENUE_AMT` serves any v1 query
 
 The expenses facet reads the XML, so it is not obvious that `REVENUE_AMT` is
 used by anything in v1. It is one of the seven ruled columns and is loaded
@@ -593,7 +656,7 @@ regardless.
 The first includes the second. They answer different questions and appear in
 different places in this doc deliberately.
 
-### 4. Whether absence-from-BMF is the entire revocation and deductibility signal
+### 3. Whether absence-from-BMF is the entire revocation and deductibility signal
 
 Ruling 1 makes BMF presence load-bearing: revoked organizations were measured
 absent from the BMF. Whether that absence is the WHOLE gate, or whether the
@@ -608,7 +671,7 @@ deductibility gate. Section 1's binding constraint removes that state, so the
 question no longer arises in that form. The gate question itself, above, is
 untouched by it.
 
-### 5. Whether retained Time Travel history counts toward the 10 GB ceiling
+### 4. Whether retained Time Travel history counts toward the 10 GB ceiling
 
 Section 1 puts peak at roughly seventeen times inside the ceiling, which is
 comfortable only if the ceiling counts what section 1 counts. **A replace-all of
