@@ -21,14 +21,32 @@
 // No indexes: their cost is already measured and would confound ingest time.
 import { createWriteStream } from 'node:fs';
 
-const ROWS = 1_957_340;
+const arg = (k, d) => { const m = process.argv.find((a) => a.startsWith(`--${k}=`)); return m ? m.slice(k.length + 3) : d; };
+
+// SHAPE. `insert` is the INSERT-only file the first run used and is the DEFAULT, so
+// that file stays byte-reproducible. `aside-swap` emits the RULED shape instead:
+// CREATE aside, INSERT into aside, DROP live, RENAME aside to live, all in ONE
+// file, which is the swap fork's binding constraint. It is a flag rather than a
+// second script because the row profile (means, exact NULL counts, deterministic
+// words) is the part that must not drift, and duplicating it creates two places
+// for it to drift. Only the surrounding DDL differs.
+const SHAPE = arg('shape', 'insert');
+if (SHAPE !== 'insert' && SHAPE !== 'aside-swap') { console.error(`--shape must be insert|aside-swap, got ${SHAPE}`); process.exit(1); }
+const LIVE = 'bmf', ASIDE = 'bmf_aside';
+const TARGET = SHAPE === 'aside-swap' ? ASIDE : LIVE;
+
+// ROW COUNT is overridable so a run can make the pre-import and post-import counts
+// DIFFER. The probe reads count(*), so if an aside-swap run loads the same count the
+// live table already holds, pre and post are identical and stale-read detection is
+// silently disabled (the analyzer guards on `EXPECT !== preCount`).
+const ROWS = Number(arg('rows', '1957340'));
 const NULL_REV = 569_235;
 const NULL_NTEE = 574_447;
 const NAME_MEAN = 30.477;
 const CITY_MEAN = 8.706;
 const STMT_TARGET = 30_000;            // ~30 KB per INSERT, the ruled chunk size
-const OUT = process.argv[2];
-if (!OUT) { console.error('usage: node scripts/d1-window-generate.mjs <out.sql>'); process.exit(1); }
+const OUT = process.argv.slice(2).find((a) => !a.startsWith('--'));
+if (!OUT) { console.error('usage: node scripts/d1-window-generate.mjs <out.sql> [--shape=insert|aside-swap] [--rows=N]'); process.exit(1); }
 
 const STATES = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA',
   'KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC',
@@ -57,11 +75,15 @@ for (let y = 1900; y <= 2026; y++) for (let m = 1; m <= 12; m++) { const v = y *
 
 const out = createWriteStream(OUT);
 let stmtCount = 0, maxStmt = 0, nameBytes = 0, cityBytes = 0, revNulls = 0, nteeNulls = 0;
-const HEAD = 'INSERT INTO bmf (ein,name,city,state,revenue_amt,ruling,ntee_cd) VALUES\n';
+const HEAD = `INSERT INTO ${TARGET} (ein,name,city,state,revenue_amt,ruling,ntee_cd) VALUES\n`;
 
 function write(chunk) { return out.write(chunk) ? Promise.resolve() : new Promise((r) => out.once('drain', r)); }
 
 const t0 = Date.now();
+if (SHAPE === 'aside-swap') {
+  await write(`CREATE TABLE ${ASIDE} (ein TEXT NOT NULL, name TEXT NOT NULL, city TEXT NOT NULL, state TEXT NOT NULL, revenue_amt INTEGER, ruling INTEGER NOT NULL, ntee_cd TEXT);\n`);
+  stmtCount++;
+}
 let buf = [], bufBytes = 0;
 
 async function flush() {
@@ -92,10 +114,17 @@ for (let i = 1; i <= ROWS; i++) {
   buf.push(row); bufBytes += rb;
 }
 await flush();
+if (SHAPE === 'aside-swap') {
+  // DROP and RENAME ship in this SAME file. Splitting them across invocations is
+  // what reintroduces the non-atomicity the swap fork closed.
+  await write(`DROP TABLE ${LIVE};\n`);
+  await write(`ALTER TABLE ${ASIDE} RENAME TO ${LIVE};\n`);
+  stmtCount += 2;
+}
 await new Promise((r) => out.end(r));
 
 console.log(JSON.stringify({
-  rows: ROWS, statements: stmtCount, maxStatementBytes: maxStmt,
+  shape: SHAPE, rows: ROWS, statements: stmtCount, maxStatementBytes: maxStmt,
   meanNameLen: +(nameBytes / ROWS).toFixed(3),
   meanCityLen: +(cityBytes / ROWS).toFixed(3),
   nullRevenue: revNulls, nullNtee: nteeNulls,

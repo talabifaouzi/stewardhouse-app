@@ -556,11 +556,15 @@ phase list, which is why the obligation is recorded here instead.
 **The experiment ran. The availability question is CLOSED, and the answer is the
 bad one.**
 
-**MODE: FAIL.** Not queue, not stale-read. Reads during the import returned an
-explicit `D1_ERROR: Currently processing a long-running import.` at **127 ms**,
-near baseline latency. That is exactly the fail signature the design specified:
-an error returned at baseline speed, rather than a slow call that eventually
+**MODE: FAIL.** Reads during the import returned an explicit
+`D1_ERROR: Currently processing a long-running import.` at **127 ms**, near
+baseline latency. That is exactly the fail signature the design specified: an
+error returned at baseline speed, rather than a slow call that eventually
 succeeds.
+
+**The FAIL finding is direct. The EXCLUSIONS of queue and stale-read are
+QUALIFIED**, for the threshold reason recorded below: a stall between roughly
+430 ms and 1 s would not have been classified either way.
 
 | Measurement | Figure |
 |---|---|
@@ -572,9 +576,31 @@ succeeds.
 | Post-import latency | p50 **~130 ms**, same `count(*)` against 1.96M rows |
 | Placement | `served_by_region` ENAM, colo EWR, `total_attempts` 1 |
 
-**NO STALENESS.** Reads went `count:0`, then error, then `count:1957340`, with no
-stale or partial value anywhere in the tail. The third outcome the probe was
-built to detect did not occur.
+**NO STALENESS, and this claim is WEAKER than it first reads.** The direct
+evidence stands: reads went `count:0`, then error, then `count:1957340`, and the
+tail samples returned 1,957,340 at roughly 130 ms with no stale or partial value.
+**What does NOT stand is the analyzer's classification**, because it ran under a
+threshold that could not see part of the range it was meant to classify.
+
+**The 1,000 ms absolute floor overrode the p50-based threshold.** With the
+measured 43 ms baseline, `p50 * 10` is 430 ms, but the floor forces the threshold
+to 1,000 ms, so **any stall between roughly 430 ms and 1 s was invisible to the
+classifier**. Demonstrated on a controlled log carrying a deliberate 600 ms
+stall:
+
+| Setting | Threshold | Reported | Anomalies | Window |
+|---|---:|---|---:|---:|
+| default floor 1,000 ms | 1,000 ms | `stale-read` | 1 | none |
+| `--slow-floor-ms=300` | 510 ms | `queue` | 15 | 3,091 ms |
+
+**The default missed the stall entirely and mislabelled the boundary as
+`stale-read`.** So the first run's single stale-read reading was a boundary
+artifact of the same kind, not a finding. The tail counts are direct evidence and
+survive; the classifier's verdict on that run does not.
+
+**The measurement was taken under a threshold that could not see part of the
+range it existed to classify.** That is stated plainly rather than folded into a
+caveat, because the figures above were reported before it was known.
 
 **WHAT THIS MEANS FOR `stewardhouse-pilot`, stated without softening.** During an
 import against the pilot database:
@@ -594,6 +620,42 @@ than D1.
 
 **This doc does not rule on what to do about it.** The availability decision is
 FT's and goes to the team.
+
+### The tighter measurement, planned and not yet run
+
+The window rests on **one sample at plus or minus 1 s**, from an import that did
+not match the real load's shape: it was INSERT-only into an empty table, while
+the ruled design ships DROP and RENAME in the same file against a table that
+already holds 1,957,340 rows.
+
+**Plan: three runs at `--interval=200` with `--slow-floor-ms=300`**, alternating
+`--rows` between **1,900,000** and **1,957,340** so the pre-import and
+post-import counts never match. That last part is not cosmetic: the analyzer
+guards stale detection on `EXPECT !== preCount`, so a run that loads the count
+the live table already holds **switches stale detection off silently.**
+
+**The realistic file shape is built and locally verified.**
+`d1-window-generate.mjs` gained `--shape=insert|aside-swap` and `--rows=N`; the
+default is unchanged and still byte-identical to the first run's file
+(`sha1 3732e243...`). The `aside-swap` shape emits CREATE aside, the INSERTs,
+then DROP live and RENAME aside to live, **all in one file**, which is the swap
+fork's binding constraint.
+
+| Check | Result |
+|---|---|
+| Statements | **5,551** (5,548 INSERT plus CREATE, DROP, RENAME) |
+| File size | **166,531,714 bytes**, 158.8 MB |
+| DROP against a full table | freed **34,422 pages**, against the ~33,000 estimate |
+| Peak during the swap | **68,845 pages**, both copies resident |
+| After | 1,957,340 rows intact, aside gone, `integrity_check` ok |
+
+**Three defects were caught while building this, and two would have shipped
+silently.** A `\Q...\E` pattern still interpolated `${ASIDE}` as a perl variable,
+because `\Q` quotes metacharacters and does not stop interpolation. A patch left
+real newlines inside template literals, which would have emitted `;\r\n` into the
+generated SQL and **broken `d1-window-verify-import.mjs`, which splits on
+`';\n'`**. The same patch left the file with mixed line endings, now normalised
+back to all-CRLF. Only the first would have failed loudly.
 
 ### What the measurement does NOT establish
 
