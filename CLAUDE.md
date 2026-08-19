@@ -44,6 +44,13 @@ Commands:
 - `npm run dev` — Vite dev server (auto-picks a port if 5173 is taken)
 - `npm run build` — production build; the only consistent warning is the
   pre-existing chunk-size note for the single-bundle output
+- **Pages dev server** (Functions + D1), which `npm run dev` does not cover:
+  ```sh
+  node node_modules/wrangler/wrangler-dist/cli.js pages dev --port 8788
+  ```
+  **Deliberately NOT an npm script:** `npm run` and `npx` both wrap it in a shell
+  chain whose tracked process exits, which is the §6 teardown defect. Verified
+  2026-08-19, `npm run pages` left 1 listener and 4 survivors after `TaskStop`.
 - **Node data verification pattern** (used in slice-verify scripts):
   ```sh
   node --input-type=module -e "import('./src/data/unified/index.js').then(({default: u}) => { ... })"
@@ -868,16 +875,40 @@ Stop background shells (dev server, watch loops) at bank time, and LAUNCH them
 as tracked background tasks so `TaskStop` applies at all. `TaskStop` is the
 first reach, never `kill`.
 
-**`TaskStop` success is NOT evidence the port is free (corrected 2026-08-17).**
-The sentence above assumed that stopping the tracked task stops what it spawned.
-For `wrangler pages dev` it does not. In the ops-guard smoke `TaskStop` reported
-`Successfully stopped task`, killed the tracked parent, and left the whole tree
-running: `npx`, `wrangler.js`, the miniflare node process, and TWO `workerd`
-children still holding port 8788. **A smoke must VERIFY teardown rather than
-report it: zero listeners on the port and zero `workerd` processes, observed.**
-Whatever survives is then stopped by PID, children first, after confirming by
-command line that each one belongs to this repo. Processes you did not start are
-left alone and named in the report instead.
+**`TaskStop` success is NOT evidence the port is free (corrected 2026-08-17,
+cause corrected 2026-08-19).** The sentence above assumed that stopping the
+tracked task stops what it spawned. Under `npx wrangler pages dev` it does not.
+**A smoke must VERIFY teardown rather than report it: zero listeners on the port
+and zero `workerd` processes, observed.**
+
+**The CAUSE is the start command, and the earlier account here was wrong.** It
+said `TaskStop` "killed the tracked parent". It did not: the tracked PID had
+ALREADY EXITED on its own. `npx` and `npm run` on Windows re-exec through a
+wrapper that exits once the chain is running, orphaning six levels of
+descendants, so the harness's tree-kill has no live ancestor to walk from and
+kills nothing at all.
+
+**The FIX is the start command, UNWRAPPED**, and §2 records it literally.
+Invoked with no wrapper, the harness's tracked shell stays alive as a real
+ancestor for the server's whole lifetime, so `TaskStop` works as designed.
+Verified on two consecutive runs: tracked PID alive at stop, whole tree gone
+afterward, port free, zero `workerd`, no manual recovery. `TaskStop` stays the
+first reach and nothing else enters this rule.
+
+**Both shortcuts were TESTED and both FAIL, so neither is a way around this.**
+`nohup npx wrangler pages dev` left every process alive with the port still held;
+`npm run pages` left 1 listener and 4 survivors. Wrapping the working command in
+a package.json script reintroduces the defect, which is why §2 carries a literal
+command rather than a script.
+
+**If verification fails anyway, whatever survives is stopped by PID after
+confirming by command line that each one belongs to this repo, processes you did
+not start are left alone and named in the report instead, and then you VERIFY
+AGAIN.** That walk UNDER-ENUMERATES, which is why it is a fallback rather than
+the answer: a `tasklist` snapshot misses children that exist at kill time. The
+2026-08-19 runs surfaced `esbuild` children under the miniflare host that no
+earlier instance had recorded, and an earlier by-hand walk had already missed
+two `workerd` children.
 
 **This is the §10 double-store incident arriving by a different route.** There
 the hazard was a second D1 store nobody knew was bound; here it is a second
@@ -1244,7 +1275,7 @@ Five hard-earned lessons from a night of failed browser screening attempts (2026
 - **In a deployment tail, `POST … - Ok` is NOT the success signal.** Added 2026-07-20. The top-level request line reads `Ok` even when the handler threw; the `(error)` lines beneath it carry the failure. **Absence of those lines is what success looks like.** Full diagnosis procedure — including how the thrown Resend status names the cause — is in **§11**.
 - **STANDING RULE: never verify a build from a truncated tail.** Added 2026-08-15. During the `494aa4f` work a build check ran `npm run build 2>&1 | tail -2`, which cut off a real esbuild failure and printed only the trailing stack frames; the agent read that as fine and moved past a BROKEN build. **Build verification reads enough output to see a failure, and a passing claim requires the actual result rather than a truncated view.** `tail -2` and `tail -3` are too short: an esbuild error puts the message ABOVE a stack trace, so the tail shows frames while the diagnosis scrolls past. Filter the noise instead of trimming the output (`grep -v "^    at "`), or read enough lines to reach the verdict line. Same principle as the deployment-tail rule above: absence of error lines is what success looks like, and **you cannot observe an absence in output you did not read.**
 - **STANDING RULE: a green build does not prove the module runs. Confirm every JSX identifier resolves.** Added 2026-08-15, immediately after the rule above because it is the failure that rule does NOT catch. **An undefined JSX identifier compiles.** `<Modal>` transforms to `jsx(Modal, …)`, and esbuild does not scope-check that `Modal` is bound, so a missing import produces a **clean build** and a **`ReferenceError` at first render of that branch**. Reproduction, this slice: the withdraw-invite confirm was written with `<Modal>` and **`Modal` was never imported**; `npm run build` reported 168 modules transformed and `✓ built in 3.79s`, and the failure would have surfaced only when an operator clicked a roster row. **Verification must therefore confirm that every JSX identifier in a changed file resolves to an import or a local definition**, which is a one-line check (collect `/<([A-Z][A-Za-z0-9]*)/`, collect the import bindings and `function [A-Z]…` declarations, diff the sets). This bites hardest on a branch the demo tree never renders, because nothing exercises it until the gated path is reached.
-- **STANDING RULE: `npm run build` does not verify `functions/`. Run the bundler that actually covers the code you changed.** Added 2026-08-16. `npm run build` is `vite build`, which bundles `src/` only. **Every Pages Function, every `_lib` module, and every endpoint is INVISIBLE to it**, so a green `npm run build` says nothing about whether server code compiles or loads. **The check for `functions/` is the wrangler bundle: either `npx wrangler pages functions build --outdir <dir>`, or a real `npx wrangler pages dev` start reading `wrangler.toml`.** Both print `Compiled Worker successfully`, and that line, not vite's, is the one that covers server code. **This gap was live for several slices before it was noticed**, including the invite delete endpoint (`1c9d69d`) and the expiry predicate (`311773c`). Both shipped "build clean" against a bundler that never read them, and both are the sharpest possible case: each touched ONLY `functions/` files, so the green build was bundling an entirely unchanged `src/` and reporting success about work it had not seen. **This is the third rule in the same family**, after reading output in full and confirming identifiers resolve. All three are about a green signal that does not mean what it appears to mean: the first is a signal you did not read, the second a signal that cannot see the defect, and this one a signal computed over different files entirely. Ask what the tool actually consumed before treating its verdict as verification.
+- **STANDING RULE: `npm run build` does not verify `functions/`. Run the bundler that actually covers the code you changed.** Added 2026-08-16. `npm run build` is `vite build`, which bundles `src/` only. **Every Pages Function, every `_lib` module, and every endpoint is INVISIBLE to it**, so a green `npm run build` says nothing about whether server code compiles or loads. **The check for `functions/` is the wrangler bundle: either `npx wrangler pages functions build --outdir <dir>`, or a real Pages dev start (the §2 command) reading `wrangler.toml`.** Both print `Compiled Worker successfully`, and that line, not vite's, is the one that covers server code. **This gap was live for several slices before it was noticed**, including the invite delete endpoint (`1c9d69d`) and the expiry predicate (`311773c`). Both shipped "build clean" against a bundler that never read them, and both are the sharpest possible case: each touched ONLY `functions/` files, so the green build was bundling an entirely unchanged `src/` and reporting success about work it had not seen. **This is the third rule in the same family**, after reading output in full and confirming identifiers resolve. All three are about a green signal that does not mean what it appears to mean: the first is a signal you did not read, the second a signal that cannot see the defect, and this one a signal computed over different files entirely. Ask what the tool actually consumed before treating its verdict as verification.
 - **STANDING RULE: smokes NEVER send real mail.** Added 2026-08-17. Any smoke that can reach a send path must override `SENDER_PROVIDER` BEFORE the first request, so a send is suppressed rather than attempted. **Reproduction:** the ops-guard smoke omitted it. Case 2 posted a valid `type:'advisor'` invite, `POST /api/invites` returned `emailSent:true`, and **Resend ACCEPTED a send to `case2-advisor@opsguard-smoke.invalid` and returned a message id.** A live outbound call was dispatched to a nonexistent domain and will bounce. **The `.invalid` TLD is NOT a guarantee the sender refuses the request**, and that assumption is precisely what made the omission feel safe: the address looks self-evidently undeliverable, so nothing seems to be at stake. Deliverability is the recipient mail system's problem and is decided long after the API call; the call itself happens regardless, against the real account, counting against real quota. **How the override behaves TODAY, which must be read before relying on it, because it works by accident rather than by design.** There is NO noop provider: `sender.js:24-31` accepts `'resend'` and `'cf-email'` only and THROWS `Unknown SENDER_PROVIDER` on anything else. An unrecognised value therefore suppresses the send by throwing inside `createSender`, BEFORE any network call, which is the right outcome reached through an error path. That is safe on the two invite paths, which wrap the send: `invites.js:184-198` catches and returns `emailSent:false` with the row standing, and `athletes.js` sends at `:308-310` inside a wider try whose catch at `:322-325` sets `invite:'failed'` with the athlete row standing. **It BREAKS the magic-link path**, which is unwrapped: `auth.js:399` calls `createSender` inside `sendMagicLink` with no try/catch, so the throw escapes and sign-in returns 500, which is the §11 failure chain exactly. A smoke that exercises sign-in therefore cannot use this override, and building a real noop provider is the proper fix, a code change no slice has made. **Citation corrected in passing:** §11 cites `auth.js:275` for the unwrapped send; at `537cc08` the send is `auth.js:420` and the `createSender` call is `:399`.
 
 ---
@@ -1256,9 +1287,10 @@ Three techniques from the P-2 Stage A migration work; bullet 1 corrected
 binds) and destructive schema rebuilds, distinct from §9, which is about
 browser screening of auth-gated surfaces.
 
-- **Identify the bound local D1 store from wrangler's startup banner.** `env.DB (stewardhouse-pilot)` means the binding was config-resolved. `env.DB (local-DB=stewardhouse-pilot)` means a `--d1` flag is in play and a DIFFERENT store is in use. Read that line before trusting any local store, and never infer the binding from a filename. **Why that line is authoritative:** the `.sqlite` filename under `miniflare-D1DatabaseObject/` is the Durable-Object id for `idFromName()` of the id string the invocation hands miniflare, under the fixed unique key `miniflare-D1DatabaseObject` (`miniflare/dist/src/index.js:85770`; `workers/shared/object-entry.worker.js`), and nothing else. Config-resolved commands (bare `pages dev`, `d1 execute --local`, `d1 migrations apply --local`) all pass `database_id` and converge on one file. A `--d1 BINDING=NAME` flag on `pages dev` does not: `wrangler-dist/cli.js:302057` assigns `database_id: ref`, putting the database NAME into the id slot. Verified empirically 2026-08-11: `8600684c-…` maps to `e7ff1add…`, `stewardhouse-pilot` maps to `7202f096…`. If a sidecar-mtime probe is used at all, it MUST be driven by the command whose binding is in question; a probe run through `d1 execute --local` proves nothing about `pages dev`, because that command and `d1 migrations apply --local` share one code path and their agreement is a tautology. Applying a migration to the wrong file produces a silent no-op: the schema looks unapplied and the smoke fails for reasons that have nothing to do with the SQL.
+- **Identify the bound local D1 store from wrangler's startup banner.** `env.DB (stewardhouse-pilot)` means the binding was config-resolved. `env.DB (local-DB=stewardhouse-pilot)` means a `--d1` flag is in play and a DIFFERENT store is in use. Read that line before trusting any local store, and never infer the binding from a filename. **Why that line is authoritative:** the `.sqlite` filename under `miniflare-D1DatabaseObject/` is the Durable-Object id for `idFromName()` of the id string the invocation hands miniflare, under the fixed unique key `miniflare-D1DatabaseObject` (`miniflare/dist/src/index.js:85770`; `workers/shared/object-entry.worker.js`), and nothing else. Config-resolved commands (the §2 start command, `d1 execute --local`, `d1 migrations apply --local`) all pass `database_id` and converge on one file. A `--d1 BINDING=NAME` flag on `pages dev` does not: `wrangler-dist/cli.js:302057` assigns `database_id: ref`, putting the database NAME into the id slot. Verified empirically 2026-08-11: `8600684c-…` maps to `e7ff1add…`, `stewardhouse-pilot` maps to `7202f096…`. **The start command changed on 2026-08-19 and the banner did not:** the §2 command and `npx wrangler pages dev` print byte-identical banners across all 29 lines (`sha1 96380160eb624388dc323a404c1821e343271797`), so this identification is unaffected by the switch. If a sidecar-mtime probe is used at all, it MUST be driven by the command whose binding is in question; a probe run through `d1 execute --local` proves nothing about `pages dev`, because that command and `d1 migrations apply --local` share one code path and their agreement is a tautology. Applying a migration to the wrong file produces a silent no-op: the schema looks unapplied and the smoke fails for reasons that have nothing to do with the SQL.
 - **Apply schema via `node:sqlite`, and run `PRAGMA foreign_keys=OFF` OUTSIDE a transaction.** The pragma is a no-op inside an open transaction and fails silently — SQLite neither errors nor warns. A table-rebuild that relies on it will then drop child rows. Set it first, **guard-assert that it actually took effect**, and only then begin the rebuild. (0016 did exactly this: four inbound child FKs, guard-asserted before DROP, child survival proven on a scratch copy, `foreign_key_check` empty afterward.)
 - **`VACUUM INTO` before any destructive rebuild — never `cp`.** A filesystem copy of a live SQLite database silently loses WAL contents: the copy looks intact and is missing the most recent committed writes. `VACUUM INTO` produces a consistent point-in-time snapshot. Use it for the scratch copy that proves a rebuild is non-destructive before touching the real store.
+- **The §2 start command runs an INTERNAL wrangler path, and that is the trade.** It invokes `node_modules/wrangler/wrangler-dist/cli.js` directly, which is a bundle path rather than a documented interface; `npx wrangler` is the supported invocation and is exactly the form §6 records as defective for teardown. **A wrangler upgrade may move or rename it.** The failure mode is benign and loud: the command fails to START, not to stop, so it cannot silently reintroduce the teardown hazard. **The check: if it stops working after an upgrade, verify the path exists before assuming anything else.** This section already depends on that same internal path at `wrangler-dist/cli.js:302057`, so the exposure is not new; what is new is that a start command now rests on it too.
 
 ### Filed — an invocation flag created a persistent second local D1 store (2026-07-16)
 
