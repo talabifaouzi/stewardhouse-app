@@ -2,7 +2,8 @@
 //
 // Part of the experiment recorded in section 12 of `docs/bmf-load-scoping.md`:
 // does a D1 import make concurrent reads QUEUE or FAIL, and how long is the
-// window. The experiment is DESIGNED, not ruled and not scheduled.
+// window. The experiment RAN, four times. The answer is FAIL, and section 12
+// carries the measured window.
 //
 // PHASE 0 (local preparation).
 // RUN: [agent-ok]. Local only. Touches no database and makes no network call.

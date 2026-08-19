@@ -832,6 +832,17 @@ their docblocks, which now points at a different item. Those are code and were
 out of scope for this docs pass. The phrase to correct is "the experiment that
 settles open item 1".
 
+**CLOSED, and the filing above UNDERCOUNTED. The undercount is recorded here
+rather than edited away.** It named five files and ONE phrase; the reality was
+five files and TWO phrases. `d1-window-analyze.mjs` also cited "open item 2" at
+`:28` and `:87`, stale in the OPPOSITE direction: rollback was item 2 and is now
+item 1, so those two pointed at the `REVENUE_AMT` question. **The filing caught
+the citations naming the item this renumbering CLOSED and missed the ones naming
+the item it MOVED**, which is the harder half to see, and the reason a stated
+count reads as an inventory when it is not one. All seven sites are fixed, and
+no replacement names an open-item number: five point at section 12, and the two
+in `d1-window-analyze.mjs` name the rollback question directly.
+
 ## Open items
 
 Recorded as open. None of these is resolved here and none carries a

@@ -25,8 +25,8 @@
 //    True staleness is the old count returned AFTER the import completes, which
 //    is what this now detects. The consequence is worth carrying into the
 //    ruling: during the window, a healthy atomic import and a stale bookmark are
-//    INDISTINGUISHABLE by count alone. Separating them needs open item 2
-//    (transaction vs compensating replay), so one run answers both.
+//    INDISTINGUISHABLE by count alone. Separating them needs the rollback
+//    question (transaction vs compensating replay), so one run answers both.
 
 // Phase 0 ANALYSIS — reduces a probe log to the experiment's deliverables.
 //
@@ -84,7 +84,8 @@ for (const r of s) {
   if (r.latencyMs > slowThreshold) { anomalies.push({ ...r, kind: 'queue' }); continue; }
   // STALE-READ is the pre-import count returned AFTER the import completed. During the
   // import, returning the old count is CORRECT if the import is atomic, so it is not an
-  // anomaly. Disambiguating those two requires open item 2 (transaction vs replay).
+  // anomaly. Disambiguating those two requires the rollback question
+  // (transaction vs compensating replay).
   if (IMP_E !== null && r.dispatchTs > IMP_E && preCount !== null && r.count === preCount && EXPECT !== preCount) {
     anomalies.push({ ...r, kind: "stale-read" });
   }
