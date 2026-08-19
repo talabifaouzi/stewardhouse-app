@@ -320,10 +320,12 @@ batch.** That is the XML route rather than BMF, but it is the same class of trap
 and the same script family will meet it.
 
 **Credential staleness mid-load is UNADDRESSED.** A `wrangler` OAuth token went
-stale and failed a `--remote` read in an earlier session. The same staleness
-arriving partway through a multi-minute load is not covered anywhere in this
-section, and the remote path in section 7 runs long enough for it to matter.
-Recorded, not solved.
+stale and failed a `--remote` read in an earlier session, and went stale TWICE
+MORE on 2026-08-19, failing a `--remote` write both times. Each was recovered by
+`npx wrangler login`. All three were instant and harmless because each hit the
+start of a short command. **The same staleness arriving partway through a
+multi-minute import would not be**, and nothing in this section covers it. The
+remote path in section 7 runs long enough for it to matter. Recorded, not solved.
 
 ## 5. Read-only verification after the load
 
@@ -490,6 +492,55 @@ should start from the spec rather than from what was there, and the name
 **This load yields THREE of the four facets.** Geography, recognition era, and
 name and city for the card. **The expenses facet reads the XML, not the BMF**, so
 the fourth waits on a second and much larger ingest.
+
+## 11. Live experiment artifacts, and the obligation to delete them
+
+**One of these exists on the Cloudflare account RIGHT NOW and bills for stored
+bytes.** Both are scaffolding for the open item 1 experiment rather than part of
+the build, and nothing in the plan depends on either surviving.
+
+| Artifact | Identifier | State |
+|---|---|---|
+| D1 database `bmf-window-probe` | `fb498c9d-0650-44c2-9a43-5090aa3c71b3`, region ENAM, created 2026-08-19 | **EXISTS.** Empty today; holds 1,957,340 synthetic rows during a run |
+| Probe Worker, public and unauthenticated, bound to that database | name not yet chosen | **ARRIVES WITH PHASE 3.** Does not exist yet |
+
+**BOTH ARE TEMPORARY AND MUST BE DELETED**, whether the experiment concludes or
+is abandoned.
+
+**Teardown is `[FT-only]`**, because every `--remote` write is FT-run per
+CLAUDE.md §6.15:
+
+```sh
+npx wrangler d1 delete bmf-window-probe
+npx wrangler d1 list
+```
+
+The Worker, once it exists, is deleted by `npx wrangler delete --name <its
+name>`. **That name is deliberately absent from the table above**: it has not
+been created, and inventing one would put a false identifier in a teardown
+record.
+
+**DO NOT PASS THE SKIP FLAG.** `d1 delete` takes `-y` / `--skip-confirmation`
+and `wrangler delete` takes `--force`; the flags differ, the hazard does not.
+**The confirmation prompt is the last guard against deleting the wrong
+database.** CLAUDE.md §6.10 records exactly what a confirmation answered without
+a human looks like: a `--remote` apply auto-answered yes in a shell with no
+stdin, printing `Using fallback value in non-interactive context: yes`. A delete
+is irreversible in a way that an additive migration is not.
+
+**DELETION IS VERIFIED BY TWO THINGS, NOT ONE.** The CLI reporting
+`Deleted 'bmf-window-probe' successfully.`, AND the name absent from
+`wrangler d1 list`. This is the apply-versus-list distinction from §6.10: a
+command's own output cannot be the proof that it worked, because it names the
+resource on the successful and the abandoned path alike. The Worker's equivalent
+list check should be confirmed when the Worker exists rather than guessed at
+here.
+
+**ABANDONMENT REQUIRES THE SAME TEARDOWN AS COMPLETION.** An experiment that is
+never ruled, or ruled against, leaves both artifacts standing and billing
+precisely as a finished one would. **The likeliest way these survive is that
+nobody decides anything**, and that is the case in which no one is reading a
+phase list, which is why the obligation is recorded here instead.
 
 ## Open items
 
