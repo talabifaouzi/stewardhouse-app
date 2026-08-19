@@ -266,7 +266,7 @@ which ruling 1 recorded from the start.
 
 **The build plan is `docs/bmf-load-scoping.md`** (2026-08-18, nothing built):
 the migration, the table shape, the swap, the script, what proves each step,
-and the six items left open.
+and the items left open.
 
 **No terms question stands in the way, and an earlier version of this section
 said one did.** It described the facets as waiting on an ingest that waited on
