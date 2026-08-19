@@ -553,54 +553,77 @@ phase list, which is why the obligation is recorded here instead.
 
 ## 12. The import window, MEASURED
 
-**The experiment ran. The availability question is CLOSED, and the answer is the
-bad one.**
+**The experiment ran, four times. The availability question is CLOSED, and the
+answer is the bad one.**
 
-**MODE: FAIL.** Reads during the import returned an explicit
-`D1_ERROR: Currently processing a long-running import.` at **127 ms**, near
-baseline latency. That is exactly the fail signature the design specified: an
-error returned at baseline speed, rather than a slow call that eventually
-succeeds.
+**THE WINDOW IS A RANGE, NOT A POINT: 14,359 to 17,647 ms**, across three runs of
+the ruled shape. Spread **3,288 ms**, which is **22.9% of the minimum**. **If a
+single figure is forced, use the MAXIMUM observed**, because the decision turns
+on how long users are locked out, not on how long they are locked out on average.
 
-**The FAIL finding is direct. The EXCLUSIONS of queue and stale-read are
-QUALIFIED**, for the threshold reason recorded below: a stall between roughly
-430 ms and 1 s would not have been classified either way.
+**Runs A, B and C are the primary evidence.** All three used the ruled
+aside-swap shape at 200 ms sampling, analysed at `--slow-floor-ms=300`, with
+stale detection genuinely enabled. Run 1 stays in the record below as the first
+observation, with its limits stated.
+
+| Run | File | Rows | Stmts | `sql_duration_ms` | Window | Bound | Baseline p50 | Anomalies |
+|---|---|---:|---:|---:|---:|---:|---:|---:|
+| **A** | A | 1,900,000 | 5,386 | 16,780.83 | **16,700 ms** | +/-218 ms | 117 ms | 81 |
+| **B** | B | 1,957,340 | 5,551 | 17,789.44 | **17,647 ms** | +/-221 ms | 121 ms | 86 |
+| **C** | A | 1,900,000 | 5,386 | 14,679.18 | **14,359 ms** | +/-219 ms | 124 ms | 70 |
+
+**MODE: FAIL, now REPRODUCIBLE rather than a single observation.** Three runs,
+three FAILs, and across all **239 error samples** exactly **one** distinct error
+string:
+
+```
+D1_ERROR: Currently processing a long-running import.
+```
+
+Reads fail at near-baseline latency rather than queueing, which is the fail
+signature the design specified.
+
+**NO STALENESS, now DIRECT rather than inferred.** Zero stale tail samples in all
+three runs, with detection genuinely enabled each time. **No partial counts**:
+each run returned only its two expected values and nothing between them. **No
+queueing inside any window.**
+
+### Run 1, the first observation, and why it is not the primary evidence
 
 | Measurement | Figure |
 |---|---|
-| Window | **15,044 ms**, bounded to plus or minus 1 s by the 1 s sample interval |
+| Window | **15,044 ms**, bound **+/-1,017 ms** at 1 s sampling |
 | Failed samples | **15 consecutive**, out of 97 |
 | Import, server-side | **14,435.65 ms**, 5,548 queries, 1,957,340 rows written |
 | Database size after | **141.18 MB** (141,176,832 bytes) |
-| Baseline latency | p50 **43 ms** over 19 samples |
-| Post-import latency | p50 **~130 ms**, same `count(*)` against 1.96M rows |
+| Baseline latency | p50 **43 ms** over 19 samples, reading an EMPTY table |
 | Placement | `served_by_region` ENAM, colo EWR, `total_attempts` 1 |
 
-**NO STALENESS, and this claim is WEAKER than it first reads.** The direct
-evidence stands: reads went `count:0`, then error, then `count:1957340`, and the
-tail samples returned 1,957,340 at roughly 130 ms with no stale or partial value.
-**What does NOT stand is the analyzer's classification**, because it ran under a
-threshold that could not see part of the range it was meant to classify.
+Run 1 was **INSERT-only into an empty table**, not the ruled shape, and its
+**stale detection was never enabled**, because it was analysed without the import
+window passed in.
 
-**The 1,000 ms absolute floor overrode the p50-based threshold.** With the
-measured 43 ms baseline, `p50 * 10` is 430 ms, but the floor forces the threshold
-to 1,000 ms, so **any stall between roughly 430 ms and 1 s was invisible to the
-classifier**. Demonstrated on a controlled log carrying a deliberate 600 ms
-stall:
+**Its classifier verdict does not stand, and the reason is recorded because it is
+a general trap.** The 1,000 ms absolute floor overrode the p50-based threshold:
+against a 43 ms baseline, `p50 * 10` is 430 ms, but the floor forced 1,000 ms, so
+any stall between roughly 430 ms and 1 s was invisible to the classifier.
+Demonstrated on a controlled log carrying a deliberate 600 ms stall:
 
 | Setting | Threshold | Reported | Anomalies | Window |
 |---|---:|---|---:|---:|
 | default floor 1,000 ms | 1,000 ms | `stale-read` | 1 | none |
 | `--slow-floor-ms=300` | 510 ms | `queue` | 15 | 3,091 ms |
 
-**The default missed the stall entirely and mislabelled the boundary as
-`stale-read`.** So the first run's single stale-read reading was a boundary
-artifact of the same kind, not a finding. The tail counts are direct evidence and
-survive; the classifier's verdict on that run does not.
+**The default missed the stall and mislabelled the boundary as `stale-read`**, so
+run 1's single stale-read reading was a boundary artifact of the same kind. Runs
+A, B and C settle the question directly instead.
 
-**The measurement was taken under a threshold that could not see part of the
-range it existed to classify.** That is stated plainly rather than folded into a
-caveat, because the figures above were reported before it was known.
+**Run 1's 43 ms baseline is not comparable to the later runs' 117 to 124 ms**,
+and the reason is the workload rather than time or path. It read an EMPTY table;
+they read a full one. Pooled across all four logs, `count(*)` returns in 43 ms
+against 0 rows and 118 to 123 ms against 1.9M, with the same count reading
+consistently across runs 37 minutes apart. **Every future run's baseline depends
+on what the table held before that import.**
 
 **WHAT THIS MEANS FOR `stewardhouse-pilot`, stated without softening.** During an
 import against the pilot database:
@@ -621,18 +644,69 @@ than D1.
 **This doc does not rule on what to do about it.** The availability decision is
 FT's and goes to the team.
 
-### The tighter measurement, planned and not yet run
+### The tighter measurement, run
 
-The window rests on **one sample at plus or minus 1 s**, from an import that did
-not match the real load's shape: it was INSERT-only into an empty table, while
-the ruled design ships DROP and RENAME in the same file against a table that
-already holds 1,957,340 rows.
+**Why three runs and not one: the variance is large.** Runs A and C used the
+**same file** against the **same starting table**, and differ by **2,102 ms
+server-side (14.32%)** and **2,341 ms observed (16.30%)**.
 
-**Plan: three runs at `--interval=200` with `--slow-floor-ms=300`**, alternating
-`--rows` between **1,900,000** and **1,957,340** so the pre-import and
-post-import counts never match. That last part is not cosmetic: the analyzer
-guards stale detection on `EXPECT !== preCount`, so a run that loads the count
-the live table already holds **switches stale detection off silently.**
+**The skipped R2 upload on C accounts for none of it.** Every window sits INSIDE
+its own `sql_duration`:
+
+| Run | Window minus `sql_duration` |
+|---|---:|
+| A | -81 ms |
+| B | -142 ms |
+| C | -320 ms |
+
+The upload completes before `action:ingest`, and the reported figure is
+`sql_duration_ms`, so the upload was never inside the measurement. C skipping it
+cannot shorten a number that never contained it. **The gap is run-to-run variance
+in server-side execution.**
+
+**What cannot be separated, said plainly.** There is no independent timing of the
+upload stage, so this argues from where that stage sits in the state machine
+rather than from a measurement of it. And there is no way to rule out a
+second-order effect correlated with having just uploaded, such as placement or
+cache warmth. With n=2 for that file, "variance" is the residual after removing
+the one thing that can be reasoned about.
+
+**SAMPLING PRECISION IS NO LONGER THE LIMITING FACTOR.** The bound is +/-219 ms
+against a 3,288 ms spread, so **variance dominates measurement error by about
+15x**, and finer sampling would buy nothing.
+
+**The DROP-then-RENAME shape cost is NOT established, and an earlier figure is
+WITHDRAWN.** Run 1 was 14,436 ms for 5,548 statements and 1,957,340 rows with no
+DROP. **Run C, which does include the DROP, came in at 14,679 ms, within 2% of
+it.** The shape cost therefore sits inside the variance. **The "about 20% per
+row" figure derived from run A alone is not supported by three runs**, and is
+withdrawn rather than carried forward with a caveat.
+
+### How the import window was derived, and how the derivation was checked
+
+The Tee'd wrangler output carries no timestamps, so import end was taken from the
+**file mtime**, and start from **end minus `sql_duration_ms`**.
+
+**Validated exactly.** Run A's `import-A.txt` mtime is `1787160909804`, matching
+the independently supplied end epoch at **delta 0 ms**.
+
+**The derivation is slightly conservative.** Runs B and C each carried one error
+sample **60 ms and 100 ms BEFORE** the derived start, so D1 began refusing
+marginally earlier than `end minus sql_duration` implies. The edges bracket the
+truth within roughly 100 ms, which is inside the +/-219 ms sampling bound.
+
+### The straggler fix, validated on real data
+
+Run B's baseline carried a **31-sample decaying queue**, draining from **6,086 ms
+to 1,147 ms** at 17:47:19. That is **2.5 minutes before its import** and
+unrelated to any import window. The median-based threshold absorbed it: `p50 *
+10` gave 1,210 ms and none of those samples reached it.
+
+**This is the straggler fix demonstrated on real data rather than on a stub.**
+Under the original p95-based threshold, that one burst would have set the bar
+past any real stall and silently disabled queue detection for the whole run.
+
+### The realistic file shape, verified locally before the runs
 
 **The realistic file shape is built and locally verified.**
 `d1-window-generate.mjs` gained `--shape=insert|aside-swap` and `--rows=N`; the
@@ -659,16 +733,19 @@ back to all-CRLF. Only the first would have failed loudly.
 
 ### What the measurement does NOT establish
 
-Unchanged by the result, and stated as the design stated them:
+Unchanged by three runs, and stated as the design stated them:
 
 - **One table, against the pilot's 29.** Whether the error is per-database or
-  per-table remains unknown, and a single-table database cannot answer it.
-- **No concurrent traffic.** The pilot serves auth, `/api/me` and Operations at
-  the same time; contention was not reproduced.
-- **One sample, not a bound.** 15,044 ms is a single observation, and duration
-  will vary with load on Cloudflare's side.
-- **A fresh database**, with no Time Travel history, no accumulated bookmarks and
-  no prior imports.
+  per-table is **exactly as unknown as after run 1**, and a single-table database
+  cannot answer it.
+- **No concurrent traffic.** The probe was the only reader, while the pilot
+  serves auth, `/api/me` and Operations at the same time.
+- **Nothing about the failure path.** All four imports succeeded, so the rollback
+  claim is untested and **open item 1 stays open**.
+- **No tail bound.** Three samples give a range, not a distribution. There is no
+  basis for a p99 or a worst case.
+- **One time of day, one region, one colo.** All three ran within 19 minutes, all
+  ENAM and EWR. No diurnal or placement variation.
 
 **FILED, and created by this renumbering:** five files under
 `scripts/d1-window-*` and `scripts/d1-window-worker/` cite "open item 1" in
