@@ -905,6 +905,79 @@ Every substantive change runs as a **slice**. The rhythm:
     because the protocol gates were never permission prompts. They are
     instructions in this document, and this rule says so explicitly so a future
     session cannot infer that a granted tool call is a granted decision.
+16. **CLAUDE.md IS NOT CAPPED AND IS NOT SPLIT. IT GROWS (FT-ruled 2026-08-21).**
+    The question was scoped read-only against the tree with a cap and a split as
+    the two candidate mechanisms. Neither was adopted.
+
+    **THE REASON, which IS the ruling rather than a preference for it.** This
+    file is the HANDOFF. The plan is to hire a human engineer through
+    industry-standard mechanisms, and that person will need the full context of
+    how this was built and why, not only the rules. Cutting rules, context or
+    process to manage file size would make the build history unreadable to the
+    person who most needs to read it. **A rule without its reason reads like
+    anyone's rule**, and what makes this document worth its length is that its
+    rules carry the incidents that produced them.
+
+    **WHAT THE RULING FORBIDS, stated plainly: removing existing rules, context
+    or process from this file in order to manage its size.** Size is not a reason
+    to cut. Nothing beyond that is forbidden by it.
+
+    **Two things it does NOT forbid, recorded as AVAILABLE rather than as
+    follow-up work.**
+    (1) **Navigability additions.** A table of contents, per-section character
+    counts, or a read-these-first ordering are ADDITIONS and are consistent with
+    the ruling. The handoff needs the full record in a form a newcomer can enter,
+    and entering is a different problem from length.
+    (2) **The relocation test for NEW material**, which is placement rather than
+    cutting: does this reason belong next to the rule, next to the CODE, or in
+    this doc? The AppShell retry ladder is the worked example. Its rationale went
+    into the docblock at `RETRY_DELAYS_MS`, putting the measured import window
+    where the next reader meets the constant rather than in a section someone
+    would have to already know to look up.
+
+    **RULED WITH THE ADVISORY TEAM, AND THE ROOM DID NOT CONVERGE. The dissent
+    is recorded because a ruling written without it reads as a consensus it did
+    not have.**
+    - **Morgan, Taylor and Drew** defended the narrative as load-bearing, Drew
+      from the position of someone who would READ this to understand what was
+      built.
+    - **Alex** opened arguing for a rule/narrative split, then moved toward
+      relocating reasons NEXT to what they govern rather than out of the file.
+      That movement is what became available item (2) above.
+    - **Aisha** proposed a per-section ceiling as the only cheap, local
+      mechanism.
+    - **Parker** reframed the problem as RETRIEVAL rather than size: a rule read
+      without its reason is a rule someone weakens.
+    - **James** wanted the fraction of sessions that actually read the narrative
+      sections MEASURED before any ruling. **It was not measured**, and the
+      ruling was made anyway.
+    - **JORDAN DISSENTED, and the dissent STANDS.** He argued this should not be
+      a slice at all right now, given the live §7 hex-literal violation and the
+      pilot gate on full platform functionality across four surfaces.
+
+    **The measurements the ruling was made against, so a later reader can see
+    what was known.** 156,323 characters at `62cb061`. The last split, `7ffe98e`,
+    removed 9,941 bytes by relocating the §7 defect queue to
+    `docs/filed-defects.md`, and that saving was consumed in five commits over
+    two days. Composition: a few KB of operative rules, roughly 55KB of incident
+    narrative, roughly 63KB of surface state, with §5 and §5.1 alone at 40.5% of
+    the file. **The 150k figure is a WARNING threshold, appears nowhere in this
+    repository, and is a property of the harness rather than of this project.**
+    What it costs is per-session context, unconditionally, because this file is
+    loaded in full at the start of every session whether or not any of it bears
+    on the task.
+
+    **One measurement CORRECTED against the tree, recorded rather than quietly
+    fixed.** The ruling was stated against a growth rate of roughly +2,600
+    characters per commit across the preceding three. **Recomputed at `62cb061`
+    those three deltas are +2,832, +4,459 and +3,434: a total of 10,725 and a
+    mean of +3,575.** The likely source of the lower figure is a FOUR-commit
+    denominator that includes `7bd0eaf`, a +2-character commit, which drags the
+    mean to +2,682. **The ruling is unaffected**, because it does not turn on the
+    rate; the difference is recorded so a reader who recomputes does not conclude
+    the record is wrong. All three commits were correct filings with no padding,
+    which is the observation the rate was offered to support, and the higher
+    figure supports it more strongly rather than less.
 
 Stop background shells (dev server, watch loops) at bank time, and LAUNCH them
 as tracked background tasks so `TaskStop` applies at all. `TaskStop` is the
