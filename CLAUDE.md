@@ -570,6 +570,55 @@ reading sitting in the doc CLAUDE.md points at rather than in CLAUDE.md itself.
 
 ## 6. Slice protocol (build discipline)
 
+**HOW THESE RULES HOLD: BY DISCIPLINE, NOT BY TOOLING (recorded 2026-08-21,
+re-verified at `9247b36`).** Read this before relying on any guardrail in this
+section or in §7.
+
+**Nothing in this repository automatically enforces anything.** No CI
+(`.github/workflows` does not exist), no git hooks (zero non-sample hooks), no
+husky, no Claude Code hooks (`.claude/settings.local.json` carries `permissions`
+and `allow`, nothing else), no lint config, no test runner. **None of that
+tooling is even INSTALLED:** `devDependencies` is three entries,
+`@vitejs/plugin-react`, `vite` and `wrangler`. The npm scripts are `dev`,
+`build` and `preview`.
+
+**The single automated check in existence is `npm run build`**, and the §9
+standing rule records that it is `vite build` and does not read `functions/` at
+all. **So every guardrail in §6 and in §7 is convention-only, and there is no
+subset worth naming, because the set is the whole set.**
+
+**THE SHARPER HALF: enforcement is uniformly convention, but what VARIES is
+whether a violation leaves a TRACE anyone could check afterwards.**
+
+**Eight of the seventeen rows below leave no trace at all**, and they are the
+rows that govern how a slice PROCEEDS: the git-state gate (1), audit and propose
+(2), verify (5), HOLD (6), the bank rule (13), the byte-identical standard of
+proof (14), the permission-mode categories (15), and the teardown block. For
+those, **"does the tree comply" is not a question the tree can answer.** They
+hold because a session follows them, and the only record that a session did is
+its own transcript.
+
+**Eight rows DO leave a trace, and every one of them held when checked at
+`9247b36`.** No commit carries `Co-Authored-By` or any other trailer since the
+rule entered at `e318d56` (2026-06-10). `main` has two merge commits and both
+predate the fast-forward-only rule. `migrations/` runs `0001` through `0018`,
+contiguous. A grep for hardcoded absolute surface nav literals under
+`src/surfaces/` returns nothing, so §6.11 holds across all four surfaces. The
+ninth row, write discipline (4), leaves only a weak trace: a diff shows
+truncation but cannot show what was left out on purpose.
+
+**THIS IS A POSTURE, NOT A DEFECT. Nothing here is broken, and the rules have
+held.** What is recorded is HOW they hold, so that a later audit does not
+rediscover it cold, and so that a human engineer inheriting this repo knows what
+to expect before trusting any rule to have been machine-checked. That is the
+same handoff reasoning as §6.16, and it is why this sits at the HEAD of the
+section rather than as another numbered rule: a reader meets it before relying
+on anything beneath it, and it is a fact about the rules rather than one of
+them.
+
+**This records the posture and stops there. Whether to ADD hooks, CI or lint is
+a separate decision, and nothing above argues for it.**
+
 Every substantive change runs as a **slice**. The rhythm:
 
 1. **Hard git-state gate.** Confirm current branch and HEAD before starting.
