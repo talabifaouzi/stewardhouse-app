@@ -10,12 +10,15 @@ This is where the queue recorded as unruled in
 moves") now lives. That doc is a point-in-time survey and is deliberately left
 unamended.
 
-**Two blocks below are CLOSED records, and one carries a TRIGGER TO WATCH note.**
-They exist to stop a future audit re-filing something already closed. Read
-"CLOSED 2026-08-17: the four Operations directory rows are NOT a keyboard defect"
-before re-filing those four files, and "CLOSED 2026-08-18: no modal opens through
-the BROWSER-AUTOMATION HARNESS" before treating a harness click that changes
-nothing as a product defect.
+**Three blocks below are CLOSED records, and one carries a TRIGGER TO WATCH
+note.** They exist to stop a future audit re-filing something already closed.
+Read "CLOSED 2026-08-17: the four Operations directory rows are NOT a keyboard
+defect" before re-filing those four files, and "CLOSED 2026-08-18: no modal opens
+through the BROWSER-AUTOMATION HARNESS" before treating a harness click that
+changes nothing as a product defect. The third, "CLOSED 2026-08-21: `AppShell.jsx`
+can now express the fetch failed", **keeps its original filing verbatim and
+therefore keeps that filing's PRE-FIX line numbers**, which is its own trap: read
+the closing note before opening any line it cites.
 
 ---
 
@@ -191,6 +194,12 @@ will re-flag these four files, because the grep cannot see the lead-cell `Link`
 or the `closest('a')` guard. This entry is what closes that loop: read it before
 filing them again.
 
+**CLOSED 2026-08-21 (`faacb67`): `AppShell.jsx` can now express "the fetch
+failed".** The filing below is preserved verbatim as the record of why the slice
+existed; it no longer describes the tree. **Every `AppShell.jsx` line number in
+it refers to the PRE-FIX tree** and will mislead anyone who opens the file at
+HEAD. `App.jsx:30` is the one citation that still holds.
+
 **Filed: `AppShell.jsx` cannot express "the fetch failed", so ANY 5xx reads as
 logged out.** `AppShell.jsx:63-64` calls `res.json()` on the `/api/me` response
 with no `res.ok` check, and both failure shapes converge on one state: an
@@ -207,3 +216,70 @@ the BMF availability work, where a D1 import makes `/api/me` return 500, and
 ruled OUT of that arc at `docs/bmf-load-scoping.md` section 13: the shell gains a
 third status so a failed fetch renders a retry state rather than a redirect.
 Touches one file. No endpoint, no migration.
+
+**What shipped.** A fourth status, `'unavailable'`, carrying one of two reasons.
+`fetch()` throwing is `'unreachable'`; a non-ok response is `'server'` and
+returns before `json()` is called; a 2xx whose body will not parse is also
+`'server'`, because the request arrived and the server answered and only the
+answer was unusable (`AppShell.jsx:138-159`). The `data && data.user` test is
+unchanged, so the legitimate 200-with-null still reaches `'unauthenticated'`
+(`:160`) and still redirects (`:330`). A failed fetch instead renders a retry
+panel at `:247`, which EARLY-RETURNS rather than mounting `AppIdentityProvider`,
+because roughly 35 sites treat provider presence as equivalent to
+`status === 'ready'`.
+
+Behind it is a bounded ladder of 1s/2s/4s/8s/16s (`:40`), six attempts and about
+31s cumulative, chosen so it clears the measured 14,359 to 17,647 ms BMF import
+window rather than capping inside it. At the cap the panel stops and offers Try
+again beside a link to sign-in; nothing retries afterward without a click.
+
+**What this does NOT close.** The BMF availability ruling itself
+(`docs/bmf-load-scoping.md` section 13) stands, along with both preconditions it
+put on a production load. And the panel it introduced has its own filing, the
+12px action-row spacing entry above, which is an affordance question rather than
+a behavioural one.
+
+**Filed: the AppShell retry panel puts a state reset and a navigation 12px
+apart.** The cap-state action row (`AppShell.jsx:292-306`) places the "Try again"
+`<Button>` and the "Sign in again" `<Link>` in one flex row with
+`gap: var(--sh-space-3)` (12px), separated only by a middot. **Both controls are
+CORRECT and were verified at `faacb67`:** Try again is
+`onClick={() => setAttempt(0)}` (`:298`), a pure state reset that re-runs the
+fetch in place, and the link is a client-side `<Link to="/signin">` (`:317`) that
+navigates away. So this is a spacing and affordance question, not a behavioural
+one.
+
+**What makes it worth filing is that the two outcomes are not similar.** A
+mis-hit on the link leaves the retry state entirely and lands on sign-in, which
+is a longer way back than the control the user meant to press. **A second
+observation for whoever picks it up:** the button takes `Button.jsx`'s default
+`size="normal"` (about 32px), which §7 marks as a deliberately non-compliant
+pointer-density size for inline row actions. This is not an inline row action; it
+is the only recovery control on a full-viewport panel, on a phone-first product.
+Whether it should be `size="lg"` belongs to the same question. No fix proposed.
+
+**Filed: the Marcus Thompson person row is structurally unclaimable, which is a
+dead end rather than a data state.** The production `person` row for Marcus
+Thompson carries `invite_email` NULL. The `user.create.before` hook
+(`functions/_lib/auth.js:303-321`, shipped `1c64296`, 2026-08-16) refuses
+`createUser` unless a `person` row exists whose `invite_email` matches the
+supplied address AND whose `auth_user_id` is NULL (`:308-313`). A NULL
+`invite_email` cannot match any supplied address, so the refusal at `:320` is
+unconditional for that row. The pre-send allowlist reaches the same result one
+step earlier: `functions/api/auth/[[route]].js:98-103` admits an address only if
+it has an `auth_user` row or a matching `person.invite_email`, and this row has
+neither.
+
+**No sign-in path recovers it.** Not a magic link, not an allowlisted send, not a
+retry. The only remedies are a write that gives the row an `invite_email`, or
+replacing the row.
+
+**No fix proposed, because the remedy is a ruling rather than a patch.** What has
+to be decided first is what Marcus's production row is FOR: a canonical demo
+record, a real claimable account, or a fixture that should never have had a
+production row at all. Each answer implies a different write, and one of them
+implies no write.
+
+**The MECHANISM is already recorded in CLAUDE.md §5, Advisor row.** This entry is
+the DEFECT record and deliberately does not restate the reasoning, so the two
+cannot drift apart.

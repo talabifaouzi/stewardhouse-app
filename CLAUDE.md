@@ -1232,7 +1232,7 @@ left explicitly open.
 
 ## 9. Browser screening runbook — lessons (2026-07-02)
 
-Five hard-earned lessons from a night of failed browser screening attempts (2026-07-02), plus three findings added 2026-07-20 (two session-minting, from P-2 screening; one log-reading, from the §11 auth incident), plus five STANDING RULES added 2026-08-15, 2026-08-16 and 2026-08-17 (browser automation; build-output reading; JSX identifier resolution; bundler coverage of `functions/`; smokes never send real mail). Any future FT-facing browser screen of an auth-gated surface must respect these, and the five standing rules bind every slice, screening or not:
+Five hard-earned lessons from a night of failed browser screening attempts (2026-07-02), plus three findings added 2026-07-20 (two session-minting, from P-2 screening; one log-reading, from the §11 auth incident), plus five STANDING RULES added 2026-08-15, 2026-08-16 and 2026-08-17 (browser automation; build-output reading; JSX identifier resolution; bundler coverage of `functions/`; smokes never send real mail), plus one DevTools technique added 2026-08-21 (reaching the AppShell retry panel). Any future FT-facing browser screen of an auth-gated surface must respect these, and the five standing rules bind every slice, screening or not:
 
 - **`localhost` vs `127.0.0.1` origin stranding.** `BETTER_AUTH_URL` in `.dev.vars` is `http://localhost:8788`. Better-auth's magic-link verify sets the session cookie on whichever origin served the verify request, then 302-redirects to `BETTER_AUTH_URL`. If FT clicked a link at `127.0.0.1:8788`, the cookie stuck to `127.0.0.1` but the redirect sent her to `localhost:8788` — different origin, no cookie carried, AppShell's `/api/me` returned null, bounce to `/signin`. **Always hand FT URLs on the SAME host as `BETTER_AUTH_URL`.** For local screening: use `localhost:8788` everywhere, never `127.0.0.1:8788`.
 - **Resend test sender (`onboarding@resend.dev`) delivers only to the registered address.** Plus-alias variants of the account owner's email (e.g. `talabifaouzi+morgan@gmail.com`) are treated as different addresses and rejected — `POST /api/auth/sign-in/magic-link` returns 500 because the sender throws. **Production invites REQUIRE a verified domain sender** — Resend's test sender is not a viable path for onboarding real pilot users. Verified domain needs to land before the first real invite goes out. **UPDATE (superseded 2026-07-15, invite-email slice):** this caveat is now STALE for the running environments — the verified domain sender has landed. Local `.dev.vars` `FROM_EMAIL=signin@steward-house.org` (a verified `steward-house.org` sender, not `onboarding@resend.dev`), and FT empirically delivered plus-address links on production 2026-07-15, so production is a verified sender too. The exact **production** `FROM_EMAIL` is a Cloudflare Pages dashboard var (NOT in `wrangler.toml`, not repo-readable) — confirm it reads `signin@steward-house.org` there before the first real external invite. (`.dev.vars.example` still shows the old `onboarding@resend.dev` placeholder — a stale template, harmless.) **See §11 (2026-07-20 incident):** production sender config lives in the Cloudflare Pages dashboard, is NOT repo-readable, and **drifts silently** — `RESEND_API_KEY` there fell out of sync with the active Resend key and took production sign-in down for ~5 days with no signal. A green local `.dev.vars` proves nothing about production.
@@ -1273,6 +1273,22 @@ Five hard-earned lessons from a night of failed browser screening attempts (2026
 - **`storeToken:'hashed'` makes a DB-token magic-link fallback impossible.** Added P-2 screening, 2026-07-20. Better-auth stores a SHA-256 **hash**, not the plaintext token. Reading that row and rebuilding a `/verify?token=…` URL therefore cannot work — the plaintext exists only in the email that was sent. When a screen needs a real session and email is unavailable, mint the session directly (bullet above); do not budget time for token recovery from D1. **Column correction (2026-08-15):** the hash lives in `verification.identifier`, NOT `verification.value` as this bullet said from 2026-07-20 until now; `value` holds `JSON.stringify({email, name})`. The recovery-is-impossible conclusion was right and is unchanged; only the column was wrong.
 - **RECOVERY is impossible, but FORWARD CONSTRUCTION works, and it is how a smoke exercises the claim hook.** Added 2026-08-15 (the `29ea526` smoke). The hash is one-way, so a token cannot be read back out of D1, but nothing stops writing the row from a token you already know. Better-auth computes `verification.identifier = base64url-nopad(SHA-256(token))` and `verification.value = JSON.stringify({ email, name })` (`node_modules/better-auth/dist/plugins/magic-link/index.mjs:32,58-66`; hasher at `dist/db/verification-token-storage.mjs:4-7`). So: pick a plaintext token, INSERT a `verification` row with that identifier plus a future `expires_at`, then `GET /api/auth/magic-link/verify?token={plaintext}&callbackURL=/`. Better-auth verifies it as genuine, and because `findUserByEmail` misses for a fresh address it calls `createUser`, which fires the `after` hook in `functions/_lib/auth.js`, meaning both the person claim AND `bindAthleteRows`. **This is the only way to exercise the claim hook without an email round-trip**, and it is precisely what a session mint cannot do: a minted session skips `createUser` entirely, so the hook never runs. Reach for the mint when a smoke needs an authenticated caller; reach for this when a smoke needs the CLAIM itself. Both are curl-only tools and neither is ever handed to FT for a browser screen.
 - **In a deployment tail, `POST … - Ok` is NOT the success signal.** Added 2026-07-20. The top-level request line reads `Ok` even when the handler threw; the `(error)` lines beneath it carry the failure. **Absence of those lines is what success looks like.** Full diagnosis procedure — including how the thrown Resend status names the cause — is in **§11**.
+- **Reaching the AppShell retry panel in DevTools: REQUEST BLOCKING, never
+  offline throttling.** Added 2026-08-21, verified live during the `faacb67`
+  verification. **Offline throttling CANNOT reach this panel.** It kills the
+  DOCUMENT request, so the app never loads and Chrome renders its own
+  `ERR_INTERNET_DISCONNECTED` page instead; there is no React tree running to
+  show a retry state at all. **Request blocking is the method:** right-click the
+  `/api/me` row in the Network panel, choose "Block request URL", then reload.
+  That fails exactly one request and leaves the page running, which is the state
+  the panel needs. **Which REASON it produces, so a screen knows what it is
+  looking at:** a blocked request makes `fetch()` reject, so this reaches the
+  panel's `'unreachable'` branch ("We couldn't reach the server"). The `'server'`
+  branch needs a response that ARRIVES and will not parse, which plain vite
+  produces for free by serving `index.html` at `/api/me`. **The distinction
+  generalizes past this panel:** throttling models a dead NETWORK, blocking
+  models a dead ENDPOINT, and any failure state that renders INSIDE the app can
+  only be reached by the second.
 - **STANDING RULE: never verify a build from a truncated tail.** Added 2026-08-15. During the `494aa4f` work a build check ran `npm run build 2>&1 | tail -2`, which cut off a real esbuild failure and printed only the trailing stack frames; the agent read that as fine and moved past a BROKEN build. **Build verification reads enough output to see a failure, and a passing claim requires the actual result rather than a truncated view.** `tail -2` and `tail -3` are too short: an esbuild error puts the message ABOVE a stack trace, so the tail shows frames while the diagnosis scrolls past. Filter the noise instead of trimming the output (`grep -v "^    at "`), or read enough lines to reach the verdict line. Same principle as the deployment-tail rule above: absence of error lines is what success looks like, and **you cannot observe an absence in output you did not read.**
 - **STANDING RULE: a green build does not prove the module runs. Confirm every JSX identifier resolves.** Added 2026-08-15, immediately after the rule above because it is the failure that rule does NOT catch. **An undefined JSX identifier compiles.** `<Modal>` transforms to `jsx(Modal, …)`, and esbuild does not scope-check that `Modal` is bound, so a missing import produces a **clean build** and a **`ReferenceError` at first render of that branch**. Reproduction, this slice: the withdraw-invite confirm was written with `<Modal>` and **`Modal` was never imported**; `npm run build` reported 168 modules transformed and `✓ built in 3.79s`, and the failure would have surfaced only when an operator clicked a roster row. **Verification must therefore confirm that every JSX identifier in a changed file resolves to an import or a local definition**, which is a one-line check (collect `/<([A-Z][A-Za-z0-9]*)/`, collect the import bindings and `function [A-Z]…` declarations, diff the sets). This bites hardest on a branch the demo tree never renders, because nothing exercises it until the gated path is reached.
 - **STANDING RULE: `npm run build` does not verify `functions/`. Run the bundler that actually covers the code you changed.** Added 2026-08-16. `npm run build` is `vite build`, which bundles `src/` only. **Every Pages Function, every `_lib` module, and every endpoint is INVISIBLE to it**, so a green `npm run build` says nothing about whether server code compiles or loads. **The check for `functions/` is the wrangler bundle: either `npx wrangler pages functions build --outdir <dir>`, or a real Pages dev start (the §2 command) reading `wrangler.toml`.** Both print `Compiled Worker successfully`, and that line, not vite's, is the one that covers server code. **This gap was live for several slices before it was noticed**, including the invite delete endpoint (`1c9d69d`) and the expiry predicate (`311773c`). Both shipped "build clean" against a bundler that never read them, and both are the sharpest possible case: each touched ONLY `functions/` files, so the green build was bundling an entirely unchanged `src/` and reporting success about work it had not seen. **This is the third rule in the same family**, after reading output in full and confirming identifiers resolve. All three are about a green signal that does not mean what it appears to mean: the first is a signal you did not read, the second a signal that cannot see the defect, and this one a signal computed over different files entirely. Ask what the tool actually consumed before treating its verdict as verification.
@@ -1425,6 +1441,67 @@ magic-link path and no failure stamp on a send, so the next outage is equally
 silent. Queued as a **near-term small build, deliberately NOT a P-7 arc
 slice**. Minimum viable shape: stamp send outcome the way the invite path
 already does, so a failure is visible in D1 without a live attempt.
+
+---
+
+## 12. Production account inventory
+
+**As of 2026-08-21.** Which production accounts can sign in, which cannot, and
+which are unverified. Distinct from §5.1's production GATE state, which records
+what a signed-in account may WRITE; this section records who can get in at all.
+
+**Provenance, stated because none of it is re-derivable from the repo.** The
+three confirmed rows below were verified by FT through live production sign-in on
+2026-08-21. The agent did not verify them and cannot: reading production D1 needs
+a `--remote` command, which is FT-run-only per §6.10 and §6.15.
+
+### Confirmed working
+
+Claimed and bound, so each passes the pre-send allowlist on its EXISTING-ACCOUNT
+branch (`functions/api/auth/[[route]].js:98-103`, the `auth_user` half of the
+UNION). That branch carries no expiry predicate, which is why none of these three
+is subject to the 30-day invite cutoff.
+
+| Address | Type | Reaches |
+|---|---|---|
+| `talabifaouzi@gmail.com` | `individual` | Individual surface |
+| `talabifaouzi+ops@gmail.com` | `ops`, displayed **Admin** | Operations, `$.ops.demo_gate = 1` |
+| `talabifaouzi+staff@gmail.com` | `staff` | Enterprise surface |
+
+**Signing in is not write access.** Per §5.1, only the ops row carries a gate at
+all: the staff row has none, so every enterprise write returns 403 for `+staff`
+today. `ops` is the DB enum value and Admin is the display label (the 2026-07-13
+naming ruling in §5); both appear in the table because a reader grepping for
+either should land here.
+
+### Uncertain, needs verification
+
+- **`talabifaouzi+screen@gmail.com`.** Minted 2026-07-15 as the create-invite
+  capstone test. It is bound if the claim walk completed; otherwise it is an
+  unclaimed invite, now past the 30-day cutoff, and refused at send.
+  **The discriminator is `created_at`, and it is not a formality:** the expiry
+  predicate admits a NULL `created_at` by deliberate decision
+  (`[[route]].js:89-91`, the eleven rows predating migration 0014), so a row
+  minted THROUGH the invite form carries a stamp and is expired, while a
+  hand-seeded row without one still passes. Which of the two this is decides the
+  answer.
+- **`talabifaouzi+morgan@gmail.com`.** Used for the advisor acceptance walk
+  2026-07-07. It did not appear among the five rows in the 2026-07-15 Accounts
+  view, so it is likely gone or was never persisted remotely.
+
+### Cannot sign in
+
+- **Marcus Thompson.** Structurally unclaimable: `invite_email` is NULL, so
+  neither the allowlist nor the claim hook can ever admit it. Filed at
+  `docs/filed-defects.md`; the mechanism is in §5's Advisor row. No sign-in path
+  recovers it.
+
+**One count is UNRECONCILED, and is left open rather than papered over.** §9
+records, from a read-only remote check on 2026-07-20, that FT held THREE claimed
+`type='individual'` rows. This inventory names ONE working individual address.
+The two are not necessarily in conflict, since a claimed row need not correspond
+to an address anyone still uses, but nothing here establishes what the other two
+are. Closing it needs a read-only remote SELECT, which is FT's to run.
 
 ---
 
