@@ -1028,6 +1028,59 @@ Every substantive change runs as a **slice**. The rhythm:
     which is the observation the rate was offered to support, and the higher
     figure supports it more strongly rather than less.
 
+    **THE 150k THRESHOLD, ANSWERED FROM THE HARNESS (2026-08-21, read-only).**
+    This closes the question the paragraph above leaves open. **The ruling is
+    UNAFFECTED and stands exactly as written**; what changes is that the cost is
+    now measured rather than assumed. Verified against the Claude Code binary at
+    `~/.local/bin/claude` and against the official docs at
+    `code.claude.com/docs/en/memory`. **One sentence above is made literally
+    false by this note and is deliberately left standing:** the ruling says the
+    figure "appears nowhere in this repository", which was true when written.
+    It is not edited, because its POINT was that the number is a property of the
+    harness with no repo-side source, and that remains exactly true.
+
+    **CLAUDE.md IS LOADED IN FULL. There is no truncation at any length.**
+    Proven four ways: the file's tail is present in context, all 15 headings
+    resolve, spot-checks at the 40k / 80k / 120k / 160k character offsets
+    resolve against disk, and the memory-block assembler in the binary builds
+    each block as `Contents of {path}{label}:` followed by `content.trim()`,
+    with no `.slice()` and no length test anywhere in that path. The docs say
+    the same in one sentence: the read limit "applies only to `MEMORY.md`.
+    CLAUDE.md files are loaded in full regardless of length".
+
+    **The 150k figure is a STATUS-LINE ADVISORY and nothing else.** It is a
+    warning item, `id:"large-memory-files"`, `tier:"warning"`. Its predicate has
+    exactly FOUR call sites in the binary and every one is display-only: its own
+    definition, the warning renderer, and one diagnostic line reading "Large
+    {file} will impact performance". Nothing gates loading, slices content, or
+    drops sections.
+
+    **The threshold FLOATS. It is not the number 150,000.** It computes as
+    `max(40,000, contextWindowTokens * 0.05 * charsPerToken)`, a
+    5%-of-context heuristic. On Opus 5 at 1M context, at 3 characters per token,
+    that is exactly 150,000, which is why the session warning reads 150.0k.
+    **It will read differently on a different model**, so a future session that
+    meets a different number has not found a changed rule.
+
+    **The only HARD ceiling is 4 MiB, and it DROPS rather than truncates.** A
+    memory file over 4,194,304 bytes returns skipped and never enters context at
+    all. This file at 165,262 bytes is 25x under it.
+
+    **The 164.0k in the warning is THIS FILE ALONE, never an aggregate.**
+    `~/.claude/CLAUDE.md` is empty, and an empty memory file is skipped before
+    its block is built, so it contributes nothing. The warning also prints one
+    line PER FILE by construction, so it could not report a sum.
+
+    **THE ONE HONEST COST, recorded unsoftened because it is the only thing that
+    argues against size.** The docs state that shorter files produce better
+    ADHERENCE, and that this content is delivered as context rather than as
+    enforced configuration. That is a claim about how RELIABLY instructions are
+    followed, not about whether they arrive. It is not truncation, and per the
+    ruling it is not a reason to cut. What it does is strengthen the case for
+    the NAVIGABILITY addition the ruling already records as available at item
+    (1): a table of contents and a read-these-first ordering serve adherence
+    directly, and they ADD rather than remove.
+
 Stop background shells (dev server, watch loops) at bank time, and LAUNCH them
 as tracked background tasks so `TaskStop` applies at all. `TaskStop` is the
 first reach, never `kill`.
