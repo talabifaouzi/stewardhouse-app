@@ -147,7 +147,7 @@ export default function Team() {
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               background: activeTab === t.id ? 'var(--sh-bronze)' : 'var(--sh-card)',
-              color: activeTab === t.id ? '#FFFFFF' : 'var(--sh-text-body)',
+              color: activeTab === t.id ? 'var(--sh-text-on-accent)' : 'var(--sh-text-body)',
               fontSize: 'var(--sh-text-xs)',
               fontWeight: 600,
               border: `1px solid ${activeTab === t.id ? 'var(--sh-bronze)' : 'var(--sh-card-border)'}`,

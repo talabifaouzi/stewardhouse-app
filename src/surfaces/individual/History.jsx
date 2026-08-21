@@ -134,7 +134,7 @@ Directed: ${100 - unrPct}%
         <p style={{
           fontFamily: 'var(--sh-font-serif)',
           fontSize: '36px',
-          color: '#FFFFFF',
+          color: 'var(--sh-text-on-accent)',
           fontWeight: 400,
           lineHeight: 1,
           marginBottom: '4px',
@@ -273,8 +273,8 @@ Directed: ${100 - unrPct}%
 
       {/* Reflection */}
       <Card padding="lg" style={{
-        background: '#FBF5E5',
-        borderColor: '#E8DDB8',
+        background: 'var(--sh-cream-tint)',
+        borderColor: 'var(--sh-cream-border)',
         marginBottom: 'var(--sh-space-4)',
       }}>
         <p style={{
@@ -321,7 +321,7 @@ function HeroStat({ value, label }) {
       <p style={{
         fontFamily: 'var(--sh-font-serif)',
         fontSize: 'var(--sh-text-xl)',
-        color: '#FFFFFF',
+        color: 'var(--sh-text-on-accent)',
         fontWeight: 400,
         lineHeight: 1,
         marginBottom: '4px',

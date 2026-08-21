@@ -285,7 +285,7 @@ export default function GivingModeler({ budget }) {
           <p style={{
             fontFamily: 'var(--sh-font-serif)',
             fontSize: '32px',
-            color: '#FFFFFF',
+            color: 'var(--sh-text-on-accent)',
             fontWeight: 400,
             lineHeight: 1,
           }}>

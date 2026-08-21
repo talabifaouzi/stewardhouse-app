@@ -41,6 +41,18 @@
   --sh-warning-text:   #A03C18; /* deep rust text on the warning tint */
   --sh-warning-border: #E8B6A1; /* warning hairline (Tag consumers; hand-rolled badge has none) */
 
+  /* Color — cream (Individual surface). A pale warm-yellow pair that no other
+     token carries: every existing warm value is bronze-brown or near-neutral
+     beige. TOKENIZED 2026-08, NOT DESIGNED AS A SYSTEM COLOR. Both values date
+     to 2026-05-07 (History.jsx and IndividualSurface.jsx, both predating
+     CLAUDE.md by nine days) and no commit message or doc records a reason for
+     them. They are tokens because a screen confirmed the three PathCard tones
+     read as visibly distinct, not because the palette was extended on purpose.
+     NOT --sh-bronze-tint (#F5EFE3), which is cooler and greyer and has 53
+     consumers; check which one you want before reaching for either. */
+  --sh-cream-tint:   #FBF5E5; /* pale warm yellow — learn tone, reflection card */
+  --sh-cream-border: #E8DDB8; /* cream hairline, both consumers */
+
   /* Color — text on accent (ADV-008 bundle 2). White text on a bronze button
      background. Distinct token from --sh-card (which is "card surface white")
      so the semantic intent is clear. */

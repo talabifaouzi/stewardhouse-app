@@ -809,7 +809,7 @@ function PulseCard({ value, label, primary }) {
         <p style={{
           fontFamily: 'var(--sh-font-serif)',
           fontSize: 'var(--sh-text-2xl)',
-          color: '#FFFFFF',
+          color: 'var(--sh-text-on-accent)',
           fontWeight: 400,
           marginBottom: '2px',
         }}>
@@ -904,7 +904,7 @@ function PathCard({ path }) {
 
   const toneColors = {
     reflect: { bg: 'var(--sh-bg-tint)', border: 'var(--sh-card-border)' },
-    learn: { bg: '#FBF5E5', border: '#E8DDB8' },
+    learn: { bg: 'var(--sh-cream-tint)', border: 'var(--sh-cream-border)' },
     act: { bg: 'var(--sh-bronze-tint)', border: 'var(--sh-bronze-border)' },
   };
   const tone = toneColors[path.tone] || toneColors.reflect;

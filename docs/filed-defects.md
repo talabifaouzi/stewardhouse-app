@@ -283,3 +283,55 @@ implies no write.
 **The MECHANISM is already recorded in CLAUDE.md §5, Advisor row.** This entry is
 the DEFECT record and deliberately does not restate the reasoning, so the two
 cannot drift apart.
+
+**Filed: TWELVE `rgba()` colour literals across five files, left standing by the
+cream-token slice.** That slice removed the last nine HEX literals from
+components. It did not touch `rgba()`, and the distinction is exactly where §7's
+two sentences part company. **"No hex literals in components" names hex
+specifically and is now satisfied.** The sentence above it, "Every color /
+spacing / radius / type-size goes through a `--sh-*` token", is not, and these
+twelve are what remain outside it.
+
+```
+  src/components/Card.jsx:29                        rgba(60, 50, 30, 0.06)
+  src/surfaces/landing/Landing.jsx:198              rgba(60, 50, 30, 0.06)
+  src/surfaces/individual/IndividualSurface.jsx:929 rgba(60, 50, 30, 0.05)
+  src/surfaces/individual/Plan.jsx:119              rgba(60, 50, 30, 0.04)
+  src/surfaces/individual/GivingModeler.jsx:278     rgba(255,255,255,0.7)
+  src/surfaces/individual/GivingModeler.jsx:298     rgba(255,255,255,0.7)
+  src/surfaces/individual/GivingModeler.jsx:308     rgba(255,255,255,0.95)
+  src/surfaces/individual/History.jsx:146           rgba(255,255,255,0.75)
+  src/surfaces/individual/History.jsx:163           rgba(255,255,255,0.7)
+  src/surfaces/individual/History.jsx:333           rgba(255,255,255,0.65)
+  src/surfaces/individual/IndividualSurface.jsx:820 rgba(255,255,255,0.75)
+  src/surfaces/individual/Team.jsx:164              rgba(255,255,255,0.3)
+```
+
+**Eight of the twelve are alpha-variant whites sitting directly beside figures
+the cream slice retokenised.** `IndividualSurface.jsx:820` is EIGHT lines from
+the `:812` swap and `History.jsx:146` is NINE lines from `:137`; both are the
+label text under the large serif number, on the same `--sh-bronze` panel. So a
+reader opening either file after the slice sees a tokenized figure and a
+hardcoded label in one glance, which is the shape most likely to be read as an
+oversight rather than as scope.
+
+**The open question, and it is a real one rather than a formality: whether
+alpha-variant whites want tokens at all.** There are FIVE distinct alphas across
+the eight white sites (0.3, 0.65, 0.7, 0.75, 0.95), which is either five tokens
+for eight consumers or one token plus an opacity convention the system does not
+currently have. The four dark sites are ONE colour at THREE alphas (0.04, 0.05,
+0.06) and are all box-shadow, which may be a different answer again. **No fix
+proposed**, and no naming proposed, because the count is what makes it a design
+question rather than a sweep.
+
+**COUNT CORRECTION, recorded because the undercount is instructive rather than
+embarrassing.** This was scoped as EIGHT sites in FOUR files, and both figures
+were wrong. The source was a diagnostic that deduplicated by VALUE
+(`sort -u -k2`), so it printed one site per distinct `rgba()` string and silently
+dropped every repeat: `GivingModeler.jsx:298`, `History.jsx:163`,
+`IndividualSurface.jsx:820`, and `Landing.jsx:198`. **The fifth FILE went with
+them**, which is why the scoping described "the same four files" when Landing is
+a fifth and is not an Individual-surface file at all. This is the §6 hazard
+verbatim, a diagnostic that did not count what it claimed to count, and it
+survived into a ruling because the deduplicated output looked like an inventory.
+A `grep -c` against the same pattern would have said twelve immediately.
