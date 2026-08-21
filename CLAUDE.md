@@ -594,10 +594,9 @@ Every substantive change runs as a **slice**. The rhythm:
 8. **Bank.** `git checkout main; git merge --ff-only {branch}; git push origin
    main; git branch -d {branch}`. Fast-forward only — refuse if anything
    intervened on main.
-9. **Audit branches are never merged or deleted.** `qa-audit-enterprise` and
-   `qa-audit-operations` are reference-only and remain on the local clone +
-   origin indefinitely. Findings flow into fix-bundle slices that branch off
-   `main`, not off the audit branch.
+9. **Audit branches are never merged or deleted.** The three audit branches are
+   reference-only. Findings flow into fix-bundle slices that branch off `main`,
+   not off the audit branch.
    **BULK-PRUNE HAZARD (recorded 2026-08-16).** Never delete an audit branch
    with a `git branch --merged` sweep. `--merged main` LISTS
    `qa-audit-enterprise`, because every one of its commits is reachable from
@@ -609,6 +608,42 @@ Every substantive change runs as a **slice**. The rhythm:
    survivors read as evidence that audit branches were left alone. All three,
    including `qa-audit-advisor` (which postdates the sentence above), are
    deleted BY NAME ONLY, and in practice never.
+   **CORRECTION 2026-08-21. The opening sentence USED to claim these branches
+   "remain on the local clone + origin indefinitely". That was FALSE when
+   written**, and it is recorded as a correction rather than edited away,
+   because what it hid is the useful part. Verified against the tree and against
+   `git ls-remote`.
+   **`qa-audit-operations` (`e7c9901`, 2 commits ahead of `main`) was LOCAL-ONLY
+   until 2026-08-21.** Its unique content, `docs/qa-audit-operations-2026-06-09.md`
+   at 431 lines, existed in exactly one clone for 73 days, and `main` does not
+   carry that file. It is now on origin. It WAS at risk and no longer is, and
+   the record of having been at risk is the reason this is a correction.
+   **`qa-audit-enterprise` (`c74058a`) is a DIFFERENT KIND OF OBJECT, and the
+   rule should say so.** It is an ancestor of `main` on the FIRST-PARENT line
+   with zero commits ahead: `main` was built directly on top of it, `33cb42f`
+   being the next commit. It is a label on a commit `main` already contains
+   rather than an unmerged branch, and its audit doc is present on `main`.
+   Pushing it would preserve nothing. **So "audit branches are never merged" was
+   never true of this one**, and the reason to keep it is naming, not retention.
+   **`qa-audit-advisor` (`deeb347`) is on origin**, local and remote
+   byte-identical, carrying its 405-line audit doc as its one commit ahead of
+   `main`.
+   **Why the BULK-PRUNE HAZARD paragraph did not catch this, which is the
+   transferable part.** It guards against DELETION and says nothing about a
+   branch never having been PUSHED. Those are different failure modes: one
+   destroys a ref that exists in two places, the other leaves a ref that only
+   ever existed in one. The paragraph's own reachability analysis is what makes
+   the distinction visible, since `--merged main` asks a question about `main`
+   and no question at all about origin. **A branch can be perfectly safe from
+   the sweep that paragraph describes and still be one disk failure from gone.**
+   **Branch inventory, recorded so the origin side is checkable rather than
+   assumed.** Origin carries four heads and zero tags: `main`,
+   `qa-audit-advisor`, `qa-audit-operations`, and `curriculum-materials-mock`
+   (`4754477`, 2026-05-23, "Curriculum: read-only materials display (mock)").
+   That fourth one is an ancestor of `main` with zero commits ahead, carries no
+   unique objects, and is referenced nowhere in this repo. **No disposition
+   proposed**; it is recorded so a later inventory meets it as a known quantity
+   rather than as a surprise.
 10. **Migration discipline (local-then-remote rule).** Any commit that ships a
     `migrations/NNNN_*.sql` file must either (a) include the corresponding
     `wrangler d1 migrations apply --remote` step in the same ship operation,
@@ -1148,6 +1183,19 @@ left explicitly open.
 ---
 
 ## 8. Key docs
+
+**Two pointers in this list resolve only from a BRANCH, never from `main`
+(recorded 2026-08-21).** `docs/qa-audit-operations-2026-06-09.md` and
+`docs/qa-audit-advisor-2026-06-13.md` are ABSENT from `main`; each exists only
+on its own audit branch. Both branches are on origin as of 2026-08-21, so
+nothing is at risk and a reader who has fetched all branches can reach both.
+**But a reader sitting on `main` and following either pointer finds no file**,
+which is a reachability condition rather than a defect. Resolving it would mean
+either committing the two docs to `main`, which §6.9's anti-merge posture argues
+against, or amending each pointer to name the branch that has to be checked out
+first. Neither is proposed here. `docs/qa-audit-enterprise-2026-05-30.md` is
+unaffected: it is present on `main`, for the reason recorded in §6.9's
+correction.
 
 - `docs/qa-audit-enterprise-2026-05-30.md` — 157-finding Enterprise audit (on
   `qa-audit-enterprise` branch; HEAD of audit). Exec-summary "Medium: 76" is a

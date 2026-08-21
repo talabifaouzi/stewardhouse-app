@@ -1069,6 +1069,66 @@ fetch as a logout, that was still wrong on every one of those three entry paths,
 and the fix is the same fix. A smaller population meeting a false logout is
 still meeting a false logout.
 
+## 14. ProPublica data freshness, from correspondence
+
+**Source: an email reply from Andrea at ProPublica, received 2026-08-21,
+answering FT's question about data lag. This is CORRESPONDENCE, not a published
+source**, and none of it has been independently verified against their API.
+Recorded as a finding rather than a ruling. It changes nothing that is built.
+
+**What she stated, in her terms:**
+
+1. The financial filings data in their older table comes from the **IRS SOI
+   annual extract** of tax-exempt organization financial data. That extract is
+   where the lag lives.
+2. Their site's front end pulls financials **directly from the electronic
+   filings they receive**, a different and fresher path than the table above.
+3. **Exempt status and deductibility code come from the IRS Business Master
+   File, which they update MONTHLY**, so those fields track the BMF itself.
+4. A **new API is planned**. No date was given; they will publicize on release.
+
+### Why it bears on the load, and where it does not
+
+**The three-source model treats IRS bulk data as the authoritative status gate
+and ProPublica as the floor.** Point 3 says ProPublica's STATUS fields track the
+BMF on a monthly cadence, and point 1 locates the lag in FINANCIALS, which the
+status gate does not read. **So for gate purposes specifically, and for
+organizations PRESENT in the BMF, the freshness gap between ProPublica and a
+direct BMF load is smaller than the word "floor" implies.**
+
+**THE QUALIFICATION IS LOAD-BEARING AND IS NOT A DETAIL.** It is the whole
+reason this finding does not contradict measured evidence already in the repo.
+`propublica-spike-findings.md` section 6 records that **31 of 40 auto-revoked
+organizations were served by ProPublica as `status=1`, `deductibility=1`**,
+including at its freshest snapshot, and states plainly that this "cannot be
+corrected by waiting for a fresher ProPublica snapshot."
+
+**Both are true, and the reconciliation is mechanical.** A monthly refresh FROM
+the BMF updates rows the BMF still contains. It does not delete rows that have
+DISAPPEARED from the BMF, and disappearance is precisely how the IRS expresses
+revocation, per ruling 1. **A monthly cadence can therefore be accurate for
+every present organization and still never propagate an absence.**
+
+**What that leaves.** For a present organization, Andrea's answer narrows the
+gap. For a revoked one it narrows nothing: the direct BMF load buys the entire
+gate, because absence is observable in no other source. The measured 31-of-40
+finding stands untouched, and so does fork 1 in the spike doc.
+
+### What this does NOT do
+
+**It does not resolve either precondition on a production BMF load.** Section 13
+gates the load on the rollback path (open item 1) and on the auth-observability
+gap filed in CLAUDE.md section 11. Nothing above addresses either, and this
+section must not be cited as bearing on them.
+
+**It does not re-open the load arc**, and it does not answer open item 3, which
+asks whether absence-from-BMF is the whole gate. If anything it sharpens that
+item without moving it.
+
+**The planned API is not a plan.** No date, no shape, no commitment beyond an
+intention to publicize. It is recorded so a future reader knows to check, not so
+that anything waits on it.
+
 ## Open items
 
 Recorded as open. None of these is resolved here and none carries a
