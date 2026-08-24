@@ -89,7 +89,7 @@ const DIANE_AUTH_USER = 'au-diane-staging';
 // Staleness is therefore handled by the ABORT MESSAGE below, which names both
 // causes so a count mismatch is never mistaken for a binding problem. That is
 // the whole mitigation, and it is deliberate rather than a compromise.
-const EXPECTED_MIGRATIONS = 18;
+const EXPECTED_MIGRATIONS = 20;
 
 const now = Date.now();
 const nowIso = new Date(now).toISOString();
@@ -271,10 +271,13 @@ for (const r of db.prepare(`SELECT id, person_id, management_mode, lessons_count
 }
 
 // In-enum confirmation, asserted rather than asserted-in-comments.
-const ENUM = new Set(['Invited', 'Active', 'Stalled', 'Sunset', 'Certified']);
+// Six values as of migration 0020, which appended 'Pending'. A five-value set
+// here would flag every imported row as out-of-enum against a CHECK that admits
+// it, which is a stale mirror reporting a failure the schema does not have.
+const ENUM = new Set(['Invited', 'Active', 'Stalled', 'Sunset', 'Certified', 'Pending']);
 const bad = db.prepare("SELECT id, enrollment_status FROM athlete WHERE id LIKE 'smk-%'").all()
   .filter((r) => !ENUM.has(r.enrollment_status));
-console.log(`\nenrollment_status all in-enum for 0016: ${bad.length === 0}${bad.length ? ' — ' + JSON.stringify(bad) : ''}`);
+console.log(`\nenrollment_status all in-enum for 0016/0020: ${bad.length === 0}${bad.length ? ' — ' + JSON.stringify(bad) : ''}`);
 
 db.close();
 console.log('\nSEED OK');

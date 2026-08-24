@@ -109,9 +109,13 @@ const TRIP = {
 //
 // See EXPECTED_MIGRATIONS in scripts/smoke-p3c-seed.mjs for the 2026-08-17
 // ruling that this stays a LITERAL and is never derived from migrations/.
+//
+// Bumped from 18 to 20 with the 0019 + 0020 slice: 0019_person_invited_at.sql
+// (R9 invitation clock) and 0020_athlete_pending_status.sql (six-value CHECK).
+// TRIP.migrations above stays 15 for the reason given there.
 const EXPECTED = {
-  migrations: 18,
-  lastMigration: '0018_client_consent_attested.sql',
+  migrations: 20,
+  lastMigration: '0020_athlete_pending_status.sql',
 };
 
 let failures = 0;

@@ -1,0 +1,61 @@
+-- Migration 0019: person.invited_at (R9, the invitation clock).
+--
+-- R9: THE INVITATION CLOCK GETS ITS OWN COLUMN. Until now the expiry predicate
+-- read person.created_at, which records when the ROW was created and not when
+-- the invitation was SENT. Those are the same instant only when the two happen
+-- in the same operation, which is exactly the assumption R9 removes. This
+-- column records the send.
+--
+-- WHAT THIS MIGRATION DOES NOT TOUCH: THE WINDOW. functions/_lib/auth.js:65-72
+-- governs how long an invitation stays live, and INVITE_EXPIRY_DAYS
+-- (auth.js:100) remains the SOLE home of that duration. This migration changes
+-- where the clock STARTS, never how long it runs. The start was ALREADY a
+-- column (created_at, since migration 0014), so this replaces one column with a
+-- more accurate one for the same role; no policy moves out of code and into the
+-- schema. Migration 0018's consent_attested_at is the cited precedent: a column
+-- records THAT something happened, while the policy governing it stays in code.
+--
+-- TEXT / ISO 8601 per 0014:15-18, and LOAD-BEARING rather than stylistic. The
+-- predicate at functions/api/auth/[[route]].js:100 performs a LEXICAL STRING
+-- COMPARISON against inviteCutoffIso() (auth.js:103-105), which returns
+-- .toISOString(). Any other representation (an epoch integer, a local-time
+-- stamp, an offset other than Z, a date-only form) compares wrong WITHOUT
+-- raising anything. There is no type error and no log line: the only symptom is
+-- an invitation that expires at the wrong moment, or never.
+--
+-- INERT ON ARRIVAL. The predicate edit at [[route]].js:100 is DEFERRED to a
+-- later slice. Until that lands, nothing reads this column. All 21 person read
+-- sites in functions/ (19 Kysely selectFrom('person'), 2 raw SQL) select named
+-- columns and NONE of them names invited_at. The identifier appears nowhere in
+-- functions/ or src/ at all: its only occurrences in the tree are inside this
+-- file, plus one filename mention in a smoke-guard comment. This migration adds
+-- a column and changes no behaviour.
+--
+-- WARNING, CARRIED FORWARD TO THE PREDICATE SLICE. Once the predicate reads
+-- COALESCE(invited_at, created_at), a send script that FAILS TO STAMP
+-- invited_at is SILENT. The row falls back to the original clock, ages from row
+-- creation rather than from send, and expires: precisely the failure R9 exists
+-- to prevent, reintroduced by an omission instead of by an error. The COALESCE
+-- fallback is what makes this column safe to ship AHEAD of the predicate, and
+-- it is the same property that will make a later send-path bug invisible. Both
+-- halves are true at once, and neither cancels the other. A slice that adds a
+-- send path owes this column a stamp, and no test will fail if it forgets.
+--
+-- NULLABLE, no NOT NULL, no DEFAULT, no index. Existing rows are not
+-- retroactively asserted an invitation instant, the same not-asserted idiom
+-- used by 0012, 0014 and 0018. No index because nothing looks a row up BY this
+-- column: the predicate selects on invite_email, which already carries a UNIQUE
+-- index (idx_person_invite_email, migration 0004).
+--
+-- ON THE NULL POPULATION, so a later reader does not misread it. The after-hook
+-- fresh-person INSERT at functions/_lib/auth.js:367-373 supplies five columns
+-- and OMITS created_at, so rows written there already land NULL on the old
+-- clock. All 6 person rows in the local dev store read created_at NULL, which
+-- means the ISO 8601 shape described above is derived from the writers and from
+-- 0014's docblock and has never been observed in local data.
+--
+-- LOCAL APPLY ONLY with this slice. The --remote apply is a SEPARATE FT-RUN
+-- step per CLAUDE.md §6.10 branch (b), and per the 2026-08-17 ruling recorded
+-- there the agent never runs a --remote migration apply.
+
+ALTER TABLE person ADD COLUMN invited_at TEXT;   -- ISO 8601; NULL = no invitation instant recorded
