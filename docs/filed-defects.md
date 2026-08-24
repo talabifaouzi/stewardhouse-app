@@ -452,3 +452,68 @@ inheriting the AppShell result. One `curl -i` against the running vite server
 answers it. Recorded here because the lever is cheap and will be reached for
 again, and because "it worked for AppShell" is precisely the reasoning that would
 carry the ambiguity forward.
+
+**Filed: the enterprise overview renders a null progression rate as the literal
+`null%`, at three sites that bypass the helper written to prevent exactly that.**
+Observed incidentally during the `844ea31` verification run, on the
+AUTHENTICATED enterprise overview with an empty roster: "null% of program" on the
+Actively progressing tile, and "GPS completed by 0 of 0 athletes (%)" on the
+supplementary line. **Verified against the tree rather than carried forward on
+the observation.**
+
+**This is a STATED-VERSUS-ACTUAL gap, not a cosmetic bug, which is why it is
+filed as such.** `enterpriseStats.js:50-51` states the rule in a docblock ("R4:
+`rateBaseTotal === 0` → rates are NULL … NEVER 0%") and `:55-57` implements it
+correctly, returning null. `RateDisclosure.jsx:14-18` then exports the display
+half, `fmtRate`, whose own docblock says a null rate "renders 'Not tracked',
+NEVER 'null%'". **The rule is stated twice in the code and the helper
+implementing it is exported from the same surface. Three render sites do not
+call it.** A bare `null%` is further from R4 than the `0%` R4 was written to
+forbid, and P-2 FORK 1 rests on the same denominator. This is the class P-0
+exists to close: the tree contradicting what the repo says about it.
+
+**The three sites, all the ELSE half of a `consentAware` ternary whose IF half is
+correct.** `EnterpriseOverview.jsx:95` and `EnterpriseRoster.jsx:93` are
+identical: the `consentAware` branch at `:94` / `:92` tests
+`activelyProgressingPct == null` and renders 'Not tracked', while the else falls
+through to an unguarded template literal. `EnterpriseOverview.jsx:118` is the
+same shape against `gpsRate`, its guarded twin being `:115-117`.
+
+**The two symptoms differ, and the reason is worth recording because it will
+confuse whoever greps for the string.** `:95` and `:93` are TEMPLATE LITERALS, so
+`${null}` stringifies to the four characters `null` and the user sees "null%".
+`:118` is JSX interpolation, where `{null}` renders NOTHING, so the same null
+value produces "(%)" with the literal percent sign left stranded. **One null,
+two different wrong outputs, and only one of them contains the word null.**
+
+**The trigger is exactly and only: the authenticated tree with ZERO athletes.**
+`enterpriseStats.js:38` derives `consentAware` as
+`athletes.some((a) => typeof a.claimed === 'boolean')`, and `[].some()` is false,
+so an empty roster takes the else branch while `:53` has already returned null
+for the zero denominator. A NON-empty authenticated roster is safe: every
+server-emitted element carries `claimed` (`functions/api/athletes.js:109`,
+`claimed: !!row.person_id`), so `consentAware` is true and the guarded branch
+runs. **The demo tree is unaffected** and this is not a fixture regression:
+fixtures omit `claimed`, so `consentAware` is false there too, but `rateBase`
+collapses to the full non-empty roster and the rates are real numbers.
+
+**REACHABLE IN PRODUCTION TODAY, and the urgency is higher than "empty state"
+suggests.** It needs no fresh local store: any production staff account whose
+institution has no `athlete` rows renders it on sign-in. **And that account
+cannot leave the state**, because enterprise writes are gated dark (§5.1: no
+staff row carries `$.enterprise.demo_gate`, so `POST /api/athletes` returns 403).
+So for a newly provisioned institution this is not an edge case reached by
+unusual data, it is the FIRST screen, and it is stuck until FT designates the
+gate. `+staff` on production is in exactly this position.
+
+**One near-miss NOT filed, checked so a later scan does not re-open it.**
+`ProgramSummary.jsx:99-100` reads the same two values and routes both through
+`fmtRate`, so it is correct. `CohortComparison.jsx:43-49,62-63` uses a bare
+`fmtPct` on `gpsRate` / `certRate`, but those come from SNAPSHOT rows, whose rate
+columns are NOT NULL (E-Write-5 zero-athlete guard writes 0), not from
+`computeStats`. Different source, not the same defect.
+
+**No fix proposed.** The shape is obvious (call `fmtRate` at the three sites),
+but the ruling is not: whether the else branch should render 'Not tracked' or
+whether a zero-athlete roster should render no rate line at all is a copy
+decision on the first screen a real institution ever sees.
