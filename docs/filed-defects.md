@@ -335,3 +335,120 @@ a fifth and is not an Individual-surface file at all. This is the §6 hazard
 verbatim, a diagnostic that did not count what it claimed to count, and it
 survived into a ruling because the deduplicated output looked like an inventory.
 A `grep -c` against the same pattern would have said twelve immediately.
+
+**CLOSED 2026-08-21: the `SignIn.jsx` + `Landing.jsx` `res.ok` item is NOT A
+DEFECT, and it was never filed here in the first place.** Both halves matter. The
+item existed ONLY in the body of `faacb67` ("Found and deferred to one follow-up
+slice, not fixed here: SignIn.jsx:39-47 and Landing.jsx:47-55"), and nowhere
+else: a grep of this file before this entry found no `SignIn`, no `get-session`,
+and no `Landing.jsx` outside the two `rgba()` rows. §7 names this file as where
+live items go. **A live item discoverable only by reading a commit message is a
+FILING gap, not merely a scoping one**, and this entry both files it and closes
+it so the gap is visible rather than silently repaired.
+
+**As filed, the fix is a NO-OP.** Adding `if (!res.ok) throw` sends the throw
+into the existing `.catch` (`SignIn.jsx:45-47`, `Landing.jsx:53-55`), which sets
+`'unauthenticated'`. That is the SAME state a parseable error body already
+reached through the ternary in the second `.then`, where `data.user` is
+undefined. Same state, same render, same pixels. The diff changes which line
+performs the assignment and nothing a user or a test can observe.
+
+**The asymmetry with AppShell is PRINCIPLED, not a matter of degree.** There the
+identical addition was load-bearing because the DESTINATION was wrong: the shell
+converged on `<Navigate to="/signin">`, telling a signed-in user they were logged
+out. Here the convergence destination is already correct at both sites, which is
+why the same two lines are worth shipping in one place and not the other.
+
+**`res.ok` is NOT a clean discriminator on this endpoint, for a reason the
+deferral did not anticipate.** The deferral's worry was that signed-out might be
+a non-2xx. It is not: signed-out is a 200 on BOTH paths, `session.mjs:43` (bare
+`return null`) and `:189` (`ctx.json(null)`, after `deleteSessionCookie` at
+`:181`). But `:233` throws `UNAUTHORIZED` immediately after
+`deleteSessionCookie(ctx)` at `:232`, when a refresh-due session was deleted
+concurrently. **That caller genuinely IS signed out** and their cookie is already
+gone. So a non-2xx exists whose correct reading is `'unauthenticated'`, and any
+fix mapping `!res.ok` onto an error state gets it wrong in the direction of
+showing a failure panel to someone who should be shown the sign-in form.
+
+**The verified endpoint contract, recorded because it is the expensive part of
+this pass and the reason the item was deferred at all.** `/api/auth/get-session`
+is entirely better-auth's: `functions/api/auth/[[route]].js` intercepts only
+`POST /api/auth/sign-in/magic-link`, and its own comment at `:41` says
+get-session passes straight through. The contract is therefore
+`node_modules/better-auth/dist/api/routes/session.mjs` (better-auth 1.6.20, route
+defined at `:17`). **`cookieCache` is DISABLED** (`functions/_lib/auth.js:169`),
+which kills the entire cached-session branch, and `deferSessionRefresh` is unset.
+Live paths only:
+
+```
+  :43        no session cookie                     200   body `null`
+  :181,:189  session missing from D1, or expired   200   body `null`
+  :190-197   valid, dontRememberMe/disableRefresh  200   {session, user}
+  :246-252   valid, refreshed or not needing it    200   {session, user}
+  :232-233   updateSession falsy (concurrent del)  401   error JSON
+  :254-257   any other throw                       500   error JSON
+  :40        POST without deferSessionRefresh      405   unreachable, both GET
+```
+
+The route's own OpenAPI block types the 200 body as `["object", "null"]` at
+`:28`. **The bare `return null` at `:43` is not an empty body:** `better-call`
+1.3.6 `dist/to-response.mjs:133-135` stringifies `null` and sets
+`application/json`, and `:157` returns a `Response` with no status, so the wire
+form is 200 carrying the four bytes `null`, which `res.json()` parses. Identical
+in shape to `/api/me`'s legitimate 200-with-null.
+
+**GREP CAUTION.** `session.mjs:306`, `:319`, `:331` and `:346` also throw
+`UNAUTHORIZED`, but they sit in `getSessionFromCtx` and the session-middleware
+helpers, NOT in the `/get-session` route handler, which ends at `:258`. A grep
+for `UNAUTHORIZED` in that file over-reports by four.
+
+**What each site's failure actually costs, both verified against the tree.**
+`SignIn` degrades safely BY ACCIDENT: `'unauthenticated'` is both the failure
+default and the correct answer for most `/signin` traffic, so the failure
+rendering and the correct rendering are the same page (the form at `:132`, which
+`'unauthenticated'` reaches by failing the `:112` and `:128` guards). A signed-in
+visitor loses only the `:129` convenience redirect. `Landing` is cosmetic: the
+whole consequence is which of two buttons occupies the reserved 37px at
+`:113-128`. **One caveat worth carrying:** the button offered on failure is
+"Already invited? Sign in", which navigates to `/signin`, so the recovery path
+routes THROUGH the other affected site. Still cosmetic; not self-contained.
+
+**Filed: `SignIn.jsx`'s session check has no timeout, and its checking state is a
+full-viewport takeover.** `SignIn.jsx:112-126` renders "Checking your session…"
+over the whole viewport while `sessionStatus === 'checking'`. A response that
+FAILS is handled; a fetch that HANGS is not. There is no timeout, no abort and no
+ladder, so a hung request leaves the user on that screen indefinitely with no
+form and no action. **`res.ok` does not touch this, because a hang never produces
+a response to test**, which is why it is filed separately from the item closed
+above rather than folded into it.
+
+**This is a STRICTLY WORSE outcome than the defect just closed**, and it is on
+the same file and the same fetch. Whoever opens `SignIn.jsx` should meet it here
+rather than rediscover it.
+
+**`Landing.jsx` is immune BY CONSTRUCTION, not by handling.** Its `'checking'`
+branch renders `null` at `:127` inside the box at `:113-118`, whose
+`minHeight: '37px'` reserves the space either way, so a hang there shows a page
+with no button. That is the cosmetic outcome again.
+
+**No fix proposed.** Found during the 2026-08-21 scoping pass on the item closed
+above, and deliberately not investigated on its own.
+
+**Filed: the plain-vite lever does not establish WHICH failure branch it
+produced, and `faacb67`'s verification inherited that ambiguity harmlessly.**
+That commit recorded "Plain vite, `/app/individual` reaches the panel with reason
+`'server'`". In `AppShell.jsx`, `'server'` covers BOTH a non-ok response AND a
+2xx whose body will not parse, so reaching it does not establish which one plain
+vite actually returned at the endpoint.
+
+**Harmless there, because AppShell treats the two identically.** Not harmless
+anywhere the two are DIFFERENT branches, which is exactly the position the
+`res.ok` item above would have been in had it shipped: `res.ok` tests one of them
+and not the other, so a lever that might be exercising either proves neither.
+
+**The rule this implies, for any future slice reaching for it:** establish the
+ACTUAL status code plain vite returns at the endpoint under test, rather than
+inheriting the AppShell result. One `curl -i` against the running vite server
+answers it. Recorded here because the lever is cheap and will be reached for
+again, and because "it worked for AppShell" is precisely the reasoning that would
+carry the ambiguity forward.
