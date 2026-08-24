@@ -34,9 +34,40 @@ export default function SignIn() {
     urlError ? (ERROR_MESSAGES[urlError] || 'Something went wrong. Please try again.') : null
   );
 
+  // BOUNDED BY AbortSignal.timeout, because the state machine above has no
+  // way to observe a hang. A request that FAILS settles and lands in the
+  // .catch below, which sets 'unauthenticated' and renders the form, the
+  // correct page for most /signin traffic. A request that HANGS never
+  // settles, so neither handler runs, sessionStatus stays at its initial
+  // 'checking' forever, and the full-viewport takeover below stays up over
+  // the only recovery page in the product: no form, no ?error= copy, and no
+  // way out. Nothing in the chain could observe that before this signal.
+  //
+  // 5000ms IS RULED. Well past any healthy round-trip to Pages, and well
+  // inside the interval where a user abandons an unexplained full-screen
+  // message. Do not trim or inflate it without answering both halves: a
+  // shorter N bounces a slow-but-live connection to the form while a valid
+  // session exists, and a longer N is time spent on a screen that offers
+  // nothing to do. AppShell.jsx uses the same interval for the same
+  // reasons; the two are deliberately identical and move together.
+  //
+  // NO NEW STATE, BY CONSTRUCTION. AbortSignal.timeout() rejects with a
+  // TimeoutError DOMException, which is a rejection like any other and
+  // lands in the EXISTING .catch. A hang therefore takes the path a failure
+  // already took: no new status value, no new branch, no new copy, and no
+  // timer of our own to clear in the cleanup below.
+  //
+  // BFCACHE: the timeout counts ACTIVE time and pauses while the document
+  // sits in the back-forward cache (MDN). SignIn has no pageshow handler of
+  // its own, unlike AppShell, so a restored page resumes the remaining
+  // budget rather than arriving already expired. That is the behaviour we
+  // want here.
   useEffect(() => {
     let cancelled = false;
-    fetch('/api/auth/get-session', { credentials: 'include' })
+    fetch('/api/auth/get-session', {
+      credentials: 'include',
+      signal: AbortSignal.timeout(5000),
+    })
       .then((res) => res.json())
       .then((data) => {
         if (cancelled) return;

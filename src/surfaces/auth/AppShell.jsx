@@ -99,7 +99,8 @@ export default function AppShell() {
   //
   // REASON MAPPING, in evaluation order.
   //
-  //   fetch() throws            -> 'unreachable'. The request never landed.
+  //   fetch() throws            -> 'unreachable'. The request never landed,
+  //                                or it timed out. See the signal below.
   //   !res.ok                   -> 'server', returning BEFORE json() runs.
   //   res.ok, res.json() throws -> 'server'.
   //
@@ -135,7 +136,42 @@ export default function AppShell() {
     async function load() {
       let res;
       try {
-        res = await fetch('/api/me', { credentials: 'include' });
+        // BOUNDED BY AbortSignal.timeout. The mapping above is complete for
+        // a request that SETTLES, and fail() is reachable only from the
+        // three settled outcomes it names, so before this signal a hang
+        // parked on this await: no rung was ever scheduled, status stayed
+        // at its initial 'loading', and the takeover below rendered
+        // indefinitely. faacb67 bounded FAILURE on the ladder and left HANG
+        // untouched. Found during the 2026-08-24 scoping pass on the
+        // sibling defect in SignIn.jsx, not by that commit.
+        //
+        // 5000ms is the same ruled interval as the session check in
+        // SignIn.jsx, for the same reasons; the two are deliberately
+        // identical and move together.
+        //
+        // A TIMED-OUT ATTEMPT IS A FAILED ATTEMPT AND CONSUMES A RUNG.
+        // TimeoutError is a DOMException and rejects, so it lands in the
+        // catch below and reaches fail('unreachable') exactly as a dead
+        // network does, and fail() reads RETRY_DELAYS_MS[attempt] and
+        // schedules the next attempt without caring which failure it was.
+        // Deliberate: a request that has not answered in 5s is not
+        // distinguishable from here from one that never landed. The user
+        // reaches the retry panel at ~5s rather than after the whole
+        // ladder. If EVERY attempt hangs, the ladder costs 6 x 5s of fetch
+        // time on top of its ~31s of delays, so the TERMINAL panel arrives
+        // at ~61s rather than ~31s. That is the price of bounding a hang at
+        // all, and it replaces an unbounded wait rather than lengthening a
+        // bounded one.
+        //
+        // BFCACHE: the pageshow handler below forces a full reload on a
+        // bfcache restore, which tears down the document and any pending
+        // signal with it. So MDN's pause-in-bfcache behaviour never decides
+        // anything here, because the reload preempts it. SignIn has no such
+        // handler and does rely on that pause.
+        res = await fetch('/api/me', {
+          credentials: 'include',
+          signal: AbortSignal.timeout(5000),
+        });
       } catch {
         if (!cancelled) fail('unreachable');
         return;
