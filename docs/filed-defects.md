@@ -122,6 +122,21 @@ things. Two shipped as fixes: the Discover score, cutoff and sort (recorded in
 function with zero consumers, DELETED in this slice. The other two are recorded
 here because nothing else in the repo holds them.
 
+**RULED 2026-08-26: filing (a) below is no longer UNRULED. The ordering STANDS
+and the constant is RENAMED.** The filing is preserved verbatim beneath this
+block as the record of the question, so it still opens with the word UNRULED and
+still names the constant STATUS_PRIORITY. **That constant is now STATUS_ORDER**
+(F-B, CLAUDE.md §5.2); read every STATUS_PRIORITY reference in the filing below
+as STATUS_ORDER. FT's answers to the three sub-questions the filing poses:
+
+1. Ordering athletes by a status each of them holds is materially different
+   from ranking them. The status is a fact of the record; no score or rank
+   number is rendered. The ordering STANDS.
+2. The harm §7 guards against is the JUDGMENT an ordering implies, not the
+   order a staff member sees.
+3. The constant SHALL stop being called priority. STATUS_PRIORITY ->
+   STATUS_ORDER.
+
 **(a) UNRULED: `EnterpriseRoster.jsx:65-69` orders athletes by journey status,
 best first.** It sorts on `STATUS_PRIORITY[statusFor(a)]`
 (`athleteStatus.js:12-18`: Certified 1, Actively progressing 2, Not yet active

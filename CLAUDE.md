@@ -568,6 +568,54 @@ reading sitting in the doc CLAUDE.md points at rather than in CLAUDE.md itself.
 
 ---
 
+## 5.2 ARC: ENTERPRISE ROSTER IMPORT (FT-ruled 2026-08-26)
+
+Arc: Enterprise roster import. Repo baseline 2917747. Scoping closed across
+three agent passes (Q1-8, G1-6, H1-2). Migrations 0019 (person.invited_at)
+and 0020 (athlete CHECK adding 'Pending') applied and agent-verified on local
+D1 (20 migrations, six-value CHECK confirmed). Remote application is per FT's
+record; --remote reads are FT-run only and this was not agent-verified.
+
+**Mechanism:** the load-bearing site is statusFor's BRANCH ORDER
+(src/surfaces/enterprise/shared/athleteStatus.js, statusFor), not STATUS_MAP.
+The earlier "one API-layer hole at athletes.js:106" framing is RETIRED —
+athleteStatus.js short-circuits on a.lessons === 0, true for every imported
+athlete, so a new map key alone is never consulted.
+
+**F-A RULED (a):** statusFor learns a 'Pending' branch, placed FIRST, before the
+certified branch. Rationale: enrollment_status 'Pending' is a deliberate
+staff-set relationship fact under FORK 2 and dominates any milestone-derived
+label. Placing it first surfaces the F-C anomaly rather than laundering a
+Pending athlete with lessons > 0 into a healthy-looking label — the failure
+class FORK 2's `?? 'active'` removal killed.
+
+**DISPLAY LABEL RULED:** "Not yet invited". Chosen over 'Pending' because
+accessLabel (same file) already returns 'Pending choice' on the consent/claim
+axis, and the two render adjacently — AthleteProfile (status badge and Access
+line) and EnterpriseRoster (ACCESS_COLUMN is inserted directly after Status
+on the auth tree). The column value stays 'Pending'; accessLabel is untouched.
+
+**CLIENT TOKEN RULED:** STATUS_MAP.Pending = 'pending'. Lowercase 'pending' is
+already in use on three sibling entities (workshop follow-ups, grant reports,
+grant acknowledgments) but never on the athlete-status axis — the only
+a.status comparisons in the tree are 'invited' and 'inactive'.
+
+**F-B RULED:** STATUS_PRIORITY is renamed STATUS_ORDER. 'Not yet invited' is
+appended at 6; 'Invited' stays at 5; nothing is renumbered. Pending sits
+earlier in the journey than Invited, so under a best-first sort it orders last.
+
+**§7 filing (a) RULED, closing an item open since 2026-08-18:**
+
+1. Ordering athletes by a status each of them holds is materially different
+   from ranking them. The status is a fact of the record; no score or rank
+   number is rendered. The ordering STANDS.
+2. The harm §7 guards against is the JUDGMENT an ordering implies, not the
+   order a staff member sees.
+3. The constant SHALL stop being called priority. STATUS_PRIORITY ->
+   STATUS_ORDER.
+
+---
+
 ## 6. Slice protocol (build discipline)
 
 **HOW THESE RULES HOLD: BY DISCIPLINE, NOT BY TOOLING (recorded 2026-08-21,
