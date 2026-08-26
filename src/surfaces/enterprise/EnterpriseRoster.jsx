@@ -12,7 +12,7 @@ import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 import { formatDate } from '../../utils/formatDate.js';
 import { computeStats } from './shared/enterpriseStats.js';
 import RateDisclosure from './shared/RateDisclosure.jsx';
-import { statusFor, STATUS_PRIORITY, accessLabel } from './shared/athleteStatus.js';
+import { statusFor, STATUS_ORDER, accessLabel } from './shared/athleteStatus.js';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 import AddAthleteModal from './AddAthleteModal.jsx';
 
@@ -63,7 +63,7 @@ export default function EnterpriseRoster() {
   const stats = computeStats(athletes);
   const { tot, certD, stalled, onTrack, notStarted, activelyProgressingPct, consentAware, rateActive, rateBaseTotal } = stats;
   const sortedAthletes = useMemo(() => [...athletes].sort((a, b) => {
-    const p = STATUS_PRIORITY[statusFor(a)] - STATUS_PRIORITY[statusFor(b)];
+    const p = STATUS_ORDER[statusFor(a)] - STATUS_ORDER[statusFor(b)];
     if (p !== 0) return p;
     return a.name.localeCompare(b.name);
   }), [athletes]);
