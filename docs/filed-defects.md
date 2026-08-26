@@ -532,3 +532,244 @@ columns are NOT NULL (E-Write-5 zero-athlete guard writes 0), not from
 but the ruling is not: whether the else branch should render 'Not tracked' or
 whether a zero-athlete roster should render no rate line at all is a copy
 decision on the first screen a real institution ever sees.
+
+**Filed: seven items from the enterprise roster-import arc, each re-proven
+against HEAD `8e6c78f` before being written here.** All seven lived only in
+session minutes until this commit. Every citation below was verified at HEAD in a
+read-only pass rather than carried forward, because this arc had already shipped
+one set of stale session-minute citations. **Two of the seven do not say what the
+minutes said**, and both corrections are recorded in place rather than quietly
+applied. Nothing below proposes a fix, and nothing below is ruled except where it
+says so.
+
+**Filed (F-C): `resolveStatus` strands a `'Pending'` athlete permanently, and
+`certified: true` is the only exit.** `functions/api/athletes/[id].js:177-183`,
+`resolveStatus`, the act-derived `enrollment_status` mirror. With
+`current = 'Pending'`, branch by branch: `:178` `f.certified === true` returns
+`'Certified'` and is the sole escape; `:180` requires `current === 'Invited'` and
+does not match; `:181` requires `current === 'Certified'` and does not match;
+`:182` falls through and returns `current`, unchanged. **The escape carries no
+intermediate state.** A Pending athlete does not pass through `'Active'` on the
+way to `'Certified'`; one write moves it the whole distance.
+
+**Milestone columns are still written while the mirror stays frozen.** `:238-246`
+sets `lessons_count`, `gps_completed_at`, `certified` and `cert_at` from the body
+BEFORE `:247` computes `set.enrollment_status = resolveStatus(...)`. So an
+athlete can accumulate all nine lessons and a GPS completion date while
+`enrollment_status` still reads `'Pending'`, and every consumer deriving from the
+status sees none of it.
+
+**The complete accepted input space, which is what makes this exhaustive rather
+than illustrative.** `ALLOWED_MILESTONE_KEYS = ['lessons', 'gpsCompleted',
+'certified']` at `:144`, enforced by `validateMilestoneBody` at `:150-153` (any
+other key returns 400, never silently dropped) and `:154-156` (at least one
+required). The three are validated at `:158-164` (integer 0..9), `:165-168`
+(boolean) and `:169-172` (boolean). **Under every combination the endpoint
+accepts except `certified: true`, the mirror is returned unchanged.** There is
+one call site: a repo-wide grep for `resolveStatus` returns the docblock at
+`:137`, the definition at `:177`, and the call at `:247`, and nothing else.
+
+**Reachability: unreachable at import, reachable after claim and delegate.** The
+permitting gate is `functions/api/athletes/[id].js:231`, in `onRequestPut`:
+`row.management_mode !== 'delegated' || row.person_id == null` returns 403. An
+imported athlete holds NULL in both columns, so both disjuncts fire and every PUT
+is refused. The gate opens once the athlete claims their account and chooses
+delegated. **Neither of those two paths writes `enrollment_status`:**
+`bindAthleteRows` in `functions/_lib/auth.js` sets `person_id` only, and
+`functions/api/athlete-consent.js:67` sets `management_mode` and `updated_at`
+only. The row is therefore still `'Pending'` at the exact moment staff writes
+become possible, and `:182` holds it there from then on.
+
+**BLOCKING CONDITION, FT-RULED 2026-08-26, stated as a requirement of this filing
+and not as advice: F-C MUST BE RULED BEFORE THE SEND SCRIPT IS WRITTEN. The send
+script may not be authored while this filing is UNRULED.** The condition attaches
+here rather than to the send script because the send script is the thing that
+would move rows off `'Pending'`, so whoever writes it is the first person with a
+reason to decide what that transition is. **A future reader who arrives at the
+send script without having read this filing is exactly the reader this condition
+exists to stop.** If you are about to write the send path: the question is open,
+and it is open here.
+
+**Filed (G1): one imported athlete in an attendance batch discards the whole
+batch, and the refusal names a cause that is not the cause.**
+`functions/api/workshops/[id]/attendance.js`, `onRequestPut`. Trace of a batch
+containing one Pending athlete. It **passes** the roster-membership query at
+`:139-145`, whose only status filter is `.where('enrollment_status', '!=',
+'Sunset')` at `:144`, so the row is returned into `validAthletes`. It therefore
+**passes** the count check at `:146-148`, because `validAthletes.length` still
+equals `athleteIds.length` and the 400 at `:147` does not fire. It is **rejected**
+by the D7 claim gate at `:173-175`, `a.management_mode !== 'delegated' ||
+a.person_id == null`, both disjuncts true for an imported athlete.
+
+**The whole batch is discarded rather than the offending entry, and two separate
+things cause that.** The `return` at `:177` exits the handler before the upsert at
+`:185`, so nothing is written. And the `.filter().map()` at `:173-175` collects
+offending ids only in order to name them in the message; **it never partitions the
+batch into a writable half and a rejected half**, so no code path exists in which
+the other athletes' marks survive. One imported athlete costs every other
+athlete's attendance mark and note in that request.
+
+**The exact user-facing message, at `:178`, returned with status 403 at `:179`:**
+"Cannot record attendance — athlete(s) have not delegated management to staff (or
+the linked account was removed): " followed by the offending ids. **It attributes
+the failure to consent state and to nothing else.** Both causes it offers are
+consent or claim causes: the athlete declined to delegate, or the linked account
+was removed. **Neither import state nor the word Pending appears anywhere in it**,
+so a staff member is told something about the athlete's choices that is not true
+of an athlete who was imported and never invited. **The message also lists
+athletes by raw id**: `:175` collects them with `.map((a) => a.id)` and `:178`
+interpolates `notDelegated.join(', ')` into the message. A raw athlete id appears
+nowhere in the staff UI, so the identifiers it hands over cannot be matched to
+anything on screen.
+
+**Filed: the staff-writability predicate is hand-maintained in FIVE places, not
+three, and the server pair and the client trio are not written the same way.**
+The session minutes recorded three copies. **The tree has five**, located by
+content rather than by remembered line number.
+
+**The server pair, negated reject form**, both `management_mode !== 'delegated'
+|| person_id == null`: `functions/api/athletes/[id].js:231` (`onRequestPut`, the
+milestone-write gate) and `functions/api/workshops/[id]/attendance.js:174`
+(`onRequestPut`, the D7 whole-batch gate).
+
+**The client trio, positive allow form**, all `claimed === true && managementMode
+=== 'delegated'`: `src/surfaces/enterprise/shared/enterpriseStats.js:37`
+(`computeStats`, as `isWritable`, which sets the FORK 1 rate denominator);
+`src/components/AthleteProfile.jsx:53` (as `isWritable`, gating the milestone
+editor); and `src/components/WorkshopDetail.jsx:68` (as `canRecord`, gating
+per-athlete attendance rows). **The last two are the pair the minutes omitted.**
+`athleteStatus.js:30` is NOT a sixth copy: it sits in `accessLabel` and returns a
+display string rather than a writability decision.
+
+**The two forms are not identical, and the difference is in the null test.** The
+server tests `person_id == null`, loose equality, true only for `null` and
+`undefined`. The client tests `claimed`, which `functions/api/athletes.js:109`
+derives as `claimed: !!row.person_id`, false for `null` and `undefined` **and also
+for the empty string and 0**. **The divergence, with its direction: for an athlete
+holding an empty-string `person_id` and `management_mode = 'delegated'`, the
+server ALLOWS the write while all three client gates hide the affordance.** That
+is the authority failing open against its own mirrors. It requires a falsy
+non-null value in a TEXT foreign-key column, so it is **practically unreachable**,
+and it is recorded as a semantic difference between the authority and its copies
+rather than as an observed failure.
+
+**Filed: CLAUDE.md's E3 snapshot-survival claim is UNVERIFIABLE from the tree.**
+The claim sits at `CLAUDE.md:205`, inside the E-Write-5 cohort-snapshot paragraph
+of the §5 Enterprise row, immediately before ENTERPRISE WRITE ARC COMPLETE, and
+reads verbatim: "**E3 survival proven in smoke: anonymizing an athlete leaves
+already-taken snapshots byte-identical** (frozen aggregates, the arc's capstone
+invariant)."
+
+**Verifying it would need snapshot rows to have existed, an anonymize to have run
+against them, and a byte comparison afterward. None of the three is reproducible
+from the tree.** No such smoke exists: `scripts/` holds thirteen entries and the
+only smokes are `smoke-p2-screen.mjs`, `smoke-p3c-run.mjs` and
+`smoke-p3c-seed.mjs`, none of which is an E3 or snapshot-survival smoke. **No
+script writes a snapshot row:** a repo-wide grep for an insert into
+`cohort_period_snapshot` returns one hit, `functions/api/snapshots.js:153`, the
+endpoint itself, and the two script files that mention the table do so only in
+PRAGMA nullability assertions. **Both local stores hold zero rows** in
+`cohort_period_snapshot`, the config-resolved `e7ff` store and the frozen `7202`
+orphan alike. **The only creation path is a gated staff POST through the running
+app**, so nothing automated can reach the precondition the claim rests on.
+
+**`--remote` was not attempted**, per the read-only scope of the pass that
+produced this filing, so the claim is unverified rather than refuted.
+
+**Filed: three comments are stale, and they are stale in three different ways.
+Migration 0020 falsified exactly ONE of them.** The session minutes recorded all
+three as falsified by 0020. That attribution is wrong for two of the three, and
+the correction matters because it changes which slice each one belongs to.
+
+**0020 falsified `functions/api/athletes.js:101-105`, the comment above the
+`status` emission in `toAthleteElement`, in two clauses.** It reads:
+"enrollment_status is CHECK-constrained to the 5-value enum (migration 0016) and
+STATUS_MAP covers all five, so this lookup is always defined". **First, "the
+5-value enum (migration 0016)": the CHECK admits six values as of 0020**, so both
+the count and the citation are now incomplete. **Second, "so this lookup is always
+defined": false.** `STATUS_MAP['Pending']` evaluates to `undefined`, and the same
+comment records that the `?? 'active'` fallback was deliberately removed, so
+nothing catches it. **What survives is the middle clause**: STATUS_MAP does still
+cover all five of 0016's values. It is the inference drawn from it that broke.
+
+**`scripts/smoke-p3c-seed.mjs:48` carries a stale recitation but a TRUE
+assertion.** Line `:48` recites the enum as
+`'Invited','Active','Stalled','Sunset','Certified'`, which 0020 made incomplete.
+But the assertion it supports at `:47`, "all four in-enum for the 0016 CHECK",
+**remains true**: the four seeded values at `:49-52` are all still in-enum. Only
+the parenthetical list is out of date.
+
+**`functions/api/athletes.js:64-68`, the STATUS_MAP docblock, is stale for a
+different reason and belongs to a different slice.** 0020 falsified no clause in
+it. Checked individually: "roster-add only ever creates 'Invited' athletes" is
+still true at `athletes.js:209`, and "the map is not yet exercised beyond
+'Invited'" is still true of roster-add. **The stale clause is "Full reconciliation
+lands with the progress-write slices", and it went stale at P-2 (`6f1b501`)**,
+when the progress-write slices landed and the reconciliation did not happen.
+0020's only bearing on this comment is that the map no longer covers the enum,
+which this comment never claims.
+
+**Filed (F-D): the persisted rate columns fall back to 0 where the render layer
+returns null, and the cause is the SCHEMA rather than a code choice.**
+`functions/api/snapshots.js:145-147`, in `onRequestPost`, computes `gpsRate`,
+`certRate` and `attendanceRate` with a zero-denominator fallback of `0`.
+`src/surfaces/enterprise/shared/enterpriseStats.js:51-53`, in `computeStats`,
+computes the same three rate concepts with a zero-denominator fallback of `null`,
+under a docblock at `:49-50` that names R4 and gives the reason: rates are NULL
+"NEVER 0% (which would read as a real 'nobody progressed' measurement)".
+
+**R4's null choice was never adopted on the persisted side, and could not have
+been without a migration.** `PRAGMA table_info(cohort_period_snapshot)` at HEAD
+shows `gps_rate`, `cert_rate` and `attendance_rate` all `notnull=1`. **The
+nullability work that did happen covered only the unsourced counters:** migration
+0013 made `dollars_moved` and `avg_weekly_engagement` nullable, 0017 made
+`gifts_count` nullable, and `snapshots.js:164-167` duly writes `null` to all
+three. **The three rate columns were never included in that work.** So the `0` at
+`:145-147` is not a divergent decision a code edit could reverse; it is the only
+value the schema permits, and closing the divergence requires a migration.
+
+**The NOT NULL fact is already recorded once in this document, in a different
+filing and for a different purpose**, in the near-miss paragraph of the `null%`
+filing above, which notes that `CohortComparison` reads snapshot rows "whose rate
+columns are NOT NULL (E-Write-5 zero-athlete guard writes 0)". That filing used
+the fact to rule a site OUT of its scope. This filing is about the fact itself.
+
+**True independent of Pending.** Every element holds for a roster containing no
+Pending athlete, and all of it predates 0020.
+
+**Filed: the render side and the persisted side divide by different populations,
+which is a separate item from the null-versus-0 divergence above.** FT ruled on
+2026-08-26 that this is its own filing rather than a sub-finding of F-D, and the
+reason is that the two are independently true: closing the null-versus-0 gap
+would leave this one exactly as it is.
+
+**The two sides do not compute the same quantity.**
+`src/surfaces/enterprise/shared/enterpriseStats.js:39`, in `computeStats`, sets
+`rateBase` to the FORK 1 institution-writable subset when `consentAware` holds,
+filtering on `isWritable` at `:37`, and `:40` takes `rateBaseTotal` from that
+subset. `functions/api/snapshots.js:116-126`, in `onRequestPost`, derives
+`athletes_count` at `:119` from the **full non-Sunset roster**, its only
+predicates being `institution_id` at `:124` and `enrollment_status != 'Sunset'` at
+`:125`. **That query selects neither `management_mode` nor `person_id`**, at
+`:118-123`, so the endpoint has no writable-denominator concept available to it at
+all.
+
+**So a rate rendered on screen and the same-named rate frozen into a snapshot
+answer different questions**, one about athletes the institution may write for and
+one about every athlete on the roster, and neither surface says so.
+
+**Independent of Pending, and predating 0020.** Both denominators were in place
+before 0020, and the mismatch holds for a roster containing no Pending athlete.
+**Pending only widens it**, by adding rows that enter the snapshot denominator
+while contributing zero to its numerators, and that are excluded from the render
+denominator by `isWritable`.
+
+**Relation to L4, which is parked.** This mismatch is only observable through
+persisted snapshots, and snapshot creation is a deliberate staff act rather than
+an automatic one: the endpoint has exactly two HTTP call sites,
+`src/contexts/SnapshotsContext.jsx:45` and `:67`, both authenticated, and the
+create path is reached only by pressing "Record period snapshot" at
+`src/surfaces/enterprise/reports/CohortComparison.jsx:145`. `wrangler.toml`
+carries no `[triggers]` block and no cron key. L4 stays parked and this filing
+does not disturb it; the relation is recorded because the parked item and this one
+touch the same endpoint.
