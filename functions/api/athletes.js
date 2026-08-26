@@ -68,7 +68,7 @@ const ALLOWED_BODY_KEYS = ['name', 'email', 'consentAcknowledged'];
 // 'Invited'. Full reconciliation lands with the progress-write slices.
 const STATUS_MAP = {
   Invited: 'invited', Active: 'active', Stalled: 'inactive',
-  Sunset: 'inactive', Certified: 'active',
+  Sunset: 'inactive', Certified: 'active', Pending: 'pending',
 };
 
 // Columns selected for the round-trip + /api/me roster read.
@@ -98,11 +98,13 @@ export function toAthleteElement(row) {
     joinDate: row.join_date,
     certified: !!row.certified,
     certDate: row.cert_at,
-    // P-2: enrollment_status is CHECK-constrained to the 5-value enum (migration
-    // 0016) and STATUS_MAP covers all five, so this lookup is always defined —
-    // the prior `?? 'active'` laundering (which would have masked a corrupt
-    // value as 'active') is removed. toAthleteElement is server-only, always on
-    // DB rows; the demo tree never routes fixtures through it.
+    // enrollment_status is CHECK-constrained to a SIX-value enum: migration 0016
+    // set five and 0020 added 'Pending'. STATUS_MAP covers all six, so this
+    // lookup is always defined. The `?? 'active'` laundering removed in P-2
+    // stays removed; it would have masked a corrupt value as 'active'.
+    // toAthleteElement is server-only, always on DB rows (called at
+    // athletes.js:224, athletes/[id].js:263 and me.js:411, and nowhere in
+    // src/); the demo tree never routes fixtures through it.
     status: STATUS_MAP[row.enrollment_status],
     notes: row.notes,
     managementMode: row.management_mode,   // C-3a: null (unclaimed/unset) | 'self' | 'delegated'
