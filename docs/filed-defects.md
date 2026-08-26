@@ -773,3 +773,153 @@ create path is reached only by pressing "Record period snapshot" at
 carries no `[triggers]` block and no cron key. L4 stays parked and this filing
 does not disturb it; the relation is recorded because the parked item and this one
 touch the same endpoint.
+
+**Filed (D3 + D4, ONE item by FT ruling 2026-08-26): four of the five
+athlete-state derivation sites do not route through `statusFor`, and the
+tile/drill divergences are what that produces on screen.** FT ruled on
+2026-08-26 that D3, derivation unification, and D4, the tile/drill mismatch, are
+not two findings but one root cause with two faces, and that they file together.
+**The claim of this filing is the root cause. The divergence result below is its
+proof, not a second item.** Everything here was proven at HEAD `23c82f3` by
+execution or by grep; nothing is carried from session minutes, and where the
+minutes disagree with the tree the tree is recorded.
+
+**The five derivation sites, all present at HEAD.**
+`statusFor` (`src/surfaces/enterprise/shared/athleteStatus.js:6-13`) derives six
+display labels. `computeStats`
+(`src/surfaces/enterprise/shared/enterpriseStats.js:12-25`) derives count buckets:
+`onTrack` at `:21`, `stalled` at `:22`, `notStarted` at `:23`, `certD` at `:15`,
+`gpsD` at `:14`. An inline `useMemo`
+(`src/surfaces/enterprise/reports/ProgramOutputs.jsx:86-110`) derives its own
+counts and percentages at `:89`, `:91`, `:92`, `:104` and `:105`.
+`philanthropicStage`
+(`src/surfaces/enterprise/reports/PhilanthropicReadiness.jsx:34-39`) derives stage
+integers, labelled at `:44`, `:49`, `:54`, `:59` and `:64`. SQL aggregates in
+`onRequestPost` (`functions/api/snapshots.js:116-126`) derive `athletes_count` at
+`:119`, `gps_completed_count` at `:120` and `certified_count` at `:121`.
+
+**FOUR of the five do not route through `statusFor`, not three.** The session
+minutes said three. A repo-wide grep for `statusFor` in `src/` (exit 0) returns it
+only in `AthleteProfile.jsx:95`, `FilteredAthletesModal.jsx:47`,
+`EnterpriseRoster.jsx:23` and `:66`, and `categoryFilters.js:9`, `:11`, `:12`,
+`:13`. **The four that derive independently are `computeStats`, the
+`ProgramOutputs.jsx` inline block, `philanthropicStage`, and the `snapshots.js`
+SQL.** The fifth is `statusFor` itself.
+
+**The vocabulary composition, recorded WITHOUT a count. FT ruled 2026-08-26 to
+drop the "four vocabularies" figure, because the tree does not decide the
+grouping.** What is provable is the composition: **one label vocabulary**
+(`statusFor`'s six labels), **one stage vocabulary** (`philanthropicStage`'s five
+stage labels), and **three mutually disjoint count vocabularies** (`computeStats`,
+the `ProgramOutputs` inline block, and the SQL columns), which share no field
+names with one another. **Whether that totals four, five, or three is not
+determinable from the tree**, because nothing in the tree decides whether three
+disjoint count vocabularies are one kind or three.
+
+**`athleteStatus.js:1` still describes the file as a single source of truth while
+four sites derive independently.** At HEAD it reads, verbatim: "Single source of
+truth for athlete-state derivation and sort order." Commit `894f22d` edited that
+line, changing "priority" to "order" as part of the F-B rename, and **left the
+single-source-of-truth claim intact**. The claim is accurate about the four call
+sites that import it and silent about the four derivations that do not.
+
+**`statusFor` and `philanthropicStage` actively contradict, PROVEN BY EXECUTION
+rather than by reading.** `philanthropicStage` is module-local inside a `.jsx`
+file that node cannot import, so it was not transcribed: **its source was
+extracted from the tree by regex and evaluated**, so what ran is the tree's own
+code. **Over the demo fixture, 10 of 16 athletes receive different labels from the
+two functions.** The sharpest case is constructed rather than fixture-drawn, and
+sits on reachable inputs: **an athlete with `lessons: 0` and `gpsCompleted: true`
+is labelled `'Invited'` by `statusFor` and stage 3, `'GPS Defined'`, by
+`philanthropicStage`, at the same moment.**
+
+**They cannot be reconciled by input, because neither reads what the other keys
+on.** `philanthropicStage` never reads `a.status` at any of `:35-38`.
+`statusFor` short-circuits at `athleteStatus.js:9` on `a.lessons === 0` and never
+reaches a GPS test at all. So there is no athlete record that makes the two agree
+by construction; the disagreement is structural rather than data-dependent.
+
+**The 8-versus-7 tile/drill mismatch STILL REPRODUCES at HEAD, and D2 did not
+close it.** Executed against the demo fixture, n=16: the "Actively progressing"
+tile displays **8** while its drill lists **7**. The athlete counted but not
+listed is **Andre Mitchell**, whose fixture values are `lessons=2`,
+`gpsCompleted=true`, `certified=false`, `status='inactive'`. He is a member of the
+`onTrack` set and `statusFor` returns **`'Outreach paused'`** for him, so he
+appears in the outreach-paused drill and not in the actively-progressing one.
+Nothing is listed-but-not-counted on that pair.
+
+**Why D2 did not close it, stated precisely so the fix is not credited twice.**
+D2 (`enterpriseStats.js:16-21`) replaced a subtraction of two overlapping counts
+with a direct set count, and that did fix the certified-without-GPS miscount it
+was written for. **But the new predicate at `:21` is
+`a.lessons > 0 && a.gpsCompleted && !a.certified`, which still never reads
+`a.status`**, while the drill at `categoryFilters.js:9` routes through
+`statusFor`, which does. D2 changed the arithmetic underneath the tile and did
+not change the fact that the tile ignores status.
+
+**The exhaustive pair test, and its method, because the method is what makes the
+result trustworthy.** A roster of **32 athletes** was constructed over every
+combination of `status` in invited / active / inactive / pending, `certified` in
+false / true, `lessons` in 0 / 3, and `gpsCompleted` in false / true. Each
+tile/drill pair was then compared **per athlete rather than by count, because two
+counts can coincide while the underlying sets differ.** The tile-side predicates
+were first validated against `computeStats` itself: all five transcribed
+predicates produced counts identical to `computeStats` on the same roster (32, 4,
+16, 8, 16), so the comparison is against the real derivation rather than a
+paraphrase of it.
+
+**Result. Three of the five pairs diverge; two agree always.** Athletes: tile set
+32, drill set 32, nothing counted-but-unlisted and nothing listed-but-uncounted.
+**Actively progressing: tile set 4, drill set 1, THREE counted but not listed**,
+none the other way. Certified: tile set 16, drill set 16, nothing either way.
+**Not yet active: tile set 8, drill set 3, FIVE counted but not listed**, none the
+other way. **Invited: tile set 16, drill set 7, TEN counted but not listed, and
+ONE listed but not counted.**
+
+**Athletes and Certified agree always, and the reason is that both sides run the
+identical predicate**: `athletes.length` against `() => true` for Athletes, and
+`a.certified` against `a.certified` for Certified. `categoryFilters.js:10` is the
+one drill predicate that does not call `statusFor`, which is exactly why its pair
+cannot drift.
+
+**The diverging members, by field combination.** **Actively progressing**, counted
+but not listed: an athlete with `lessons>0, gps, not certified` whose status is
+`invited`, `inactive` or `pending`. **Not yet active**, counted but not listed:
+`certified` athletes with `lessons>0, no gps` across three status values, plus
+both `pending` variants. **Invited**, counted but not listed: every `certified`
+athlete with `lessons===0`, plus all four `pending` variants.
+
+**Invited is the only pair that diverges in BOTH directions.** Its one
+listed-but-not-counted member is an athlete with `status='invited'` and 3 lessons:
+`statusFor:9` labels them `'Invited'` on the `a.status === 'invited'` disjunct,
+while the tile predicate `lessons === 0` excludes them. So that athlete appears in
+a drill whose tile never counted them.
+
+**The 23c82f3 instance, ruled onto this filing on 2026-08-26 rather than filed
+separately.** A roster of one Pending and one genuinely Invited athlete, both with
+`lessons: 0`: the Invited tile displays **2** and its drill lists **1**. Across
+every non-catch-all category, only the Invited athlete is reachable; the Pending
+athlete appears in none. This was first observed during the `23c82f3` verification
+and re-proven at HEAD for this filing. FT ruled it an instance of the root cause
+above rather than its own item.
+
+**The rendered tile/drill pairs: five distinct pairs, each rendered on two
+surfaces, so ten tile instances.** On `EnterpriseOverview.jsx` they are at `:89`
+Athletes, `:90-97` Actively progressing, `:98` Certified, `:99` Not yet active and
+`:100` Invited; on `EnterpriseRoster.jsx` at `:87`, `:88-95`, `:96`, `:97` and
+`:98`. **A grep for `StatTile` with `onClick` finds only eight of the ten**,
+because both Actively progressing tiles are multi-line JSX with the handler on its
+own line, at `EnterpriseOverview.jsx:96` and `EnterpriseRoster.jsx:94`. **Both
+surfaces feed the same `CATEGORY_CONFIG` and the same `FilteredAthletesModal`, so
+a divergence appears identically on each** rather than being a property of either
+page.
+
+**Two other drills exist and are explicitly OUT of this filing's scope, recorded
+so a later fix does not sweep them in.** `ProgramSummary.jsx:177-183` mounts
+`FilteredAthletesModal`, but it is driven by a BarChart week click and filters on
+fixture id membership at `:80-81` through `engagedAthletesByWeek`, which `:78`
+documents as demo-only; its four `StatTile`s at `:98-104` are `variant="inline"`
+with no `onClick` and do not drill at all.
+`PhilanthropicReadiness.jsx:80` partitions by `philanthropicStage` and `:153`
+lists athlete names inline per stage, which is a listing rather than a modal
+drill. **Neither reads `CATEGORY_CONFIG`, and neither is a tile/drill pair.**
