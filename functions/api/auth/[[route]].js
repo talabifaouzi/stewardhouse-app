@@ -21,8 +21,9 @@
 //   (a) an auth_user already exists for it  — a RETURNING sign-in; existing
 //       accounts must always be able to sign in, gate or no gate; OR
 //   (b) a person row carries it as invite_email AND that invite has not
-//       EXPIRED (Slice A: 30 days from person.created_at) — an INVITED
-//       (pre-seeded) account, claimable on first verify by the auth.js (c) hook.
+//       EXPIRED (Slice A: 30 days from COALESCE(invited_at, created_at)) —
+//       an INVITED (pre-seeded) account, claimable on first verify by the
+//       auth.js (c) hook.
 // Neither present → unknown email → refuse: no link sent, no auth_user, no
 // verification row created. The 403 body mirrors better-auth's own
 // disableSignUp error shape ({ code: 'new_user_signup_disabled' }) so
@@ -86,18 +87,34 @@ export async function onRequest(context) {
       // claims on day 29 keeps access: expiry is a property of the INVITATION,
       // not of the person.
       //
-      // NULL created_at passes. Eleven rows predate migration 0014, which
+      // A NULL CLOCK PASSES, and the clock is COALESCE(invited_at, created_at):
+      // the invitation instant when one was recorded, else the row's birth. A
+      // row with neither passes. Eleven rows predate migration 0014, which
       // deliberately did not backfill them, and one is a real deliverable
-      // address. A DECISION, not an oversight: unknown age is not expiry.
+      // address; migration 0019 did not backfill invited_at either, so those
+      // rows carry no clock at all and still pass. A DECISION, not an
+      // oversight: unknown age is not expiry.
+      //
+      // COALESCE, NOT a bare swap to invited_at (FT 2026-08-27; CLAUDE.md §5.2,
+      // CLOCK MECHANISM AMENDED). Under a bare swap a row carrying created_at
+      // with invited_at NULL would pass PERMANENTLY: not mis-aged, non-expiring,
+      // and no test would fail. COALESCE keeps NULL-passes for genuinely
+      // unstamped rows while rows that already have a clock keep aging from it.
+      // The window is untouched; only where the clock STARTS moves.
+      //
       // See INVITE_EXPIRY_DAYS in functions/_lib/auth.js for the full
       // reasoning, including why the claim hook does NOT repeat this predicate
-      // and absorbs the send-to-verify window instead.
+      // and absorbs the send-to-verify window instead. That docblock still
+      // describes the clock as person.created_at and is STALE on that point
+      // only; its 30-day window and its one-enforcement-site rule both stand.
       const cutoff = inviteCutoffIso();
       const allowed = await context.env.DB
         .prepare(
           'SELECT 1 AS ok FROM auth_user WHERE email = ? ' +
           'UNION ALL SELECT 1 AS ok FROM person ' +
-          'WHERE invite_email = ? AND (created_at IS NULL OR created_at > ?) LIMIT 1'
+          'WHERE invite_email = ? AND ' +
+          '(COALESCE(invited_at, created_at) IS NULL ' +
+          'OR COALESCE(invited_at, created_at) > ?) LIMIT 1'
         )
         .bind(email, email, cutoff)
         .first();
