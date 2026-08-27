@@ -624,7 +624,7 @@ functions/api/athletes/[id].js:107.
 athlete acknowledgment. There is NO send script. resolveStatus is NOT modified;
 it never advances an athlete off 'Pending'.
 
-**SCOPE OF THE ATOMIC UNIT: the three SQL writes only.** The send, its
+**SCOPE OF THE ATOMIC UNIT: the two SQL writes only.** The send, its
 sent-stamp, and the conditional UNIQUE-collision bind CANNOT be batch members —
 env.DB.batch() requires every statement compiled with parameters bound before
 execution, and those three depend on outcomes not yet observed. The send remains
@@ -647,6 +647,32 @@ local rows allowed, identical before and after); with it dropped, 4 of 6 are
 refused including every unclaimed invited row. NO BACKFILL IS REQUIRED while the
 clause stands.
 
+**CLOCK MECHANISM AMENDED 2026-08-27.** The predicate at auth/[[route]].js:100
+becomes COALESCE(invited_at, created_at), NOT a bare column swap. The
+NULL-passes clause is still KEPT. The CLOCK COLUMN and NULL-PASSES rulings
+above are left exactly as they were ruled; what follows supersedes the
+MECHANISM only.
+
+**Why the original mechanism was insufficient, recorded because the reasoning
+is the point:** the NULL-PASSES ruling reasoned about rows that never had a
+clock ("unknown age is not expiry"). It did not reason about a row whose invite
+was stamped and failed to record. Under a bare column swap, a row carrying
+created_at with invited_at NULL passes the expiry check PERMANENTLY: not
+mis-aged, non-expiring, with no test failing. Proven by execution: row r6
+(created_at old, invited_at NULL) is REFUSED under the current predicate,
+PASSES under the bare swap, and is REFUSED under COALESCE. COALESCE preserves
+NULL-passes for genuinely unstamped rows while old rows keep aging from the
+clock they have.
+
+**Migration 0019's docblock anticipated exactly this mechanism** ("once the
+predicate reads COALESCE(invited_at, created_at)") and its warning stands
+verbatim: a slice that adds a send path owes this column a stamp, and no test
+will fail if it forgets.
+
+**Section 5.2's phrase "the column swap changes nothing" is true of today's
+frozen local data and NOT of the predicate.** All six local person rows take
+the NULL branch, so local equivalence is trivial.
+
 **OPS VISIBILITY RULED:** Operations sees pre-invitation athletes, NAME AND EMAIL
 ONLY, the same line E6 draws. The ops roster element gains an explicit `source`
 field, 'person' | 'athlete', SET BY THE ENDPOINT and never derived from which
@@ -656,6 +682,52 @@ fields is the pattern that produced the `?? 'active'` laundering. Athlete and
 person are joined nowhere in the codebase today.
 
 **DENOMINATORS RULED:** Pending counts in enterprise denominators.
+
+**RULED 2026-08-27, the invite endpoint.** Five rulings plus two citation
+corrections, recorded against HEAD 1f9cd16.
+
+**COLLISION DISPOSITION RULED: ABORT.** On UNIQUE(invite_email) collision the
+batch aborts, the athlete stays 'Pending', and no partial state exists. A
+pre-batch SELECT supplies an honest operator message naming the address as
+already in use; that SELECT narrows the race window but cannot close it, and
+when it loses, the abort is the correct outcome. ON CONFLICT DO NOTHING is
+REJECTED: it would report success while flipping the athlete to 'Invited' with
+no claimable person row behind it, a worse falsehood than the abort.
+
+**LAYER-8 GATE RULED:** the progression endpoint's claim-state gate INVERTS for
+an invite. The invite gate is enrollment_status = 'Pending' AND
+person_id IS NULL. Gate layers 1-7 of athletes/[id].js:185-227 transfer
+unchanged.
+
+**NON-PENDING INVITE RULED:** refused.
+
+**ENDPOINT RULED:** PUT /api/athletes/:id/invite, matching the existing
+sub-resource precedent at workshops/[id]/attendance.js.
+
+**SAME-EMAIL ATHLETES: no separate ruling.** athlete.email carries no unique
+index while person.invite_email does, so two athletes on one roster may share
+an address; the second invite hits the collision path and is governed by the
+COLLISION DISPOSITION ruling above.
+
+**CITATION CORRECTIONS, both proven at HEAD, recorded here rather than edited
+into the 2026-08-26 text above, which is left intact.** First: invited_at is a
+column on PERSON, not athlete. PRAGMA table_info(athlete) returns 23 columns
+and none is invited_at; person carries it. The stamp therefore rides the person
+INSERT rather than a separate athlete write. The CLOCK COLUMN ruling already
+reads person.invited_at and needs no change. Second: the invites.js citation in
+that same ruling reads :153-169; :153 is the start of the re-SELECT statement,
+the select naming created_at is at :156, and the emit is at :169, so the lower
+bound is :156.
+
+**WRITE COUNT CORRECTED 2026-08-27.** F-C's SCOPE OF THE ATOMIC UNIT originally
+read "the three SQL writes only." It is TWO: one UPDATE on athlete
+(enrollment_status 'Pending' -> 'Invited') and one INSERT on person carrying
+the invited_at stamp as a column. The original count treated the stamp as a
+separate write; PRAGMA table_info proves invited_at is a person column, not an
+athlete one. This corrects a factual miscount, NOT the ruling: what F-C rules
+out of the atomic unit is unchanged, and the send, its sent-stamp and the
+conditional UNIQUE-collision bind remain outside it. "Heterogeneous
+multi-table" at :620 stands: two tables.
 
 ---
 
