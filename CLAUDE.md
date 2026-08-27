@@ -855,6 +855,83 @@ roster file chosen by a gated enterprise staff member, which is narrow but not
 zero. FILED for revisit during SOC 2 readiness scoping, where the dependency
 posture belongs alongside the vendor-review question generally.
 
+**RULED 2026-08-27, roster review, delete, bulk and sorting.** Recorded against
+HEAD 9792e29. The four rulings immediately below were ruled first and are
+recorded first, so the rulings after them resolve.
+
+**REVIEW BEFORE SAVE.** An uploaded roster must land in the roster VIEW first,
+uncommitted. The operator reviews the rows, removes any that are wrong, and then
+saves to confirm. The current flow commits everything on submit with no review
+step, which is the gap.
+
+**DELETE, BEFORE AND AFTER SAVE.** Removing a record must be available at both
+points. Before save it is dropping a row from an uncommitted list. After save it
+is a HARD DELETE for Pending athletes: no children, no snapshot history, nothing
+to preserve. Wrong upload, delete, re-upload.
+
+**ATHLETES WHO HAVE PROGRESSED** keep the existing anonymize path
+(enrollment_status='Sunset', person_id NULL, children deleted in one batch). E3
+rules that already-taken snapshots stay byte-identical, and hard-deleting an
+athlete inside a reported aggregate would change history already seen. Hard
+delete across all statuses would be an E3 amendment and is NOT ruled.
+
+**BULK.** Selection and bulk delete are required, not optional. A wrong upload is
+the whole import, not one row.
+
+**UNCOMMITTED MEANS CLIENT STATE.** An uploaded roster under review is NOT
+written to D1. Parsed rows live in provider state alongside persisted ones,
+distinguishable by a flag on the row object. Discard drops them from memory: no
+endpoint, no cleanup, no orphan risk. A browser refresh loses an unreviewed
+import, which is correct, because the operator still has the file. This resolves
+an ambiguity in the earlier ruling: "lands in the roster VIEW first,
+uncommitted" means not in the database, not written-but-flagged.
+
+**REVIEW LIVES IN THE ROSTER TABLE.** Not in the modal and not on a separate
+route. The modal explicitly refused a preview grid on mobile-overflow grounds,
+and reinstating one at a 262px body would undo a decision made well. The cost is
+accepted: DataTable is a shared component with three live consumers.
+
+**DATATABLE GAINS ROW-STATE CAPABILITY.** Distinguishing an uncommitted row is a
+DataTable concern, not something a consumer fakes through a column render.
+Putting row-level styling inside a cell looks fine and breaks the next consumer.
+
+**MIXED SELECTION RULED: RESTRICT TO PENDING.** A progressed athlete gets no
+checkbox. The rejected alternatives were allowing mixed selection with each
+ruling applied per row, and refusing mixed batches after the fact. Per-row
+divergent operations have no precedent in this tree, and one gesture producing
+two outcomes (some rows vanishing, some becoming redacted stubs still on the
+roster) is a surprise at exactly the wrong moment. Refusing after the operator
+has built a selection is worse UX than a checkbox that never appears.
+
+**SORTING RULED:** every column with a defensible order is sortable, CRM-style.
+Sorting is how an operator finds the rows to select; "delete the unclaimed ones"
+is unusable without sorting by Access first.
+
+- STATUS_ORDER remains the DEFAULT. An operator-chosen sort REPLACES it. Name
+  remains the tiebreak.
+- A chosen sort RESETS on navigation. Persistence is a preference feature and
+  this is not that.
+- ACCESS IS SORTABLE, via a new constant that is NOT named for rank, sequenced
+  by claim progression: Unclaimed, Pending choice, Self-managed, Delegated. Same
+  test as section 7 clause 1: a fact-of-record sequence, no score rendered.
+- GIFTS AND LAST ACTIVE ARE NOT SORTABLE. Nothing writes either column, so every
+  value is identical. A sort affordance on a dead column asserts there is
+  something to sort.
+- YEAR gets an explicit class order: Freshman, Sophomore, Junior, Senior.
+  Alphabetical yields Freshman, Junior, Senior, Sophomore, which is meaningless.
+
+**Recorded for the implementer: accessLabel has NO ordering constant today.**
+STATUS_ORDER covers statusFor only, so the ACCESS sub-ruling above CREATES a
+constant where none exists rather than extending one. That build therefore adds
+new rhetorical surface under section 7 clause 3, and the new constant's name is
+governed by the same ruling that renamed STATUS_PRIORITY.
+
+**SORTING AGAINST SECTION 7 FILING (a):** operator-chosen sorting sits inside
+what clause 2 permits, and further inside than the current default. Clause 2
+locates the harm in the JUDGMENT an ordering implies. A sort the operator
+chooses, on a column they name, implies the operator's intent rather than the
+platform's assessment.
+
 ---
 
 ## 6. Slice protocol (build discipline)
@@ -2008,6 +2085,21 @@ is labelled as such in code.
 **FILED, NOT BUILT:** moving the Excel parse into a Web Worker is the only thing
 that guarantees a hostile or malformed workbook cannot freeze the tab. That is a
 follow-up slice, not this one.
+
+### Filed — whether D1 enforces foreign keys in production is unverified (2026-08-27)
+
+**WHETHER D1 ENFORCES FOREIGN KEYS IN PRODUCTION IS UNVERIFIED.** Local reads
+show PRAGMA foreign_keys = 1, but that is a node:sqlite session, not D1. The
+ruled hard delete for Pending athletes relies on ON DELETE CASCADE firing across
+the four inbound FKs (athlete_activity, athlete_note, athlete_reflection,
+workshop_attendance). This is MOOT today because all four child tables are empty
+and every live Pending athlete has no children, and it becomes load-bearing for
+any future Pending athlete that acquires them.
+
+**Related, reported and not fixed: OperationsRoster.jsx does not import
+DataTable.** It reimplements the idiom and cites DataTable.jsx by line number in
+comments as its source. A change to DataTable will not break it; it will
+silently drift.
 
 ---
 
