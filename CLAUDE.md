@@ -838,6 +838,23 @@ exists so a wrong-file drop fails fast instead of after a large read. A 500-row
 roster is well under 1 MB in every accepted format, so 10 MB rejects nothing
 legitimate.
 
+**SHEETJS VERSION RULED 2026-08-27:** ship xlsx 0.18.5 as installed, from the
+npm registry, pinned exactly. It carries two HIGH advisories with
+fixAvailable: false: GHSA-4r6h-8v6p-xvw6 (Prototype Pollution, fixed in 0.19.3)
+and GHSA-5pgg-2g8v-p4x9 (ReDoS, fixed in 0.20.2). 0.18.5 is the newest version
+npm carries; SheetJS moved distribution to cdn.sheetjs.com at 0.19+, so the
+fixes exist off-registry.
+
+**The rejected alternative was a CDN tarball URL in package.json at 0.20.x.**
+Rejected because a non-registry dependency source is its own supply-chain
+surface, and a known-vulnerable registry package under vendor review is a better
+position to defend than an unexplained tarball URL.
+
+**Both advisories require attacker-controlled input.** The input here is a
+roster file chosen by a gated enterprise staff member, which is narrow but not
+zero. FILED for revisit during SOC 2 readiness scoping, where the dependency
+posture belongs alongside the vendor-review question generally.
+
 ---
 
 ## 6. Slice protocol (build discipline)
@@ -1970,6 +1987,27 @@ the batch is assembled, never as separate calls.
 **UNVERIFIED:** whether env.DB.batch() counts as one subrequest or N against the
 queries-per-invocation limit. Immaterial at 15 statements on Workers Paid;
 material at large roster sizes.
+
+### Filed — XLSX.read hangs forever on a truncated ZIP header (2026-08-27)
+
+**XLSX.read HANGS FOREVER on a 14-byte ZIP local-file header.** It never returns
+and never throws. Measured at 20 seconds with no completion. On a browser main
+thread this is a frozen tab: no error, no recovery, and the operator's work is
+gone. No timeout can interrupt synchronous JavaScript.
+
+**The boundary was characterized before a guard was written, and the shape
+matters:** every truncation of a real workbook, down to 1% of its bytes, throws
+cleanly in about 70ms. Random non-ZIP bytes return as garbage in 78ms. ONLY the
+tiny ZIP-signature-but-truncated case hangs.
+
+**The guard shipped is MIN_EXCEL_BYTES = 512** in readRosterFile.js. A real
+.xlsx is roughly 16KB for two rows and cannot approach 512 bytes. It closes the
+DEMONSTRATED case in 1ms with a clean refusal. It is NOT a general guarantee and
+is labelled as such in code.
+
+**FILED, NOT BUILT:** moving the Excel parse into a Web Worker is the only thing
+that guarantees a hostile or malformed workbook cannot freeze the tab. That is a
+follow-up slice, not this one.
 
 ---
 
