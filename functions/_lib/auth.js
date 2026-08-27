@@ -59,8 +59,9 @@ import { createSender } from './sender.js';
 
 // ─────────────────────────────────────────────────────────────────────────
 // INVITE EXPIRY (Slice A). FT ruling: an unclaimed invite expires 30 days
-// after person.created_at. Before this, an unclaimed row lived forever and its
-// address could request a magic link indefinitely.
+// after COALESCE(person.invited_at, person.created_at): the invitation instant
+// when one was recorded, else the row's birth. Before this, an unclaimed row
+// lived forever and its address could request a magic link indefinitely.
 //
 // A MODULE CONSTANT, deliberately, not an env var and not a column.
 //   NOT an env var: §11 records that production env config lives in the
@@ -90,13 +91,17 @@ import { createSender } from './sender.js';
 // empirically before this change. Five minutes of slack at the boundary costs
 // less than an unrecoverable account.
 //
-// NULL created_at is treated as LIVE, not expired. This now applies to SITE 1
+// A ROW WITH NO CLOCK AT ALL is treated as LIVE, not expired: both invited_at
+// and created_at NULL. A NULL created_at alone is not enough, because
+// invited_at wins whenever it is set, so a row carrying a stale invited_at is
+// refused however old or absent its created_at. This now applies to SITE 1
 // ONLY, there being no other site. ELEVEN rows predate migration 0014, which
 // deliberately did not backfill them, and one of them is FT's own staff test
-// identity on a real deliverable address. Locking out a real person to enforce
-// a policy against four .invalid demo seeds is the wrong trade. This is a
-// DECISION, not an oversight: a NULL date means the age is unknown, and an
-// unknown age is not evidence of expiry.
+// identity on a real deliverable address; migration 0019 did not backfill
+// invited_at either, so those rows carry neither clock and stay live. Locking
+// out a real person to enforce a policy against four .invalid demo seeds is
+// the wrong trade. This is a DECISION, not an oversight: no date at all means
+// the age is unknown, and an unknown age is not evidence of expiry.
 export const INVITE_EXPIRY_DAYS = 30;
 
 /** ISO instant before which an invite is expired. Rows at or older than this fail. */
