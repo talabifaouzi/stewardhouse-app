@@ -50,7 +50,7 @@ import {
 import { createSender } from '../_lib/sender.js';
 import { buildInviteEmail } from '../_lib/inviteEmail.js';
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // C-1 field lockdown (consent model, docs/enterprise-provisioning-runbook.md
 // §4 E6): pre-claim, an athlete record holds name + email ONLY. No other field
