@@ -1,4 +1,12 @@
-// DELETE /api/athletes/:id — anonymize-to-stub (E-Slice E-Write-2, E3 override).
+// DELETE /api/athletes/:id — remove one athlete.
+//
+// TWO OUTCOMES, decided by the athlete's own state (ruled 2026-08-27):
+//   Pending      -> HARD DELETE, one statement, cascade takes the children.
+//   anything else -> the E-Write-2 anonymize-to-stub below, unchanged.
+// The docblock from here to the handler describes the ANONYMIZE path, which is
+// what it always described; the Pending branch is documented at its own site.
+//
+// ORIGINAL: anonymize-to-stub (E-Slice E-Write-2, E3 override).
 //
 // Gated dark per E11: requireGatedEnterprise → 403 unless the staff person
 // carries $.enterprise.demo_gate=true (production rows carry none; local smoke
@@ -60,12 +68,47 @@ export async function onRequestDelete(context) {
   // idempotent per Q9).
   const athlete = await db
     .selectFrom('athlete')
-    .select(['id'])
+    .select(['id', 'enrollment_status'])
     .where('id', '=', athleteId)
     .where('institution_id', '=', contact.institution_id)
     .executeTakeFirst();
   if (!athlete) {
     return jsonError('Athlete not found', 404);
+  }
+
+  // PENDING IS A HARD DELETE (DELETE, BEFORE AND AFTER SAVE, ruled 2026-08-27).
+  // A Pending athlete has never progressed: no children, no snapshot history,
+  // nothing to preserve. Wrong upload, delete, re-upload.
+  //
+  // ONE STATEMENT. The four inbound FKs (athlete_activity, athlete_note,
+  // athlete_reflection, workshop_attendance) are all ON DELETE CASCADE, and they
+  // fire here precisely because the row does NOT survive. The anonymize batch
+  // below deletes those children explicitly for the opposite reason: its row
+  // stays, so nothing cascades.
+  //
+  // The status is re-asserted in the WHERE rather than trusted from the SELECT,
+  // so an athlete that progressed in the interval is not hard-deleted on the
+  // strength of a stale read. It then matches no rows and the response says so.
+  //
+  // NOTHING ABOUT THE PROGRESSED PATH CHANGES. E3 rules that already-taken
+  // snapshots stay byte-identical, and hard delete across all statuses would be
+  // an E3 amendment, which is NOT ruled.
+  if (athlete.enrollment_status === 'Pending') {
+    let result;
+    try {
+      result = await db
+        .deleteFrom('athlete')
+        .where('id', '=', athleteId)
+        .where('institution_id', '=', contact.institution_id)
+        .where('enrollment_status', '=', 'Pending')
+        .executeTakeFirst();
+    } catch (err) {
+      return jsonError('Failed to remove athlete', 500);
+    }
+    if (Number(result?.numDeletedRows ?? 0n) === 0) {
+      return jsonError('This athlete changed while it was being removed; nothing was deleted', 409);
+    }
+    return jsonOk({ id: athleteId, deleted: true });
   }
 
   const nowIso = new Date().toISOString();

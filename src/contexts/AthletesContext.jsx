@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { athletes as athletesFixture } from '../data/enterpriseFixtures.js';
 
 // Enterprise athlete-roster provider — ClientsProvider mirror, now with the
@@ -28,6 +28,11 @@ export function AthletesProvider({ initialState, children }) {
   const authenticated = initialState !== undefined;
   const [athletes, setAthletes] = useState(authenticated ? initialState : athletesFixture);
   const [writeError, setWriteError] = useState(null);
+  // saveStaged reads the CURRENT list without taking `athletes` as a dependency,
+  // which would rebuild the callback on every roster change and churn every
+  // consumer's memo.
+  const athletesRef = useRef(athletes);
+  athletesRef.current = athletes;
 
   const clearWriteError = useCallback(() => setWriteError(null), []);
 
@@ -109,44 +114,131 @@ export function AthletesProvider({ initialState, children }) {
     }
   }, [authenticated]);
 
-  // Roster import (roster-import arc). Unlike add/update/remove this returns a
-  // RESULT OBJECT rather than a boolean, because a rejected import carries
-  // per-row detail the caller has to render: the endpoint's 400 body is
-  // { error, rejected: [{index, reason}] } and those indices are only meaningful
-  // to the client that built the array. serverError() is not used here for the
-  // same reason — it extracts body.error and discards body.rejected.
-  const importAthletes = useCallback(async (rows) => {
+  // REVIEW BEFORE SAVE (ruled 2026-08-27). Staged rows are CLIENT STATE and are
+  // never written to D1. They live in the same array as persisted athletes,
+  // flagged `uncommitted: true`, so the roster table renders one list and the
+  // operator reviews in place. A refresh loses them, which the ruling calls
+  // correct: the operator still has the file.
+  //
+  // The synthesized shape is a full athlete element rather than a partial one,
+  // so every column, comparator and status derivation treats a staged row
+  // exactly like a Pending athlete. `status: 'pending'` is the STATUS_MAP token
+  // for enrollment_status 'Pending', so statusFor returns "Not yet invited",
+  // which is what these rows will read as once saved.
+  const stageImport = useCallback((rows) => {
+    const staged = rows.map((r, i) => ({
+      id: `staged-${i}-${Math.random().toString(36).slice(2, 10)}`,
+      uncommitted: true,
+      name: `${r.firstName} ${r.lastName}`,
+      email: r.email,
+      sport: null,
+      year: null,
+      position: null,
+      phone: null,
+      badge: null,
+      notes: null,
+      status: 'pending',
+      gpsCompleted: false,
+      gpsDate: null,
+      lessons: 0,
+      gifts: 0,
+      lastActive: null,
+      joinDate: null,
+      certified: false,
+      certDate: null,
+      managementMode: null,
+      claimed: false,
+      activity: [],
+      payload: r,          // the exact {firstName,lastName,email} the endpoint wants
+    }));
+    setAthletes((prev) => [...staged, ...prev]);
+    setWriteError(null);
+    return staged.length;
+  }, []);
+
+  // Discard drops them from memory. No endpoint, no cleanup, no orphan risk.
+  const discardStaged = useCallback(() => {
+    setAthletes((prev) => prev.filter((a) => !a.uncommitted));
+    setWriteError(null);
+  }, []);
+
+  // Drop ONE staged row before save. Deleting an uncommitted row is not a write,
+  // so it never reaches the server.
+  const dropStaged = useCallback((id) => {
+    setAthletes((prev) => prev.filter((a) => !(a.uncommitted && a.id === id)));
+  }, []);
+
+  // Save is the FIRST time anything is written. The staged rows are replaced
+  // wholesale by what the server returns, so their throwaway client ids never
+  // outlive the request.
+  const saveStaged = useCallback(async () => {
+    const staged = athletesRef.current.filter((a) => a.uncommitted);
+    if (staged.length === 0) return { ok: true, imported: 0, matches: { onRoster: [], withinPaste: [] } };
     if (!authenticated) {
-      // Demo tree mirror shape; the Import affordance is authenticated-only, so
-      // this branch is not reached in practice.
       return { ok: true, imported: 0, matches: { onRoster: [], withinPaste: [] } };
     }
     try {
       const res = await fetch('/api/athletes/import', {
         method: 'POST', credentials: 'include',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ athletes: rows }),
+        body: JSON.stringify({ athletes: staged.map((a) => a.payload) }),
       });
       let body = null;
       try { body = await res.json(); } catch { body = null; }
       if (!res.ok) {
-        setWriteError((body && body.error) || 'Failed to import athletes');
+        setWriteError((body && body.error) || 'Failed to save the imported athletes');
+        // The staged rows STAY. A rejected save must not silently discard the
+        // operator's reviewed list; rejected[] indices still line up with it.
         return { ok: false, rejected: (body && body.rejected) || [] };
       }
-      // Whole-batch: either every row landed or none did, so this splice is
-      // never partial. Newest first, matching add().
-      setAthletes((prev) => [...body.athletes, ...prev]);
+      setAthletes((prev) => [...body.athletes, ...prev.filter((a) => !a.uncommitted)]);
       setWriteError(null);
       return { ok: true, imported: body.imported, matches: body.matches };
     } catch (err) {
-      setWriteError('Failed to import athletes');
+      setWriteError('Failed to save the imported athletes');
       return { ok: false, rejected: [] };
     }
   }, [authenticated]);
 
+  // Bulk hard delete of Pending athletes. Whole-batch: the endpoint refuses the
+  // entire request if any id is not removable, so this splice is never partial.
+  const removeMany = useCallback(async (ids) => {
+    if (!Array.isArray(ids) || ids.length === 0) return { ok: true, deleted: 0 };
+    if (!authenticated) {
+      setAthletes((prev) => prev.filter((a) => !ids.includes(a.id)));
+      return { ok: true, deleted: ids.length };
+    }
+    try {
+      const res = await fetch('/api/athletes', {
+        method: 'DELETE', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ids }),
+      });
+      let body = null;
+      try { body = await res.json(); } catch { body = null; }
+      if (!res.ok) {
+        setWriteError((body && body.error) || 'Failed to remove the selected athletes');
+        return { ok: false, deleted: 0 };
+      }
+      const gone = new Set(body.ids || ids);
+      setAthletes((prev) => prev.filter((a) => !gone.has(a.id)));
+      setWriteError(null);
+      return { ok: true, deleted: body.deleted ?? ids.length };
+    } catch (err) {
+      setWriteError('Failed to remove the selected athletes');
+      return { ok: false, deleted: 0 };
+    }
+  }, [authenticated]);
+
   const value = useMemo(
-    () => ({ athletes, add, update, remove, importAthletes, writeError, clearWriteError }),
-    [athletes, add, update, remove, importAthletes, writeError, clearWriteError],
+    () => ({
+      athletes, add, update, remove,
+      stageImport, discardStaged, dropStaged, saveStaged, removeMany,
+      writeError, clearWriteError,
+    }),
+    [athletes, add, update, remove,
+      stageImport, discardStaged, dropStaged, saveStaged, removeMany,
+      writeError, clearWriteError],
   );
 
   return (

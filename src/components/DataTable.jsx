@@ -39,6 +39,25 @@ import { Icon } from './Icon.jsx';
 // visual signal is a rotated chevron from the shared Icon registry, and the
 // machine-readable signal is aria-sort on the header cell.
 //
+// ROW STATE IS ALSO OPT-IN (DATATABLE GAINS ROW-STATE CAPABILITY, ruled
+// 2026-08-27). `rowState: row => string | null` lets a consumer mark a row as
+// something other than ordinary, and DataTable owns what that looks like. The
+// ruling is explicit that a consumer must not fake this through a column render:
+// row-level styling inside a cell looks fine and breaks the next consumer.
+// Today the only state is 'uncommitted'.
+//
+// SELECTION IS OPT-IN AND KEYED, NEVER POSITIONAL. Supplying `selectable` adds
+// a leading checkbox column; `selectedKeys` is a Set of rowKey values the
+// consumer owns. Because selection is stored by KEY and not by index, it
+// survives a re-sort untouched: sorting reorders the array, and the Set does not
+// care. Storing indices would silently reassign a selection the moment a column
+// header was clicked, which is the bug this shape exists to make impossible.
+//
+// `selectable: row => boolean` decides PER ROW whether a checkbox appears at
+// all. A row that returns false renders an empty cell, not a disabled control:
+// MIXED SELECTION RULED says a progressed athlete gets no checkbox, and a
+// disabled one still says "you could have chosen this".
+//
 // Interactive rows: when onRowClick is set, rows get the ENT #15
 // keyboard-activation pattern (tabIndex={0} + Enter/Space + preventDefault),
 // hover background, and aria-label via rowAriaLabel. Row semantics are
@@ -53,11 +72,17 @@ export default function DataTable({
   rowAriaLabel,
   defaultSort,
   tiebreak,
+  rowState,
+  selectable,
+  selectedKeys,
+  onSelectionChange,
 }) {
   const [hoveredRowKey, setHoveredRowKey] = useState(null);
   // null = no column chosen, so defaultSort governs.
   const [sort, setSort] = useState(null);
   const interactive = typeof onRowClick === 'function';
+  const selecting = typeof selectable === 'function' && typeof onSelectionChange === 'function';
+  const selected = selectedKeys instanceof Set ? selectedKeys : EMPTY_SET;
 
   const toggleSort = (key) => {
     setSort((prev) => {
@@ -92,11 +117,45 @@ export default function DataTable({
     });
   }, [data, sort, columns, defaultSort, tiebreak]);
 
+  // Select-all operates on the rows the operator can actually see and select,
+  // which is every selectable row in the CURRENT order. Sorting does not change
+  // the membership of that set, only its sequence.
+  const selectableKeys = selecting ? rows.filter(selectable).map(rowKey) : [];
+  const allSelected = selectableKeys.length > 0 && selectableKeys.every((k) => selected.has(k));
+  const someSelected = selectableKeys.some((k) => selected.has(k));
+
+  const toggleAll = () => {
+    const next = new Set(selected);
+    if (allSelected) selectableKeys.forEach((k) => next.delete(k));
+    else selectableKeys.forEach((k) => next.add(k));
+    onSelectionChange(next);
+  };
+  const toggleOne = (key) => {
+    const next = new Set(selected);
+    if (next.has(key)) next.delete(key); else next.add(key);
+    onSelectionChange(next);
+  };
+
   return (
     <div style={tableWrapperStyle}>
       <table style={{ ...tableStyle, minWidth }}>
         <thead>
           <tr>
+            {selecting && (
+              <th style={selectThStyle}>
+                <label style={checkWrapStyle}>
+                  <input
+                    type="checkbox"
+                    checked={allSelected}
+                    ref={(el) => { if (el) el.indeterminate = !allSelected && someSelected; }}
+                    onChange={toggleAll}
+                    disabled={selectableKeys.length === 0}
+                    style={checkboxStyle}
+                    aria-label={allSelected ? 'Clear selection' : 'Select all removable rows'}
+                  />
+                </label>
+              </th>
+            )}
             {columns.map((c) => {
               const sortable = isSortable(c);
               const active = sortable && sort && sort.key === c.key;
@@ -153,8 +212,30 @@ export default function DataTable({
                   },
                 }
               : {};
+            const state = typeof rowState === 'function' ? rowState(row) : null;
+            const canSelect = selecting && selectable(row);
+            const stateStyle = state === 'uncommitted' ? uncommittedRowStyle : null;
             return (
-              <tr key={key} {...rowProps}>
+              <tr key={key} {...rowProps} style={{ ...(rowProps.style || {}), ...(stateStyle || {}) }}>
+                {selecting && (
+                  <td
+                    style={cellStyle(isLast)}
+                    onClick={(e) => e.stopPropagation()}
+                    onKeyDown={(e) => e.stopPropagation()}
+                  >
+                    {canSelect ? (
+                      <label style={checkWrapStyle}>
+                        <input
+                          type="checkbox"
+                          checked={selected.has(key)}
+                          onChange={() => toggleOne(key)}
+                          style={checkboxStyle}
+                          aria-label={rowAriaLabel ? `Select ${rowAriaLabel(row)}` : 'Select row'}
+                        />
+                      </label>
+                    ) : null}
+                  </td>
+                )}
                 {columns.map((c) => (
                   <td
                     key={c.key}
@@ -185,6 +266,10 @@ const tableStyle = {
 function isSortable(c) {
   return typeof c.sortValue === 'function';
 }
+
+// A stable empty Set, so an absent selectedKeys never creates a new identity
+// per render and never invalidates anything downstream.
+const EMPTY_SET = new Set();
 
 const thStyle = {
   textAlign: 'left',
@@ -237,6 +322,41 @@ const caretBase = {
 };
 const caretUpStyle = { ...caretBase, transform: 'rotate(-90deg)' };
 const caretDownStyle = { ...caretBase, transform: 'rotate(90deg)' };
+
+// Selection column: narrow, and its header carries the same 44px floor the sort
+// buttons do so the select-all control is a real touch target.
+const selectThStyle = { ...thStyle, width: '1%', paddingLeft: 'var(--sh-space-3)', paddingRight: 0 };
+
+// The label is the tap target, not the 13px box inside it: §7's LOCKED standard
+// is 44px and a bare checkbox is nowhere near it. Stretching the label to 44
+// square makes the whole cell tappable while the control itself stays the
+// platform default, which is what assistive tech and muscle memory both expect.
+const checkWrapStyle = {
+  display: 'inline-flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  minWidth: '44px',
+  minHeight: '44px',
+  marginTop: '-12px',
+  marginBottom: '-12px',
+  cursor: 'pointer',
+};
+
+const checkboxStyle = {
+  accentColor: 'var(--sh-bronze)',
+  cursor: 'pointer',
+  width: '16px',
+  height: '16px',
+};
+
+// An uncommitted row reads as provisional without shouting: the bronze tint the
+// surface already uses for an active region, plus a left marker. No badge and no
+// extra column, because the state belongs to the ROW and the review bar above
+// the table already says how many there are and what happens next.
+const uncommittedRowStyle = {
+  background: 'var(--sh-bg-tint)',
+  boxShadow: 'inset 3px 0 0 0 var(--sh-bronze)',
+};
 
 function cellStyle(isLast) {
   return {

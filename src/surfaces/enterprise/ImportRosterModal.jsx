@@ -51,7 +51,6 @@ import { readRosterFile, fileFromDrop, ACCEPT_ATTR } from './shared/readRosterFi
 
 const STEP_PASTE = 'paste';
 const STEP_MAP = 'map';
-const STEP_DONE = 'done';
 
 // Tab-separated, because that is what a spreadsheet range copy produces and
 // the sniffer will read it as such.
@@ -63,13 +62,11 @@ const FIELDS = [
   { key: 'email', label: 'Email' },
 ];
 
-export default function ImportRosterModal({ isOpen, onClose, onImport, writeError, clearWriteError }) {
+export default function ImportRosterModal({ isOpen, onClose, onStage, writeError, clearWriteError }) {
   const [step, setStep] = useState(STEP_PASTE);
   const [text, setText] = useState('');
   const [hasHeader, setHasHeader] = useState(true);
   const [mapping, setMapping] = useState({ firstName: null, lastName: null, email: null });
-  const [submitting, setSubmitting] = useState(false);
-  const [outcome, setOutcome] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [fileError, setFileError] = useState(null);
   const [fileNotes, setFileNotes] = useState([]);
@@ -97,8 +94,6 @@ export default function ImportRosterModal({ isOpen, onClose, onImport, writeErro
       setText('');
       setHasHeader(true);
       setMapping({ firstName: null, lastName: null, email: null });
-      setSubmitting(false);
-      setOutcome(null);
       setFileName(null);
       setFileError(null);
       setFileNotes([]);
@@ -187,23 +182,19 @@ export default function ImportRosterModal({ isOpen, onClose, onImport, writeErro
   const chosen = FIELDS.map((f) => mapping[f.key]).filter((v) => v != null);
   const duplicateColumn = new Set(chosen).size !== chosen.length;
   const allMapped = chosen.length === FIELDS.length;
-  const canSubmit = allMapped && !duplicateColumn && !overCap && rowCount > 0 && !submitting;
+  const canSubmit = allMapped && !duplicateColumn && !overCap && rowCount > 0;
 
-  const handleSubmit = async () => {
+  // REVIEW BEFORE SAVE (ruled 2026-08-27). This no longer writes anything. The
+  // mapped rows are STAGED into provider state as uncommitted rows and the modal
+  // closes, putting the operator in the roster table where the review happens.
+  // The save is theirs to make from the review bar; nothing reaches D1 until
+  // they press it, and the import endpoint's rejected[] surfaces there instead.
+  const handleSubmit = () => {
     if (!canSubmit) return;
-    setSubmitting(true);
     clearWriteError();
-    const result = await onImport(toPayloadRows(parsed.rows, mapping));
-    setSubmitting(false);
-    if (!result) return;                       // network-level failure; writeError renders below
-    setOutcome(result);
-    if (result.ok) setStep(STEP_DONE);
-    else setStep(STEP_DONE);                   // rejections render in the same place
+    onStage(toPayloadRows(parsed.rows, mapping));
+    onClose();
   };
-
-  // The client did the parsing, so the client owns mapping the endpoint's
-  // array indices back to the operator's pasted lines.
-  const lineFor = (index) => (parsed && parsed.rows[index] ? parsed.rows[index].line : null);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Import roster">
@@ -381,79 +372,12 @@ export default function ImportRosterModal({ isOpen, onClose, onImport, writeErro
           <div style={footerStyle}>
             <Button variant="ghost" size="sm" onClick={() => setStep(STEP_PASTE)}>Back</Button>
             <Button variant="primary" size="sm" onClick={handleSubmit} disabled={!canSubmit}>
-              {submitting ? 'Importing…' : `Import ${rowCount} athlete${rowCount === 1 ? '' : 's'}`}
+              {`Review ${rowCount} athlete${rowCount === 1 ? '' : 's'}`}
             </Button>
           </div>
         </>
       )}
 
-      {step === STEP_DONE && outcome && outcome.ok && (
-        <>
-          <p style={leadStyle}>
-            {outcome.imported} athlete{outcome.imported === 1 ? '' : 's'} imported. They sit at
-            &ldquo;Not yet invited&rdquo; until you invite them.
-          </p>
-
-          {outcome.matches && outcome.matches.onRoster.length > 0 && (
-            <div style={noticeStyle}>
-              <p style={noticeHeadStyle}>Some rows look like athletes already on your roster</p>
-              <ul style={listStyle}>
-                {outcome.matches.onRoster.slice(0, 25).map((m, i) => (
-                  <li key={i} style={listItemStyle}>
-                    Line {lineFor(m.index)} shares {m.matchedOn === 'email' ? 'an email' : 'a name'} with {m.athleteName}
-                  </li>
-                ))}
-              </ul>
-              {outcome.matches.onRoster.length > 25 && (
-                <p style={noticeFootStyle}>and {outcome.matches.onRoster.length - 25} more.</p>
-              )}
-              <p style={noticeFootStyle}>
-                They were imported. Two athletes can share a name or an address, so this is
-                shown rather than decided.
-              </p>
-            </div>
-          )}
-
-          {outcome.matches && outcome.matches.withinPaste.length > 0 && (
-            <div style={noticeStyle}>
-              <p style={noticeHeadStyle}>Some pasted rows repeat each other</p>
-              <ul style={listStyle}>
-                {outcome.matches.withinPaste.slice(0, 25).map((m, i) => (
-                  <li key={i} style={listItemStyle}>
-                    Lines {m.indexes.map(lineFor).join(', ')} share {m.matchedOn === 'email' ? 'an email' : 'a name'}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          <div style={footerStyle}>
-            <Button variant="primary" size="sm" onClick={onClose}>Done</Button>
-          </div>
-        </>
-      )}
-
-      {step === STEP_DONE && outcome && !outcome.ok && (
-        <>
-          <p style={errorLeadStyle}>{writeError || 'No athletes were imported.'}</p>
-          {outcome.rejected && outcome.rejected.length > 0 && (
-            <ul style={listStyle}>
-              {outcome.rejected.slice(0, 50).map((r, i) => (
-                <li key={i} style={listItemStyle}>
-                  <strong style={lineRefStyle}>Line {lineFor(r.index)}</strong>: {r.reason}
-                </li>
-              ))}
-              {outcome.rejected.length > 50 && (
-                <li style={listItemStyle}>and {outcome.rejected.length - 50} more.</li>
-              )}
-            </ul>
-          )}
-          <div style={footerStyle}>
-            <Button variant="ghost" size="sm" onClick={() => setStep(STEP_PASTE)}>Edit paste</Button>
-            <Button variant="primary" size="sm" onClick={() => setStep(STEP_MAP)}>Change mapping</Button>
-          </div>
-        </>
-      )}
     </Modal>
   );
 }
@@ -555,8 +479,6 @@ const leadStyle = {
   marginBottom: 'var(--sh-space-4)',
 };
 
-const errorLeadStyle = { ...leadStyle, color: 'var(--sh-bronze-deep)' };
-
 const textareaStyle = {
   width: '100%',
   boxSizing: 'border-box',
@@ -646,43 +568,6 @@ const errorStyle = {
   fontSize: 'var(--sh-text-sm)',
   color: 'var(--sh-bronze-deep)',
   marginBottom: 'var(--sh-space-3)',
-  overflowWrap: 'anywhere',
-};
-
-const noticeStyle = {
-  marginBottom: 'var(--sh-space-4)',
-  padding: 'var(--sh-space-3) var(--sh-space-4)',
-  background: 'var(--sh-bg-tint)',
-  border: 'var(--sh-border-thin)',
-  borderRadius: 'var(--sh-radius-md)',
-};
-
-const noticeHeadStyle = {
-  fontSize: 'var(--sh-text-sm)',
-  color: 'var(--sh-text-body)',
-  fontWeight: 500,
-  marginTop: 0,
-  marginBottom: 'var(--sh-space-2)',
-};
-
-const noticeFootStyle = {
-  fontSize: 'var(--sh-text-xs)',
-  color: 'var(--sh-text-muted)',
-  lineHeight: 1.5,
-  marginTop: 'var(--sh-space-2)',
-  marginBottom: 0,
-};
-
-const listStyle = {
-  margin: 0,
-  paddingLeft: 'var(--sh-space-4)',
-  listStyle: 'disc',
-};
-
-const listItemStyle = {
-  fontSize: 'var(--sh-text-sm)',
-  color: 'var(--sh-text-secondary)',
-  lineHeight: 1.6,
   overflowWrap: 'anywhere',
 };
 

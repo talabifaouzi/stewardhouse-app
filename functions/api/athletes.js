@@ -329,3 +329,135 @@ export async function onRequestPost(context) {
 
   return jsonOk({ ...element, invite });
 }
+
+// -----------------------------------------------------------------------------
+// DELETE /api/athletes — bulk hard delete of Pending athletes (BULK, ruled
+// 2026-08-27: "a wrong upload is the whole import, not one row").
+//
+// BODY ON DELETE, following cohort-members.js: context.request.json() works on
+// DELETE under CF Pages Functions, and a body is the only sane carrier for a
+// list of ids. Body is { ids: [...] }.
+//
+// PENDING ONLY, and refused otherwise. The client restricts selection to Pending
+// (MIXED SELECTION RULED), but a client restriction is an affordance and this is
+// the authority: a direct call, a stale tab, or an athlete that progressed since
+// the roster rendered all arrive here and are all refused the same way.
+//
+// REJECT THE WHOLE BATCH, naming every offending id. This is attendance.js's
+// posture verbatim, and it is the right one twice over: the operator asked for
+// one action, and the write is a D1 batch that is atomic anyway, so a partial
+// outcome is not even available to report.
+//
+// CHUNKED AT 98, NOT 99, and the difference is a race guard rather than an
+// off-by-one. D1 allows 100 bound parameters per query (CLAUDE.md §10). An
+// id-list DELETE scoped by institution fits 99 ids exactly; adding the
+// enrollment_status='Pending' guard to the same statement costs one more
+// parameter, so 98 ids is the ceiling WITH that guard. The guard is worth the
+// row: without it a Pending athlete that progressed between validation and the
+// batch would be hard-deleted on the strength of a stale read, which is the
+// exact E3 violation the progressed-athletes ruling exists to prevent. Verified
+// by compiling the query rather than by counting placeholders.
+//
+// ONE env.DB.batch() across every chunk, so all-or-nothing holds ACROSS chunks
+// and not merely within one. This is the import endpoint's chunking precedent
+// (import.js), running in the opposite direction.
+
+const DELETE_CHUNK_IDS = 98;
+
+// Mirrors import.js MAX_IMPORT_ROWS. Declared locally rather than imported:
+// import.js already imports from this file, so importing back would close the
+// module graph into a cycle for one integer.
+const MAX_BULK_DELETE = 500;
+
+export async function onRequestDelete(context) {
+  const db = makeDb(context);
+  const { person, error, status } = await requireGatedEnterprise(db, context);
+  if (error) return jsonError(error, status);
+
+  let body;
+  try { body = await context.request.json(); }
+  catch { return jsonError('Invalid JSON body', 400); }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    return jsonError('Body must be an object', 400);
+  }
+  const forbidden = rejectRankKeys(body);
+  if (forbidden) return jsonError(`Field "${forbidden}" is not permitted`, 400);
+  const extraKeys = Object.keys(body).filter((k) => k !== 'ids');
+  if (extraKeys.length > 0) {
+    return jsonError(`Field(s) not permitted: ${extraKeys.join(', ')}`, 400);
+  }
+
+  const ids = body.ids;
+  if (!Array.isArray(ids)) return jsonError('ids must be an array', 400);
+  if (ids.length === 0) return jsonError('ids must contain at least one athlete', 400);
+  if (!ids.every((i) => typeof i === 'string' && i.trim().length > 0)) {
+    return jsonError('every id must be a non-empty string', 400);
+  }
+  const unique = [...new Set(ids)];
+  if (unique.length > MAX_BULK_DELETE) {
+    return jsonError(
+      `A bulk removal is limited to ${MAX_BULK_DELETE} athletes; ${unique.length} were submitted.`,
+      400,
+    );
+  }
+
+  // Owner scope from institution_contact, NEVER the body.
+  const contact = await db
+    .selectFrom('institution_contact')
+    .select(['institution_id', 'is_default_operator'])
+    .where('person_id', '=', person.id)
+    .orderBy('is_default_operator', 'desc')
+    .executeTakeFirst();
+  if (!contact) {
+    return jsonError('No institution is associated with this operator', 403);
+  }
+
+  // Validate EVERY id before deleting any, chunked to the same parameter cap.
+  // An id that is absent, another institution's, or not Pending all land in the
+  // same refusal, and the refusal names them.
+  const found = new Map();
+  for (let i = 0; i < unique.length; i += DELETE_CHUNK_IDS) {
+    const page = await db
+      .selectFrom('athlete')
+      .select(['id', 'enrollment_status'])
+      .where('id', 'in', unique.slice(i, i + DELETE_CHUNK_IDS))
+      .where('institution_id', '=', contact.institution_id)
+      .execute();
+    for (const row of page) found.set(row.id, row.enrollment_status);
+  }
+
+  const missing = unique.filter((id) => !found.has(id));
+  const notPending = unique.filter((id) => found.has(id) && found.get(id) !== 'Pending');
+  if (missing.length > 0 || notPending.length > 0) {
+    // One message, because from the operator's side both are the same fact:
+    // these rows are not removable this way. Absent and not-yours are already
+    // indistinguishable by design (the single-delete 404 idiom), and naming
+    // which is which would make this an existence probe.
+    const bad = [...missing, ...notPending];
+    return jsonError(
+      `${bad.length} of ${unique.length} selected athlete(s) cannot be removed this way. Only athletes who have not yet been invited can be removed; anyone further along is retired instead, one at a time. Nothing was removed.`,
+      409,
+    );
+  }
+
+  const compiled = [];
+  for (let i = 0; i < unique.length; i += DELETE_CHUNK_IDS) {
+    compiled.push(
+      db.deleteFrom('athlete')
+        .where('id', 'in', unique.slice(i, i + DELETE_CHUNK_IDS))
+        .where('institution_id', '=', contact.institution_id)
+        .where('enrollment_status', '=', 'Pending')
+        .compile(),
+    );
+  }
+
+  try {
+    await context.env.DB.batch(
+      compiled.map((c) => context.env.DB.prepare(c.sql).bind(...c.parameters)),
+    );
+  } catch (err) {
+    return jsonError('Failed to remove the selected athletes', 500);
+  }
+
+  return jsonOk({ deleted: unique.length, ids: unique });
+}

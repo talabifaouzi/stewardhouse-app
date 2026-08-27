@@ -5,6 +5,7 @@ import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
 import AthleteProfile from '../../components/AthleteProfile.jsx';
 import DataTable from '../../components/DataTable.jsx';
 import { Button } from '../../components/Button.jsx';
+import { Modal } from '../../components/Modal.jsx';
 import { useComms } from '../../contexts/CommsContext.jsx';
 import { useAthletes } from '../../contexts/AthletesContext.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
@@ -74,7 +75,11 @@ const AUTH_ROSTER_COLUMNS = [
 export default function EnterpriseRoster() {
   const eyebrow = useInstitutionEyebrow();
   const { openCompose } = useComms();
-  const { athletes, add, update, remove, importAthletes, writeError, clearWriteError } = useAthletes();
+  const {
+    athletes, add, update, remove,
+    stageImport, discardStaged, dropStaged, saveStaged, removeMany,
+    writeError, clearWriteError,
+  } = useAthletes();
   // Roster-add affordance is authenticated-only — the demo tree renders
   // byte-identical (no CTA, no modal). Gate on identity presence.
   const isAuthenticated = !!useOptionalAppIdentity();
@@ -82,6 +87,43 @@ export default function EnterpriseRoster() {
   const [activeAthlete, setActiveAthlete] = useState(null);
   const [addOpen, setAddOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  // Selection is a Set of athlete IDS, never indices, so it survives a re-sort.
+  const [selected, setSelected] = useState(() => new Set());
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [busy, setBusy] = useState(false);
+  // The import endpoint's per-row rejected[] and its likely-match report used to
+  // render in the modal. The save moved here, so they render here: PARTIAL
+  // FAILURE RULED requires every rejected row to be named, and the indices are
+  // positions in the staged list, which is exactly what is on screen.
+  const [saveOutcome, setSaveOutcome] = useState(null);
+
+  const staged = athletes.filter((a) => a.uncommitted);
+
+  // MIXED SELECTION RULED: a progressed athlete gets no checkbox, ever.
+  // Removable at all means Pending, in one of two senses: a STAGED row, which is
+  // dropped from memory, or a SAVED Pending athlete, which is hard-deleted.
+  const kindOf = (a) => {
+    if (a.uncommitted) return 'staged';
+    return statusFor(a) === 'Not yet invited' ? 'saved' : null;
+  };
+
+  // Selection can outlive the rows it names (a save replaces staged ids, a
+  // delete removes them), so everything below is derived from the CURRENT
+  // roster rather than from the Set's size.
+  const selectedRows = athletes.filter((a) => selected.has(a.id) && kindOf(a));
+  const selectedCount = selectedRows.length;
+  const selectedKind = selectedCount > 0 ? kindOf(selectedRows[0]) : null;
+
+  // THE MIXING RULE, enforced by the checkbox's existence rather than by a
+  // refusal. Once a kind is chosen, only that kind stays selectable, so the two
+  // operations can never end up in one gesture. The ruling's own reasoning is
+  // the argument: refusing after the operator has built a selection is worse
+  // than a checkbox that never appears.
+  const isRemovable = (a) => {
+    const k = kindOf(a);
+    if (!k) return false;
+    return selectedKind === null || k === selectedKind;
+  };
 
   const stats = computeStats(athletes);
   const { tot, certD, stalled, onTrack, notStarted, activelyProgressingPct, consentAware, rateActive, rateBaseTotal } = stats;
@@ -121,6 +163,101 @@ export default function EnterpriseRoster() {
       </div>
       <RateDisclosure stats={stats} />
 
+      {/* REVIEW BAR. Sits OUTSIDE the table's horizontal scroll container, so
+          the save and discard controls stay reachable at any viewport width even
+          when the leading checkbox column has scrolled out of view. */}
+      {isAuthenticated && staged.length > 0 && (
+        <div style={reviewBarStyle}>
+          <p style={reviewTextStyle}>
+            <strong>{staged.length} row{staged.length === 1 ? '' : 's'} ready to save.</strong>{' '}
+            Nothing has been saved yet. Check them below and remove any that are wrong.
+          </p>
+          <div style={reviewActionsStyle}>
+            <Button variant="ghost" size="lg" onClick={() => { discardStaged(); setSelected(new Set()); }} disabled={busy}>
+              Discard
+            </Button>
+            <Button
+              variant="primary"
+              size="lg"
+              disabled={busy}
+              onClick={async () => {
+                setBusy(true);
+                const result = await saveStaged();
+                setBusy(false);
+                setSaveOutcome(result);
+              }}
+            >
+              {busy ? 'Saving…' : `Save ${staged.length} athlete${staged.length === 1 ? '' : 's'}`}
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* SAVE OUTCOME. A rejection names EVERY bad row by the staged athlete it
+          refers to; the staged rows are still on screen and still editable, so
+          the repair is to remove them and save again. */}
+      {isAuthenticated && saveOutcome && !saveOutcome.ok && saveOutcome.rejected.length > 0 && (
+        <div style={rejectedBoxStyle}>
+          <p style={reviewTextStyle}>Nothing was saved. These rows were refused:</p>
+          <ul style={rejectedListStyle}>
+            {saveOutcome.rejected.slice(0, 50).map((r, i) => (
+              <li key={i} style={rejectedItemStyle}>
+                <strong>{staged[r.index] ? staged[r.index].name : `Row ${r.index + 1}`}</strong>: {r.reason}
+              </li>
+            ))}
+            {saveOutcome.rejected.length > 50 && (
+              <li style={rejectedItemStyle}>and {saveOutcome.rejected.length - 50} more.</li>
+            )}
+          </ul>
+        </div>
+      )}
+
+      {isAuthenticated && saveOutcome && saveOutcome.ok && saveOutcome.matches
+        && (saveOutcome.matches.onRoster.length > 0 || saveOutcome.matches.withinPaste.length > 0) && (
+        <div style={matchBoxStyle}>
+          <p style={reviewTextStyle}>
+            Saved. {saveOutcome.matches.onRoster.length > 0 && `${saveOutcome.matches.onRoster.length} row(s) share a name or an email with someone already on the roster. `}
+            {saveOutcome.matches.withinPaste.length > 0 && `${saveOutcome.matches.withinPaste.length} set(s) of imported rows repeat each other. `}
+            They were all imported: two athletes can share a name or an address, so this is shown rather than decided.
+          </p>
+          <div style={reviewActionsStyle}>
+            <Button variant="ghost" size="lg" onClick={() => setSaveOutcome(null)}>Dismiss</Button>
+          </div>
+        </div>
+      )}
+
+      {/* SELECTION BAR, outside the scroll container for the same reason. */}
+      {isAuthenticated && selectedCount > 0 && (
+        <div style={selectionBarStyle}>
+          <p style={reviewTextStyle}>
+            {selectedCount} selected
+            {selectedKind === 'staged' && ' from this import'}
+          </p>
+          <div style={reviewActionsStyle}>
+            <Button variant="ghost" size="lg" onClick={() => setSelected(new Set())} disabled={busy}>Clear</Button>
+            <Button
+              variant="secondary"
+              size="lg"
+              disabled={busy}
+              onClick={() => {
+                // A staged row has never been written, so dropping it is not a
+                // delete and asks no confirmation: the operator is editing a
+                // list they are still assembling. A saved row is a hard delete
+                // with no undo, so that one confirms.
+                if (selectedKind === 'staged') {
+                  selectedRows.forEach((a) => dropStaged(a.id));
+                  setSelected(new Set());
+                } else {
+                  setConfirmOpen(true);
+                }
+              }}
+            >
+              Remove {selectedCount}
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Add-athlete CTA — authenticated tree only, when the roster is
           non-empty (the empty state carries its own affordance below). */}
       {isAuthenticated && athletes.length > 0 && (
@@ -144,6 +281,10 @@ export default function EnterpriseRoster() {
               rowAriaLabel={(a) => `View ${a.name}'s profile`}
               defaultSort={DEFAULT_ROSTER_SORT}
               tiebreak={ROSTER_TIEBREAK}
+              rowState={isAuthenticated ? ((a) => (a.uncommitted ? 'uncommitted' : null)) : undefined}
+              selectable={isAuthenticated ? isRemovable : undefined}
+              selectedKeys={selected}
+              onSelectionChange={isAuthenticated ? setSelected : undefined}
             />
             {/* FORK 3 caption — explains the "—" in the Gifts column so the dash
                 reads as unsourced rather than ambiguous. Same string shipped in
@@ -165,12 +306,43 @@ export default function EnterpriseRoster() {
         )}
       </Card>
 
+      {/* CONFIRM, NAMING THE COUNT. A hard delete has no undo and no stub left
+          behind, so the count is in the button as well as the copy: an operator
+          who mis-clicked "select all" sees the number before it happens, not
+          after. */}
+      {isAuthenticated && (
+        <Modal isOpen={confirmOpen} onClose={() => setConfirmOpen(false)} title="Remove athletes">
+          <p style={confirmTextStyle}>
+            Remove {selectedCount} athlete{selectedCount === 1 ? '' : 's'} from the roster?
+            {' '}They have not been invited yet, so nothing is kept: their records are deleted
+            outright and this cannot be undone.
+          </p>
+          {writeError && <p style={confirmErrorStyle}>{writeError}</p>}
+          <div style={confirmActionsStyle}>
+            <Button variant="ghost" size="lg" onClick={() => setConfirmOpen(false)} disabled={busy}>Cancel</Button>
+            <Button
+              variant="primary"
+              size="lg"
+              disabled={busy}
+              onClick={async () => {
+                setBusy(true);
+                const result = await removeMany(selectedRows.map((a) => a.id));
+                setBusy(false);
+                if (result.ok) { setSelected(new Set()); setConfirmOpen(false); }
+              }}
+            >
+              {busy ? 'Removing…' : `Remove ${selectedCount}`}
+            </Button>
+          </div>
+        </Modal>
+      )}
+
       {/* Roster import — authenticated tree only, same gate as the add form. */}
       {isAuthenticated && (
         <ImportRosterModal
           isOpen={importOpen}
           onClose={() => setImportOpen(false)}
-          onImport={importAthletes}
+          onStage={stageImport}
           writeError={writeError}
           clearWriteError={clearWriteError}
         />
@@ -280,6 +452,97 @@ const addRowStyle = {
   justifyContent: 'flex-end',
   gap: 'var(--sh-space-2)',
   marginBottom: 'var(--sh-space-4)',
+};
+
+// The review and selection bars sit OUTSIDE the table's overflow-x container,
+// so their controls never scroll away with the checkbox column. Both use
+// size="lg" buttons, the §7 touch-primary size held to 44px, and wrap.
+const barBase = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  alignItems: 'center',
+  justifyContent: 'space-between',
+  gap: 'var(--sh-space-3)',
+  padding: 'var(--sh-space-3) var(--sh-space-4)',
+  borderRadius: 'var(--sh-radius-md)',
+  marginBottom: 'var(--sh-space-4)',
+};
+
+const reviewBarStyle = {
+  ...barBase,
+  background: 'var(--sh-bg-tint)',
+  border: '1px solid var(--sh-bronze)',
+};
+
+const selectionBarStyle = {
+  ...barBase,
+  background: 'var(--sh-card)',
+  border: 'var(--sh-border-default)',
+};
+
+const reviewTextStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  lineHeight: 1.5,
+  margin: 0,
+  flex: '1 1 12rem',
+};
+
+const reviewActionsStyle = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  gap: 'var(--sh-space-2)',
+};
+
+const rejectedBoxStyle = {
+  ...barBase,
+  display: 'block',
+  background: 'var(--sh-warning-bg)',
+  border: '1px solid var(--sh-warning-border)',
+};
+
+const matchBoxStyle = {
+  ...barBase,
+  background: 'var(--sh-bg-tint)',
+  border: 'var(--sh-border-thin)',
+};
+
+const rejectedListStyle = {
+  margin: 'var(--sh-space-2) 0 0',
+  paddingLeft: 'var(--sh-space-4)',
+  listStyle: 'disc',
+};
+
+const rejectedItemStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-warning-text)',
+  lineHeight: 1.6,
+  overflowWrap: 'anywhere',
+};
+
+const confirmTextStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  lineHeight: 1.6,
+  marginTop: 0,
+  marginBottom: 'var(--sh-space-4)',
+};
+
+const confirmErrorStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-bronze-deep)',
+  marginBottom: 'var(--sh-space-3)',
+  overflowWrap: 'anywhere',
+};
+
+const confirmActionsStyle = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'flex-end',
+  gap: 'var(--sh-space-2)',
+  marginTop: 'var(--sh-space-5)',
+  paddingTop: 'var(--sh-space-4)',
+  borderTop: 'var(--sh-border-thin)',
 };
 
 const emptyActionsStyle = {
