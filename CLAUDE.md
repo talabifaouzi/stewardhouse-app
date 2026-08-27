@@ -752,6 +752,53 @@ therefore outside the ruled atomic unit. Cosmetic today, since the claim matches
 on the person column. The import slice should normalize at import so the two
 never differ.
 
+**RULED 2026-08-27, the roster import path.** Six rulings, recorded against
+HEAD 2c74f86.
+
+**INPUT SHAPE RULED: PASTED TEXT, not file upload.** The roster arrives as a
+string through request.json(), which has 34 precedents in functions/ against
+zero for request.formData(). This sidesteps multipart handling, which is
+unverified under Pages Functions. A parser is required either way. File upload
+may be added later without rework, because the parse-and-validate layer is
+identical; only the transport differs.
+
+**PARTIAL FAILURE RULED: REJECT THE WHOLE BATCH**, naming every bad row and its
+reason. A partial roster with no record of what did not land is the worse
+outcome. The response must name every rejected row so the operator can fix the
+paste and resubmit. This is viable with pasted text in a way it would not be
+with a large file upload.
+
+**DUPLICATE POLICY RULED: NO dedup, NO unique index.** Report likely matches
+without blocking. The schema has no natural key and cannot acquire one
+honestly: athlete carries exactly one unique constraint, its PRIMARY KEY, and
+two athletes may legally share an institution, a name, and an email. Blocking
+on a guess is worse than showing the operator what looks like a match. This is
+Path B: exposure, not judgment.
+
+**MANAGEMENT_MODE GUARD RULED: ADD IT.** Import must set management_mode NULL,
+and the invite endpoint's gate must also refuse a non-NULL value. Recorded
+because the gate does NOT check it today, proven by execution: a Pending row
+with management_mode='delegated' or 'self' is still ACCEPTED (200), as is one
+with lessons_count=7 and certified=1. The gate is two conditions only,
+enrollment_status and person_id. A non-NULL management_mode asserts a consent
+choice the athlete never made, and nothing would catch it until an attendance
+or progression write behaved as though consent had been given.
+
+**C-1 FIELDS RULED: DISCARD.** Import stores name and email only, matching what
+POST /api/athletes already does when it explicitly NULLs sport, year, position,
+phone, notes, badge, management_mode, gps_completed_at and last_active_at. A
+roster file will contain those columns; they are dropped. Anything else would
+be a second enrollment path with different rules, and the divergence would be
+invisible.
+
+**CONSENT AT IMPORT RULED: 'Pending' IS THE DEFERRAL.** An imported athlete has
+acknowledged nothing; the offline conversation before invitation is where
+acknowledgment happens. Import therefore does NOT stamp
+consent_acknowledged_at and does NOT accept a consentAcknowledged field. This
+differs deliberately from POST /api/athletes, which requires
+consentAcknowledged === true per E6 and stamps the column. Recorded explicitly
+because section 5.2 did not previously say it.
+
 ---
 
 ## 6. Slice protocol (build discipline)
@@ -1856,6 +1903,34 @@ directory.
    ignored files: search them explicitly, or do not let correction-bearing text
    live in an ignored path. This is why the file was renamed to
    `scripts/smoke-p2-screen.mjs`.
+
+### Filed — D1's bound-parameter limit is 100, and no local probe can see it (2026-08-27)
+
+**D1 ALLOWS 100 BOUND PARAMETERS PER QUERY, not SQLite's 32,766.** Source:
+Cloudflare's published D1 limits, read by FT; the account is Workers PAID.
+Related published limits, same source: maximum SQL statement length 100,000
+bytes; queries per Worker invocation 1000 on Workers Paid and 50 on Free;
+maximum 100 columns per table; maximum SQL query duration 30 seconds.
+
+**WHY THIS IS FILED AS A MEASUREMENT HAZARD RATHER THAN AS A NUMBER.** A local
+probe proved 32,766 bound parameters succeed, failing only at 32,769 with "too
+many SQL variables". That probe was CORRECT about node:sqlite and says nothing
+whatever about D1. Miniflare enforces no cap either: its query schema is
+`params: z.array(D1ValueSchema).nullable().optional()` with no `.max()`, so a
+query that passes locally can fail in production on a limit neither the probe
+nor the emulator can express. **This is the same class as `npm run build`
+exiting 0 on a `functions/`-only change:** a check that succeeds while
+asserting nothing about the real target.
+
+**CONSEQUENCE FOR MULTI-ROW WRITES.** At 7 supplied columns a multi-row INSERT
+fits 14 rows per statement. A 200-row import therefore needs roughly 15 chunked
+statements inside ONE env.DB.batch(), which remains a single implicit
+transaction, so chunking preserves all-or-nothing. Chunking must happen BEFORE
+the batch is assembled, never as separate calls.
+
+**UNVERIFIED:** whether env.DB.batch() counts as one subrequest or N against the
+queries-per-invocation limit. Immaterial at 15 statements on Workers Paid;
+material at large roster sizes.
 
 ---
 
