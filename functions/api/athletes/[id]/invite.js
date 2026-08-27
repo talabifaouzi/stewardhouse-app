@@ -118,7 +118,7 @@ export async function onRequestPut(context) {
   // exist. Pulls the columns layer 8, the mint, and the collision check need.
   const row = await db
     .selectFrom('athlete')
-    .select(['id', 'name', 'email', 'enrollment_status', 'person_id'])
+    .select(['id', 'name', 'email', 'enrollment_status', 'person_id', 'management_mode'])
     .where('id', '=', athleteId)
     .where('institution_id', '=', contact.institution_id)
     .where('enrollment_status', '!=', 'Sunset')
@@ -136,6 +136,16 @@ export async function onRequestPut(context) {
   }
   if (row.person_id != null) {
     return jsonError('This athlete already has a linked account', 409);
+  }
+  // A record-keeping choice before invitation is an ANOMALY, not a state the
+  // product produces: the athlete makes that choice at claim (C-3b), which
+  // cannot have happened yet on a Pending row. Import sets it NULL, so a
+  // non-NULL value here means some other path asserted a consent choice the
+  // athlete never made. Refuse rather than invite over it, because nothing
+  // downstream would catch it until an attendance or progression write behaved
+  // as though consent had been given.
+  if (row.management_mode != null) {
+    return jsonError('This athlete\'s record-keeping mode was set before invitation; the record needs correcting first', 409);
   }
 
   // The address. athlete.email is NULLABLE, so an imported row may carry none,
