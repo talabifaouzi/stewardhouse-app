@@ -573,8 +573,11 @@ reading sitting in the doc CLAUDE.md points at rather than in CLAUDE.md itself.
 Arc: Enterprise roster import. Repo baseline 2917747. Scoping closed across
 three agent passes (Q1-8, G1-6, H1-2). Migrations 0019 (person.invited_at)
 and 0020 (athlete CHECK adding 'Pending') applied and agent-verified on local
-D1 (20 migrations, six-value CHECK confirmed). Remote application is per FT's
-record; --remote reads are FT-run only and this was not agent-verified.
+D1 (20 migrations, six-value CHECK confirmed). Remote application CONFIRMED
+2026-08-27: FT ran `d1 migrations list --remote` and it reported no migrations
+to apply, so 0019 and 0020 are both applied on remote. That confirmation was
+FT-run, which is both the closure evidence §6.10 requires and the only way it
+may be obtained, since --remote reads and applies are FT-only.
 
 **Mechanism:** the load-bearing site is statusFor's BRANCH ORDER
 (src/surfaces/enterprise/shared/athleteStatus.js, statusFor), not STATUS_MAP.
@@ -728,6 +731,26 @@ athlete one. This corrects a factual miscount, NOT the ruling: what F-C rules
 out of the atomic unit is unchanged, and the send, its sent-stamp and the
 conditional UNIQUE-collision bind remain outside it. "Heterogeneous
 multi-table" at :620 stands: two tables.
+
+**ANONYMIZE-RACE RULED 2026-08-27.** COLLISION DISPOSITION governs the
+UNIQUE(invite_email) collision. It does NOT govern an athlete being anonymized
+between the invite endpoint's pre-check SELECT and its batch. That race is ruled
+as follows: the athlete UPDATE re-asserts its own precondition in the WHERE
+clause (enrollment_status='Pending' AND person_id IS NULL AND institution
+scope), so a row anonymized mid-flight does NOT flip. The consequence is a stray
+unclaimed person row, which is withdrawable through the existing Operations
+Accounts path. The rejected alternative was omitting the WHERE guard, which
+would resurrect an anonymized athlete from Sunset to Invited and silently
+violate E3. A recoverable artifact is preferred to a silent invariant violation.
+The endpoint's post-batch confirmation refuses to report success when the
+athlete did not flip.
+
+**FILED OBSERVATION, not a ruling: athlete.email case can diverge from
+person.invite_email.** The mint normalizes (trim().toLowerCase()) while
+athlete.email is not rewritten, because rewriting it would be a third write and
+therefore outside the ruled atomic unit. Cosmetic today, since the claim matches
+on the person column. The import slice should normalize at import so the two
+never differ.
 
 ---
 
@@ -1244,6 +1267,22 @@ Every substantive change runs as a **slice**. The rhythm:
     the NAVIGABILITY addition the ruling already records as available at item
     (1): a table of contents and a read-these-first ordering serve adherence
     directly, and they ADD rather than remove.
+17. **ONE-PASS BUILD (FT-ruled 2026-08-27).** A build slice may be built end to
+    end in a single pass, without per-phase approval stops. The agent makes its
+    own calls on structure, naming, error shape, validation order, and helper
+    extraction, and flags FT only when something contradicts a ruling, requires
+    a ruling not yet made, or cannot be built as scoped.
+
+    **WHAT DOES NOT RELAX.** The bank rule (§6.13) is unchanged: no commit fires
+    without a full printed diff and FT's explicit confirmation. `--remote` reads
+    and writes remain FT-run only. The dev store is not written. One slice, one
+    branch.
+
+    **Recorded because the first trial held.** The invite endpoint (`ff9e404`)
+    was built in one pass with 25 executed checks against the real handler,
+    caught an undocumented route-shadowing risk unprompted by generating the
+    route table, proved the batch shape rather than asserting it, and surfaced
+    three judgment calls at the right level of detail.
 
 Stop background shells (dev server, watch loops) at bank time, and LAUNCH them
 as tracked background tasks so `TaskStop` applies at all. `TaskStop` is the
