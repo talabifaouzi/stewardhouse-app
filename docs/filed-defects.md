@@ -542,6 +542,38 @@ minutes said**, and both corrections are recorded in place rather than quietly
 applied. Nothing below proposes a fix, and nothing below is ruled except where it
 says so.
 
+**RULED 2026-08-26: F-C is no longer UNRULED, the BLOCKING CONDITION below is
+DISCHARGED, and the filing's "send script" language is WRONG.** The filing is
+preserved verbatim below as the record of the question, so it still reads UNRULED
+and still says a send script must not be authored. **Both of those are now false,
+and this block is the correction.**
+
+**There is NO send script, and there never will be. The invite is a STAFF ACT in
+the UI**, taken after an offline conversation and athlete acknowledgment, through
+an invite endpoint. Every place the filing below says "send script" should be
+read as that staff act. The BLOCKING CONDITION was written to stop whoever wrote
+the send path from deciding the transition unilaterally; **FT has now decided it,
+so the condition has done its job and is discharged.** Nothing is blocked.
+
+**The transition is an ATOMIC invite act.** Setting `enrollment_status='Invited'`,
+stamping `person.invited_at`, and minting the person row succeed or fail together,
+via `env.DB.batch()`, the D1 implicit transaction whose heterogeneous multi-table
+precedent is `functions/api/athletes/[id].js:107`.
+
+**`resolveStatus` is NOT modified.** The filing's mechanism below stands
+unchanged and is not a defect to be fixed: `resolveStatus` never advances an
+athlete off `'Pending'`, and the invite act is what moves the row, not the
+milestone path. So the branch-by-branch analysis below remains accurate about
+`functions/api/athletes/[id].js:177-183`, and the `certified: true` escape it
+describes remains the only way the milestone endpoint can change the value.
+
+**The atomic unit is the three SQL writes only.** The send, its sent-stamp, and
+the conditional UNIQUE-collision bind cannot be batch members: `env.DB.batch()`
+requires every statement compiled with parameters bound before execution, and
+those three depend on outcomes not yet observed. The send stays what
+`athletes.js:228-236` already describes, a step after the committed act whose
+failure degrades an outcome string rather than rolling anything back.
+
 **Filed (F-C): `resolveStatus` strands a `'Pending'` athlete permanently, and
 `certified: true` is the only exit.** `functions/api/athletes/[id].js:177-183`,
 `resolveStatus`, the act-derived `enrollment_status` mirror. With

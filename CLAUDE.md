@@ -614,6 +614,49 @@ earlier in the journey than Invited, so under a best-first sort it orders last.
 3. The constant SHALL stop being called priority. STATUS_PRIORITY ->
    STATUS_ORDER.
 
+**F-C RULED 2026-08-26. The invite act is ATOMIC:** setting
+enrollment_status='Invited', stamping invited_at, and minting the person row
+succeed or fail together. Mechanism is env.DB.batch(), a D1 implicit
+transaction, with heterogeneous multi-table precedent at
+functions/api/athletes/[id].js:107.
+
+**The invite is a STAFF ACT in the UI**, taken after an offline conversation and
+athlete acknowledgment. There is NO send script. resolveStatus is NOT modified;
+it never advances an athlete off 'Pending'.
+
+**SCOPE OF THE ATOMIC UNIT: the three SQL writes only.** The send, its
+sent-stamp, and the conditional UNIQUE-collision bind CANNOT be batch members —
+env.DB.batch() requires every statement compiled with parameters bound before
+execution, and those three depend on outcomes not yet observed. The send remains
+what athletes.js:228-236 already describes: a step after the committed act,
+whose failure degrades an outcome string rather than rolling anything back.
+
+**CLOCK COLUMN RULED:** the invite stamps person.invited_at. person.created_at is
+NOT touched and remains the operator-visible "Added" date (four readers, not
+three — auth/[[route]].js:100, roster.js:50/:69, OperationsRoster.jsx:203, and
+invites.js:153-169, which the first pass missed). The expiry predicate at
+auth/[[route]].js:100 MOVES from created_at to invited_at. This makes re-send
+safe by construction: a re-invite re-stamps the clock without moving a date an
+operator reads.
+
+**NULL-PASSES CLAUSE RULED KEPT 2026-08-26.** The moved predicate retains
+`IS NULL OR ... > ?`. Rationale is unchanged from the original decision at
+[[route]].js:89-91 and _lib/auth.js:93-99: unknown age is not expiry. The
+executed evidence: with the clause kept, the column swap changes nothing (5 of 6
+local rows allowed, identical before and after); with it dropped, 4 of 6 are
+refused including every unclaimed invited row. NO BACKFILL IS REQUIRED while the
+clause stands.
+
+**OPS VISIBILITY RULED:** Operations sees pre-invitation athletes, NAME AND EMAIL
+ONLY, the same line E6 draws. The ops roster element gains an explicit `source`
+field, 'person' | 'athlete', SET BY THE ENDPOINT and never derived from which
+fields are populated. Why: `pending`, `type` and `sourceSurface` are person
+columns with no athlete equivalent, and inferring a row's origin from absent
+fields is the pattern that produced the `?? 'active'` laundering. Athlete and
+person are joined nowhere in the codebase today.
+
+**DENOMINATORS RULED:** Pending counts in enterprise denominators.
+
 ---
 
 ## 6. Slice protocol (build discipline)
@@ -677,6 +720,7 @@ Every substantive change runs as a **slice**. The rhythm:
    review. **Do not edit until decisions are locked.**
 3. **Feature branch off main.** One slice = one branch (`slice-{letter}-{name}`,
    `fix-{topic}-bundle-{n}`, `docs-{topic}-refresh`, etc.).
+   **Docs-only commits do NOT require a slice branch (FT-ruled 2026-08-26).**
 4. **Write the slice.** One file at a time when possible; no truncation; no
    "rest unchanged" markers. Flag anything unusual; do not fix unrelated issues
    inline.
