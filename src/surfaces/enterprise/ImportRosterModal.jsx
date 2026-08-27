@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Modal } from '../../components/Modal.jsx';
 import { Button } from '../../components/Button.jsx';
 import { parseRoster, suggestMapping, toPayloadRows, MAX_IMPORT_ROWS } from './shared/parseRoster.js';
+import { readRosterFile, fileFromDrop, ACCEPT_ATTR } from './shared/readRosterFile.js';
 
 // Roster import, client half (roster-import arc). Authenticated tree only, the
 // same gating as AddAthleteModal: EnterpriseRoster renders it behind
@@ -32,10 +33,29 @@ import { parseRoster, suggestMapping, toPayloadRows, MAX_IMPORT_ROWS } from './s
 // body is about 262px: any real roster overflows and the operator scrolls a
 // grid sideways to answer a question the dropdowns answer directly. The live
 // example under each select is the same information without the overflow.
+//
+// THREE EQUAL WAYS IN (INPUT SHAPE AMENDED 2026-08-27): drop a file, pick a
+// file, or paste. All three end at the same place, a string in `text`, which
+// the existing parser consumes unchanged.
+//
+// MOBILE IS AN APP, NOT A NARROW DESKTOP WINDOW. Drag-and-drop does not exist
+// on touch, so on touch the drop zone is NOT rendered at all: it is not
+// de-emphasised, it is absent, because a target you cannot drag onto is
+// furniture. The picker becomes the primary control, a full-width size="lg"
+// button held to the §7 44px standard, sitting near the top where a thumb
+// reaches it. Paste moves BELOW it behind a disclosure, because pasting
+// hundreds of rows on a phone is not a real workflow and should not be the
+// first thing the screen offers. The switch is a CAPABILITY query,
+// (hover: none) and (pointer: coarse), not a width breakpoint: a narrow desktop
+// window can still drag, and a large tablet still cannot.
 
 const STEP_PASTE = 'paste';
 const STEP_MAP = 'map';
 const STEP_DONE = 'done';
+
+// Tab-separated, because that is what a spreadsheet range copy produces and
+// the sniffer will read it as such.
+const PASTE_PLACEHOLDER = 'First Name\tLast Name\tEmail\nMarcus\tThompson\tmarcus@school.edu';
 
 const FIELDS = [
   { key: 'firstName', label: 'First name' },
@@ -50,6 +70,26 @@ export default function ImportRosterModal({ isOpen, onClose, onImport, writeErro
   const [mapping, setMapping] = useState({ firstName: null, lastName: null, email: null });
   const [submitting, setSubmitting] = useState(false);
   const [outcome, setOutcome] = useState(null);
+  const [fileName, setFileName] = useState(null);
+  const [fileError, setFileError] = useState(null);
+  const [fileNotes, setFileNotes] = useState([]);
+  const [reading, setReading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const [showPaste, setShowPaste] = useState(false);
+  const fileInputRef = useRef(null);
+  // dragenter/dragleave fire for EVERY child element under the pointer, so a
+  // boolean flickers off the moment the cursor crosses the zone's own text. A
+  // depth counter is the standard fix: only the outermost leave clears it.
+  const dragDepth = useRef(0);
+
+  // CAPABILITY, not width. Read once on open; a device does not grow a mouse
+  // mid-session, and re-querying on resize would flip the layout when a
+  // desktop window is merely narrowed.
+  const [isTouch] = useState(() => (
+    typeof window !== 'undefined'
+      && typeof window.matchMedia === 'function'
+      && window.matchMedia('(hover: none) and (pointer: coarse)').matches
+  ));
 
   useEffect(() => {
     if (isOpen) {
@@ -59,9 +99,31 @@ export default function ImportRosterModal({ isOpen, onClose, onImport, writeErro
       setMapping({ firstName: null, lastName: null, email: null });
       setSubmitting(false);
       setOutcome(null);
+      setFileName(null);
+      setFileError(null);
+      setFileNotes([]);
+      setReading(false);
+      setDragging(false);
+      dragDepth.current = 0;
+      setShowPaste(false);
       clearWriteError();
     }
   }, [isOpen, clearWriteError]);
+
+  // A file dropped ANYWHERE other than the zone would otherwise make the
+  // browser navigate away from the app and open it, losing the operator's work
+  // with no warning. Suppressed for as long as the modal is open, and only
+  // then, so the rest of the app keeps default behaviour.
+  useEffect(() => {
+    if (!isOpen) return undefined;
+    const swallow = (e) => { e.preventDefault(); };
+    window.addEventListener('dragover', swallow);
+    window.addEventListener('drop', swallow);
+    return () => {
+      window.removeEventListener('dragover', swallow);
+      window.removeEventListener('drop', swallow);
+    };
+  }, [isOpen]);
 
   // Re-parsed whenever the paste or the header toggle changes, so flipping
   // "First row is a header" re-reads immediately rather than on a re-submit.
@@ -72,6 +134,48 @@ export default function ImportRosterModal({ isOpen, onClose, onImport, writeErro
 
   const rowCount = parsed ? parsed.rows.length : 0;
   const overCap = rowCount > MAX_IMPORT_ROWS;
+
+  // The single funnel every input path ends in: a File becomes a string, and
+  // that string becomes `text`, which is exactly what a paste sets. Nothing
+  // downstream can tell the two apart.
+  const acceptFile = useCallback(async (file) => {
+    setFileError(null);
+    setFileNotes([]);
+    setReading(true);
+    const result = await readRosterFile(file);
+    setReading(false);
+    if (!result.ok) {
+      setFileError(result.error);
+      setFileName(null);
+      return;
+    }
+    setFileName(file.name);
+    setFileNotes(result.notes || []);
+    setText(result.text);
+    setShowPaste(false);
+  }, []);
+
+  const onDragEnter = (e) => {
+    e.preventDefault();
+    dragDepth.current += 1;
+    setDragging(true);
+  };
+  const onDragLeave = (e) => {
+    e.preventDefault();
+    dragDepth.current = Math.max(0, dragDepth.current - 1);
+    if (dragDepth.current === 0) setDragging(false);
+  };
+  // Without preventDefault on dragover the drop event never fires at all: the
+  // default action is "this element is not a drop target".
+  const onDragOver = (e) => { e.preventDefault(); };
+  const onDrop = (e) => {
+    e.preventDefault();
+    dragDepth.current = 0;
+    setDragging(false);
+    const picked = fileFromDrop(e.dataTransfer);
+    if (picked.error) { setFileError(picked.error); setFileName(null); return; }
+    acceptFile(picked.file);
+  };
 
   const handleRead = () => {
     if (!parsed || rowCount === 0) return;
@@ -106,17 +210,93 @@ export default function ImportRosterModal({ isOpen, onClose, onImport, writeErro
       {step === STEP_PASTE && (
         <>
           <p style={leadStyle}>
-            Copy the rows from your spreadsheet and paste them below. Tab-separated and
-            comma-separated both work; you&rsquo;ll choose which column is which on the next step.
+            {isTouch
+              ? 'Choose a roster file from your device. CSV, Excel and plain text all work.'
+              : 'Drop a roster file here, choose one from your drive, or paste the rows. CSV, TSV, plain text and Excel all work.'}
           </p>
-          <textarea
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder={'First Name\tLast Name\tEmail\nMarcus\tThompson\tmarcus@school.edu'}
-            rows={10}
-            style={textareaStyle}
-            aria-label="Paste roster rows"
+
+          {/* Shared by both layouts and never visible: the visible controls
+              below drive it. */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept={ACCEPT_ATTR}
+            onChange={(e) => {
+              const f = e.target.files && e.target.files[0];
+              // Cleared first so re-picking the SAME file fires change again.
+              e.target.value = '';
+              if (f) acceptFile(f);
+            }}
+            style={hiddenInputStyle}
+            tabIndex={-1}
+            aria-hidden="true"
           />
+
+          {isTouch ? (
+            /* TOUCH: the picker IS the interface. Full-width, size="lg" (the
+               §7 touch-primary size, held to 44px), directly under the lead.
+               No drop zone: it would be inert furniture. */
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => fileInputRef.current && fileInputRef.current.click()}
+              style={touchPickerStyle}
+            >
+              {reading ? 'Reading…' : 'Choose a file'}
+            </Button>
+          ) : (
+            <div
+              onDragEnter={onDragEnter}
+              onDragOver={onDragOver}
+              onDragLeave={onDragLeave}
+              onDrop={onDrop}
+              onClick={() => fileInputRef.current && fileInputRef.current.click()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  if (fileInputRef.current) fileInputRef.current.click();
+                }
+              }}
+              role="button"
+              tabIndex={0}
+              aria-label="Drop a roster file here, or choose one from your drive"
+              style={dragging ? dropZoneActiveStyle : dropZoneStyle}
+            >
+              <p style={dropHeadStyle}>
+                {reading ? 'Reading…' : dragging ? 'Drop to read it' : 'Drop a roster file here'}
+              </p>
+              <p style={dropSubStyle}>or click to choose one from your drive</p>
+            </div>
+          )}
+
+          {fileName && !fileError && (
+            <p style={fileNameStyle}>Read <strong style={lineRefStyle}>{fileName}</strong>.</p>
+          )}
+          {fileError && <p style={warnStyle}>{fileError}</p>}
+          {fileNotes.map((n, i) => <p key={i} style={noteStyle}>{n}</p>)}
+
+          {/* PASTE. Collapsed below the picker on touch, open beneath the drop
+              zone on pointer. An equal path, not a fallback, but not the first
+              thing a phone should offer. */}
+          {isTouch && !showPaste && (
+            <button type="button" onClick={() => setShowPaste(true)} style={disclosureStyle}>
+              Or paste rows instead
+            </button>
+          )}
+          {(!isTouch || showPaste) && (
+            <>
+              {isTouch && <p style={labelStyle}>Paste rows</p>}
+              <textarea
+                value={text}
+                onChange={(e) => { setText(e.target.value); setFileName(null); setFileNotes([]); setFileError(null); }}
+                placeholder={PASTE_PLACEHOLDER}
+                rows={isTouch ? 6 : 10}
+                style={textareaStyle}
+                aria-label="Paste roster rows"
+              />
+            </>
+          )}
+
           {parsed && (
             <p style={metaStyle}>
               {rowCount} row{rowCount === 1 ? '' : 's'} read, {parsed.delimiterName}-separated
@@ -124,8 +304,8 @@ export default function ImportRosterModal({ isOpen, onClose, onImport, writeErro
             </p>
           )}
           <div style={footerStyle}>
-            <Button variant="ghost" size="sm" onClick={onClose}>Cancel</Button>
-            <Button variant="primary" size="sm" onClick={handleRead} disabled={rowCount === 0}>Continue</Button>
+            <Button variant="ghost" size={isTouch ? 'lg' : 'sm'} onClick={onClose}>Cancel</Button>
+            <Button variant="primary" size={isTouch ? 'lg' : 'sm'} onClick={handleRead} disabled={rowCount === 0 || reading}>Continue</Button>
           </div>
         </>
       )}
@@ -277,6 +457,95 @@ export default function ImportRosterModal({ isOpen, onClose, onImport, writeErro
     </Modal>
   );
 }
+
+// Visually hidden rather than display:none: a display:none input cannot be
+// clicked programmatically in some engines.
+const hiddenInputStyle = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  opacity: 0,
+  pointerEvents: 'none',
+};
+
+// TOUCH PICKER. Full width of the modal body, which at a 320px viewport is
+// about 262px (panel min(600, 100vw-32) = 288, less 12.8px body padding each
+// side). size="lg" carries the §7 44px minHeight, so this clears the locked
+// tap-target standard with the whole row as the target.
+const touchPickerStyle = {
+  width: '100%',
+  justifyContent: 'center',
+  marginBottom: 'var(--sh-space-4)',
+};
+
+const dropZoneBase = {
+  border: '1px dashed var(--sh-card-border)',
+  borderRadius: 'var(--sh-radius-md)',
+  padding: 'var(--sh-space-6) var(--sh-space-4)',
+  textAlign: 'center',
+  cursor: 'pointer',
+  marginBottom: 'var(--sh-space-4)',
+  transition: 'background 120ms ease, border-color 120ms ease',
+};
+
+const dropZoneStyle = { ...dropZoneBase, background: 'var(--sh-bg-tint)' };
+
+// Hover state on drag. Bronze border + a slightly stronger tint: the same
+// accent the rest of the surface uses for an active affordance, so it reads as
+// armed rather than as an error.
+const dropZoneActiveStyle = {
+  ...dropZoneBase,
+  background: 'var(--sh-card)',
+  borderColor: 'var(--sh-bronze)',
+  borderStyle: 'solid',
+};
+
+const dropHeadStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-body)',
+  fontWeight: 500,
+  margin: 0,
+};
+
+const dropSubStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  marginTop: 'var(--sh-space-1)',
+  marginBottom: 0,
+};
+
+const fileNameStyle = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  marginTop: 0,
+  marginBottom: 'var(--sh-space-3)',
+  overflowWrap: 'anywhere',
+};
+
+const noteStyle = {
+  fontSize: 'var(--sh-text-xs)',
+  color: 'var(--sh-text-muted)',
+  lineHeight: 1.5,
+  marginTop: 0,
+  marginBottom: 'var(--sh-space-3)',
+  overflowWrap: 'anywhere',
+};
+
+// Text-button disclosure. 44px minHeight so the touch-only control clears the
+// §7 standard even though it is not a Button.
+const disclosureStyle = {
+  display: 'block',
+  width: '100%',
+  minHeight: '44px',
+  background: 'none',
+  border: 'none',
+  padding: 'var(--sh-space-2) 0',
+  fontFamily: 'inherit',
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-bronze-deep)',
+  textAlign: 'left',
+  cursor: 'pointer',
+};
 
 const leadStyle = {
   fontSize: 'var(--sh-text-sm)',
