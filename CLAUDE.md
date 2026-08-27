@@ -799,6 +799,45 @@ differs deliberately from POST /api/athletes, which requires
 consentAcknowledged === true per E6 and stamps the column. Recorded explicitly
 because section 5.2 did not previously say it.
 
+**INPUT SHAPE AMENDED 2026-08-27.** File upload and drag-and-drop are a BASIC
+FEATURE, not an enhancement. Pasted text is retained; upload joins it. The
+operator may drop a file on the window, pick one from their drive, or paste.
+This supersedes the TRANSPORT half of the original INPUT SHAPE ruling above
+only; the parse-and-validate layer, the envelope, and every other import ruling
+stand.
+
+**Why the original was insufficient, recorded because the reasoning is the
+point:** it chose pasted text on the grounds that request.json() had 34
+precedents against zero for file upload. That is an argument about what is
+cheap to build, not about what is correct for the operator. A department
+pasting hundreds of rows into a textarea is not an acceptable 2026 product, and
+file import is an industry standard the platform must meet.
+
+**ACCEPTED FORMATS:** .csv, .tsv, .txt and other text/* files, read as text and
+handed to the existing parser unchanged. Plus .xlsx and .xls by direct upload.
+
+**DEPENDENCY RULED 2026-08-27: SheetJS** is added for .xlsx and .xls, scoped to
+the import path. This is the FIRST runtime dependency added since section 2
+recorded the six-package set, and is recorded as a decision rather than a
+detail: nothing in this repo is machine-enforced, so a dependency lands on
+convention alone. The rejected alternative was hand-rolling an unzip plus XML
+parser, which is more surface and worse code for the same result. The agent
+installing it must report the exact package name, source registry, resolved
+version, and license, and pin the version.
+
+**PDF REFUSED, filed as a future platform enhancement.** A PDF roster is a
+rendered document, not tabular data: extraction needs a PDF library plus layout
+heuristics plus inferring column boundaries, and a wrong boundary silently
+imports wrong data. That is the guessing this arc has ruled against repeatedly.
+A PDF is refused BY NAME with a message telling the operator to open it, copy
+the rows, and paste.
+
+**FILE SIZE CEILING RULED 2026-08-27: 10 MB**, checked BEFORE the file is read
+into memory. The 500-row cap remains the authority on content; the byte ceiling
+exists so a wrong-file drop fails fast instead of after a large read. A 500-row
+roster is well under 1 MB in every accepted format, so 10 MB rejects nothing
+legitimate.
+
 ---
 
 ## 6. Slice protocol (build discipline)
