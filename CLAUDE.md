@@ -1494,6 +1494,15 @@ correction.
   mapping across all four surfaces (foundation for the unified data layer).
 - `docs/qa-triage-medium-low-2026-05-30.md` — disposition of the 115 Enterprise
   Medium + Low audit findings.
+- `docs/individual-rework-scoping.md` — Individual structural-rework scoping
+  pass (read-only) plus escalation resolutions: 15-surface inventory with
+  LOC, primitive-adoption map, unified-data divergence, the three paused
+  folds (#12 / #63 / #116), and tier sequencing. **Its INVENTORY is
+  superseded**, though its rulings and reasoning are not: the file table
+  names `Feedback.jsx` and `Discover.jsx`, both since removed (`fbc1a9a`,
+  `65f2a28`), and the #12 recommendation to swap `Tag.jsx` `warning` off hex
+  literals was done at `cd1a518`, which added the `--sh-warning-*` tokens.
+  Read it for the dispositions, not for the current file set.
 - `docs/5.8-giving-flow-scoping.md` — Individual 5.8 giving-flow design rulings
   (FT, this session) + current-state baseline of the three gift shapes
   (seed / session / unified) + Parker hard lines + carried debt + next-turn
@@ -1528,6 +1537,40 @@ correction.
   charitable-retention-floor confirmation, Clause 6 subpoena posture —
   isolated, do NOT block the build; reviewing counsel confirms in
   parallel.
+- `docs/advisor-persistence-scoping.md` — Advisor persistence scoping pass
+  (read-only), opened after the routing and §6.11 path-fix slices: provider
+  anatomy, five-fixture boundary map, Individual-pattern reuse audit, schema
+  touchpoints against migrations 0001-0006, and 12 open questions. Its §6 is
+  the load-bearing part and is current: advisor persistence introduces
+  **third-party PII**, data about real athletes who are not the account
+  holder, which advanced Derek to critical-path. **Its §7 team defaults were
+  bless-or-override and TWO were overridden in build.** Q12 drafted
+  `advisory_session`; the tree ships `client_session`
+  (`0007_advisor_schema.sql:112`). Q11 drafted a lean `/api/me` with
+  per-entity fetches; the tree ships a fat advisor block (`me.js:358`), and
+  `me.js:20-23` records that reasoning going stale. For what was actually
+  ruled, read the schema draft below.
+- `docs/advisor-persistence-schema-draft.md` — the **rule** artifact in
+  scope → rule → build for Advisor. FT rulings Q1-Q12 recorded verbatim, DDL
+  for 8 tables, deletion / retention, Parker invariants hard-commented in the
+  DDL, the Q4/Q7 gate (tables built now, real client data waits), seed story,
+  indexing note. **BUILT: its header "HELD: no migration until FT signs off"
+  is DISCHARGED.** All 8 tables shipped in migration 0007 in the drafted
+  order, and its §10 "Next" checklist is complete per the §5 Advisor row.
+  Live residue: this doc carries the definition of the **Q7 counsel-gated
+  seam** that §5 and `docs/filed-defects.md` both still cite as blocking the
+  advisor stage-label rename.
+- `docs/client-record-rulings.md` — FT rulings R1-R6 governing advisor write
+  slice 2b (client CRUD UI), ruled 2026-07-02 and amended the same day.
+  Minimum-viable create (name only; stage defaults to New server-side, so
+  non-form callers cannot skip it); stage is asserted, never derived; the
+  field stays "Sport", re-ruled under athletes-only launch scope; the 2b
+  IN/OUT boundary; no client contact fields, recorded as a decision and not
+  an omission, pending Q7; stage never reads as ranking. **CURRENT, and
+  cited from code**: `functions/api/clients.js:171` names this doc for R1's
+  server-side default, `ClientRoster.jsx:45` implements R6's sort, and R3
+  and R5 both hold in the tree. This is where Path B and the no-ranking
+  discipline get applied to the advisor's OWN client records.
 - `docs/pilot-gate-criteria.md` — the pilot gate's acceptance criteria, ruled
   2026-08-14. Five rulings (isolate-vs-caveat by claim subject; caveated counts;
   honest-but-empty counts; publish both figures; weight by endpoints plus
@@ -1539,6 +1582,23 @@ correction.
   different method; the move is rulings, not progress.
   One criterion (Enterprise "renders live institution data") is flagged NOT
   AUDITABLE with a proposed test.
+- `docs/guardrail-violation-findings.md` — read-only survey against
+  `58f465f`, 2026-08-18, asking one question: has a §7 guardrail ever been
+  violated here, and what did it cost. Six instances, dated by rule TEXT
+  rather than by sub-heading (the no-scoring rule is 25 days older than the
+  heading it now sits under). Two classes, and the distinction is the
+  finding: two violations predate CLAUDE.md's existence, so raw duration
+  ranks them misleadingly; the rest ran against a standing rule. **The
+  demonstrative-caveat instance refutes availability as the explanation.**
+  That rule was authored 69 minutes before the commit that violated it, into
+  the same file, and went uncorrected for 68 days. The names-verbatim
+  instance is a violation nobody committed, caused by a correct commit in a
+  different file. Not once did a correction come from the slice that
+  introduced the violation. **Evidence, NOT an amendment**; it proposes
+  nothing. Of its two open items, #2 (whether the §7 defect queue moves) was
+  answered the next day by `7ffe98e`, which created
+  `docs/filed-defects.md`; **#1 (whether §6 gains a guardrail check, and of
+  what shape) remains UNRULED.**
 - `docs/filed-defects.md` — the §7 defect queue, relocated 2026-08-19 from the
   tap-target sub-heading. Live: file there, not in §7.
 - `src/data/unified/README.md` — unified data layer internal notes.
