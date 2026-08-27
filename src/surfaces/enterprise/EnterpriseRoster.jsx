@@ -15,6 +15,7 @@ import RateDisclosure from './shared/RateDisclosure.jsx';
 import { statusFor, STATUS_ORDER, accessLabel } from './shared/athleteStatus.js';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 import AddAthleteModal from './AddAthleteModal.jsx';
+import ImportRosterModal from './ImportRosterModal.jsx';
 
 const ROSTER_COLUMNS = [
   { key: 'name',       label: 'Name',        render: (a) => a.name },
@@ -52,13 +53,14 @@ const AUTH_ROSTER_COLUMNS = [
 export default function EnterpriseRoster() {
   const eyebrow = useInstitutionEyebrow();
   const { openCompose } = useComms();
-  const { athletes, add, update, remove, writeError, clearWriteError } = useAthletes();
+  const { athletes, add, update, remove, importAthletes, writeError, clearWriteError } = useAthletes();
   // Roster-add affordance is authenticated-only — the demo tree renders
   // byte-identical (no CTA, no modal). Gate on identity presence.
   const isAuthenticated = !!useOptionalAppIdentity();
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeAthlete, setActiveAthlete] = useState(null);
   const [addOpen, setAddOpen] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
 
   const stats = computeStats(athletes);
   const { tot, certD, stalled, onTrack, notStarted, activelyProgressingPct, consentAware, rateActive, rateBaseTotal } = stats;
@@ -103,6 +105,7 @@ export default function EnterpriseRoster() {
           non-empty (the empty state carries its own affordance below). */}
       {isAuthenticated && sortedAthletes.length > 0 && (
         <div style={addRowStyle}>
+          <Button variant="secondary" size="sm" onClick={() => setImportOpen(true)}>Import roster</Button>
           <Button variant="secondary" size="sm" onClick={() => setAddOpen(true)}>Add athlete</Button>
         </div>
       )}
@@ -131,11 +134,25 @@ export default function EnterpriseRoster() {
           <div style={emptyBlockStyle}>
             <p style={emptyStateStyle}>No athletes enrolled yet.</p>
             {isAuthenticated && (
-              <Button variant="secondary" size="sm" onClick={() => setAddOpen(true)}>Add the first athlete</Button>
+              <div style={emptyActionsStyle}>
+                <Button variant="secondary" size="sm" onClick={() => setImportOpen(true)}>Import roster</Button>
+                <Button variant="secondary" size="sm" onClick={() => setAddOpen(true)}>Add the first athlete</Button>
+              </div>
             )}
           </div>
         )}
       </Card>
+
+      {/* Roster import — authenticated tree only, same gate as the add form. */}
+      {isAuthenticated && (
+        <ImportRosterModal
+          isOpen={importOpen}
+          onClose={() => setImportOpen(false)}
+          onImport={importAthletes}
+          writeError={writeError}
+          clearWriteError={clearWriteError}
+        />
+      )}
 
       {/* Roster-add form — authenticated tree only. */}
       {isAuthenticated && (
@@ -233,9 +250,20 @@ const giftNoteStyle = {
 };
 
 // Right-aligned "Add athlete" CTA row above a populated roster (auth tree).
+// flexWrap + gap so the two CTAs stack rather than overflow on a narrow
+// viewport. Authenticated tree only, so the demo tree is unaffected.
 const addRowStyle = {
   display: 'flex',
+  flexWrap: 'wrap',
   justifyContent: 'flex-end',
+  gap: 'var(--sh-space-2)',
   marginBottom: 'var(--sh-space-4)',
+};
+
+const emptyActionsStyle = {
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: 'var(--sh-space-2)',
 };
 

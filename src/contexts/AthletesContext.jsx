@@ -109,9 +109,44 @@ export function AthletesProvider({ initialState, children }) {
     }
   }, [authenticated]);
 
+  // Roster import (roster-import arc). Unlike add/update/remove this returns a
+  // RESULT OBJECT rather than a boolean, because a rejected import carries
+  // per-row detail the caller has to render: the endpoint's 400 body is
+  // { error, rejected: [{index, reason}] } and those indices are only meaningful
+  // to the client that built the array. serverError() is not used here for the
+  // same reason — it extracts body.error and discards body.rejected.
+  const importAthletes = useCallback(async (rows) => {
+    if (!authenticated) {
+      // Demo tree mirror shape; the Import affordance is authenticated-only, so
+      // this branch is not reached in practice.
+      return { ok: true, imported: 0, matches: { onRoster: [], withinPaste: [] } };
+    }
+    try {
+      const res = await fetch('/api/athletes/import', {
+        method: 'POST', credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ athletes: rows }),
+      });
+      let body = null;
+      try { body = await res.json(); } catch { body = null; }
+      if (!res.ok) {
+        setWriteError((body && body.error) || 'Failed to import athletes');
+        return { ok: false, rejected: (body && body.rejected) || [] };
+      }
+      // Whole-batch: either every row landed or none did, so this splice is
+      // never partial. Newest first, matching add().
+      setAthletes((prev) => [...body.athletes, ...prev]);
+      setWriteError(null);
+      return { ok: true, imported: body.imported, matches: body.matches };
+    } catch (err) {
+      setWriteError('Failed to import athletes');
+      return { ok: false, rejected: [] };
+    }
+  }, [authenticated]);
+
   const value = useMemo(
-    () => ({ athletes, add, update, remove, writeError, clearWriteError }),
-    [athletes, add, update, remove, writeError, clearWriteError],
+    () => ({ athletes, add, update, remove, importAthletes, writeError, clearWriteError }),
+    [athletes, add, update, remove, importAthletes, writeError, clearWriteError],
   );
 
   return (
