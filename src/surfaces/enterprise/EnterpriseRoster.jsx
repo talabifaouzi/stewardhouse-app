@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Card } from '../../components/Card.jsx';
 import StatTile from '../../components/StatTile.jsx';
 import FilteredAthletesModal from '../../components/FilteredAthletesModal.jsx';
@@ -12,21 +12,29 @@ import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 import { formatDate } from '../../utils/formatDate.js';
 import { computeStats } from './shared/enterpriseStats.js';
 import RateDisclosure from './shared/RateDisclosure.jsx';
-import { statusFor, STATUS_ORDER, accessLabel } from './shared/athleteStatus.js';
+import { statusFor, STATUS_ORDER, accessLabel, ACCESS_ORDER, YEAR_ORDER } from './shared/athleteStatus.js';
 import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
 import AddAthleteModal from './AddAthleteModal.jsx';
 import ImportRosterModal from './ImportRosterModal.jsx';
 
+// sortValue makes a column sortable; its absence makes it not (DataTable's
+// opt-in contract). Gifts and Last Active deliberately have none: nothing writes
+// either column, so every value is identical and a sort affordance on them would
+// assert there is something to sort (SORTING RULED 2026-08-27).
+//
+// Dates sort on the raw ISO string, not the rendered short form: ISO is
+// lexicographically ordered and "3/4/26" is not. A date is null unless the
+// corresponding boolean says it happened, which matches what the cell renders.
 const ROSTER_COLUMNS = [
-  { key: 'name',       label: 'Name',        render: (a) => a.name },
-  { key: 'sport',      label: 'Sport',       render: (a) => a.sport },
-  { key: 'year',       label: 'Year',        render: (a) => a.year },
-  { key: 'status',     label: 'Status',      render: (a) => statusFor(a) },
-  { key: 'gps',        label: 'GPS',         render: (a) => (a.gpsCompleted ? formatDate(a.gpsDate) : '—') },
-  { key: 'lessons',    label: 'Lessons',     render: (a) => a.lessons },
+  { key: 'name',       label: 'Name',        render: (a) => a.name,   sortValue: (a) => a.name },
+  { key: 'sport',      label: 'Sport',       render: (a) => a.sport,  sortValue: (a) => a.sport ?? null },
+  { key: 'year',       label: 'Year',        render: (a) => a.year,   sortValue: (a) => YEAR_ORDER[a.year] ?? null },
+  { key: 'status',     label: 'Status',      render: (a) => statusFor(a), sortValue: (a) => STATUS_ORDER[statusFor(a)] ?? null },
+  { key: 'gps',        label: 'GPS',         render: (a) => (a.gpsCompleted ? formatDate(a.gpsDate) : '—'), sortValue: (a) => (a.gpsCompleted ? (a.gpsDate ?? null) : null) },
+  { key: 'lessons',    label: 'Lessons',     render: (a) => a.lessons, sortValue: (a) => a.lessons },
   { key: 'gifts',      label: 'Gifts',       render: (a) => a.gifts },
   { key: 'lastActive', label: 'Last Active', render: (a) => a.lastActive },
-  { key: 'certified',  label: 'Certified',   render: (a) => (a.certified ? formatDate(a.certDate) : '—') },
+  { key: 'certified',  label: 'Certified',   render: (a) => (a.certified ? formatDate(a.certDate) : '—'), sortValue: (a) => (a.certified ? (a.certDate ?? null) : null) },
 ];
 
 // Access column (C-3b) — claim/consent state, plain text. AUTHENTICATED-ONLY:
@@ -35,7 +43,12 @@ const ROSTER_COLUMNS = [
 // read every demonstrative athlete as "Unclaimed" (a false live-signal, against
 // the demonstrative/LIVE honesty boundary). Inserted after Status on the auth
 // tree only; the demo tree renders ROSTER_COLUMNS byte-identical.
-const ACCESS_COLUMN = { key: 'access', label: 'Access', render: (a) => accessLabel(a) };
+const ACCESS_COLUMN = {
+  key: 'access',
+  label: 'Access',
+  render: (a) => accessLabel(a),
+  sortValue: (a) => ACCESS_ORDER[accessLabel(a)] ?? null,
+};
 
 // FORK 3 (P-2): athlete.gifts_count is written by no path, so every auth cell
 // would read a frozen 0 — a measurement that was never taken. The column is
@@ -44,6 +57,14 @@ const ACCESS_COLUMN = { key: 'access', label: 'Access', render: (a) => accessLab
 // table rather than repeated down every row. Gated on isAuthenticated, not
 // consentAware: the counter is unsourced for every athlete, claimed or not.
 const AUTH_GIFTS_COLUMN = { key: 'gifts', label: 'Gifts', render: () => '—' };
+// The default when no column is chosen, and the tiebreak when one is. Both are
+// module constants so their identity is stable across renders and DataTable's
+// sort memo is not invalidated every frame.
+const DEFAULT_ROSTER_SORT = (a, b) => {
+  const p = (STATUS_ORDER[statusFor(a)] ?? 0) - (STATUS_ORDER[statusFor(b)] ?? 0);
+  return p !== 0 ? p : a.name.localeCompare(b.name);
+};
+const ROSTER_TIEBREAK = (a, b) => a.name.localeCompare(b.name);
 const AUTH_ROSTER_COLUMNS = [
   ...ROSTER_COLUMNS.slice(0, 4),   // through Status
   ACCESS_COLUMN,
@@ -64,11 +85,10 @@ export default function EnterpriseRoster() {
 
   const stats = computeStats(athletes);
   const { tot, certD, stalled, onTrack, notStarted, activelyProgressingPct, consentAware, rateActive, rateBaseTotal } = stats;
-  const sortedAthletes = useMemo(() => [...athletes].sort((a, b) => {
-    const p = STATUS_ORDER[statusFor(a)] - STATUS_ORDER[statusFor(b)];
-    if (p !== 0) return p;
-    return a.name.localeCompare(b.name);
-  }), [athletes]);
+  // Sorting moved INTO DataTable (SORTING RULED 2026-08-27): it owns the chosen
+  // column, and DEFAULT_ROSTER_SORT is what it falls back to when none is
+  // chosen. Keeping the sort here as well would mean two orderings racing, and
+  // the operator's choice losing to whichever ran last.
 
   // Access column is authenticated-only (see AUTH_ROSTER_COLUMNS docblock);
   // the demo tree keeps the 9-column set byte-identical.
@@ -103,7 +123,7 @@ export default function EnterpriseRoster() {
 
       {/* Add-athlete CTA — authenticated tree only, when the roster is
           non-empty (the empty state carries its own affordance below). */}
-      {isAuthenticated && sortedAthletes.length > 0 && (
+      {isAuthenticated && athletes.length > 0 && (
         <div style={addRowStyle}>
           <Button variant="secondary" size="sm" onClick={() => setImportOpen(true)}>Import roster</Button>
           <Button variant="secondary" size="sm" onClick={() => setAddOpen(true)}>Add athlete</Button>
@@ -113,15 +133,17 @@ export default function EnterpriseRoster() {
       {/* Roster table — rows clickable, opens profile directly. Empty until
           athletes enroll via the roster-add write path (slim-seed ruling). */}
       <Card>
-        {sortedAthletes.length > 0 ? (
+        {athletes.length > 0 ? (
           <>
             <DataTable
               columns={rosterColumns}
-              data={sortedAthletes}
+              data={athletes}
               rowKey={(a) => a.id}
               minWidth={rosterMinWidth}
               onRowClick={setActiveAthlete}
               rowAriaLabel={(a) => `View ${a.name}'s profile`}
+              defaultSort={DEFAULT_ROSTER_SORT}
+              tiebreak={ROSTER_TIEBREAK}
             />
             {/* FORK 3 caption — explains the "—" in the Gifts column so the dash
                 reads as unsourced rather than ambiguous. Same string shipped in
