@@ -2,15 +2,23 @@
 // institution (E-Slice E-Write-5, E9). Gated dark per E11.
 //
 // Q5 DERIVATION: the SOURCED aggregates are derived server-side from live D1 at
-// snapshot time, institution-scoped over the ACTIVE roster (non-Sunset):
-//   athletes_count      — COUNT active athletes
+// snapshot time, institution-scoped over the WRITABLE roster:
+//   athletes_count      — COUNT writable athletes
 //   gps_completed_count — COUNT gps_completed_at IS NOT NULL; gps_rate = round%
 //   certified_count     — COUNT certified=1;                   cert_rate = round%
 //   attendance_rate     — SUM(attended)/COUNT across the institution's
 //                         workshop_attendance rows (joined through workshop)
-// gps_rate / cert_rate denominators stay the FULL non-Sunset roster (P-2 L4 —
-// snapshots are a frozen historical series and do NOT adopt the FORK 1
-// consent-aware denominator, which would break a mid-series trend).
+//
+// SUPERSEDED, recorded rather than deleted because it was a ruling and not a
+// detail. This docblock read, until the write-gate slice: "gps_rate / cert_rate
+// denominators stay the FULL non-Sunset roster (P-2 L4 — snapshots are a frozen
+// historical series and do NOT adopt the FORK 1 consent-aware denominator,
+// which would break a mid-series trend)." FT REVERSED that: the denominator IS
+// now the FORK 1 writable population, matching what computeStats renders. The
+// mid-series-trend concern L4 raised is not answered by this slice; it is
+// mooted for now because the table holds zero rows, so no series exists to
+// break. A future reader restarting a series across this change should know the
+// denominator moved.
 //
 // The UNSOURCED aggregates are written NULL (migrations 0013 + 0017 made them
 // nullable): gifts_count (P-2 FORK 3 — the athlete.gifts_count soft counter is
@@ -21,9 +29,24 @@
 //
 // Rate representation matches the fixture (enterpriseFixtures cohort snapshots):
 // integer percent 0-100, no '%' — CohortComparison adds the sign via fmtPct.
-// Zero-denominator guard: with 0 athletes (or 0 attendance rows) the rate is 0,
-// NOT NULL — gps_rate/cert_rate/attendance_rate stay NOT NULL columns, so 0 is
-// the honest "nothing yet" value (athletes_count=0 already signals no cohort).
+//
+// WRITE GATE (ruled): with a writable denominator of zero the request is
+// REFUSED and no row is written. The prior behaviour wrote gps_rate=0 and
+// cert_rate=0, which read as a measured "nobody progressed" while the same
+// concept rendered "Not tracked" on screen via computeStats R4.
+//
+// The gate is a REFUSAL, not a NULL write. gps_rate / cert_rate /
+// attendance_rate are NOT NULL columns and stay that way: no migration, no
+// schema change, and the F-D filing (docs/filed-defects.md) is untouched.
+//
+// E3 does NOT mandate this gate, and attributing it to E3 would misread the
+// rule. What E3 establishes is that a snapshot, once taken, stays
+// byte-identical: there is no correction path except delete-and-re-snapshot
+// (0009:513-515). That makes a wrong row permanent, which is why refusing costs
+// less than writing. The decision to refuse is FT's, not E3's.
+//
+// attendance_rate is OUT of scope: it has no render-side twin to contradict it,
+// so its denominator and its own zero-guard are unchanged.
 //
 // E9 HARD INVARIANT (verbatim, 0009): "Snapshots store AGGREGATES ONLY. NO
 // per-athlete identifiable column (no athlete_id, no name, no email) may EVER be
@@ -112,7 +135,21 @@ export async function onRequestPost(context) {
   }
   const instId = contact.institution_id;
 
-  // Roster aggregates (active, non-Sunset).
+  // Roster aggregates over the WRITABLE population, not the full roster.
+  //
+  // THE COLUMN NAMES NO LONGER MATCH WHAT THEY HOLD, and that is worth meeting
+  // here rather than discovering downstream. `athletes_count` is the count of
+  // athletes the institution may write for, NOT the roster size;
+  // `gps_completed_count` and `certified_count` are numerators over that same
+  // subset. The three cohort_period_snapshot columns they feed keep their
+  // original names, so a row written after this slice and a row written before
+  // it would carry the same column names for different populations. The table
+  // holds zero rows today, so no such pair exists yet.
+  //
+  // The two added predicates are the FORK 1 writable predicate, the same one
+  // enterpriseStats.js isWritable applies on the render side and the same one
+  // the PUT /api/athletes/:id gate enforces. Both columns live on `athlete`, so
+  // this needs no JOIN and no second query.
   const agg = await db
     .selectFrom('athlete')
     .select(() => [
@@ -123,6 +160,8 @@ export async function onRequestPost(context) {
     ])
     .where('institution_id', '=', instId)
     .where('enrollment_status', '!=', 'Sunset')
+    .where('management_mode', '=', 'delegated')
+    .where('person_id', 'is not', null)
     .executeTakeFirst();
 
   // Attendance aggregate (institution-scoped through workshop).
@@ -142,6 +181,26 @@ export async function onRequestPost(context) {
   const attTotal = Number(att?.total ?? 0);
   const attAttended = Number(att?.attended ?? 0);
 
+  // THE GATE. Refuse before anything is written: no row, nothing to correct.
+  //
+  // 409 rather than 400 or 403. The body is well-formed, so it is not a 400;
+  // the caller is a correctly typed and correctly gated operator, so it is not
+  // a 403 — reusing 403 here would collapse "you may not write" with "there is
+  // nothing to write about". 409 is the established idiom in this tree for an
+  // act the record's current state does not permit: thirteen call sites, among
+  // them athletes/[id]/invite.js:135 (already invited), :148 (a consent column
+  // holding the wrong value, the closest sibling to this guard) and
+  // invites/[id].js:138 (already claimed). 422 has zero precedent here.
+  if (athletesCount === 0) {
+    return jsonError('A snapshot needs at least one athlete with delegated record-keeping.', 409);
+  }
+
+  // athletesCount is now guaranteed positive by the guard above, so the zero
+  // branch of the next two ternaries is unreachable. Both are RETAINED as
+  // defence in depth, on the reasoning ProgramOutputs.jsx:98-99 states for the
+  // same shape: a guard that returns early can be moved, and these must never
+  // produce NaN into a NOT NULL column if it is. attendanceRate keeps its own
+  // guard on its own denominator; it is out of this slice's scope.
   const gpsRate = athletesCount > 0 ? Math.round((100 * gpsCompleted) / athletesCount) : 0;
   const certRate = athletesCount > 0 ? Math.round((100 * certified) / athletesCount) : 0;
   const attendanceRate = attTotal > 0 ? Math.round((100 * attAttended) / attTotal) : 0;

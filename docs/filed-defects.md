@@ -1202,3 +1202,44 @@ exactly the kind of claim a render would confirm or refute.
 **No fix proposed, because there is nothing yet to fix.** The disposition is a
 check, and it belongs with the full-platform QA pass the calendar entry above is
 already banked for.
+
+**Filed: `POST /api/snapshots` re-SELECTs outside its try, so an undefined row
+throws and the caller receives 500 for a write that committed.** Found during
+the snapshot write-gate scoping pass and filed with the slice that gated the
+write, which deliberately did not touch this. **It predates that slice**: the
+shape is unchanged from before it, and only the line numbers moved.
+
+`functions/api/snapshots.js:211-231` wraps the INSERT in `try` / `catch`, and
+the catch at `:230` returns `jsonError('Failed to record snapshot', 500)`. The
+re-SELECT that follows at `:233-237` sits OUTSIDE that block, and `:238` passes
+its result straight into `toSnapshotElement(row)`. **`toSnapshotElement`
+(`:76`) dereferences `row.id` at `:78` with no guard.** Proven by execution
+against the function's own first statement: calling it with `undefined` throws
+`TypeError: Cannot read properties of undefined (reading 'id')`.
+
+**The consequence is the wrong direction of wrong.** The INSERT has already
+committed by then. A throw at `:238` produces a 5xx, `SnapshotsContext.jsx:50`
+turns any non-ok response into an error, `:56` sets `writeError`, and
+`RecordSnapshotModal.jsx:60` renders it in-form. **So the operator is told the
+snapshot failed while the row exists**, and the natural response to that message
+is to press the button again, which writes a second row: the table carries no
+UNIQUE constraint on `(institution_id, cohort_label)` and the INSERT carries no
+`onConflict`, both confirmed by reading the applied schema.
+
+**What is NOT established, said plainly.** Whether D1 can actually return
+`undefined` from a `SELECT ... WHERE id = ?` immediately after that id was
+committed in the same request. No mechanism for it was identified and none was
+reproduced. The throw is proven; its reachability is **unverified**. That is
+what makes this a filing rather than a defect with a known trigger.
+
+**The sibling path does not share the shape**, checked so a fix is not scoped
+wider than it needs to be. `DELETE /api/snapshots/:id` reads before it writes
+(`functions/api/snapshots/[id].js:37-45`, returning 404 when the row is absent)
+and returns a literal object at `:57` rather than mapping a re-read row, so it
+has no post-write dereference at all.
+
+**No fix proposed.** The shape admits at least two readings that differ in what
+they claim: widening the `try` treats the re-read as part of the write, while
+guarding the row treats a missing row as a reportable state. Which one is right
+depends on whether the re-read is understood as confirmation of the write or as
+a separate read, and that is a decision rather than a patch.
