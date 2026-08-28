@@ -40,6 +40,51 @@ export function computeStats(athletes) {
   const rateBaseTotal = rateBase.length;
   const writable = athletes.filter(isWritable).length;
 
+  // ENUMERATION (ruled 2026-08-28): the disclosure names individual exclusion
+  // reasons with counts rather than one generic clause, so the excluded
+  // population is counted per reason here.
+  //
+  // Buckets are computed over SAVED rows ONLY. A staged import row carries
+  // `uncommitted: true` (AthletesContext.jsx stageImport) and has never been
+  // written to D1, so counting it would report a database population that does
+  // not exist — and the count would move as the operator drops rows during
+  // review. `staged` is emitted beside the buckets so a consumer that needs to
+  // say so can, without re-deriving it. It is independent of consentAware and
+  // is always a number.
+  //
+  // GATED ON consentAware, emitting NULL rather than 0. When consentAware is
+  // false no element carries `claimed` at all, so `a.claimed !== true` is true
+  // of every athlete and ALL of them fall into invitedUnclaimed — a statement
+  // that is false about every one of them. The counts are not a measurement of
+  // zero, they are the ABSENCE of a measurement, so they emit null on exactly
+  // the reasoning R4 applies to a zero-denominator rate (:94-98) and FORK 3
+  // applies to the unsourced gift counter. A consumer that renders a bucket
+  // must handle null; RateDisclosure's gate below refuses null explicitly
+  // rather than leaning on `null <= 0` coercing true.
+  //
+  // The four are pairwise disjoint: the claimed/unclaimed split is exhaustive,
+  // unclaimed splits on `status`, and claimed-not-delegated splits on
+  // managementMode null vs 'self'.
+  //
+  // RESIDUAL, stated rather than guarded: management_mode carries NO CHECK
+  // constraint (migration 0015 is a bare ADD COLUMN, and 0015:14 says so — the
+  // gate is deny-by-default against any unknown value). A claimed athlete
+  // holding some third value would be non-writable and would land in no bucket,
+  // making excludedTotal UNDER-count, never over-count. It is unreachable
+  // through any endpoint: the three writers are athlete-consent.js:67 (behind
+  // the ALLOWED_MODES check at :61), athletes.js:204 and athletes/[id].js:135,
+  // and the latter two write null. Only a direct DB write could produce it.
+  const staged = athletes.filter((a) => a.uncommitted === true).length;
+  const saved = athletes.filter((a) => a.uncommitted !== true);
+  const bucket = (pred) => (consentAware ? saved.filter(pred).length : null);
+  const notInvited = bucket((a) => a.status === 'pending' && a.claimed !== true);
+  const invitedUnclaimed = bucket((a) => a.status !== 'pending' && a.claimed !== true);
+  const claimedNoMode = bucket((a) => a.claimed === true && a.managementMode == null);
+  const selfManaged = bucket((a) => a.claimed === true && a.managementMode === 'self');
+  const excludedTotal = consentAware
+    ? notInvited + invitedUnclaimed + claimedNoMode + selfManaged
+    : null;
+
   // Rate-scoped numerators over rateBase (Stage D renders "{rateGps} of
   // {rateBaseTotal}"). rateActive = certified ∪ onTrack-predicate (disjoint).
   const rateGps = rateBase.filter((a) => a.gpsCompleted).length;
@@ -57,6 +102,10 @@ export function computeStats(athletes) {
     tGi, athletesWithGifts, gpsRate, activelyProgressingPct, certRate,
     // FORK 1 additions — consumed by the Stage D disclosure (auth tree only).
     writable, consentAware, rateBaseTotal, rateGps, rateCert, rateActive,
+    // ENUMERATION additions — per-reason exclusion counts over SAVED rows.
+    // The four buckets and excludedTotal are NULL when !consentAware; `staged`
+    // is always a number.
+    staged, notInvited, invitedUnclaimed, claimedNoMode, selfManaged, excludedTotal,
   };
 }
 

@@ -955,3 +955,59 @@ with no `onClick` and do not drill at all.
 `PhilanthropicReadiness.jsx:80` partitions by `philanthropicStage` and `:153`
 lists athlete names inline per stage, which is a listing rather than a modal
 drill. **Neither reads `CATEGORY_CONFIG`, and neither is a tile/drill pair.**
+
+**Filed: `management_mode` carries no CHECK, so the disclosure's four buckets do
+not exhaustively cover claimed-and-not-delegated, and its headline count can
+silently under-report.** Introduced by the enumeration slice and filed with it
+rather than left to be discovered later. The residual is also recorded in code,
+at `src/surfaces/enterprise/shared/enterpriseStats.js:69`, so a reader meets it
+beside the buckets; this entry is the queue record and carries the reasoning.
+
+`migrations/0015_athlete_management_mode.sql:21` is a bare
+`ALTER TABLE athlete ADD COLUMN management_mode TEXT`, with no CHECK and no
+DEFAULT. The applied schema agrees: reading `sqlite_master` for the `athlete`
+table returns the declaration `management_mode TEXT` and no
+`CHECK (management_mode ...)` anywhere in it. **The absence is deliberate**, and
+`0015:13-16` says why: the gate is deny-by-default, so "NULL, 'self', or any
+other value blocks". The column was never meant to be constrained, because the
+write gate was meant to carry the whole burden.
+
+**What the enumeration slice added on top of that.**
+`enterpriseStats.js:82-83` splits claimed-and-not-delegated into two buckets,
+`claimedNoMode` (`managementMode == null`) and `selfManaged`
+(`managementMode === 'self'`). Those two values plus `'delegated'` are the whole
+INTENDED domain, so the split is exhaustive over the intended domain and not
+over the column. A claimed athlete holding some third value is non-writable, is
+therefore excluded from the rate denominator by `isWritable` (`:37`), and lands
+in **no bucket**. `excludedTotal` (`:84-86`), being the sum of the four,
+under-counts by exactly that many rows.
+
+**The direction is safe; the failure mode is not.** It can only under-count,
+never over-count, since nothing is double-counted and no row is invented. But
+`RateDisclosure.jsx` now renders `excludedTotal` as its headline figure, "N
+athletes are not counted here", above lines that would not reconcile with the
+roster arithmetic a staff member can do for themselves. **The expression it
+replaced could not fail this way.** `tot - writable` was a subtraction over the
+same array, correct for any value the column could hold, including one nobody
+anticipated. The enumeration bought per-reason detail at the cost of an
+exhaustiveness assumption, and this entry is that cost written down.
+
+**Unreachable through any endpoint at HEAD, re-proven here rather than carried
+forward from session text.** A repo-wide grep for writes to the column returns
+exactly three sites. `functions/api/athlete-consent.js:67` sets it from the
+request body; `functions/api/athletes.js:204` writes `null` at roster-add; and
+`functions/api/athletes/[id].js:135` writes `null` on anonymize. Only the first
+can write a non-null value, and it is guarded: `ALLOWED_MODES` is
+`new Set(['self', 'delegated'])` at `:38`, tested at `:61-63`, which returns 400
+before the UPDATE at `:65-68`. The roster import path writes nothing to the
+column at all, leaving it NULL (`functions/api/athletes/import.js:280-282`).
+**So a third value requires a direct database write**, meaning a hand-run
+statement, or a future endpoint that forgets the allowlist.
+
+**Two ways to close it, neither proposed, because they are different kinds of
+decision.** A CHECK on the column would make the state unrepresentable, and
+would be a migration against a table with four inbound child FKs, which is the
+0016 table-rebuild hazard rather than an `ALTER`. A fifth bucket, or a residual
+line, would make the state visible instead, and that is a copy decision on a
+screen that has just been screened on both trees and on mobile. **No fix
+proposed.**

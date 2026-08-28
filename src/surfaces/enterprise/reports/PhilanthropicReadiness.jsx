@@ -8,6 +8,7 @@ import { useAthletes } from '../../../contexts/AthletesContext.jsx';
 import { useCompliance } from '../../../contexts/ComplianceContext.jsx';
 import { useInstitutionEyebrow } from '../shared/useInstitutionEyebrow.js';
 import { computeStats } from '../shared/enterpriseStats.js';
+import RateDisclosure from '../shared/RateDisclosure.jsx';
 
 // P-1 isolation: this page is FULLY live-backable — every figure derives from
 // the roster (useAthletes) and the exclusion list (useCompliance), both of
@@ -82,9 +83,11 @@ export default function PhilanthropicReadiness() {
     [athletes],
   );
   const totalAthletes = athletes.length;
-  // FORK 1 note gate: consent-aware, auth tree only, and only when some athlete
-  // is excluded from staff record-keeping.
-  const { consentAware, writable } = computeStats(athletes);
+  // FORK 1 note: this page ADOPTS RateDisclosure rather than hand-writing its
+  // own gate and paragraph (enumeration slice). Its page-specific prose rides
+  // along as the optional `note` prop, so the gate, the counts and the per-
+  // reason lines stay in one place.
+  const stats = computeStats(athletes);
 
   // Empty roster → honest page-level line (unchanged). This guard is still
   // correct; what changed is that passing it no longer reveals fixture data.
@@ -124,11 +127,10 @@ export default function PhilanthropicReadiness() {
         </p>
       </div>
 
-      {consentAware && (totalAthletes - writable) > 0 && (
-        <p style={consentNoteStyle}>
-          Only athletes who have delegated record-keeping to the department can have new milestones recorded by staff. Athletes who manage their own records keep any milestones recorded earlier, but their stage will not advance here. Athletes who have not yet claimed their account remain at Invited.
-        </p>
-      )}
+      <RateDisclosure
+        stats={stats}
+        note="Only athletes who have delegated record-keeping to the department can have new milestones recorded by staff. Athletes who manage their own records keep any milestones recorded earlier, but their stage will not advance here. Athletes who have not claimed an account cannot have milestones recorded."
+      />
 
       {stageCounts.map((stage) => {
         const count = stage.athletes.length;
@@ -281,16 +283,6 @@ const contextLineStyle = {
   lineHeight: 1.55,
   marginTop: 'var(--sh-space-2)',
   marginBottom: 'var(--sh-space-3)',
-};
-
-// FORK 1 consent-aware note (auth tree, when some athlete is excluded).
-const consentNoteStyle = {
-  fontSize: 'var(--sh-text-xs)',
-  color: 'var(--sh-text-muted)',
-  lineHeight: 1.55,
-  letterSpacing: '0.02em',
-  marginBottom: 'var(--sh-space-4)',
-  maxWidth: '720px',
 };
 
 const stageCardStyle = {
