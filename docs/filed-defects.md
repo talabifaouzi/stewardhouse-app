@@ -1011,3 +1011,194 @@ would be a migration against a table with four inbound child FKs, which is the
 line, would make the state visible instead, and that is a copy decision on a
 screen that has just been screened on both trees and on mobile. **No fix
 proposed.**
+
+**Filed: `athlete.badge` has a ruling and no author. No code path writes it, so
+every athlete's badge is NULL forever.** E10 rules it a staff-authored
+descriptive label, restated across three migrations
+(`0009_enterprise_schema.sql:156` and `:201`,
+`0016_athlete_enrollment_status_check.sql:30`,
+`0020_athlete_pending_status.sql:69`), each pairing the ruling with a
+prohibition on any `badge_rank` or `badge_score` column. The ruling is recorded
+four times. The write is recorded nowhere.
+
+**C-1 closed the only door it had.** `ALLOWED_BODY_KEYS` at
+`functions/api/athletes.js:62` is `['name', 'email', 'consentAcknowledged']`,
+and `:158-163` rejects anything else with a 400 naming the offending keys. The
+comment at `:156` lists badge explicitly among what that check catches. The
+milestone PUT does not accept it either: `ALLOWED_MILESTONE_KEYS`
+(`functions/api/athletes/[id].js:187`) is lessons, gpsCompleted and certified,
+enforced at `:193`.
+
+**Both writes that exist set it to NULL.** `athletes.js:203` at enrollment,
+commented "C-1: locked out pre-claim (was E10)", and
+`functions/api/athletes/[id].js:129` on anonymize. A repo-wide grep across
+`functions/` for the column returns exactly those two writes plus two comments.
+
+**It is still carried the whole way to the client.** `badge` sits in
+`ATHLETE_ELEMENT_COLUMNS` (`athletes.js:76`) and is emitted by
+`toAthleteElement` (`:92`), so every roster element on every authenticated read
+carries the field. **No UI renders it**: a grep across `src/` finds `badge` only
+inside three comments, none of them a render site. A column is therefore
+selected, shipped and ignored, and the phrase "was E10" in the enrollment
+comment is the closest the tree comes to saying the ruling is unimplemented.
+
+**What is NOT known.** Whether the intended author is staff at enrollment, staff
+after the athlete claims, or something else. C-1's field lockdown answers the
+pre-claim case with nobody and leaves the post-claim case unstated. **No fix
+proposed**, because the missing piece is who writes it and when, which is a
+ruling rather than a patch.
+
+**Filed: `athlete_activity` exists as a table with an event enum and has no
+INSERT path anywhere in the repo. The client-facing `activity` array is a
+hardcoded literal.** The table is created at
+`migrations/0009_enterprise_schema.sql:232-241`, carrying `athlete_id`, `date`,
+`type`, `label` and `created_at`, with its six-value enum documented in the
+comment at `:236-237`: `lesson_completed`, `workshop_attended`, `gift_made`,
+`note_added`, `gps_completed`, `certified`. It has an index at `:562`.
+
+**Nothing writes it.** A repo-wide grep for an INSERT into the table across
+`functions/`, `src/`, `scripts/` and `migrations/` returns nothing, exit 1. The
+only code naming it at all is the anonymize batch,
+`functions/api/athletes/[id].js:119`, which DELETES from it. Local D1 holds 0
+rows, as do its two siblings `athlete_note` and `athlete_reflection`.
+
+**The emission is a literal.** `functions/api/athletes.js:115` writes
+`activity: []` into every element, under a comment at `:112-114` saying the
+table is "empty until the activity-write slice" and that the array is always
+present so `AthleteProfile`'s `.map` / `.filter` never touch undefined. That
+literal is doing real defensive work, which is why it is easy to miss that it is
+also the only value the field will ever hold.
+
+**Three consumers read it as though it were populated.**
+`src/components/AthleteProfile.jsx:84` filters it for `gift_made` events and
+`:229-230` maps it as a timeline;
+`src/surfaces/enterprise/reports/ProgramOutputs.jsx:47` parses it for the same
+events; `src/data/unified/adapters/enterprise.js:185` and `:196` carry and
+iterate it. On the demo tree the fixtures supply real arrays, so all three work.
+On the authenticated tree all three read an array that is empty by construction
+rather than by observation.
+
+**Already documented once, in a comment, on one of the three.**
+`ProgramOutputs.jsx:19-24` states the whole finding accurately and uses it to
+justify rendering "Not tracked". This entry exists because a finding recorded
+only in one consumer's comment is not in the queue, which is the same filing gap
+the `SignIn.jsx` closed record above names by its own name.
+
+**No fix proposed.** Writing the table means deciding which acts emit which enum
+values and when, and the `gift_made` value additionally touches the accepted
+Phase-1 boundary on enterprise gift tracking.
+
+**Filed: the BMF rollback path is a stated precondition on a production BMF
+load, and it lives only in the scoping doc rather than in this queue.**
+`docs/bmf-load-scoping.md:1026-1032` records two preconditions on any production
+load, both attributed to Parker and both marked ACCEPTED. The first is the
+rollback path; the second is the observability gap.
+
+**The rollback precondition, in full.** `:1029` states it as "The rollback path,
+open item 1 below, must be closed." Open item 1 sits at `:1142-1161`, and its
+finding is narrow and exact: the measured import committed ATOMICALLY on the
+success path, with an exact row count and no partial table ever visible
+(`:1144-1147`), but nothing failed during the run, so the rollback claim was
+never exercised (`:1149-1153`). `:1155` states the position in five words:
+"Success path proven. Failure path untested." `:1157-1161` records it as GATING
+the load rather than the window.
+
+**The second precondition resolves, and already has a home.** `:1030-1032`
+points at CLAUDE.md section 11 for the auth-observability gap. **That reference
+resolves**: section 11 begins at `CLAUDE.md:2106` and the filing is at
+`:2170-2174`, recording that magic-link sends stamp nothing, that there is no
+health check, and that the July outage therefore ran silently. It is queued
+there as a near-term small build.
+
+**Why this is filed here.** Section 7 names this document as where live items
+go. The rollback precondition is live, it gates a production action, and it is
+discoverable only by reading a scoping doc for a build that has not started. The
+observability half already sits in CLAUDE.md; the rollback half sat nowhere.
+**No fix proposed**, and nothing here disturbs the section 13 ruling: the window
+is accepted, and the load waits on these two.
+
+**Filed: two controls were reported as mobile-as-app violations. One is provable
+from the tree and one is not, and they are recorded separately for exactly that
+reason.**
+
+**PROVABLE, `AddAthleteModal`.** Its footer carries `size="sm"` on all three
+buttons: `src/surfaces/enterprise/AddAthleteModal.jsx:107` (Done), `:139`
+(Cancel) and `:140` (the primary submit). `Button.jsx:75` defines `sm` as
+`padding: '6px 10px'` at `--sh-text-xs`, and `Button.jsx:70-73` states what that
+size is FOR, verbatim: "sm and normal are POINTER-DENSITY controls for inline
+row actions and are deliberately left non-compliant (~27px / ~32px)". A modal
+footer's primary submit is not an inline row action, so the deliberate carve-out
+in section 7 does not cover this use, and the control that commits a roster
+enrollment renders at roughly 27px against a standard section 7 locks at 44px
+for a phone-first product. **This is the same shape as the AppShell retry-panel
+entry above**, which flagged `size="normal"` on the only recovery control of a
+full-viewport panel; the two should be read together.
+
+**NOT PROVABLE, `WorkshopDetail` attendance toggles. Reported, mechanism partly
+established, magnitude unverified.** The toggle is a native
+`<input type="checkbox">` at `src/components/WorkshopDetail.jsx:179-184`.
+`checkboxStyle` (`:417-421`) sets `accentColor`, `flexShrink` and `cursor`, and
+NO dimensions; a grep across `src/` finds no width, height, minWidth or
+minHeight on any checkbox, exit 1. So it renders at the user agent's default
+size, whatever that is on the device. **What complicates the reading** is that
+`:178` wraps it in a `<label style={editCheckLabelStyle}>` carrying the name and
+sport spans, so the hit area extends across the label rather than stopping at
+the box. `editCheckLabelStyle` (`:403-409`) is a flex row with no height, so the
+height emerges from the name span's line box at `--sh-text-base`.
+
+**The horizontal target is therefore generous and the vertical one is
+text-driven and unnamed. Whether the result clears 44px is UNVERIFIED**, because
+it needs a rendered measurement on a device and none has been taken. Recording
+it as a violation would be inventing a mechanism. **What IS established** is that
+the control's height is an emergent product of a font-size token rather than a
+named requirement, which is the exact pattern `Button.jsx:61-63` rejected when it
+chose `minHeight` over a corrected `lineHeight`, on the grounds that an emergent
+height "silently re-breaks the next time a font-size token moves".
+
+**No fix proposed for either.**
+
+**Filed: no mobile render check has been performed on the sites that now render
+a Pending athlete. This is a gap in verification, not a defect in code.** Nothing
+below claims any of these sites is wrong. The claim is that `Pending` reached the
+interface across the roster-import arc and that no site rendering it has been
+looked at on a phone.
+
+**The render sites, located by grep at HEAD.** Status label, via `statusFor`
+returning "Not yet invited": `EnterpriseRoster.jsx:33` (Status column cell),
+`AthleteProfile.jsx:95` (status badge), `FilteredAthletesModal.jsx:47` (the
+`{year} · {status}` meta line). Claim state, via `accessLabel`, which renders
+adjacent to it: `EnterpriseRoster.jsx:50` (Access column, authenticated tree
+only), `AthleteProfile.jsx:102` (the Access line) and `:171` (the gated
+milestone-editor explanation), `WorkshopDetail.jsx:171` (the non-recordable row
+state). Staged-row treatment: `EnterpriseRoster.jsx:284` passes `rowState`, and
+`DataTable.jsx:215-217` applies `uncommittedRowStyle` (`:356`).
+`FilteredAthletesModal` is mounted at three sites, so its line renders on three
+surfaces: `EnterpriseOverview.jsx:160`, `EnterpriseRoster.jsx:363`,
+`ProgramSummary.jsx:177`.
+
+**Why the roster is the one most worth checking.** `EnterpriseRoster.jsx:138`
+sets `rosterMinWidth` to `'960px'` on the authenticated tree and `'880px'` on
+the demo tree, passed at `:279` into `DataTable`, whose wrapper is
+`overflowX: 'auto'` (`DataTable.jsx:257`). At a 375px viewport the table is
+roughly two and a half times the viewport width, so Status and Access are
+reached by horizontal scroll. **That is the ruled behaviour and not a defect**:
+the import arc chose the scroll wrapper deliberately, over a preview grid, on
+mobile-overflow grounds. What is unverified is what an operator actually sees
+and reaches at that width, which is the question the ruling deferred rather than
+answered.
+
+**Two adjacent labels are the specific thing to look at.** "Not yet invited" and
+"Pending choice" render in adjacent columns on the authenticated roster, and the
+display label was chosen precisely because those two sit side by side. That
+choice has never been seen at a phone width.
+
+**Also unchecked at mobile width: the review bar and the bulk-selection bar**,
+both new with the review-before-save slice and both rendering only when Pending
+rows are present. `EnterpriseRoster.jsx:166-168` documents the review bar as
+sitting OUTSIDE the horizontal scroll container so its controls stay reachable
+at any viewport width. That is a deliberate mobile accommodation, and it is
+exactly the kind of claim a render would confirm or refute.
+
+**No fix proposed, because there is nothing yet to fix.** The disposition is a
+check, and it belongs with the full-platform QA pass the calendar entry above is
+already banked for.
