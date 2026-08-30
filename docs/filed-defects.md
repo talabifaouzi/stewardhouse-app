@@ -1355,3 +1355,125 @@ scheduled", as "Not tracked", or as the honest "0 of 0" it already is, is a copy
 decision about a row count, and the page has three separate absence conventions
 in play already: NT for unsourced figures, the R4 "Not tracked" for unmeasurable
 rates, and plain zeros for counts.
+
+**Filed: the enterprise roster's stat grid stacks into seven full-width rows on
+a phone, putting the table's header row roughly a thousand pixels down the
+page.** Surfaced while scoping a sticky table header, which does NOT address it
+and is recorded here so the two are not confused. Filed, not fixed.
+
+**The mechanism, and it is one line.** `EnterpriseRoster.jsx:425-432`,
+`statGridStyle`, is `repeat(auto-fit, minmax(min(100%, 180px), 1fr))` with a
+`--sh-space-4` gap. At a 375px viewport the `<main>` padding is
+`clamp(var(--sh-space-3), 4vw, var(--sh-space-8))` (`:404-408`), which resolves
+to 15px a side, leaving a 345px content box. One 180px track fits. So the seven
+tiles mounted at `:168-177` become **seven rows, one tile wide**.
+
+**FIGURES ARE SOURCE ARITHMETIC, NOT MEASUREMENTS.** Every number below is
+derived from tokens in `src/styles/tokens.css` and from style objects read at
+HEAD, with rounding. Nothing was rendered and nothing was measured on a device.
+§7 already records a case where a 640-wide measurement and a 320-wide estimate
+disagreed, so these should be confirmed before anyone quotes them.
+
+```
+  tile height          97   (padding 20 + label 18 + margin 8 + value 31 + padding 20)
+  columns at 375px      1
+  grid with 5 tiles   549
+  grid with 7 tiles   775
+  header row top    ~1016   (accent 3 + chrome 64 + main pad 40 + eyebrow 26
+                             + h1 60 + grid 775 + grid margin 24 + Card pad 24)
+```
+
+**A CORRECTION to the figures this was first raised with, made here rather than
+carried.** It was raised as "roughly 972px" with a "roughly 216px" slice-2
+delta. Both were computed with an assumed 1.2 line-height. The tokens say
+`--sh-line-normal: 1.6` (`tokens.css:86`) and `--sh-line-tight: 1.3` (`:84`),
+and `global.css:36` applies the tight one to `h1`. Re-derived from those, the
+figures are **~1016px and ~226px**. The correction makes the problem slightly
+worse, not better, and the shape of the finding is unchanged.
+
+**Slice 2 added about 226px of it**, and that is worth naming rather than
+leaving for someone to discover. `3b0f26b` took the grid from five tiles to
+seven, adding 'Outreach paused' and 'Not yet invited' so that every `statusFor`
+label has a tile. At 375px that is two more rows plus two more gaps. The tiles
+were right to add: before them a Pending athlete was counted by the Invited tile
+and listed by no drill at all. The cost landed entirely on narrow viewports.
+
+**The sticky header does not address this, and the distinction is the point.** A
+sticky header orients you WITHIN the table once you are looking at it. The grid
+height determines how long it takes to GET there. They are different problems
+with different fixes, and shipping the first would not shorten the ~1016px by a
+pixel.
+
+**STICKY HEADER: INVESTIGATED, RULED, DROPPED. Recorded so nobody re-opens it.**
+It was scoped as an opt-in prop on `DataTable` and is not being built. What
+follows is why, at the level of detail that stops the question being asked
+again.
+
+**The mechanism.** `tableWrapperStyle` (`src/components/DataTable.jsx:256-259`)
+is `{ overflowX: 'auto', width: '100%' }` and sets no `overflow-y`. Under CSS
+Overflow Level 3, a `visible` axis computes to `auto` when the other axis is
+neither `visible` nor `clip`, so the wrapper is a scroll container on BOTH axes.
+A `position: sticky` `<th>` resolves against its nearest scrollport, which is
+that wrapper. The wrapper has no height constraint, so its scrollport height is
+always its content height and it never scrolls vertically: a sticky header would
+pin to a position it already occupies and never move. The page itself scrolls in
+the window (nothing in `src/styles/` sets `overflow` or `height` on `html`,
+`body` or `#root`), so the element the operator scrolls and the element the
+header would stick to are different elements.
+
+**PREMISE CONFIRMED BY RENDER, not merely cited from spec.** `getComputedStyle`
+on the table's parent, read in DevTools on the live authenticated roster,
+returned `overflow-y: 'auto'`. That matters because the whole ruling rests on
+one computed value, and a spec citation is an argument about what a browser
+should do rather than a reading of what it did.
+
+**No overflow value satisfies both requirements**, which is stronger than "the
+wrapper would have to change". The two requirements are that the table scrolls
+horizontally, which is not optional (`minWidth` is 560px by default at
+`DataTable.jsx:70` and 880/960px on the roster at `EnterpriseRoster.jsx:150`,
+against a 297px box inside the Card at 375px), and that no vertical scrollport
+sits between the `<th>` and the window. Every combination was enumerated:
+`auto` or `scroll` on x always yields a y scrollport, whatever y is set to,
+because `hidden` and `clip` are scrollports too; `clip` or `visible` on x
+removes the scrollport but also removes the horizontal scrolling. **The
+horizontal scroll container IS the vertical scrollport.** There is no CSS-only
+sticky header here.
+
+**Both workable approaches were considered and rejected.** The first gives the
+wrapper a `max-height` so it becomes a real vertical scroll region and sticky
+works inside it; that costs nested scrolling, so an operator scrolls ~1016px to
+reach the table and then scrolls again inside a capped region while the page
+still scrolls behind it, and it requires choosing a height, which is a design
+decision nobody had made. The second renders a duplicate header outside the
+wrapper and syncs its column widths and horizontal offset in JavaScript; that
+costs two header rows in the DOM with one `aria-hidden`, a measurement pass or
+`ResizeObserver`, and a scroll listener, and it is not `position: sticky` on the
+real header. `borderCollapse: 'collapse'` (`DataTable.jsx:261-264`) is a third
+obstacle that bites the first approach and not the second, since the header's
+bottom border is painted by the table and would not travel with a sticky cell.
+
+**THE RULING: sticky is dropped. The tile grid is the live item.** Nothing about
+`DataTable` changed, and its three call sites are untouched. If a future reader
+wants a sticky roster header, the question to answer first is not how to make
+sticky work; it is whether the wrapper should stop being the scrollport, which
+is a change to how every table on the surface scrolls.
+
+**RULED, and recorded as settled rather than open: any fix applies at ALL
+WIDTHS, not narrow viewports only.** A below-a-breakpoint variant would be a
+second layout to maintain, and the tree has consistently refused that shape: the
+`min()` floor in this very style exists (per its own comment at `:427-428`,
+citing `88e07ea`) precisely so the track degrades continuously rather than
+switching at a breakpoint. Whatever replaces or condenses the grid does so
+everywhere.
+
+**Not ruled, and left open deliberately.** Whether the answer is fewer tiles, a
+denser tile, a collapsed summary row, or moving the grid below the table. Each
+trades something different away, and the seven tiles are load-bearing after
+`3b0f26b`: every one of them is a drill target, and dropping any label would
+return an athlete to being counted with no list to reach.
+
+**Reachable on both trees.** The grid is ungated; `EnterpriseRoster.jsx:167`
+sits outside every `isAuthenticated` condition on the page, so the demo tree and
+the authenticated tree stack identically at 375px.
+
+**No fix proposed.**
