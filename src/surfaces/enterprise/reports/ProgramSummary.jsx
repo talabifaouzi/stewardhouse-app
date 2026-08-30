@@ -25,6 +25,7 @@ import { useWorkshops } from '../../../contexts/WorkshopsContext.jsx';
 import { useInstitutionEyebrow } from '../shared/useInstitutionEyebrow.js';
 import { formatDate } from '../../../utils/formatDate.js';
 import { computeStats, engagementBounds } from '../shared/enterpriseStats.js';
+import { CATEGORY_CONFIG, STATUS_CATEGORY_KEYS, countByCategory } from '../shared/categoryFilters.js';
 import RateDisclosure, { fmtRate } from '../shared/RateDisclosure.jsx';
 
 // P-1 isolation. Cohort snapshot + status breakdown were already live
@@ -71,7 +72,28 @@ export default function ProgramSummary() {
   }
 
   const stats = computeStats(athletes);
-  const { tot, gpsRate, certRate, tGi, onTrack, certD, stalled, notStarted } = stats;
+  const { tot, gpsRate, certRate, tGi } = stats;
+  // The status breakdown below reads the SAME predicates the Overview and
+  // Roster tiles read, and the same ones their drills filter on. This page has
+  // no drills, so this is not a pairing change: it removes a contradiction the
+  // pairing slice would otherwise create, where Reports and the tiles named the
+  // same four statuses with different numbers over the same roster.
+  //
+  // `onTrack`, `certD`, `stalled` and `notStarted` are no longer destructured
+  // here. computeStats still exports all four; only this file's binding moved.
+  const categoryCount = countByCategory(athletes);
+  // ALL SIX statuses, with zero-count clauses SUPPRESSED, the same shape
+  // RateDisclosure uses for its reason lines: name what is present rather than
+  // list absences. Four clauses reading zero over a 46-athlete roster is true
+  // and not honest, because the 46 sit in a status the sentence never mentions.
+  //
+  // Suppression cannot empty the sentence. statusFor is total, returning one of
+  // these six labels for every athlete, so any roster of one or more produces
+  // at least one clause; a roster of zero returns at :63 above and never
+  // reaches here.
+  const statusClauses = STATUS_CATEGORY_KEYS
+    .filter((key) => categoryCount[key] > 0)
+    .map((key) => `${categoryCount[key]} ${CATEGORY_CONFIG[key].label}`);
   const { min: engagementMin, max: engagementMax } = engagementBounds(engagementTimeline);
   const latestEngagement = engagementTimeline[engagementTimeline.length - 1];
 
@@ -110,7 +132,7 @@ export default function ProgramSummary() {
         <Card>
           <SectionLabel>Status breakdown</SectionLabel>
           <p style={narrativeStyle}>
-            {onTrack} Actively progressing, {certD} Certified, {stalled} Not yet active, {notStarted} Invited.
+            {statusClauses.join(', ')}.
           </p>
         </Card>
 

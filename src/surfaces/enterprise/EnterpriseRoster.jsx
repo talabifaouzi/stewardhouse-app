@@ -14,7 +14,7 @@ import { formatDate } from '../../utils/formatDate.js';
 import { computeStats } from './shared/enterpriseStats.js';
 import RateDisclosure from './shared/RateDisclosure.jsx';
 import { statusFor, STATUS_ORDER, accessLabel, ACCESS_ORDER, YEAR_ORDER } from './shared/athleteStatus.js';
-import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
+import { CATEGORY_CONFIG, STATUS_CATEGORY_KEYS, countByCategory, buildModalTitle } from './shared/categoryFilters.js';
 import AddAthleteModal from './AddAthleteModal.jsx';
 import ImportRosterModal from './ImportRosterModal.jsx';
 
@@ -126,7 +126,19 @@ export default function EnterpriseRoster() {
   };
 
   const stats = computeStats(athletes);
-  const { tot, certD, stalled, onTrack, notStarted, activelyProgressingPct, consentAware, rateActive, rateBaseTotal } = stats;
+  const { activelyProgressingPct, consentAware, rateActive, rateBaseTotal } = stats;
+  // Tile counts come from the DRILL's own predicates (pairing rule), not from
+  // computeStats. `tot`, `certD`, `stalled`, `onTrack` and `notStarted` were
+  // read here ONLY by the tiles, so they are no longer destructured.
+  // computeStats still exports all five and ProgramSummary still reads four of
+  // them; nothing was removed from the derivation, only from this file's local
+  // binding. `stats` itself is still passed whole to RateDisclosure below.
+  const categoryCount = countByCategory(athletes);
+  // FORK 1 rate line. Belongs to the Actively progressing tile and to no other,
+  // so it is named here and attached by key below rather than positionally.
+  const activelyProgressingSublabel = consentAware
+    ? (activelyProgressingPct == null ? 'Not tracked' : `${rateActive} of ${rateBaseTotal} tracked`)
+    : `${activelyProgressingPct}% of program`;
   // Sorting moved INTO DataTable (SORTING RULED 2026-08-27): it owns the chosen
   // column, and DEFAULT_ROSTER_SORT is what it falls back to when none is
   // chosen. Keeping the sort here as well would mean two orderings racing, and
@@ -146,20 +158,23 @@ export default function EnterpriseRoster() {
       {eyebrow && <p style={eyebrowStyle}>{eyebrow}</p>}
       <h1 style={titleStyle}>Roster</h1>
 
-      {/* Stat grid — each tile drills into a filtered athlete list */}
+      {/* Stat grid — each tile drills into a filtered athlete list. Every value
+          is categoryCount[k] against the same key its onClick opens, so the
+          number and the list it leads to are one predicate. Seven tiles in
+          STATUS_CATEGORY_KEYS order, identical to EnterpriseOverview and to the
+          ProgramSummary sentence: all three feed the same CATEGORY_CONFIG, so
+          they offer the same set in the same sequence. */}
       <div style={statGridStyle}>
-        <StatTile label="Athletes" value={tot} onClick={() => setActiveCategory('all')} />
-        <StatTile
-          label="Actively progressing"
-          value={onTrack}
-          sublabel={consentAware
-            ? (activelyProgressingPct == null ? 'Not tracked' : `${rateActive} of ${rateBaseTotal} tracked`)
-            : `${activelyProgressingPct}% of program`}
-          onClick={() => setActiveCategory('actively-progressing')}
-        />
-        <StatTile label="Certified" value={certD} onClick={() => setActiveCategory('certified')} />
-        <StatTile label="Not yet active" value={stalled} onClick={() => setActiveCategory('not-yet-active')} />
-        <StatTile label="Invited" value={notStarted} onClick={() => setActiveCategory('invited')} />
+        <StatTile label="Athletes" value={categoryCount['all']} onClick={() => setActiveCategory('all')} />
+        {STATUS_CATEGORY_KEYS.map((key) => (
+          <StatTile
+            key={key}
+            label={CATEGORY_CONFIG[key].label}
+            value={categoryCount[key]}
+            sublabel={key === 'actively-progressing' ? activelyProgressingSublabel : undefined}
+            onClick={() => setActiveCategory(key)}
+          />
+        ))}
       </div>
       <RateDisclosure stats={stats} />
 

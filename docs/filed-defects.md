@@ -1243,3 +1243,60 @@ they claim: widening the `try` treats the re-read as part of the write, while
 guarding the row treats a missing row as a reportable state. Which one is right
 depends on whether the re-read is understood as confirmation of the write or as
 a separate read, and that is a decision rather than a patch.
+
+**Filed: the `certified` and `not-yet-invited` categories overlap, so the six
+enterprise tile categories no longer partition the roster.** Surfaced by the
+tile/drill pairing slice and filed with it. **Nothing regressed**: the overlap
+existed the moment `statusFor` gained its Pending branch, and pairing only made
+it visible by giving 'Not yet invited' a tile of its own.
+
+**The cause is that the two categories are defined on different axes.**
+`categoryFilters.js` filters `certified` on `a.certified` directly, while every
+other category routes through `statusFor`. And `athleteStatus.js:7` returns
+`'Not yet invited'` for a Pending athlete BEFORE `:8` can return `'Certified'`,
+which is the branch order F-A ruled deliberately. So an athlete who is both
+Pending and certified satisfies both filters and is counted twice.
+
+**The overlap rows, proven by execution over the exhaustive synthetic roster**
+(status x certified x lessons x gps, n=32). Four rows sit in both categories,
+and `statusFor` returns `'Not yet invited'` for every one of them:
+
+```
+  status=pending  certified=true  lessons=0  gps=false   statusFor = Not yet invited
+  status=pending  certified=true  lessons=0  gps=true    statusFor = Not yet invited
+  status=pending  certified=true  lessons=3  gps=false   statusFor = Not yet invited
+  status=pending  certified=true  lessons=3  gps=true    statusFor = Not yet invited
+```
+
+The six categories sum to **36 over a 32-athlete roster**, and the excess is
+exactly the four overlapping rows.
+
+**Each tile still equals its own drill.** This is NOT a pairing failure: the
+pairing check reports zero mismatches on all seven pairs across all three
+rosters, because a tile and its drill run one predicate. What fails is a
+DIFFERENT property, that the categories are mutually exclusive, which nothing
+in the tree ever asserted and which the tiles do not claim on screen.
+
+**UNREACHABLE on both real rosters, verified rather than assumed.** The live
+local store holds 46 athlete rows and **zero** with
+`enrollment_status='Pending' AND certified=1`. The demo fixture roster holds 16
+and **zero** with `status='pending' && certified`; it has no Pending athlete at
+all. So the sum is 46 over 46 and 16 over 16 respectively, and no operator can
+see a double count today.
+
+**Whether it is reachable in principle is the F-C question, and that is why
+this is filed rather than fixed.** F-C above records that `resolveStatus` in
+`functions/api/athletes/[id].js` strands a Pending athlete and that
+`certified: true` is its ONLY exit, with no intermediate state: one write moves
+a Pending athlete the whole distance to `'Certified'`. **But that write sets
+`enrollment_status` as well**, so the row it produces is Certified rather than
+Pending-and-certified, and the overlap needs a row where the column and the
+flag disagree. **Whether any path can produce that pair is NOT established
+here.** Fixing the overlap means deciding which category owns such an athlete,
+and that decision is downstream of F-C's, so the two want ruling together.
+
+**No fix proposed.** The obvious change, routing `certified` through
+`statusFor` like its five siblings, is not obviously right: it would make the
+Certified tile stop counting a certified athlete whose status column says
+something else, which is a different falsehood rather than none. The
+alternative, leaving both and saying so on screen, is a copy decision.

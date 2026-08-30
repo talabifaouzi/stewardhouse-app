@@ -14,7 +14,7 @@ import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 import { computeStats, engagementBounds } from './shared/enterpriseStats.js';
 import RateDisclosure from './shared/RateDisclosure.jsx';
-import { CATEGORY_CONFIG, buildModalTitle } from './shared/categoryFilters.js';
+import { CATEGORY_CONFIG, STATUS_CATEGORY_KEYS, countByCategory, buildModalTitle } from './shared/categoryFilters.js';
 
 export default function EnterpriseOverview() {
   const eyebrow = useInstitutionEyebrow();
@@ -26,8 +26,19 @@ export default function EnterpriseOverview() {
   // (computeStats([]) → zeros).
   const isAuthenticated = !!useOptionalAppIdentity();
   const stats = computeStats(athletes);
-  const { tot, gpsD, certD, stalled, onTrack, notStarted, tGi, athletesWithGifts, gpsRate, activelyProgressingPct,
+  const { tot, gpsD, tGi, athletesWithGifts, gpsRate, activelyProgressingPct,
     consentAware, rateGps, rateActive, rateBaseTotal } = stats;
+  // Tile counts come from the DRILL's own predicates (pairing rule), not from
+  // computeStats. `certD`, `stalled`, `onTrack` and `notStarted` were read here
+  // ONLY by the tiles, so they are no longer destructured. computeStats still
+  // exports all four and ProgramSummary still reads three of them; nothing was
+  // removed from the derivation, only from this file's local binding.
+  const categoryCount = countByCategory(athletes);
+  // FORK 1 rate line. Belongs to the Actively progressing tile and to no other,
+  // so it is named here and attached by key below rather than positionally.
+  const activelyProgressingSublabel = consentAware
+    ? (activelyProgressingPct == null ? 'Not tracked' : `${rateActive} of ${rateBaseTotal} tracked`)
+    : `${activelyProgressingPct}% of program`;
   const { min: engagementMin, max: engagementMax } = engagementBounds(engagementTimeline);
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeWeek, setActiveWeek] = useState(null);
@@ -84,20 +95,31 @@ export default function EnterpriseOverview() {
         )}
       </div>
 
-      {/* Primary stat grid — each tile drills into a filtered athlete list */}
+      {/* Primary stat grid — each tile drills into a filtered athlete list.
+          Every value is categoryCount[k] against the same key its onClick
+          opens, so the number and the list it leads to are one predicate.
+
+          SEVEN tiles: the catch-all plus one per statusFor label. 'Outreach
+          paused' and 'Not yet invited' are new here; the first had a category
+          key and no tile, and the second had neither, so a Pending athlete was
+          counted by the Invited tile and listed by no drill at all.
+
+          Order comes from STATUS_CATEGORY_KEYS, the same sequence the
+          ProgramSummary status breakdown reads, so a grid and a sentence naming
+          the same six statuses name them in the same order. 'Athletes' is not a
+          status and is rendered first, ahead of all six. The grid is auto-fit,
+          so seven wraps without a layout change. */}
       <div style={statGridStyle}>
-        <StatTile label="Athletes" value={tot} onClick={() => openCategory('all')} />
-        <StatTile
-          label="Actively progressing"
-          value={onTrack}
-          sublabel={consentAware
-            ? (activelyProgressingPct == null ? 'Not tracked' : `${rateActive} of ${rateBaseTotal} tracked`)
-            : `${activelyProgressingPct}% of program`}
-          onClick={() => openCategory('actively-progressing')}
-        />
-        <StatTile label="Certified" value={certD} onClick={() => openCategory('certified')} />
-        <StatTile label="Not yet active" value={stalled} onClick={() => openCategory('not-yet-active')} />
-        <StatTile label="Invited" value={notStarted} onClick={() => openCategory('invited')} />
+        <StatTile label="Athletes" value={categoryCount['all']} onClick={() => openCategory('all')} />
+        {STATUS_CATEGORY_KEYS.map((key) => (
+          <StatTile
+            key={key}
+            label={CATEGORY_CONFIG[key].label}
+            value={categoryCount[key]}
+            sublabel={key === 'actively-progressing' ? activelyProgressingSublabel : undefined}
+            onClick={() => openCategory(key)}
+          />
+        ))}
       </div>
 
       {/* Supplementary line — writable-scoped GPS on the auth tree (FORK 1);
