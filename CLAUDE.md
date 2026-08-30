@@ -1776,6 +1776,13 @@ correction.
   verbatim from CLAUDE.md §5 on 2026-07-08 (rework tiers, 5.8 + persistence
   scoping, schema rulings A–F, the full auth + wiring + persistence-writes
   build). Current-state lives in the slim §5 Individual row.
+- `docs/session-log.md` — rolling session log, one entry per session, appended
+  NEWEST LAST (the ordering `docs/pilot-gate-criteria.md` §6 already states for
+  its re-score log). Each entry carries that session's commits with what each
+  closed and left out of scope, branch pruning, filings added with their line
+  ranges, any ruling that reversed or superseded a prior one, and the open items
+  carried out. Chronological and cross-surface, where the three arc-history docs
+  above are per-surface and organized by arc.
 - `docs/operations-current-state-2026-05-31.md` — Operations surface inventory
   (pre-redesign baseline).
 - `docs/operations-overview-discovery-2026-06-01.md` — gap-map between
