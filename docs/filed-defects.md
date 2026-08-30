@@ -1477,3 +1477,316 @@ sits outside every `isAuthenticated` condition on the page, so the demo tree and
 the authenticated tree stack identically at 375px.
 
 **No fix proposed.**
+
+**Filed: three items from the single-Name-column scoping pass, plus a fourth
+found while re-proving them, each verified against HEAD `a63fcee` by execution or
+grep before being written here.** No line number below is carried from the
+scoping pass. One of the four is an OBSERVATION rather than a defect and says so,
+one is a RULING recorded so the question is not re-opened, and one is STALE
+DOCUMENTATION rather than a defect. Nothing below proposes a fix, and nothing
+below is built in this commit.
+
+**Filed: `suggestMapping`'s containment fallback claims a column for a field the
+header does not name, and "Full Name" is the known instance.**
+`src/surfaces/enterprise/shared/parseRoster.js`. The mechanism is the fallback
+loop at `:220-223`, which runs after the exact-label loop at `:213-216` has
+failed for every label in the field, and matches on `c.includes(k)` rather than
+equality. **Proven by execution, not by reading:** `norm` at `:198` reduces
+"Full Name" to `"fullname"`, `CANDIDATES.lastName` at `:194` contains `'lname'`,
+and `"fullname".includes("lname")` is `true`, because `"fullname"` carries the
+contiguous run `l,n,a,m,e` from index 3. Calling the real exported function,
+`suggestMapping(['Full Name','Email'])` returns
+`{"firstName":null,"lastName":0,"email":1}`, so index 0, the Full Name column,
+is pre-selected as **Last name**.
+
+**It steers wrong rather than landing wrong, and the guards that make that true
+are worth naming because they are what keeps this off the blocking list.**
+Submit is disabled until all three fields are mapped:
+`ImportRosterModal.jsx:184` computes `allMapped` from the count of non-null
+mappings, `:185` folds it into `canSubmit`, and `:374` passes
+`disabled={!canSubmit}`. The operator therefore cannot submit the two-of-three
+state this mis-claim produces, because `firstName` comes back `null` and nothing
+fills it. And the live example under each select shows the cell contents from
+their own first data row: `:323` reads `parsed.rows[0].fields[idx]` and
+`:340-343` renders it as `First row: {value}`, so a Full Name column pre-selected
+as Last name displays `First row: Marcus Thompson` under the Last name dropdown.
+The mis-claim is visible at the moment it is made. `:183` separately blocks
+mapping one source column to two targets via `duplicateColumn`, and `FIELDS` at
+`:59-63` fixes the three targets.
+
+**THE AUDIT, AND ITS RESULT IS THE OPPOSITE OF WHAT THE FILING TITLE SUGGESTS.
+"Full Name" is NOT one collision among several inside the candidate vocabulary.
+It is outside the vocabulary entirely, and the exhaustive vocabulary audit is
+CLEAN.** Every one of the 16 candidate labels at `:193-195` was run against every
+other as a header string, 240 ordered pairs, testing
+`norm(header).includes(label)` where the two belong to different fields.
+**Cross-field containment pairs found: ZERO.** Within the vocabulary the fallback
+is sound, and no candidate label is a substring of any other field's label.
+**So an audit confined to the candidate lists would have reported the fallback
+safe and would not have surfaced "Full Name" at all**, because `"fullname"` is
+not a candidate label. That is the finding: the collision surface is not the
+vocabulary, it is the space of real headers the vocabulary was never compared
+against.
+
+**THE COLLISION SURFACE IS UNAUDITED FOR HEADERS OUTSIDE THE CANDIDATE
+VOCABULARY, AND IT CANNOT BE AUDITED EXHAUSTIVELY**, because it is the set of
+strings an athletic department might put in a header cell, which is unbounded and
+undocumented. The tree carries no sample roster file, no test, and no statement
+of what real exports look like, so there is no corpus to run this against. What
+follows was found by probing plausible headers and is **ILLUSTRATIVE, NOT
+EXHAUSTIVE.** Every line is the real function's real return value, with the
+wrongly claimed header named:
+
+- `['Full Name','Email']` claims "Full Name" as **Last name**, via `'lname'`.
+- `['Legal Name','Preferred Email']` claims "Legal Name" as **Last name**, via
+  `'lname'` again: `"legalname"` also carries `l,n,a,m,e` contiguously.
+- `['Athlete','Last Active','Email']` claims "Last Active" as **Last name**, via
+  `'last'`.
+- `['Student Name','Last Login','Email']` claims "Last Login" as **Last name**.
+- `['Player','Last Updated','Email']` claims "Last Updated" as **Last name**.
+- `['Name','Mailing Address']` claims "Mailing Address" as **Email**, via
+  `'mail'`.
+- `['Given Consent','Surname','Email']` claims "Given Consent" as **First
+  name**, via `'given'`.
+- `['First Contact','Last Name','Email']` claims "First Contact" as **First
+  name**, via `'first'`.
+- `['Family Contact','First Name','Email']` claims "Family Contact" as **Last
+  name**, via `'family'`.
+
+**The three-and-four-letter labels are the whole exposure.** `'last'`, `'first'`,
+`'mail'`, `'given'`, `'family'` and `'lname'` are short enough to sit inside
+ordinary English header phrases; `'emailaddress'`, `'familyname'` and
+`'forename'` are not. **The last-something family is the one most likely to be
+met in practice**, because "Last Active", "Last Login" and "Last Updated" are
+columns a CRM or SIS export produces by default, and any of them sitting to the
+left of the real surname column takes the Last name slot before the exact label
+is reached. Note that this specific ordering hazard does not arise inside one
+field, since `:213-216` tries every exact label across every cell before
+`:220-223` runs at all; it arises when a field has NO exact match anywhere in the
+row, which is exactly the single-Name-column case.
+
+**One candidate entry is DEAD and can never match, found during the same audit
+and recorded here rather than filed separately because it is harmless.**
+`CANDIDATES.email` at `:195` carries `'e mail'`, with a space. `cells` at `:210`
+are normed, and `norm` at `:198` strips every non-alphanumeric character, so no
+cell can ever contain a space. `'e mail'` therefore fails `indexOf` at `:214` and
+`includes` at `:221` for every possible input. It costs nothing, because a header
+reading "E-Mail" or "e mail" norms to `"email"` and is caught by the exact
+`'email'` candidate on the line before. **It is dead, not broken.**
+
+**No fix proposed, and the shape of a fix is genuinely unobvious**, which is why
+this is filed rather than patched. Anchoring the containment match, requiring the
+label to sit at a word boundary, or dropping the short labels each trade a class
+of correct pre-selection away for a class of wrong one, and none of them can be
+evaluated without knowing what real headers look like. The guards above mean
+nothing is currently mis-imported, so this is not blocking.
+
+**Filed as an OBSERVATION, not a defect: the two enrollment paths disagree about
+whether a name has parts, and both write the same single column.** Both
+endpoints behave correctly and neither is doing anything wrong; what is recorded
+is the divergence.
+
+**`POST /api/athletes`, the one-at-a-time path, takes a single `name`.**
+`functions/api/athletes.js:62` sets `ALLOWED_BODY_KEYS = ['name', 'email',
+'consentAcknowledged']`, `:121-122` requires `body.name` to be a non-empty
+string, and `:124` stores `out.name = body.name.trim()` whole. There is no
+first/last pair in the accepted body, and `:158` rejects any key outside the
+allowlist.
+
+**`POST /api/athletes/import` requires firstName AND lastName and joins them.**
+`functions/api/athletes/import.js:85` sets `ALLOWED_ROW_KEYS = ['firstName',
+'lastName', 'email']`, `:110-111` rejects a row whose `firstName` trims empty,
+`:112-113` does the same for `lastName`, and `:121-122` writes the joined
+`` `${first} ${last}` `` into `name`, the join its own comment marks as ruled.
+All three are required and nothing is optional. The comment at `:106-108` gives
+the reason: guessing which half is present, or storing a one-word name, would be
+the endpoint inventing a record.
+
+**Both write `athlete.name`, which is ONE column.** `migrations/0001` declares
+`name TEXT NOT NULL` on `athlete` and there is no second name column: a grep for
+`first_name`, `last_name`, `firstname`, `lastname`, `given_name` and `surname`
+across all of `migrations/` returns nothing. **So the split the importer demands
+exists only in transit.** It is consumed at the join and is not recoverable from
+stored data.
+
+**A precision correction to the scoping pass, recorded rather than quietly
+applied.** The minutes said no code anywhere splits `athlete.name`. **The
+narrower claim is the true one and it is the one that matters here:
+`athlete.name` is never split.** Every read of it renders it whole, at
+`AthleteProfile.jsx:89` and `:274`, `FilteredAthletesModal.jsx:45` and
+`WorkshopDetail.jsx:223`. But the tree does carry name splits:
+`ClientWorkspace.jsx:93` and `:1239` both take `client.name.split(' ')[0]` as a
+first name, and `Chrome.jsx:378` splits a display name for initials. Those
+operate on the advisor `client` record and on a display string, not on an
+athlete, so they do not contradict the finding. They do contradict the sentence
+as it was written.
+
+**CLAUDE.md's C-1 FIELDS ruling is the nearest thing to a governing rule, and its
+scope over this case is UNVERIFIED.** Quoted verbatim from CLAUDE.md `:787-792`:
+"**C-1 FIELDS RULED: DISCARD.** Import stores name and email only, matching what
+POST /api/athletes already does when it explicitly NULLs sport, year, position,
+phone, notes, badge, management_mode, gps_completed_at and last_active_at. A
+roster file will contain those columns; they are dropped. Anything else would be
+a second enrollment path with different rules, and the divergence would be
+invisible."
+
+**That ruling was written about DISCARDED COLUMNS**, which its own sentence makes
+plain: the divergence it forbids is one path keeping fields the other drops. **It
+was not written about the shape of the name field**, and whether "a second
+enrollment path with different rules" reaches a difference in how a name is
+submitted is not something this filing can settle. **It is not asserted to
+apply.** It is quoted because a reader who meets this divergence will reach for
+it, and should know both that it exists and that its scope here is undecided. The
+two paths agree exactly on what is STORED, which is name plus email and nothing
+else, so if the ruling is read narrowly as being about stored fields, there is no
+divergence at all.
+
+**No fix proposed.** The ruling below settles what happens next, and it is not a
+reconciliation of these two shapes.
+
+**RULED: no name splitter will ever be built. Recorded so the question is not
+re-opened.** The importer will not accept a single Name column by splitting it,
+and no future slice should propose one.
+
+**The reasoning, which is the part worth keeping.** `athlete` has exactly one
+name column, proven above. The importer's two halves are joined at
+`import.js:121-122` and the split is discarded there, so nothing downstream can
+recover it. **A splitter would therefore be guessing, at import time, in order to
+produce a string it immediately re-joins.** The guess is not a rounding error: it
+is the endpoint deciding something about a person's name that the operator knows
+and the file does not encode.
+
+**The shape enumeration. Every one of these is a legitimate thing a single Name
+cell can hold, and no rule distinguishes them from the cell alone:**
+
+- `Marcus Thompson`, two tokens, first then last, the shape a splitter would
+  assume.
+- `Thompson, Marcus`, last then first, comma-delimited, which a naive splitter
+  reverses.
+- `Marcus James Thompson`, three tokens, where the middle token is a middle name.
+- `Anna van der Berg`, four tokens, where three of them are the surname.
+- `Maria del Carmen Rodriguez Garcia`, a compound given name and two surnames,
+  where every token boundary is a plausible and wrong split point.
+- `Chen Wei`, family name first, where the correct split point is right but the
+  assignment is inverted.
+- `Marcus Thompson Jr.` and `Marcus Thompson III`, where the last token is a
+  suffix and not a name at all.
+- `Mary-Kate Olsen` and `Jean-Luc Picard`, where a hyphen sits inside a single
+  given name.
+- A mononym, one token, where there is no last name to produce and the endpoint
+  would have to invent one or refuse the row.
+
+**No heuristic separates these, because the information is not in the cell.**
+Token count does not: two tokens can be first-last or a mononym plus a suffix,
+and four can be a middle name or a particle surname. A comma helps only the
+second shape and appears in none of the others. **Whether "Garcia" is a surname
+or the second half of a compound one is a fact about the person, and the file
+records only the string.** The operator knows; the parser cannot.
+
+**FT RULED: the importer will ACCEPT BOTH SHAPES, with the operator declaring
+which.** A single name column, or a first/last pair. **Nothing is inferred either
+way**, which is what distinguishes this from the splitter: the operator states
+the shape of their file rather than the importer deducing it, and a declared
+single-name column is stored as given rather than split. This is consistent with
+the module's own standing posture at `parseRoster.js:15-16` and
+`ImportRosterModal.jsx:21-24`, both of which record that the import never guesses
+a mapping.
+
+**THAT BUILD IS A SEPARATE SLICE AND IS NOT DONE IN THIS COMMIT.** This entry
+records the ruling only. Until it lands, the importer requires both halves and a
+single-Name-column roster cannot be imported without the operator splitting the
+column in their spreadsheet first, which is the current behaviour and is not a
+defect.
+
+**FT reports that most real rosters split names into two columns, so the
+single-column case is the MINORITY shape.** That is why the current requirement
+is workable in the meantime, and it is recorded because it bears on sequencing
+rather than on the ruling: the ruling holds regardless of which shape is more
+common.
+
+**Filed as STALE DOCUMENTATION, not a defect: `parseRoster.js`'s header docblock
+says the import path has no file upload, and the path has had one since
+2026-08-27. The code is correct; the docblock is wrong.** Nothing here describes
+a behaviour that needs changing. What is recorded is that a module's own header
+now misdescribes the arc it belongs to.
+
+**The two contradicting docblocks, both at HEAD `a63fcee`.**
+
+- **The older one: `src/surfaces/enterprise/shared/parseRoster.js:3-8`**, opening
+  "PASTED TEXT, not file upload (ruled). There is no file input, no FormData and
+  no FileReader anywhere in this path: the operator copies a range out of a
+  spreadsheet and pastes it".
+- **The newer one: `src/surfaces/enterprise/ImportRosterModal.jsx:37-39`**,
+  opening "THREE EQUAL WAYS IN (INPUT SHAPE AMENDED 2026-08-27): drop a file,
+  pick a file, or paste. All three end at the same place, a string in `text`,
+  which the existing parser consumes unchanged."
+
+**The three code sites that falsify the older one**, each verified at HEAD:
+
+- **`ImportRosterModal.jsx:213`** renders `type="file"` on an `<input>` whose
+  `onChange` at `:216` takes `e.target.files[0]` and hands it to `acceptFile`.
+  That is a file input, named as absent.
+- **`ImportRosterModal.jsx:166`** defines `onDrop`, which at `:169` calls
+  `fileFromDrop(e.dataTransfer)` and passes the result to `acceptFile` at `:172`.
+  It is wired to the drop zone via `onDrop={onDrop}` at `:243`.
+- **`src/surfaces/enterprise/shared/readRosterFile.js`** is a whole module that
+  exists only to read uploaded files: `classifyFile` at `:74`, `file.text()` at
+  `:124` for the text formats, `XLSX.read(new Uint8Array(await
+  file.arrayBuffer()))` at `:144` for the workbook formats, `fileFromDrop` at
+  `:194`, and `files[0]` at `:220`. It sits in the same `shared/` directory as
+  `parseRoster.js`, one file away from the docblock denying it.
+
+**THE STALENESS IS PARTIAL, AND THE SURVIVING HALF IS TRUE BY ACCIDENT. This is
+the part worth recording, because a reader correcting the docblock will otherwise
+delete two claims that still hold.** The sentence makes four negative claims and
+they do not fail together. Each was tested separately:
+
+- **"PASTED TEXT, not file upload (ruled)" is FALSE** as a description of the
+  current path, and the parenthetical `(ruled)` is the specific problem: it cites
+  a ruling that was superseded. CLAUDE.md §5.2 carries "INPUT SHAPE AMENDED
+  2026-08-27", which supersedes the TRANSPORT half of the original ruling and
+  records file upload and drag-and-drop as a basic feature rather than an
+  enhancement.
+- **"There is no file input" is FALSE**, per `ImportRosterModal.jsx:213` above.
+- **"no FormData" is STILL TRUE.** A grep for `FormData` across
+  `src/surfaces/enterprise/` and `functions/api/athletes/import.js` returns
+  exactly one hit: the docblock line asserting its absence. The endpoint takes
+  `context.request.json()` at `import.js:204`, consistent with the INPUT SHAPE
+  ruling's reasoning that `request.json()` is the shape with precedent in this
+  tree.
+- **"no FileReader" is STILL TRUE**, by the same grep, which again returns only
+  the docblock's own line. The upload path reads with the Blob methods
+  `file.text()` and `file.arrayBuffer()`, not the legacy `FileReader` API.
+
+**So two of the four claims survive a change that removed their premise.** They
+were written to mean "there is no upload here, therefore none of upload's
+machinery is here", and they now read as true only because the upload that
+arrived happened to be built on Blob methods and a JSON body. **The conclusions
+outlived the reasoning**, which is why this is filed with the claims separated
+rather than as a single stale paragraph.
+
+**The staleness is ONE-SIDED rather than a genuine ambiguity, and the modal's own
+docblock is what makes that determinable.** `ImportRosterModal.jsx:37` carries
+the amendment date, "INPUT SHAPE AMENDED 2026-08-27", inline in the text. A
+reader meeting both docblocks does not have to weigh two undated assertions
+against each other or go to the tree to break a tie: one of them names the date
+on which the other was superseded. **There is no question about which is current,
+only a stale sentence sitting where a reader of the parser will meet it first.**
+That is also why this is low-severity: the contradiction is self-resolving for
+anyone who reads both, and dangerous only for someone who reads the parser alone
+and concludes the arc never took file upload.
+
+**Not filed as part of the containment finding above, though both live in
+`parseRoster.js`.** They are unrelated: that one is about `suggestMapping`'s
+behaviour, this one is about the module header, and the module header is correct
+about `suggestMapping` ("IT NEVER GUESSES A MAPPING" at `:15-16` holds, and the
+containment fallback proposes a default the operator confirms rather than a guess
+the import acts on).
+
+**No fix proposed, and deliberately not applied here.** The correction is a
+comment edit in a source file, which is a code change and not a docs-only commit;
+folding it in would put a `src/` edit into a commit whose diff is otherwise one
+markdown file. Whoever makes it should keep the two surviving claims, drop the
+`(ruled)` parenthetical rather than leave it pointing at a superseded ruling, and
+consider whether the module header should describe the arc's input shape at all
+now that `ImportRosterModal.jsx` and `readRosterFile.js` both own that concern.
