@@ -8,6 +8,8 @@ import { useBasePath, useOptionalAppIdentity } from '../../../contexts/AppIdenti
 import { useAthletes } from '../../../contexts/AthletesContext.jsx';
 import { useWorkshops } from '../../../contexts/WorkshopsContext.jsx';
 import { useInstitutionEyebrow } from '../shared/useInstitutionEyebrow.js';
+import { computeStats } from '../shared/enterpriseStats.js';
+import RateDisclosure, { fmtRate } from '../shared/RateDisclosure.jsx';
 
 // P-1 isolation. Two classes of section on this page:
 //
@@ -95,19 +97,48 @@ export default function ProgramOutputs() {
     const totalWorkshopAttendances = workshops
       .filter((w) => w.status === 'completed')
       .reduce((sum, w) => sum + w.attendance.filter((a) => a.attended).length, 0);
+    // certifiedPct and gpsPct are GONE from this block. They divided by the full
+    // roster and fell back to 0, so this page rendered "0% of cohort" for the
+    // same concept ProgramSummary rendered as "Not tracked" — two sub-pages of
+    // one section disagreeing about one measurement. Both now come from
+    // computeStats below, which is the only derivation of a progression rate.
+    //
+    // The remaining keys stay. They are counts and a lesson average, none of
+    // them a progression rate, and none of them in this slice's scope.
+    //
     // Guard every rate against an empty roster (the page-level guard already
     // returns early, but these must never produce NaN if that guard moves).
     return {
       totalAthletes, totalGifts, athletesCertified, athletesWithGifts,
       gpsCompleted, totalLessonsCompleted, workshopsHeld, workshopsScheduled,
       totalWorkshopAttendances,
-      certifiedPct: totalAthletes ? Math.round((athletesCertified / totalAthletes) * 100) : 0,
-      gpsPct: totalAthletes ? Math.round((gpsCompleted / totalAthletes) * 100) : 0,
       avgLessonsPerAthlete: totalAthletes
         ? Math.round((totalLessonsCompleted / totalAthletes) * 10) / 10
         : 0,
     };
   }, [athletes, workshops]);
+
+  // The two progression rates AND their numerators and denominator, all from
+  // the shared derivation. FORK 1 scopes them to institution-writable athletes,
+  // and R4 makes a zero denominator null rather than 0, which fmtRate renders
+  // "Not tracked".
+  //
+  // Both lines of each tile read this same population. Pairing a full-roster
+  // count with a writable-scoped percentage would put two denominators in one
+  // tile with nothing on screen saying so: "4 of 16" above "50%" is two true
+  // numbers that cannot both be about the same group. rateCert / rateGps /
+  // rateBaseTotal are taken from computeStats rather than re-derived here, so
+  // the counts and the rate cannot drift apart.
+  const progressionStats = computeStats(athletes);
+  const { gpsRate, certRate, rateGps, rateCert, rateBaseTotal } = progressionStats;
+  // With no writable athlete there is no measurement, and "0 of 0" would read
+  // as one: a fraction asserts something was counted, and this page says
+  // "Across N athletes" two tiles down, so a zero denominator contradicts its
+  // own neighbour. Both tiles fall back to the page's existing NT constant as
+  // their VALUE, with no sublabel, which is what the two unsourced tiles above
+  // already do (value={NT} at :194 and :220). One convention for absence on
+  // this page, not two.
+  const rateTracked = rateBaseTotal > 0;
 
   // Unsourced pair. Computed only for the demo tree; on auth the roster's
   // activity[] is always empty, so these would be $0 / [] — which 0013
@@ -119,10 +150,14 @@ export default function ProgramOutputs() {
     [giftEvents],
   );
 
+  // `athletesCertified` and `gpsCompleted` are no longer destructured: the two
+  // tiles that read them now read rateCert and rateGps instead. Both are still
+  // derived and returned by the useMemo above, which this slice leaves alone;
+  // only this local binding moved.
   const {
-    totalAthletes, totalGifts, athletesCertified, athletesWithGifts,
-    gpsCompleted, totalLessonsCompleted, workshopsHeld, workshopsScheduled,
-    totalWorkshopAttendances, certifiedPct, gpsPct, avgLessonsPerAthlete,
+    totalAthletes, totalGifts, athletesWithGifts,
+    totalLessonsCompleted, workshopsHeld, workshopsScheduled,
+    totalWorkshopAttendances, avgLessonsPerAthlete,
   } = stats;
 
   // Empty roster → honest page-level line (unchanged). Passing this guard no
@@ -178,8 +213,8 @@ export default function ProgramOutputs() {
           <StatTile
             variant="inline"
             label="Athletes certified"
-            value={`${athletesCertified} of ${totalAthletes}`}
-            sublabel={`${certifiedPct}% of cohort`}
+            value={rateTracked ? `${rateCert} of ${rateBaseTotal}` : NT}
+            sublabel={rateTracked ? fmtRate(certRate) : undefined}
           />
           {/* FORK 3: unsourced — athlete.gifts_count is written by no path, so
               both the count and the "(tracked + untracked)" sublabel would be
@@ -255,11 +290,21 @@ export default function ProgramOutputs() {
           <StatTile
             variant="inline"
             label="GPS frameworks completed"
-            value={`${gpsCompleted} of ${totalAthletes}`}
-            sublabel={`${gpsPct}% of cohort`}
+            value={rateTracked ? `${rateGps} of ${rateBaseTotal}` : NT}
+            sublabel={rateTracked ? fmtRate(gpsRate) : undefined}
           />
         </div>
       </Card>
+
+      {/* FORK 1 denominator disclosure, this page's fifth mount after Overview,
+          Roster and ProgramSummary. Placed AFTER the last section carrying a
+          rate rather than beside the first: the two rates sit in different
+          Cards (Athletes certified in Activity summary, GPS frameworks in
+          Engagement activity), so one instance cannot sit adjacent to both, and
+          duplicating the paragraph on one page would be worse than a single
+          note below both. Its own gate (consentAware && excludedTotal > 0)
+          renders nothing on the demo tree, so no extra condition is needed. */}
+      <RateDisclosure stats={progressionStats} />
 
       {/* Section 4 — About this report */}
       <Card tint>

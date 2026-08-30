@@ -1300,3 +1300,58 @@ and that decision is downstream of F-C's, so the two want ruling together.
 Certified tile stop counting a certified athlete whose status column says
 something else, which is a different falsehood rather than none. The
 alternative, leaving both and saying so on screen, is a copy decision.
+
+**Filed: the "Workshops held" tile renders "0 of 0" for an institution with no
+workshops, which is the exact string the slice beside it just stopped rendering.**
+Noticed during the slice-3 screen and deliberately NOT folded in. **The
+arithmetic is honest and this is not a defect in it**: the demo tree renders
+"2 of 5" over five real fixture workshops, two completed, and every number the
+tile produces is a true count of the rows it was given. What is filed is a
+STRING that reads as a measurement when there is nothing to measure.
+
+**Two corrections to how this was described when it was raised, both proven at
+HEAD, recorded because the second changes what a reader will find.**
+
+**First, the expression.** It is `functions`-free and lives at
+`src/surfaces/enterprise/reports/ProgramOutputs.jsx:242`, reading
+`` value={`${workshopsHeld} of ${workshopsHeld + workshopsScheduled}`} ``. The
+denominator is the SUM, not `workshopsScheduled` alone, which is why the demo
+renders "2 of 5" rather than "2 of 3". `workshopsHeld` is
+`workshops.filter((w) => w.status === 'completed').length` (`:95`) and
+`workshopsScheduled` is its complement (`:96`).
+
+**Second, the position.** It is not three lines above the two tiles slice 3
+changed; it sits BETWEEN them. The tile is `:239-244`, the last of Section 1
+(Activity summary). "Athletes certified" is `:213-218`, twenty-one lines ABOVE
+it in the same Card. "GPS frameworks completed" is `:290-295`, in Section 3,
+some fifty lines below. So an operator meets the suppressed shape, then the
+unsuppressed one, then the suppressed one again, in that order down the page.
+
+**Why the shapes are the same and the mechanisms are not.** The two progression
+tiles were suppressed because their denominator is a CONSENT population: with no
+delegated athlete the measurement does not exist, and R4 already ruled that
+absence renders "Not tracked" rather than 0. The workshops tile's denominator is
+a COUNT OF ROWS. Zero workshops is a real and correct answer to "how many
+workshops", not an unmeasurable one, and an institution that has scheduled
+nothing has genuinely held none of nothing. Folding it into slice 3 would have
+applied a consent-population rule to a row count, and the resemblance between
+the two output strings is not a reason to treat them alike.
+
+**REACHABLE, and it is the first screen a new institution sees.** The live local
+store holds **zero** `workshop` rows, so the tile renders "0 of 0" today under
+"Workshops held", with the sublabel "0 remaining this term" beneath it. The tile
+is ungated: `:239` sits outside the `isAuthenticated` ternary that closes at
+`:238`, so it renders identically on both trees. A newly provisioned institution
+has no workshops by definition, which puts this on the same first-screen footing
+as the `null%` filing above.
+
+**The sublabel is the second string, and it is arguably the worse one.** "0
+remaining this term" asserts a term with nothing left in it, which reads as a
+completed programme rather than an empty one.
+
+**No fix proposed**, and the resemblance to slice 3 is a reason for caution
+rather than for a matching patch. Whether zero workshops should read as "None
+scheduled", as "Not tracked", or as the honest "0 of 0" it already is, is a copy
+decision about a row count, and the page has three separate absence conventions
+in play already: NT for unsourced figures, the R4 "Not tracked" for unmeasurable
+rates, and plain zeros for counts.
