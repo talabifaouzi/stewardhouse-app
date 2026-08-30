@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Modal } from '../../components/Modal.jsx';
 import { Button } from '../../components/Button.jsx';
-import { parseRoster, suggestMapping, toPayloadRows, MAX_IMPORT_ROWS } from './shared/parseRoster.js';
+import { parseRoster, suggestMapping, toPayloadRows, MAX_IMPORT_ROWS, SHAPE_SPLIT, SHAPE_SINGLE, SHAPE_KEYS } from './shared/parseRoster.js';
+import SegmentedControl from '../../components/SegmentedControl.jsx';
 import { readRosterFile, fileFromDrop, ACCEPT_ATTR } from './shared/readRosterFile.js';
 
 // Roster import, client half (roster-import arc). Authenticated tree only, the
@@ -19,14 +20,21 @@ import { readRosterFile, fileFromDrop, ACCEPT_ATTR } from './shared/readRosterFi
 // without re-pasting.
 //
 // IT NEVER GUESSES A MAPPING. suggestMapping pre-selects a DEFAULT from the
-// header labels, and the operator sees all three dropdowns with a live example
-// drawn from their own first data row before anything is submitted. Submit
-// stays disabled until all three are chosen.
+// header labels, and the operator sees every dropdown for the declared shape
+// with a live example drawn from their own first data row before anything is
+// submitted. Submit stays disabled until all of them are chosen.
 //
-// C-1 DISCARD is structural here rather than enforced: only the three mapped
-// columns are ever read, so a roster's Sport / Class / Jersey columns are not
-// dropped so much as never carried. The endpoint rejects them if they ever
-// arrive.
+// THE OPERATOR DECLARES THE NAME SHAPE. A toggle above the dropdowns switches
+// the target set between (First name, Last name, Email) and (Name, Email).
+// Nothing is inferred from the header or from which fields happen to be
+// mapped, and NO SPLITTER EXISTS at any layer: a single Name cell is stored
+// exactly as written, and two halves are joined server-side. The shape is a UI
+// declaration only and is never transmitted; the endpoint keys its own
+// allowlist on which keys a row actually carries.
+//
+// C-1 DISCARD is structural here rather than enforced: only the mapped columns
+// are ever read, so a roster's Sport / Class / Jersey columns are not dropped
+// so much as never carried. The endpoint rejects them if they ever arrive.
 //
 // NO PREVIEW GRID, deliberately. A columns-by-rows preview is the obvious way
 // to show a parsed paste and it is the wrong one at 320px wide, where the modal
@@ -52,21 +60,38 @@ import { readRosterFile, fileFromDrop, ACCEPT_ATTR } from './shared/readRosterFi
 const STEP_PASTE = 'paste';
 const STEP_MAP = 'map';
 
-// Tab-separated, because that is what a spreadsheet range copy produces and
-// the sniffer will read it as such.
-const PASTE_PLACEHOLDER = 'First Name\tLast Name\tEmail\nMarcus\tThompson\tmarcus@school.edu';
+// Shape-dependent, so the example never contradicts the toggle the operator
+// just set. Tab-separated, because that is what a spreadsheet range copy
+// produces and the sniffer will read it as such.
+const PASTE_PLACEHOLDERS = {
+  [SHAPE_SPLIT]: 'First Name\tLast Name\tEmail\nMarcus\tThompson\tmarcus@school.edu',
+  [SHAPE_SINGLE]: 'Full Name\tEmail\nMarcus Thompson\tmarcus@school.edu',
+};
 
-const FIELDS = [
-  { key: 'firstName', label: 'First name' },
-  { key: 'lastName', label: 'Last name' },
-  { key: 'email', label: 'Email' },
+// Target LABELS. The key order per shape lives in SHAPE_KEYS (parseRoster.js),
+// which is the single source the reset sites, allMapped and toPayloadRows all
+// follow; this map only supplies the visible label for each key.
+const FIELD_LABELS = {
+  firstName: 'First name',
+  lastName: 'Last name',
+  name: 'Name',
+  email: 'Email',
+};
+
+const SHAPE_OPTIONS = [
+  { value: SHAPE_SPLIT, label: 'First and last name' },
+  { value: SHAPE_SINGLE, label: 'One name column' },
 ];
+
+// An all-null mapping for a shape, used at every reset site.
+const emptyMapping = (shape) => Object.fromEntries(SHAPE_KEYS[shape].map((k) => [k, null]));
 
 export default function ImportRosterModal({ isOpen, onClose, onStage, writeError, clearWriteError }) {
   const [step, setStep] = useState(STEP_PASTE);
   const [text, setText] = useState('');
   const [hasHeader, setHasHeader] = useState(true);
-  const [mapping, setMapping] = useState({ firstName: null, lastName: null, email: null });
+  const [shape, setShape] = useState(SHAPE_SPLIT);
+  const [mapping, setMapping] = useState(() => emptyMapping(SHAPE_SPLIT));
   const [fileName, setFileName] = useState(null);
   const [fileError, setFileError] = useState(null);
   const [fileNotes, setFileNotes] = useState([]);
@@ -93,7 +118,8 @@ export default function ImportRosterModal({ isOpen, onClose, onStage, writeError
       setStep(STEP_PASTE);
       setText('');
       setHasHeader(true);
-      setMapping({ firstName: null, lastName: null, email: null });
+      setShape(SHAPE_SPLIT);
+      setMapping(emptyMapping(SHAPE_SPLIT));
       setFileName(null);
       setFileError(null);
       setFileNotes([]);
@@ -174,14 +200,31 @@ export default function ImportRosterModal({ isOpen, onClose, onStage, writeError
 
   const handleRead = () => {
     if (!parsed || rowCount === 0) return;
-    setMapping(suggestMapping(parsed.header));
+    setMapping(suggestMapping(parsed.header, shape));
     clearWriteError();
     setStep(STEP_MAP);
   };
 
-  const chosen = FIELDS.map((f) => mapping[f.key]).filter((v) => v != null);
+  // FLIP BEHAVIOUR, chosen deliberately: the EMAIL choice is PRESERVED and the
+  // name target(s) are CLEARED. Email is the one target both shapes share, and
+  // it means the same column either way, so discarding it would throw away work
+  // the flip did not invalidate. The name targets cannot transfer without
+  // inferring something: carrying a single Name column over to First name would
+  // assert the cell holds a first name, and carrying First name over to Name
+  // would assert a half is the whole. Both are the guess this arc refuses, so
+  // the operator re-chooses. suggestMapping is deliberately NOT re-run on flip:
+  // a flip is the operator correcting an assumption, and re-proposing from the
+  // same heuristic they just overrode is the wrong response to a correction.
+  const onShapeChange = (next) => {
+    if (next === shape) return;
+    setShape(next);
+    setMapping({ ...emptyMapping(next), email: mapping.email });
+  };
+
+  const targetKeys = SHAPE_KEYS[shape];
+  const chosen = targetKeys.map((k) => mapping[k]).filter((v) => v != null);
   const duplicateColumn = new Set(chosen).size !== chosen.length;
-  const allMapped = chosen.length === FIELDS.length;
+  const allMapped = chosen.length === targetKeys.length;
   const canSubmit = allMapped && !duplicateColumn && !overCap && rowCount > 0;
 
   // REVIEW BEFORE SAVE (ruled 2026-08-27). This no longer writes anything. The
@@ -192,7 +235,7 @@ export default function ImportRosterModal({ isOpen, onClose, onStage, writeError
   const handleSubmit = () => {
     if (!canSubmit) return;
     clearWriteError();
-    onStage(toPayloadRows(parsed.rows, mapping));
+    onStage(toPayloadRows(parsed.rows, mapping, shape));
     onClose();
   };
 
@@ -280,7 +323,7 @@ export default function ImportRosterModal({ isOpen, onClose, onStage, writeError
               <textarea
                 value={text}
                 onChange={(e) => { setText(e.target.value); setFileName(null); setFileNotes([]); setFileError(null); }}
-                placeholder={PASTE_PLACEHOLDER}
+                placeholder={PASTE_PLACEHOLDERS[shape]}
                 rows={isTouch ? 6 : 10}
                 style={textareaStyle}
                 aria-label="Paste roster rows"
@@ -312,13 +355,33 @@ export default function ImportRosterModal({ isOpen, onClose, onStage, writeError
             <input
               type="checkbox"
               checked={hasHeader}
-              onChange={(e) => { setHasHeader(e.target.checked); setMapping({ firstName: null, lastName: null, email: null }); }}
+              onChange={(e) => { setHasHeader(e.target.checked); setMapping(emptyMapping(shape)); }}
               style={checkboxStyle}
             />
             <span>The first row is a header, not an athlete</span>
           </label>
 
-          {FIELDS.map((f) => {
+          {/* SHAPE TOGGLE. The operator DECLARES how their file holds names; the
+              importer never infers it from the header, and no splitter exists
+              behind either choice. Sits ABOVE the dropdowns because it decides
+              which dropdowns there are. */}
+          <div style={fieldBlockStyle}>
+            <p id="import-shape-label" style={labelStyle}>How does this file hold names?</p>
+            <SegmentedControl
+              options={SHAPE_OPTIONS}
+              value={shape}
+              onChange={onShapeChange}
+              ariaLabelledBy="import-shape-label"
+            />
+            <p style={exampleStyle}>
+              {shape === SHAPE_SINGLE
+                ? 'One column holds the whole name. It is stored exactly as written.'
+                : 'Two columns, joined with a single space when the athlete is saved.'}
+            </p>
+          </div>
+
+          {targetKeys.map((key) => {
+            const f = { key, label: FIELD_LABELS[key] };
             const idx = mapping[f.key];
             const example = idx != null && parsed.rows[0] ? parsed.rows[0].fields[idx] : '';
             return (

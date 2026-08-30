@@ -193,6 +193,25 @@ const CANDIDATES = {
   firstName: ['firstname', 'first', 'fname', 'givenname', 'given', 'forename'],
   lastName: ['lastname', 'last', 'lname', 'surname', 'familyname', 'family'],
   email: ['email', 'emailaddress', 'e mail', 'mail'],
+  // Single-name vocabulary, added with the shape toggle. Most specific FIRST,
+  // because the exact pass walks this list in order: 'fullname' must be tried
+  // before the bare 'name', which would otherwise containment-match a
+  // 'firstname' or 'lastname' column sitting earlier in the row.
+  name: ['fullname', 'athletename', 'studentname', 'playername', 'legalname', 'name'],
+};
+
+// The two declared shapes. The OPERATOR chooses; nothing here infers one from
+// the header, and no code path derives a shape from which fields happen to be
+// mapped. SHAPE_SPLIT is the default because most real rosters carry two name
+// columns.
+export const SHAPE_SPLIT = 'split';
+export const SHAPE_SINGLE = 'single';
+
+// Target keys per shape, in render order. This is the single source the modal's
+// FIELDS, the reset sites, allMapped and toPayloadRows all follow.
+export const SHAPE_KEYS = {
+  [SHAPE_SPLIT]: ['firstName', 'lastName', 'email'],
+  [SHAPE_SINGLE]: ['name', 'email'],
 };
 
 const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -201,12 +220,18 @@ const norm = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
  * Propose a DEFAULT mapping the operator confirms or changes. This is not a
  * guess the import acts on: the mapping step renders these as pre-selected
  * dropdowns with a live example from the first data row, and nothing is
- * submitted until the operator has seen all three.
+ * submitted until the operator has seen every target for the declared shape.
  *
  * A column is never proposed for two fields at once. Returns null for any field
  * with no confident label, which leaves the operator to choose.
+ *
+ * SHAPE-DEPENDENT. The operator has already declared whether their file carries
+ * one name column or two, so this proposes targets for THAT shape only and the
+ * returned object carries exactly that shape's keys. It does not look at the
+ * header to decide the shape, and it never proposes a single-name column as a
+ * name half or the reverse.
  */
-export function suggestMapping(header) {
+export function suggestMapping(header, shape = SHAPE_SPLIT) {
   const cells = (header || []).map(norm);
   const taken = new Set();
   const pick = (keys) => {
@@ -224,8 +249,12 @@ export function suggestMapping(header) {
     return null;
   };
   // Order matters: 'email' is matched first because its labels are the most
-  // distinctive, then the two name halves.
+  // distinctive, then the name target(s) for the declared shape.
   const email = pick(CANDIDATES.email);
+  if (shape === SHAPE_SINGLE) {
+    const name = pick(CANDIDATES.name);
+    return { name, email };
+  }
   const firstName = pick(CANDIDATES.firstName);
   const lastName = pick(CANDIDATES.lastName);
   return { firstName, lastName, email };
@@ -233,12 +262,26 @@ export function suggestMapping(header) {
 
 /**
  * Build the POST payload rows from parsed rows plus a confirmed mapping.
- * Shape is exactly the endpoint's ALLOWED_ROW_KEYS: firstName, lastName, email
- * and nothing else. The NAME JOIN happens server-side, so the two halves travel
- * separately.
+ * Shape is exactly the endpoint's per-shape allowlist for the DECLARED shape and
+ * nothing else: { name, email } under SHAPE_SINGLE, { firstName, lastName,
+ * email } under SHAPE_SPLIT.
+ *
+ * A row NEVER carries keys from both shapes. The endpoint keys its allowlist on
+ * which keys are present, so a mixed row is rejected there rather than
+ * special-cased; emitting one here would be the bug that check exists to catch.
+ *
+ * Under SHAPE_SPLIT the NAME JOIN happens server-side, so the two halves travel
+ * separately. Under SHAPE_SINGLE there is nothing to join: the cell travels
+ * whole and is stored as given. No splitter exists at this layer or any other.
  */
-export function toPayloadRows(rows, mapping) {
+export function toPayloadRows(rows, mapping, shape = SHAPE_SPLIT) {
   const at = (fields, idx) => (idx == null ? '' : (fields[idx] == null ? '' : fields[idx]));
+  if (shape === SHAPE_SINGLE) {
+    return rows.map((r) => ({
+      name: at(r.fields, mapping.name).trim(),
+      email: at(r.fields, mapping.email).trim(),
+    }));
+  }
   return rows.map((r) => ({
     firstName: at(r.fields, mapping.firstName).trim(),
     lastName: at(r.fields, mapping.lastName).trim(),

@@ -7,10 +7,19 @@
 //
 // INPUT SHAPE (ruled): pasted text, not file upload, so the roster arrives as
 // JSON through request.json() like every other write in this tree. The envelope
-// is { athletes: [{ firstName, lastName, email }] }, an OBJECT rather than a
-// bare array: athletes.js:147 already rejects a bare array, rejectRankKeys
-// expects an object, and attendance.js established the
-// one-key-holding-an-array idiom ({ records: [...] }).
+// is { athletes: [...] }, an OBJECT rather than a bare array: athletes.js:147
+// already rejects a bare array, rejectRankKeys expects an object, and
+// attendance.js established the one-key-holding-an-array idiom
+// ({ records: [...] }).
+//
+// A ROW COMES IN ONE OF TWO SHAPES, and carries the keys of exactly one:
+// { name, email } or { firstName, lastName, email }. The operator declares
+// which in the mapping UI; that declaration is NEVER transmitted, and this
+// endpoint keys its allowlist on the keys a row actually carries, so a row
+// mixing the two is rejected as unpermitted fields rather than special-cased.
+// NO SPLITTER EXISTS at this or any other layer: a single Name cell is stored
+// as written, two halves are joined with one space, and neither direction
+// guesses anything the file does not encode.
 //
 // WHAT IT WRITES (C-1 DISCARD, ruled): name and email ONLY. A roster file will
 // carry sport, year, position, phone and more; they are dropped. This matches
@@ -82,7 +91,18 @@ const SELECT_CHUNK_IDS = 90;
 // The 30-second query-duration cap is not close to binding at 36 small INSERTs.
 const MAX_IMPORT_ROWS = 500;
 
-const ALLOWED_ROW_KEYS = ['firstName', 'lastName', 'email'];
+// PER-SHAPE ALLOWLISTS, keyed on which keys the row actually carries. There is
+// deliberately NO permissive four-key allowlist: a row carrying `name` is
+// validated against the single-name list, in which `firstName` and `lastName`
+// are simply not members, so a row mixing the two shapes is rejected by the
+// ordinary extra-keys check rather than by a special case written to catch it.
+// The mixed row is UNEXPRESSIBLE rather than forbidden.
+//
+// THE SHAPE IS NEVER TRANSMITTED. The client declares a shape in its own UI to
+// decide which dropdowns to render; the endpoint does not learn what was
+// displayed, accepts no shape field, and reads only the row in front of it.
+const ROW_KEYS_SINGLE = ['name', 'email'];
+const ROW_KEYS_SPLIT = ['firstName', 'lastName', 'email'];
 
 // Name comparison key: case-folded, whitespace-collapsed. Used ONLY to surface
 // matches, never to block or to merge.
@@ -99,20 +119,41 @@ function validateRow(row) {
   const forbidden = rejectRankKeys(row);
   if (forbidden) return { reason: `field "${forbidden}" is not permitted` };
 
-  const extra = Object.keys(row).filter((k) => !ALLOWED_ROW_KEYS.includes(k));
+  // Which shape this row is IN, from its own keys. `name` present means the
+  // single-name shape; anything else is read as the first/last shape, which is
+  // also the right default for a row carrying neither, since it then fails on
+  // "firstName is required" rather than on a key the operator never mapped.
+  const isSingle = Object.prototype.hasOwnProperty.call(row, 'name');
+  const allowed = isSingle ? ROW_KEYS_SINGLE : ROW_KEYS_SPLIT;
+
+  const extra = Object.keys(row).filter((k) => !allowed.includes(k));
   if (extra.length > 0) {
     return { reason: `field(s) not permitted: ${extra.join(', ')}` };
   }
 
-  // Both name halves are required. A roster row missing either is a mapping
-  // error the operator can see and fix; guessing which half is present, or
-  // storing a one-word name, would be the endpoint inventing a record.
+  const rawEmail = typeof row.email === 'string' ? row.email.trim() : '';
+
+  // SINGLE-NAME SHAPE. The cell is stored exactly as written, with whitespace
+  // collapsed the same way a joined name is. It is NEVER SPLIT: what a single
+  // Name cell holds is a fact about the person that the file does not encode,
+  // so any split would be the endpoint inventing a record.
+  if (isSingle) {
+    const whole = typeof row.name === 'string' ? row.name.trim().replace(/\s+/g, ' ') : '';
+    if (whole.length === 0) return { reason: 'name is required' };
+    if (rawEmail.length === 0) return { reason: 'email is required' };
+    if (!EMAIL_REGEX.test(rawEmail)) return { reason: 'email is not a valid address' };
+    return { fields: { name: whole, email: rawEmail.toLowerCase() } };
+  }
+
+  // FIRST/LAST SHAPE. Both halves are required. A roster row missing either is
+  // a mapping error the operator can see and fix; guessing which half is
+  // present, or storing a one-word name, would be the endpoint inventing a
+  // record just as surely as a split would.
   const first = typeof row.firstName === 'string' ? row.firstName.trim() : '';
   if (first.length === 0) return { reason: 'firstName is required' };
   const last = typeof row.lastName === 'string' ? row.lastName.trim() : '';
   if (last.length === 0) return { reason: 'lastName is required' };
 
-  const rawEmail = typeof row.email === 'string' ? row.email.trim() : '';
   if (rawEmail.length === 0) return { reason: 'email is required' };
   if (!EMAIL_REGEX.test(rawEmail)) return { reason: 'email is not a valid address' };
 

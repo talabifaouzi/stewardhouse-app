@@ -15,6 +15,19 @@ import { athletes as athletesFixture } from '../data/enterpriseFixtures.js';
 // Newly-enrolled athletes are spliced to the FRONT to match /api/me's
 // `ORDER BY created_at DESC` (newest first).
 
+// Display name for a staged import row, for BOTH declared name shapes. The
+// payload is whatever toPayloadRows built for the shape the operator declared,
+// so the shape is read off the KEYS PRESENT rather than passed in as a flag: a
+// single-name row carries `name` and is shown exactly as written, and a
+// first/last row is joined the same way the endpoint joins it, so the review
+// table and every rejected-row label show the name that will be stored.
+//
+// This is a DISPLAY join and it never runs in reverse. No code here or at any
+// other layer takes a whole name apart.
+const displayName = (r) => (
+  typeof r.name === 'string' ? r.name : `${r.firstName} ${r.lastName}`
+);
+
 const AthletesContext = createContext(null);
 
 async function serverError(res, fallback) {
@@ -129,7 +142,7 @@ export function AthletesProvider({ initialState, children }) {
     const staged = rows.map((r, i) => ({
       id: `staged-${i}-${Math.random().toString(36).slice(2, 10)}`,
       uncommitted: true,
-      name: `${r.firstName} ${r.lastName}`,
+      name: displayName(r),
       email: r.email,
       sport: null,
       year: null,
@@ -149,7 +162,7 @@ export function AthletesProvider({ initialState, children }) {
       managementMode: null,
       claimed: false,
       activity: [],
-      payload: r,          // the exact {firstName,lastName,email} the endpoint wants
+      payload: r,          // exactly the shape toPayloadRows built; never re-shaped here
     }));
     setAthletes((prev) => [...staged, ...prev]);
     setWriteError(null);
