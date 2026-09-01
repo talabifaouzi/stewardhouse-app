@@ -299,13 +299,23 @@ implies no write.
 the DEFECT record and deliberately does not restate the reasoning, so the two
 cannot drift apart.
 
-**Filed: TWELVE `rgba()` colour literals across five files, left standing by the
+**Filed: TWELVE `rgba()` colour literals across SEVEN files, left standing by the
 cream-token slice.** That slice removed the last nine HEX literals from
 components. It did not touch `rgba()`, and the distinction is exactly where §7's
 two sentences part company. **"No hex literals in components" names hex
 specifically and is now satisfied.** The sentence above it, "Every color /
 spacing / radius / type-size goes through a `--sh-*` token", is not, and these
 twelve are what remain outside it.
+
+**FILE COUNT CORRECTED 2026-09-01, from five to seven.** The opening sentence
+read "across five files" until now. The enumeration below was right all along
+and is unchanged; only that sentence was wrong. The seven are `Card.jsx`,
+`Landing.jsx`, `IndividualSurface.jsx`, `Plan.jsx`, `GivingModeler.jsx`,
+`History.jsx` and `Team.jsx`, counted at HEAD and matching the twelve rows
+verbatim. **This is the THIRD count this entry has carried**, after
+eight-in-four and twelve-in-five: the correction paragraph below fixed the site
+count and left the file count one short. A sentence and a table disagreed inside
+one filing for eleven days.
 
 ```
   src/components/Card.jsx:29                        rgba(60, 50, 30, 0.06)
@@ -448,6 +458,13 @@ with no button. That is the cosmetic outcome again.
 
 **No fix proposed.** Found during the 2026-08-21 scoping pass on the item closed
 above, and deliberately not investigated on its own.
+
+**CLOSED by `844ea31` (2026-08-24). Recorded here rather than by deleting the
+filing, per this document's convention.** `SignIn.jsx:69` now passes
+`signal: AbortSignal.timeout(5000)` on the session check, and `AppShell.jsx:173`
+carries the twin, so the indefinite hang described above cannot outlast five
+seconds. **The filing's line citations above predate that slice and are kept as
+written:** read them against `844ea31`'s parent, not against HEAD.
 
 **Filed: the plain-vite lever does not establish WHICH failure branch it
 produced, and `faacb67`'s verification inherited that ambiguity harmlessly.**
@@ -956,6 +973,19 @@ with no `onClick` and do not drill at all.
 lists athlete names inline per stage, which is a listing rather than a modal
 drill. **Neither reads `CATEGORY_CONFIG`, and neither is a tile/drill pair.**
 
+**PARTLY CLOSED by `3b0f26b` (2026-08-30): the DIVERGENCE RESULT is gone, the
+ROOT CAUSE is not.** The pairing slice made each tile and its drill run one
+predicate, and the sibling filing appended by that same commit records the
+pairing check reporting zero mismatches on all seven pairs across all three
+rosters. **So the 8-versus-7 paragraph above no longer reproduces at HEAD**, and
+it is kept verbatim because it is the evidence that produced the ruling rather
+than a live observation. **What this filing CLAIMS is untouched.** Four of the
+five derivation sites still do not route through `statusFor`, re-verified at
+HEAD on 2026-09-01: `computeStats`, the `ProgramOutputs` inline `useMemo`,
+`philanthropicStage`, and the `snapshots.js` SQL. `e0ff617` moved that page's
+progression RATES onto `computeStats` and left its own count derivations in
+place, so it narrowed the site without removing it.
+
 **Filed: `management_mode` carries no CHECK, so the disclosure's four buckets do
 not exhaustively cover claimed-and-not-delegated, and its headline count can
 silently under-report.** Introduced by the enumeration slice and filed with it
@@ -1105,10 +1135,31 @@ the load rather than the window.
 
 **The second precondition resolves, and already has a home.** `:1030-1032`
 points at CLAUDE.md section 11 for the auth-observability gap. **That reference
-resolves**: section 11 begins at `CLAUDE.md:2106` and the filing is at
-`:2170-2174`, recording that magic-link sends stamp nothing, that there is no
-health check, and that the July outage therefore ran silently. It is queued
-there as a near-term small build.
+resolves**: it is the filed open item on the auth observability gap, in
+CLAUDE.md section 11, "Production incident log". It is queued there as a
+near-term small build.
+
+**CITATIONS RE-RESOLVED 2026-09-01 AND CONVERTED TO SECTION-AND-TITLE. The
+SUBSTANCE moved too.** This paragraph carried LINE NUMBERS into CLAUDE.md until
+now, `:2106` and `:2170-2174`, and both had drifted as that file grew: they came
+to land inside section 10, so a reader following them met the SheetJS hang and
+the foreign-key probe rather than the filing. **A pointer whose target moves
+silently is the failure this queue exists to catch, and it happened to this
+queue.**
+
+**THE REPLACEMENT CARRIES NO LINE NUMBER, and that is the correction rather
+than a stylistic choice.** A recomputed number is correct once and rots on the
+next edit, and the very commit making this correction would have invalidated a
+fresh one, because it lengthens both CLAUDE.md section 5.1 and the section 11
+filing it points at. **A citation into a DOC now names the section and the
+filing title. Citations into SOURCE files keep their line numbers**, because
+those are checkable against a build and a doc's headings are the stabler
+address.
+
+**The substance moved as well:** `2726d40` shipped the send-outcome stamp, so
+"magic-link sends stamp nothing" is no longer true of the tree, and the section
+11 filing now says which half of the gap still stands. **Whether the corrected
+half satisfies this precondition is an FT call and is not made here.**
 
 **Why this is filed here.** Section 7 names this document as where live items
 go. The rollback precondition is live, it gates a production action, and it is
@@ -1361,6 +1412,20 @@ a phone, putting the table's header row roughly a thousand pixels down the
 page.** Surfaced while scoping a sticky table header, which does NOT address it
 and is recorded here so the two are not confused. Filed, not fixed.
 
+**FIGURES SUPERSEDED 2026-09-01 by `7cff1c1`. THE FINDING SURVIVES; ITS
+ARITHMETIC DID NOT.** `7cff1c1` moved the floor on this grid and on
+`EnterpriseOverview`'s twin from 180px to 160px, and touched no doc, so
+everything below was computed against a value the tree no longer holds. **At
+HEAD the floor is 160px**, which at the same 345px content box fits TWO tracks
+(160 + 16 + 160 = 336), so the seven tiles stack **four rows** rather than
+seven. The commit records the 2-column threshold at a 366px viewport, below
+every current iPhone width. **What does NOT change is the filing.** Four rows of
+tiles plus the gaps still push the table header far down a phone screen, the
+grid is still ungated on both trees, and the question left open below, whether
+the answer is fewer tiles or a denser tile or a collapsed row, is untouched by a
+floor change. Read every figure in this entry as describing the pre-`7cff1c1`
+tree.
+
 **The mechanism, and it is one line.** `EnterpriseRoster.jsx:425-432`,
 `statGridStyle`, is `repeat(auto-fit, minmax(min(100%, 180px), 1fr))` with a
 `--sh-space-4` gap. At a 375px viewport the `<main>` padding is
@@ -1410,12 +1475,13 @@ inherited value, so `--sh-line-normal` is interrupted one element above the
 label.
 
 **The mechanism is already LOCKED section 7 text and is cited rather than
-restated.** `CLAUDE.md:1565-1569` records that `lg` "computes to 39px (padding
-20 + border 2 + a 17px UA line box), because browsers force `line-height:
-normal` on form controls and inheritance of `--sh-line-normal` never reaches
-them." **The 17px does NOT transfer.** That figure was measured on a `lg`
-`Button`, whose font-size is not `--sh-text-xs`, and a UA line box is computed
-against the font-size it applies to. What transfers is the mechanism sentence.
+restated.** CLAUDE.md §7, "Tap targets and control sizing (LOCKED 2026-08-14)",
+records that `lg` "computes to 39px (padding 20 + border 2 + a 17px UA line
+box), because browsers force `line-height: normal` on form controls and
+inheritance of `--sh-line-normal` never reaches them." **The 17px does NOT
+transfer.** That figure was measured on a `lg` `Button`, whose font-size is not
+`--sh-text-xs`, and a UA line box is computed against the font-size it applies
+to. What transfers is the mechanism sentence.
 The number belongs to a different control.
 
 **NO REPLACEMENT FIGURE IS GIVEN, and that is the point rather than an
@@ -1773,6 +1839,15 @@ single-Name-column roster cannot be imported without the operator splitting the
 column in their spreadsheet first, which is the current behaviour and is not a
 defect.
 
+**BUILT by `82b4a39` (2026-08-30), the very next commit after this entry was
+written.** The paragraph above stopped describing the tree almost immediately.
+The importer now accepts both shapes with the operator declaring which:
+`parseRoster.js` carries `firstName` / `lastName` candidate lists and a
+`SHAPE_SPLIT` mapping, and `import.js` documents the two accepted row shapes.
+**`82b4a39` touched no doc**, which is why the correction lands here rather than
+in its own commit message, and it is the reason this entry read as open for two
+days after it was answered.
+
 **FT reports that most real rosters split names into two columns, so the
 single-column case is the MINORITY shape.** That is why the current requirement
 is workable in the meantime, and it is recorded because it bears on sequencing
@@ -2017,16 +2092,21 @@ key and is not an authentication path into this application. A native iOS
 client has no same-origin cookie context, so it would need bearer tokens and a
 token-issuing endpoint, and **neither exists**. **That doubles the
 authentication surface, and it would double it while the auth observability gap
-is still open.** This queue records that gap at `:1106-1111`, which resolves it
-to CLAUDE.md section 11.
+is still open.** This queue records that gap in the filing that opens "Filed:
+the BMF rollback path is a stated precondition on a production BMF load", which
+resolves it to CLAUDE.md section 11.
 
-**Recorded in passing, verified while following that pointer and NOT a
-correction to the paragraph it concerns**, which is left exactly as written:
-the line numbers inside `:1106-1111` have DRIFTED. It states that section 11
-begins at `CLAUDE.md:2106` and that the filing sits at `:2170-2174`. At HEAD
-the section 11 heading is at `:2170` and the observability filing opens at
-`:2234`. The pointer still resolves by section; only the line numbers are
-stale, and they are stale because CLAUDE.md grew beneath them.
+**Recorded in passing, and OVERTAKEN 2026-09-01.** This paragraph observed that
+the line numbers in that filing had DRIFTED: it cited where CLAUDE.md section 11
+began and where the observability filing sat, and both had gone stale as
+CLAUDE.md grew beneath them. It also said the paragraph it concerned was left
+exactly as written. **Neither half is true any longer.** The outstanding-items
+sweep converted that paragraph to a section-and-title reference, so it carries
+no line number left to drift, and the same commit lengthened section 11, which
+would have invalidated any recomputed figure this paragraph offered. **No line
+number is restated here.** The pointer resolves by section: CLAUDE.md section
+11, "Production incident log", and within it the filed open item on the auth
+observability gap.
 
 **SCOPING NOTE, magic links: the return path is the hard part, and it is
 UNVERIFIED here.** An emailed link opens the system browser, not an app. Coming
@@ -2387,8 +2467,10 @@ belonging in an app, and none is ranked.**
 
 INDIVIDUAL:
 - Discover org directory, surface spec written, BMF ingest unbuilt.
-  Blocker: the ingest itself, plus the Parker rollback precondition at
-  `docs/filed-defects.md:1091`.
+  Blocker: the ingest itself, plus the Parker rollback precondition, filed in
+  this document as "Filed: the BMF rollback path is a stated precondition on a
+  production BMF load, and it lives only in the scoping doc rather than in this
+  queue".
 - Account-settings page, parked EXCEPT consent reversibility, which shipped.
   Blocker: none named; a founder decision.
 - Geo-selection weighting; AI-drafted org descriptions; the Discover design pass.
@@ -2410,7 +2492,9 @@ ADVISOR:
 ENTERPRISE:
 - Gift tracking, an accepted Phase-1 boundary rather than a defect.
   Blocker: reopening it reopens the Clause 6 subpoena posture. COUNSEL.
-- Athlete SOFT DELETE, parked at `docs/filed-defects.md:2179`.
+- Athlete SOFT DELETE, parked in this document as "PARKED SCOPING ITEM, not a
+  defect filing and not a queued build: athlete deletion should be SOFT, and
+  today it is HARD".
   Blocker: the retention period, a founder-judgment item, with the legal
   standard needing counsel.
 - `athlete.badge` has a ruling and no author (`:1015`); `athlete_activity`
