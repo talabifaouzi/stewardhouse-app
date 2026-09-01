@@ -1922,6 +1922,17 @@ correction.
   what shape) remains UNRULED.**
 - `docs/filed-defects.md` — the §7 defect queue, relocated 2026-08-19 from the
   tap-target sub-heading. Live: file there, not in §7.
+- `docs/outstanding.md` — what is open, in what order, and where the detail
+  lives. Produced 2026-09-01 by a sweep of the tree and the git history, because
+  this repository had a defect queue and a session record and neither answered
+  that question. **It does NOT claim completeness**, and its own header names
+  the known weak spot: parked lists living inside scoping docs, which two rounds
+  of checking caught before it committed. An INDEX and not a record: ID,
+  one-line title, blocker, pointer, nothing else. `docs/filed-defects.md` above
+  holds the detail and `docs/session-log.md` the narrative, and where either
+  disagrees with it they are right. **Its citations name a section and a filing
+  title, never a line number**, the rule `d08b20e` established the hard way;
+  citations into SOURCE files keep their line numbers.
 - `src/data/unified/README.md` — unified data layer internal notes.
 
 ---
