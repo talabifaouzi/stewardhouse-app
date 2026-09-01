@@ -1790,3 +1790,125 @@ markdown file. Whoever makes it should keep the two surviving claims, drop the
 `(ruled)` parenthetical rather than leave it pointing at a superseded ruling, and
 consider whether the module header should describe the arc's input shape at all
 now that `ImportRosterModal.jsx` and `readRosterFile.js` both own that concern.
+
+**Filed: on the AUTHENTICATED enterprise tree, a roster with no athletes renders
+the literal string "null% of program" as the Actively progressing tile's
+sublabel.** Both the Roster and the Overview do it, from character-identical
+expressions. Verified by execution against `computeStats`, not by reading. Filed,
+not fixed.
+
+**The string, and the two states it sits between.** The sublabel expression at
+`EnterpriseRoster.jsx:139-141` was evaluated against three rosters:
+
+```
+  empty authenticated roster        consentAware false  rateBaseTotal 0  pct null   ->  "null% of program"
+  one athlete, unclaimed            consentAware true   rateBaseTotal 0  pct null   ->  "Not tracked"
+  one athlete, claimed + delegated  consentAware true   rateBaseTotal 1  pct 100    ->  "1 of 1 tracked"
+```
+
+The middle row is what makes this a defect rather than an absent measurement.
+`activelyProgressingPct` is null in the first two rows alike; one athlete later
+the same null renders correctly. Nothing about the value changed, only which
+branch read it. The empty roster is the ONLY input state in which a null
+reaches a render at all: one athlete of any kind, claimed or unclaimed,
+delegated or not, flips `consentAware` true and routes the identical null
+through the working guard at `:140`.
+
+**The mechanism, and it is the vacuous-truth case.** `consentAware` is
+`athletes.some((a) => typeof a.claimed === 'boolean')`
+(`enterpriseStats.js:38`). `Array.prototype.some` returns false on an empty array
+without ever invoking its predicate, so an empty authenticated roster is
+indistinguishable at that test from the demo fixture roster, which the predicate
+is actually written to detect. Control therefore takes the `:141` branch, which
+is a TEMPLATE LITERAL: `` `${activelyProgressingPct}% of program` ``. Template
+interpolation stringifies null to the four characters `null`. The value is null
+because `rateBaseTotal` is 0 (`enterpriseStats.js:98`).
+
+**The guard exists, is correct, and is on the wrong side of the branch.** The
+`activelyProgressingPct == null ? 'Not tracked'` test at `:140` is the intended
+handling, and it is nested INSIDE the `consentAware`-true arm. The one input
+state that produces a null while `consentAware` is false never reaches it. This
+is not a missing guard; it is a guard placed where the condition it guards
+against cannot arrive.
+
+**R4, and a citation collision worth recording rather than working around.** The
+rule this contradicts is labelled R4 in the code, at `enterpriseStats.js:94-95`,
+quoted verbatim:
+
+    // R4: rateBaseTotal === 0 -> rates are NULL ("Not tracked" in Stage D), NEVER
+    // 0% (which would read as a real "nobody progressed" measurement).
+
+CLAUDE.md records the same rule in SECTION 5, in the Enterprise row's P-2 Stage C
+text, inside FORK 1 and without the R4 label: "`rateBaseTotal===0` -> rates null
+-> Not tracked, never 0%". **It is NOT the R4 in section 5.1.** That one
+(`CLAUDE.md:356-357`) is the P-3c ruling, "a **standalone consent card**, not an
+unparked settings route", and has nothing to do with rates. Two unrelated rulings
+carry the same label in two places, so a filing that cited section 5.1 for this
+would send a reader to the wrong one. Cite the code for the label and section 5
+for the manifest record.
+
+**What R4 forbids is narrower than what ships here, and the shipped string is
+worse than the case R4 names.** R4 refuses a rendered `0%` because it would read
+as a real measurement of nobody progressing. `null% of program` is not a false
+measurement; it is a visibly broken one, which fails differently and arguably
+more loudly. Recorded because the two are easy to conflate: the rule was written
+against a plausible falsehood, and what escaped the rule is an implausible one.
+
+**SCOPE, first half: the Overview shares it, from a character-identical
+expression.** `EnterpriseOverview.jsx:39-41` and `EnterpriseRoster.jsx:139-141`
+are the same three lines. A `grep` for `activelyProgressingPct` across `src/`
+returns eight sites in three files: the derivation and return in
+`enterpriseStats.js:98` and `:102`, a destructure in each consumer
+(`EnterpriseOverview.jsx:29`, `EnterpriseRoster.jsx:129`), the guarded arm in
+each (`:40`, `:140`), and the unguarded interpolation in each (`:41`, `:141`).
+**Two unguarded sites, no others, and no other surface reads the value at all.**
+
+**SCOPE, second half: a non-empty authenticated roster CANNOT reach it, and this
+is established from the tree rather than assumed.** `claimed` is assigned in
+exactly two places, both unconditional boolean coercions:
+`functions/api/athletes.js:111`, `claimed: !!row.person_id`, and
+`src/contexts/AthletesContext.jsx:163`, `claimed: false`, on staged import rows.
+Every `setAthletes` call site in `AthletesContext.jsx` was enumerated (`:42`,
+`:57`, `:72`, `:87`, `:98`, `:111`, `:121`, `:167`, `:174`, `:181`, `:207`,
+`:221`, `:237`). The five that INSERT on the authenticated tree are `:42` (initial
+state, from `EnterpriseSurface.jsx:81` -> `/api/me` -> `me.js:411`, which maps
+`toAthleteElement`), `:72` (`add()`, from `athletes.js:226`), `:98` (`update()`,
+from `athletes/[id].js:306`), `:167` (`stageImport()`, the literal above) and
+`:207` (`saveStaged()`, from `import.js:362`). Four route through
+`toAthleteElement` and the fifth writes the literal. The remaining call sites are
+the `!authenticated` demo branches and filters. **So every athlete on an
+authenticated roster carries a boolean `claimed`, and `athletes.length === 0` is
+the only route to `consentAware === false` there.** The demo tree never reaches
+it either: its 16 fixture athletes omit `claimed`, so `consentAware` is false by
+design, but `rateBaseTotal` is then 16 and the percentage is a real number.
+
+**The state is REACHABLE, and it is the first thing a new institution sees.**
+`EnterpriseSurface.jsx:81` seeds the authenticated roster as
+`appIdentity?.identity?.enterprise?.athletes ?? []`, so a provisioned staff
+account holds an empty array until its first enrollment. The grid at
+`EnterpriseRoster.jsx:167` sits outside every `athletes.length` condition; only
+the `Card` contents at `:288` branch on emptiness, into the "No athletes enrolled
+yet." block. The seven tiles therefore render on an empty roster, reading 0, with
+this string under the Actively progressing one. `EnterpriseOverview.jsx:112` is
+ungated in the same way, and that file's own comment at `:26` states the
+assumption the defect sits inside: "Stat tiles follow the roster data
+automatically (computeStats([]) -> zeros)." Zeros were anticipated. A null was
+not.
+
+**One adjacent site that is NOT this defect, named so the two are not merged.**
+`EnterpriseOverview.jsx:140` renders `({gpsRate}%)` as a JSX CHILD rather than
+through a template literal. React renders a null child as nothing, so that
+expression produces `(%)` on an empty roster, not `(null%)`. Different variable,
+different mechanism, different output, and whether an empty parenthesised percent
+sign is itself worth filing is a separate question this filing does not reach.
+
+**SEVERITY, recorded because where this sits in the tree understates where it
+appears to a customer.** This is what a newly provisioned enterprise account
+displays before its first enrollment, so it is not a state reached after some
+sequence of actions: it is the roster and the overview an institution meets on
+its first authenticated load. It appears on the AUTHENTICATED tree ONLY, which
+is the surface a pilot institution is given, and the demo tree cannot reach it
+at all. That makes it a first-impression defect on the customer surface rather
+than a demo-tree cosmetic one.
+
+**No fix proposed.**
