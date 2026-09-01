@@ -2077,3 +2077,101 @@ from the tree.**
 **No path forward is proposed here. Neither PWA nor native is recommended, and
 this item is not ranked against anything else in this queue.** It exists to be
 found.
+
+**Filed: flow content is rendered inside `<button>` at 20 sites across 7 files.**
+The HTML content model for `<button>` is PHRASING content. `p`, `div`, `h1`
+through `h6`, `ul`, `li` and `table` are FLOW content and are not permitted
+there. Re-verified against HEAD `e396306` by execution, with a known-positive
+control asserted before any count was trusted. Filed, not fixed.
+
+**THE FULL ENUMERATION, by file and line.** Each line names the offending
+element and the `<button>` it sits inside.
+
+    src/components/BarChart.jsx:95                 <div>  in <button> at :85
+    src/components/BarChart.jsx:108                <div>  in <button> at :85
+    src/components/BarChart.jsx:129                <div>  in <button> at :85
+    src/components/ContactsDirectory.jsx:45        <div>  in <button> at :31
+    src/components/ContactsDirectory.jsx:46        <p>    in <button> at :31
+    src/components/ContactsDirectory.jsx:47        <p>    in <button> at :31
+    src/components/FilteredAthletesModal.jsx:45    <p>    in <button> at :31
+    src/components/FilteredAthletesModal.jsx:46    <p>    in <button> at :31
+    src/components/FilteredAthletesModal.jsx:47    <p>    in <button> at :31
+    src/components/StatTile.jsx:61                 <p>    in <button> at :40
+    src/components/StatTile.jsx:62                 <p>    in <button> at :40
+    src/components/StatTile.jsx:63                 <p>    in <button> at :40
+    src/surfaces/enterprise/EnterpriseCompliance.jsx:133   <p>   in <button> at :123
+    src/surfaces/enterprise/EnterpriseCompliance.jsx:134   <p>   in <button> at :123
+    src/surfaces/enterprise/EnterpriseCompliance.jsx:135   <p>   in <button> at :123
+    src/surfaces/enterprise/reports/ProgramSummary.jsx:235 <div> in <button> at :221
+    src/surfaces/enterprise/reports/ProgramSummary.jsx:236 <div> in <button> at :221
+    src/surfaces/enterprise/reports/ProgramSummary.jsx:237 <div> in <button> at :221
+    src/surfaces/individual/Questions.jsx:765      <div>  in <button> at :749
+    src/surfaces/individual/Questions.jsx:774      <div>  in <button> at :749
+
+Six of the seven files carry three sites each; `Questions.jsx` carries two.
+All four surfaces are represented, plus four shared components.
+
+**`Button.jsx` IS CLEAN, and that is the most useful fact here.** The component
+intended as the shared button is not the problem, so this is not a defect in the
+design system. `Button.jsx:107` renders a bare `{children}` inside its
+`<button>`, so what it contains is entirely a property of its call sites. There
+are **124** of them, and **exactly ONE passes any element child**:
+`CurriculumLibrary.jsx:122`, which passes a `<span>` wrapping a `<Tag>`. `Tag`
+renders a `<span>` as its root (`Tag.jsx:22`). Both are PHRASING content, so
+that site is valid. Every other one of the 124 passes a string. **The 20 sites
+above are therefore all hand-rolled `<button>` elements written outside the
+shared component**, which is what let them diverge from it.
+
+**SCOPE: the `StatTile.jsx` instance is the widest of the seven.** Every roster
+and overview tile passes an `onClick`, and `StatTile.jsx:15-25` routes any tile
+with an `onClick` through `ClickableTile`, which is the `<button>` at `:40`. So
+all seven tiles on `EnterpriseRoster` and all seven on `EnterpriseOverview`
+render three `<p>` elements inside a `<button>` each, on both the demo and the
+authenticated tree, on every load. The other six files are narrower: a chart
+bar, two directory rows, an exclusion row, a workshop row, and an onboarding
+option.
+
+**CONSEQUENCE, stated as what IS and IS NOT established.** What is established
+is the content-model violation itself, which is a fact about the markup and is
+enumerated above. What is also established is why it survived: **browsers render
+it without visible error.** There is no parse failure, no console warning from
+the browser, and nothing in the build touches it, so nothing in this project's
+one automated check would ever surface it. **Whether it changes
+accessibility-tree exposure or how a screen reader announces these controls is
+UNVERIFIED and cannot be established from this tree.** That question needs
+assistive technology on a device, which has not been run. **No claim about
+screen-reader behaviour is made here**, and a later reader should not treat the
+violation as evidence of one.
+
+**HOW THE COUNT WAS ARRIVED AT, and the earlier miss, recorded because a naive
+re-check will under-count exactly the same way.** The first scan of this
+question reported **3** sites where there are **20**. The scanner built its
+matcher by CONCATENATING A STRING rather than writing a regex literal, and the
+intended suffix `'(?=[\\s>/]|$)'` lost a backslash TWICE, at two separate
+stages. One was consumed writing the script to disk, leaving `'(?=[\s>/]|$)'`
+in the file. JavaScript then consumed the second when it evaluated that
+single-quoted string, because `'\s'` is not a recognised escape and
+evaluates to a bare `s`. The engine received the literal class `[s>/]` and
+required the character after a tag name to be `s`, `>` or `/`. **`<p style=`
+is followed by a SPACE and never matched.** The only hits that survived were
+tags sitting at end of line, which is why `BarChart.jsx` appeared and the
+other six files did not, and why the result looked like a plausible small
+finding rather than a broken tool.
+
+**What caught it was asserting a KNOWN-POSITIVE CONTROL**, not reading the
+output. `StatTile.jsx:61-63` were known to be three `<p>` inside a `<button>`
+before the scan ran, so a scan returning zero for that file was a broken scan
+regardless of what it reported elsewhere. The re-verification for this filing
+asserts that control first and exits non-zero if it does not hold, and it uses
+regex LITERALS only, since a literal cannot lose a backslash the way a
+constructed string can. **A grep is the wrong tool for this question anyway:**
+the nesting is multi-line, so establishing that a `<p>` is INSIDE a `<button>`
+requires tracking element depth, which a line-oriented grep cannot do.
+
+**Not counted, and named so the number is not over-read.** The scan sees literal
+`<button>` elements only. A component that renders flow content and is used
+inside a hand-rolled `<button>` would not appear, so **20 is a floor rather than
+a total.** `Button.jsx`'s 124 call sites were checked separately, by the
+element-child pass described above.
+
+**No fix proposed.**
