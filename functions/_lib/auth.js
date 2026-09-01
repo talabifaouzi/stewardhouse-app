@@ -422,7 +422,55 @@ export function makeAuth(env) {
             '<p>This link expires in five minutes and can be used once.</p>',
             '<p>If you did not request this, you can disregard this message.</p>',
           ].join('\n');
-          await sender.send({ to: email, subject, text, html });
+          // SEND-OUTCOME STAMP (migration 0021, auth_send_log). CATCH, STAMP,
+          // RETHROW — in that order, and the order is the whole contract.
+          //
+          // CLIENT-OBSERVABLE BEHAVIOUR IS UNCHANGED, and it has to be. The
+          // magic-link endpoint awaits this callback and then returns
+          // `ctx.json({ status: true })` UNCONDITIONALLY
+          // (better-auth/dist/plugins/magic-link/index.mjs:75-81) — it inspects
+          // no return value and wraps the call in no try/catch. So SWALLOWING
+          // here would produce a 200 and SignIn.jsx would tell the user their
+          // email was sent when it was not. Rethrowing the original error keeps
+          // better-auth on the same path it takes today: 500, and the existing
+          // "Sign-in is temporarily unavailable" string.
+          //
+          // THE STAMP MUST NEVER DESTROY THE ERROR IT RECORDS. stampSend has
+          // its own try/catch and swallows, so a D1 failure inside the stamp
+          // cannot replace the send error. That matters concretely: §11's
+          // diagnosis reads `Resend send failed: {status}` to name the cause
+          // (401 key · 403 domain · 422 from-address · 429 quota · 5xx outage),
+          // and a stamp error surfacing instead would destroy that signal.
+          //
+          // `db` and `env` are both closed over from makeAuth(env) above — the
+          // same per-request Kysely instance the claim hooks use.
+          const stampSend = async (outcome, errorText) => {
+            try {
+              await db.insertInto('auth_send_log').values({
+                id: crypto.randomUUID(),
+                email,
+                outcome,
+                error_text: errorText,
+                attempted_at: new Date().toISOString(),
+              }).execute();
+            } catch {
+              // Swallowed on purpose. An unwritable log must not break sign-in
+              // and must not mask the send outcome. A gap here is exactly the
+              // blind spot migration 0021 documents: absence of a row is not
+              // evidence of absence of an attempt.
+            }
+          };
+
+          try {
+            await sender.send({ to: email, subject, text, html });
+          } catch (err) {
+            await stampSend('failure', err instanceof Error ? err.message : String(err));
+            // The ORIGINAL error object, unwrapped and unchanged. Not a new
+            // Error, not a re-message: better-auth and the deployment tail both
+            // see exactly what they see today.
+            throw err;
+          }
+          await stampSend('success', null);
         },
       }),
     ],
