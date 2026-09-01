@@ -11,7 +11,7 @@ title, a blocker, and a pointer. It carries no evidence and restates no finding.
 holds the narrative of how each session went. Where those disagree with this
 file, they are right and this file is stale.
 
-**As committed: 76 OPEN, 9 PARKED, 6 founder-judgment, 5 answerable only by FT,
+**As committed: 76 OPEN, 9 PARKED, 6 founder-judgment, 4 answerable only by FT,
 10 ruled out.** The OPEN count breaks down as six ruled tiers, then
 gates-other-work 11, gates-a-stated-commitment 4, BMF-and-Discover 8,
 cheap-and-mechanical 18, large 24, and blocker-undetermined 2.
@@ -74,6 +74,12 @@ CLAUDE.md §5.1 describes that designation as routine and "never a slice". L4's
 mid-series-trend concern is mooted only while `cohort_period_snapshot` holds
 zero rows. If it is ever to be revisited on the merits, that must happen before
 the first write.
+**The zero-row state was OBSERVED on 2026-09-01**, by an FT-run read-only COUNT
+against remote `stewardhouse-pilot`, so the window is confirmed open rather than
+assumed. This is the answer to the former F5.
+Coupled to A69: enterprise writes 403 with no gate set, so the same unset gate
+that makes two surfaces non-functional is what holds this window open, and
+whenever FJ-3 is ruled, A39 must be settled first or it closes as a side effect.
 
 ### Tier 2 — live honesty defects on routes the pilot gate scores as MET
 
@@ -606,6 +612,8 @@ gap?**
 Every write on two of the four surfaces returns 403 in production, and the pilot
 gate's production-usable figure sits far below its capability figure almost
 entirely because of it.
+A39 must be settled before this is ruled: the unset enterprise gate is what
+holds A39's window open, so ruling here closes it as a side effect.
 
 **FJ-4 | A41: which arc owns the 403 copy defect?**
 CLAUDE.md §5.1 records it under P-7 while saying it may belong to P-6 slice 2
@@ -633,6 +641,10 @@ rulings that never became commits, which no commit history can recover.
 Each needs a read-only remote query, which is FT-run-only per CLAUDE.md §6.10
 and §6.15.
 
+**F5 was ANSWERED 2026-09-01** and has left this section; the remaining IDs are
+not renumbered, since renumbering would break every reference to them. The
+answer lives in A39, Tier 1.
+
 **F1 | Is the `+screen` test address bound, or an expired invite?**
 Query class: a single-row SELECT over `person` for that address, reading its
 created timestamp and whether an `auth_user` is bound.
@@ -648,11 +660,6 @@ unreconciled.
 **F4 | Has migration 0021 reached remote?**
 Query class: the remote migrations list, or a plain SELECT over the migrations
 table if that subcommand returns 7403 again. Both are recorded in CLAUDE.md §10.
-
-**F5 | Does `cohort_period_snapshot` hold zero rows on remote?**
-Query class: a COUNT. This is the fact A39's window rests on. Structurally near
-certain, because snapshot writes are gated and no enterprise gate is set, but
-not observed.
 
 ---
 

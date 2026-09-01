@@ -778,3 +778,18 @@ file being unreadable. Neither move is made in this commit.
 **The parked rulings from the second block are unchanged**: the iOS app
 (`e396306`) and athlete soft delete (`4cee27a`), each still carrying a
 founder-judgment item left open.
+
+---
+
+## Session — 2026-09-01 (fourth)
+
+Queue state, not build state. No commit was made in the session that produced
+this entry, and CLAUDE.md is untouched.
+
+**FT ran a read-only COUNT against remote `stewardhouse-pilot` on 2026-09-01:
+`cohort_period_snapshot` holds ZERO rows.** A39's window is therefore confirmed
+open rather than assumed.
+
+**F5 is answered and has left the FT-only section of `docs/outstanding.md`.**
+That section's count moves from 5 to 4, and the remaining IDs are deliberately
+not renumbered.
