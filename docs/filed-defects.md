@@ -2292,3 +2292,245 @@ that form. If soft delete is built, the guard question is answered by the
 design; if it is not built, the guard was never the gap.
 
 **No fix proposed. No design, no schema and no migration is sketched here.**
+
+**PARKED SCOPING ITEM, not a defect and not a queued build: a surface inventory
+of Individual and Advisor, plus the parked-work set, taken as evidence for the
+parked iOS ruling above.** That entry carries the ruling and is not restated
+here. This one carries what the two surfaces are MADE OF, and what across the
+whole project is parked or unbuilt. Every figure was re-derived against HEAD
+`ed17755` rather than carried from the pass that produced it.
+
+**THE FRAME, and it decides what was counted.** The question scoped was NOT
+"what would we port". It was "what is each surface made of", so that a later
+decision rests on evidence rather than on assumption. FT framed it against X and
+Instagram: apps that do FEWER things than their web versions, in a shape the
+phone is good at. Under that frame the useful facts are route inventory,
+read-versus-write, where honesty language lives, and what is structurally
+desktop-shaped. **Nothing here says what belongs in an app.**
+
+**INDIVIDUAL SURFACE: 14 destinations across two route groups.** Five onboarding
+paths (`IndividualSurface.jsx:92-102`): `welcome`, `letter`, `privacy`,
+`questions`, `reveal`, plus a catch-all falling to the dashboard. Nine dashboard
+destinations (`:321-332`): an index plus `plan`, `discover`, `learn`, `history`,
+`team`, `give`, `cohort`, `record-keeping`, plus a catch-all.
+
+**THE READ/WRITE SPLIT: five write endpoints, six call sites, everything else
+reads.**
+
+    POST /api/gifts             GiveScreen.jsx:84            records a gift
+    POST /api/scenarios         GivingModeler.jsx:133        saves a scenario
+    DELETE /api/scenarios/:id   GivingModeler.jsx:84         removes one
+    POST /api/athlete-consent   IndividualSurface.jsx:121    the interstitial
+    POST /api/athlete-consent   RecordKeeping.jsx:64         the reversible flip
+    POST /api/intake            Questions.jsx:21             intake answers
+
+Two callers share `/api/athlete-consent`, which is why the endpoint count and
+the call-site count differ. Everything not listed is read-only.
+
+**NOTHING ON THIS SURFACE IS STRUCTURALLY DESKTOP-SHAPED, and the evidence is an
+absence in four places at once.** A grep of `src/surfaces/individual/` for a
+`minWidth` above 500px returns **exit 1, no match**. The surface does NOT consume
+`DataTable`, whose three consumers are `EnterpriseRoster.jsx`,
+`reports/CohortComparison.jsx` and `reports/ProgramOutputs.jsx`, so the 560px
+default at `DataTable.jsx:70` never reaches it. There is **no file input and no
+drop target** anywhere under `src/surfaces/individual/`. And it renders no wide
+table. Its only `minWidth` uses are the flex-shrink idiom `minWidth: 0`
+(`CohortView.jsx:207`, `IndividualSurface.jsx:874`) and a 3px chart bar
+(`GivingModeler.jsx:356`).
+
+**THE HONESTY SURFACES, and this count is the number the iOS entry names as a
+drift risk.** Five `useFixtureIsolated()` gates plus two authored absence
+components:
+
+    CohortView.jsx:34            gates the whole cohort view
+    IndividualSurface.jsx:297    dashboard fixture gate
+    IndividualSurface.jsx:348    the Home cohort callout
+    Learn.jsx:10                 gates the advisor block
+    Team.jsx:12                  gates every fixture panel
+    RecordKeeping.jsx:6-13       names itself the consent-reversibility control
+    DiscoverUnavailable.jsx:3-30 the authored unavailable state
+
+`useFixtureIsolated.js` is the shared predicate behind the first five and returns
+true when fixture content must NOT render. `IndividualSurface.jsx:341` records
+that its two call sites answer "TWO distinct questions, deliberately not merged".
+`RecordKeeping.jsx:22-23` records its null branch as "a first-class branch, not a
+defensive one: it is genuinely reachable".
+
+**`DiscoverUnavailable.jsx:3-30` is the sharpest of the seven.** It does not
+merely say the surface is unavailable; it records WHY it was removed. The old
+page computed a weighted score per organization and sorted descending, which §7
+forbids outright. Its cutoff LEAKED: a National bonus applied unconditionally, so
+7 of 17 orgs cleared it on any cause selection with zero cause overlap. And its
+copy asserted that some organizations have "Trust you can't buy" while others are
+"doing bold work", which is recommendation rather than exposure and fails the
+Path B test. `:22-28` records the component as TREE-INVARIANT: no
+`isAuthenticated` branch and no `useFixtureIsolated()` call, because the reason
+the surface is gone has nothing to do with whose data it would show.
+
+**FT NOTED 2026-09-01, INTENT AND NOT A RULING: nonprofit screening is something
+FT would use in a companion app. The constraint rides in the same paragraph
+because the two cannot be separated.** The surface was retired for violating
+Path B, so any return must be EXPOSURE-ONLY: no scores, no rankings, no
+evaluative framing, and no cutoff that behaves like one. The replacement is
+already specified at `docs/discover-surface-spec.md` (four combinable facets,
+alphabetical results, the count leading, the cut stated at the same visual
+weight), and the record it would draw on is the three-source model in §7:
+ProPublica for the structured 990, IRS bulk data as a hard status gate, and the
+organization's own website for current language, with provenance PER FIELD rather
+than per profile. It needs the BMF ingest scoped at `docs/bmf-load-scoping.md`,
+which is itself unbuilt. **This is a SEPARATE ARC. Nothing is designed and
+nothing is scheduled.**
+
+**THE PARKED SET, grouped by surface, with the blocker where one exists.** This
+is the inventory a later decision would draw from. **No item here is marked as
+belonging in an app, and none is ranked.**
+
+INDIVIDUAL:
+- Discover org directory, surface spec written, BMF ingest unbuilt.
+  Blocker: the ingest itself, plus the Parker rollback precondition at
+  `docs/filed-defects.md:1091`.
+- Account-settings page, parked EXCEPT consent reversibility, which shipped.
+  Blocker: none named; a founder decision.
+- Geo-selection weighting; AI-drafted org descriptions; the Discover design pass.
+  Blocker: none named.
+- In-product feedback channel, FILED AND UNSCHEDULED. Removed at `fbc1a9a`
+  rather than persisted. Blocker: a deliberate design problem, not a restore.
+- Who-gave-to-whom view, UNBUILT (`CLAUDE.md:513`, `:1834`).
+  Blocker: COUNSEL, ruling E Clause 6 subpoena posture.
+- Charitable-retention-floor. Blocker: COUNSEL, ruling E Clause 3.
+
+ADVISOR:
+- Stage-label renaming (`docs/filed-defects.md:38`). Blocker: the Q7 allowlist,
+  itself counsel-gated.
+- Pipeline persistence: no `/api/pipeline` exists and `handleSave` persists
+  nothing. Blocker: none named.
+- Every advisor WRITE, in production. Blocker: FT's `$.advisor.demo_gate`
+  designation, which `CLAUDE.md:517` records is "never a slice".
+
+ENTERPRISE:
+- Gift tracking, an accepted Phase-1 boundary rather than a defect.
+  Blocker: reopening it reopens the Clause 6 subpoena posture. COUNSEL.
+- Athlete SOFT DELETE, parked at `docs/filed-defects.md:2179`.
+  Blocker: the retention period, a founder-judgment item, with the legal
+  standard needing counsel.
+- `athlete.badge` has a ruling and no author (`:1015`); `athlete_activity`
+  exists as a table with no writer (`:1051`). Blocker: none named.
+- Every enterprise WRITE, in production. Blocker: FT's
+  `$.enterprise.demo_gate` designation.
+
+OPERATIONS:
+- QA-023, the last open audit finding. Blocker: a future CR-level filtered view.
+- P-6 slice 2, the shared `'Not authorized'` string. Blocker: advisor and
+  enterprise gate emissions in `/api/me`, which do not exist.
+
+INFRASTRUCTURE:
+- Alerting on `auth_send_log`. The table records and nothing reads it.
+  Blocker: SCHEDULED EXECUTION, which this project has never had, and which
+  `migrations/0021_auth_send_log.sql` and `functions/api/invites/[id].js:60-61`
+  both record as absent: no cron, no scheduled worker, no triggers block.
+- Retention purge on any append-only table, five of them now.
+  Blocker: the same absent scheduled execution, plus ruling E Clause 3.
+- An iOS app. Blocker: an Apple Developer account, which needs a legal entity
+  and a D-U-N-S number. A grep of CLAUDE.md for `LLC`, `incorporat` and
+  `D-U-N-S` returns ZERO, so no entity is recorded anywhere.
+- Whether production D1 enforces foreign keys. Blocker: it needs a remote
+  write, which is FT-only.
+
+**ADVISOR SURFACE: 16 destinations** (`AdvisorSurface.jsx:110-126`), an index
+plus fifteen named paths: `clients`, `clients/:clientId`, `curriculum`,
+`curriculum/new`, `curriculum/drafts`, `curriculum/:lessonId`,
+`curriculum/:lessonId/fork`, `curriculum/:lessonId/edit`, `cohorts`,
+`cohorts/:cohortId`, `pipeline`, `docs`, `docs/new`, `docs/:docId`, `settings`.
+
+**THE AUTHORING / REVIEWING SPLIT, enumerated both ways.** AUTHORING, where the
+advisor composes new material: `curriculum/new`, `curriculum/:lessonId/fork`,
+`curriculum/:lessonId/edit` (lesson text), `docs/new` (document body),
+`clients/:clientId` (free-text notes), `settings` (practice profile prose).
+REVIEWING, where the advisor reads existing material with at most a structured
+state change: the index, `clients`, `curriculum`, `curriculum/drafts`,
+`curriculum/:lessonId`, `cohorts`, `cohorts/:cohortId`, `pipeline`, `docs`,
+`docs/:docId`.
+
+**TWO ROUTES STRADDLE THE SPLIT and are named rather than forced to a side.**
+`clients/:clientId` reviews a client's history AND accepts free-text notes on one
+screen, so it is both at once. `cohorts/:cohortId` is STRUCTURED-WRITE-ONLY
+despite being a detail view: its writes are membership add and remove
+(`POST` / `DELETE /api/cohort-members`), which compose nothing.
+
+**`LessonEditor` IS THE MOST KEYBOARD-DEPENDENT SURFACE IN THE PRODUCT**, and it
+is one component serving three routes: `mode="author"`, `mode="fork"` and
+`mode="edit"`. Long-form lesson composition is the task at all three.
+
+**ADVISOR IS NOT DESKTOP-SHAPED EITHER, by the same test.** A grep of
+`src/surfaces/advisor/` for a `minWidth` above 500px returns **exit 1**, and the
+surface does not consume `DataTable`. Its `minWidth` values are layout hints well
+under the threshold: 200px (`ClientRoster.jsx:310`, `CohortDetail.jsx:240`),
+180px (`PracticeSettings.jsx:305`, `:333`), 160px (`PracticeSettings.jsx:300`,
+`:323`, `Pipeline.jsx:205`), 140px (`Pipeline.jsx:185`), 120px
+(`ClientRoster.jsx:486`), 64px (`ClientWorkspace.jsx:1224`), plus `minWidth: 0`
+flex idioms.
+
+**ONE ADVISOR FILE INPUT EXISTS AND IT UPLOADS NOTHING, corrected here because a
+first pass reported the surface as having none.** `LessonDetail.jsx:261-271`
+renders `type="file"`, but its handler is
+`setFormFilename(e.target.files?.[0]?.name || '')`: it captures the NAME and
+never the contents, and `:70` sends `fileName` alone. No bytes move. The only
+real upload in the tree is `ImportRosterModal.jsx:256` with its drop target at
+`:286`, which is enterprise.
+
+**EVERY ADVISOR WRITE IS GATED, AND THE GATE IS UNSET IN PRODUCTION.**
+`requireGatedAdvisor` is called at **13 sites across 12 endpoint files**
+(`clients.js:145`, `clients/[id].js:16`, `client-sessions.js:74`,
+`client-notes.js:51`, `cohorts.js:87`, `cohorts/[id].js:12`,
+`cohort-members.js:59` and `:100`, `docs.js:58`, `doc-categories.js:15`,
+`practice-content.js:119`, `practice-content/[id].js:15`,
+`practice-profile.js:37`). `gate.js:91-92` refuses a non-advisor type, and the
+gate then requires `$.advisor.demo_gate === 1`. No production advisor row carries
+that flag at all, so **every advisor write returns 403 in production today**.
+Reads are ungated by contrast.
+
+**THE ADVISOR HONESTY SURFACES.**
+
+    ClientRoster.jsx:258-271     the client-consent attestation
+    ClientRoster.jsx:282         Save disabled until attested
+    ClientRoster.jsx:154-159     records the flag as a request flag, not a field
+    ClientWorkspace.jsx:1011     the handling disclosure, attestation half omitted
+    PracticeSettings.jsx:245-254 the Path B boundary statement
+    PracticeSettings.jsx:260     its version marker, "Path B boundary · v1.0"
+
+**`ClientRoster.jsx:258-271` IS THE ONLY CONSENT SURFACE IN THE PRODUCT ENFORCED
+ON BOTH CLIENT AND SERVER**, and the reason is what it attests to. The disclosure
+at `:260` reads: "StewardHouse stores what you write and does not parse it, mine
+it, surface it, or act on it. It does not contact your client. They have no
+account, cannot see this record, and you cannot delete it from StewardHouse."
+The checkbox at `:269` reads "I have my client's agreement to keep this record."
+**`clients.js:12-14` refuses the write without the flag**, stating that the form
+gates it client-side and "requiring it here means non-form callers cannot skip
+it."
+
+**Why this one and no other: a THIRD PARTY is attesting on someone else's
+behalf.** The Individual-side consent at `/api/athlete-consent` is the athlete
+acting on their own record, so a client-side control is the whole control. Here
+the person consenting is not the person operating the screen, is not present,
+and per the disclosure has no account and cannot see the record. That asymmetry
+is why the server does not trust the form.
+
+**`PracticeSettings.jsx:245-254` is the versioned Path B boundary statement**, in
+the product's own words: "StewardHouse is a structural platform. It does not
+provide advisory acts (specific recommendations on giving), fiduciary execution
+(custody, payment, transfers), or financial, legal, or compliance advice. These
+boundaries apply across all surfaces and cannot be configured." It carries a
+version marker at `:260`, which no other honesty string in the product does.
+
+**THE BINDING FINDING: NEITHER SURFACE HAS A LAYOUT BARRIER TO A PHONE.** The
+Individual surface is already phone-shaped, and so are the advisor REVIEW routes.
+Both return exit 1 on the `minWidth` above 500px test, neither consumes
+`DataTable`, neither renders a wide table, and the one advisor file input moves
+no bytes. **The gap is TAP TARGETS, which is the class filed separately in this
+document, and it is not screen shape.** Anything that looks like a porting
+obstacle in these two surfaces is a control-sizing problem wearing a layout
+problem's clothes.
+
+**No recommendation. This entry does not say what belongs in an app, does not
+rank the surfaces or the parked items against each other, and proposes no
+build.** It exists so that a later decision has evidence.
