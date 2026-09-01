@@ -424,9 +424,9 @@ const titleStyle = {
 
 const statGridStyle = {
   display: 'grid',
-  // Floor wrapped in min() per 88e07ea: identical at or above 180px, and below
+  // Floor wrapped in min() per 88e07ea: identical at or above 160px, and below
   // it the track shrinks to fit rather than overflowing the page sideways.
-  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 180px), 1fr))',
+  gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 160px), 1fr))',
   gap: 'var(--sh-space-4)',
   marginBottom: 'var(--sh-space-6)',
 };
