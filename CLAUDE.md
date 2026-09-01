@@ -2074,24 +2074,81 @@ material at large roster sizes.
 
 ### Filed — XLSX.read hangs forever on a truncated ZIP header (2026-08-27)
 
-**XLSX.read HANGS FOREVER on a 14-byte ZIP local-file header.** It never returns
-and never throws. Measured at 20 seconds with no completion. On a browser main
-thread this is a frozen tab: no error, no recovery, and the operator's work is
-gone. No timeout can interrupt synchronous JavaScript.
+**XLSX.read HANGS FOREVER on a ZIP local-file header that DECLARES COMPRESSION
+METHOD 8 (DEFLATE) AT OFFSET 8.** It never returns and never throws. On a
+browser main thread this was a frozen tab: no error, no recovery, and the
+operator's work gone. No timeout can interrupt synchronous JavaScript.
 
-**The boundary was characterized before a guard was written, and the shape
-matters:** every truncation of a real workbook, down to 1% of its bytes, throws
-cleanly in about 70ms. Random non-ZIP bytes return as garbage in 78ms. ONLY the
-tiny ZIP-signature-but-truncated case hangs.
+**THE METHOD BYTE IS THE TRIGGER, AND THIS FILING ORIGINALLY OMITTED IT. That
+omission cost an hour and produced a false negative during a live Chrome
+screen**, which is why it is corrected here rather than left to the code
+comments. The filing used to say only "a 14-byte ZIP local-file header". A
+screen built the obvious thing from that description, the signature followed by
+zero padding, which declares **method 0 (STORED)** and **throws in 1-3 ms** with
+"That file could not be read. It may be corrupt or password-protected." That
+read as proof the hang was a Node-only artifact. It is not. **A
+signature-plus-zero-padding header reproduces NOTHING.** Build the input with
+byte 8 set to 8 or you will observe a clean refusal and conclude the wrong
+thing.
 
-**The guard shipped is MIN_EXCEL_BYTES = 512** in readRosterFile.js. A real
-.xlsx is roughly 16KB for two rows and cannot approach 512 bytes. It closes the
-DEMONSTRATED case in 1ms with a clean refusal. It is NOT a general guarantee and
-is labelled as such in code.
+**The exact input is a byte table in the code, deliberately not duplicated
+here:** `readRosterFile.js:39-51`, in the comment above `MIN_EXCEL_BYTES`
+(`:78`). Thirty bytes, offset by offset, with `08 00` at 8-9 marked as the
+trigger. Truncating that header to its first 14 bytes hangs identically, so
+bytes 14-29 are not load-bearing; byte 8 is. Padding may be zeros or noise.
+The worker file carries the same warning at `rosterExcel.worker.js:5` and
+`:14`.
 
-**FILED, NOT BUILT:** moving the Excel parse into a Web Worker is the only thing
-that guarantees a hostile or malformed workbook cannot freeze the tab. That is a
-follow-up slice, not this one.
+**IT IS A FULL-CORE CPU SPIN, NOT A WAIT.** Measured: 4 seconds of processor
+time in 4 seconds of wall time. Two consequences follow, and both matter. It is
+why no same-thread timeout could ever have interrupted it. And it is why this
+is NOT a Node artifact: pure JavaScript, no I/O, no runtime services, and
+Chrome executes it on the same V8 engine. The bytes actually shipped in the
+built worker chunk were extracted and run, and they hang the same way, including
+with `Buffer` and `process` shadowed so SheetJS's own is-Node detector reads
+false.
+
+**THE HANG IS NOT SIZE-BOUNDED, and the original claim that "ONLY the tiny
+ZIP-signature-but-truncated case hangs" is WRONG.** With the method byte set it
+hangs at 600 bytes, at 5 KB and at 100 KB, with zero padding and with noise
+padding alike. Every one of those is ABOVE the 512-byte floor. No byte threshold
+separates the hanging inputs from the safe ones.
+
+**Figure corrected: truncations of a real workbook throw in 1-2 ms, not "about
+70ms".** The 70ms was process startup in the harness, not parse time. What the
+original got right and still stands: every truncation of a real workbook, down
+to 1% of its bytes, throws cleanly, and random non-ZIP bytes return quickly as
+garbage.
+
+**The guard MIN_EXCEL_BYTES = 512** in readRosterFile.js is KEPT. A real .xlsx
+is roughly 16KB for two rows and cannot approach 512 bytes, so it costs nothing
+and settles one known input in about a millisecond without starting a Worker.
+It is NOT a safety boundary, it never was, and nothing downstream may treat it
+as one.
+
+**BUILT, NOT MERELY FILED (`24a6682`, 2026-09-01). The line above used to read
+"FILED, NOT BUILT" and is superseded.** The Excel parse now runs in a Web
+Worker (`rosterExcel.worker.js`), with a 10-second timeout armed on the main
+thread (`readRosterFile.js:218`) that terminates the worker. **This is
+CONTAINMENT, NOT REPAIR** and the code says so at every site: the spinning
+thread keeps spinning until terminated, burning one core. What it buys is that
+the spin is no longer the UI thread, so the page survives, the operator keeps
+their work, and a timeout is possible at all. FT screened it in Chrome: the
+crafted method-8 file spun the worker, the page stayed interactive throughout,
+the timeout fired with the intended refusal, and a 9.07MB 480-row workbook
+parsed without tripping it.
+
+**The same commit closed a SIZE-GUARD BYPASS, recorded here because it is a
+separate defect that happened to ride along.** Both thresholds used to be
+written as `typeof file.size === 'number' && ...`, so an object whose size was
+absent or non-numeric SKIPPED the 10 MB ceiling AND the 512-byte floor and went
+straight to the parser: the one input least able to account for itself was the
+one input neither guard examined. It is now refused outright at
+`readRosterFile.js:157-159`, ahead of both thresholds, on the reasoning that a
+ceiling whose whole purpose is to fail before touching contents cannot treat an
+unknown size as small enough. A `File` from a picker or a drop always carries a
+numeric size, so nothing legitimate is turned away, and `readExcel` records at
+`:197-198` that it may now assume a finite number rather than re-testing.
 
 ### Filed — whether D1 enforces foreign keys in production is unverified (2026-08-27)
 

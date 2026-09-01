@@ -275,3 +275,129 @@ rests on executing the tree's own expressions, and every claim about what a page
 does when used rests on FT's own screening. And `npm run build` covers `src/`
 only, which is why `8a81fd4`, the one commit touching `functions/`, needed a
 separate bundler.
+
+---
+
+## Session — 2026-09-01
+
+Every line number below was re-proven against the tree at HEAD `24a6682`, not
+carried from session notes.
+
+**Scope, stated because it is narrower than the gap it sits in.** This entry
+covers TWO commits, `82b4a39` and `24a6682`. THREE commits sit between the
+previous entry's closing HEAD (`e0ff617`) and `82b4a39` and are logged nowhere:
+`ae4d515` (added this file and pointed CLAUDE.md at it), `a63fcee` and
+`a9b5ae9`, the last two both filings, across which `docs/filed-defects.md` grew
+from 1357 lines to 1792. They are named so a reader following the chain does not
+mistake this entry for a continuous record.
+
+**The baseline.** `82b4a39` was authored 2026-08-30 12:12 and `24a6682` on
+2026-09-01 09:08, so the two-commit span crosses two days under a single-date
+heading. The session closes at `24a6682`, which is `origin/main`.
+
+---
+
+### The two commits
+
+#### 1. `82b4a39` — Accept both name shapes in the roster importer
+2026-08-30 12:12. Four files, +203 / -43.
+`functions/api/athletes/import.js` · `AthletesContext.jsx` ·
+`ImportRosterModal.jsx` · `parseRoster.js`
+
+**Shipped.** The operator DECLARES whether their roster holds one Name column or
+a first/last pair, through a toggle above the mapping dropdowns. Nothing is
+inferred from the header or from which fields happen to be mapped, and no
+splitter exists at any layer: a single Name cell is stored exactly as written,
+two halves are joined with one space. `SHAPE_KEYS` in `parseRoster.js` is the
+single source that the modal's target set, the three reset sites, `allMapped`
+and `toPayloadRows` all follow. `suggestMapping` gained a single-name vocabulary
+ordered most-specific-first and still returns null rather than guessing. On flip
+the mapped email is preserved and the name targets are cleared, because email
+means the same column in both shapes while neither name target can transfer
+without asserting something the file does not encode. The endpoint keys
+per-shape allowlists on which keys a row carries, so a row mixing the two shapes
+is rejected as unpermitted fields rather than by a special case; the shape is
+never transmitted, and rejection messages derive from the keys present.
+`AthletesContext` reads the same way, so the staged review table and every
+rejected-row label show the name that will be stored.
+
+**Left out of scope.** No migration. `findMatches`, the chunking and the INSERT
+are untouched.
+
+#### 2. `24a6682` — Move the Excel parse into a Web Worker
+2026-09-01 09:08. Two files, +302 / -64.
+`readRosterFile.js` · `rosterExcel.worker.js` (new)
+
+**Shipped, and the framing is load-bearing: CONTAINMENT, NOT REPAIR.** SheetJS
+0.18.5 still does not stop on a crafted ZIP local-file header, and the spinning
+thread runs until terminated. What changed is that it is no longer the UI
+thread, so the page survives, the operator keeps their work, and a timeout
+becomes possible at all. All SheetJS work moved into `rosterExcel.worker.js`,
+read and sheet inspection and CSV conversion together, so `sheet_to_csv` does
+not stay behind on the UI thread. Errors cross as strings, because Error objects
+do not survive structured clone intact, and the buffer is transferred rather
+than copied. The timeout is 10 seconds, chosen by measurement: 500 rows parses
+in 7 ms and 50,000 rows at 8.00 MB in 321 ms, the slowest parse that can legally
+reach the parser because `MAX_FILE_BYTES` refuses anything past 10 MB first, so
+the ceiling sits at roughly thirty times the slowest legitimate parse. SheetJS
+is imported statically in the worker, so no code-splitting is needed and
+`vite.config.js` is untouched; the chunk stays lazy, with zero SheetJS in the
+main bundle and no worker preload in `index.html`.
+
+**Also in this commit.** The size-guard bypass. An object whose size was absent
+or non-numeric skipped both the 10 MB ceiling and the 512-byte floor and reached
+the parser; it is now refused at `readRosterFile.js:157-159`, because a ceiling
+that exists to fail before reading cannot treat an unknown size as small enough.
+CSV and TSV are untouched and never route through the worker.
+
+**Left out of scope.** THE HANG ITSELF. It is contained, not fixed. The trigger
+is the compression-method byte at offset 8, method 8 hanging where method 0
+throws in 1-3 ms, and `MIN_EXCEL_BYTES` is kept for what it is, a cheap
+one-case refusal, with its comment no longer claiming more.
+
+---
+
+### Branch pruning
+
+Five local branches were deleted BY NAME. All five were ancestors of `main` with
+ZERO commits ahead, verified by `git merge-base --is-ancestor` and
+`git rev-list --count` before deletion, and `git ls-remote` confirmed none of
+the five existed on origin, so nothing was removed from the remote.
+
+```
+slice-excel-worker              slice-snapshot-write-gate
+slice-import-name-shape         slice-tile-drill-pairing
+slice-program-outputs-rates
+```
+
+Local branches went from nine to four: `main` and the three audit branches.
+
+**`qa-audit-enterprise` was retained, and it is the one that needed protecting.**
+It is an ancestor of `main` with zero commits ahead (`c74058a`), so
+`git branch --merged main` LISTS it beside genuinely merged slice branches and a
+sweep would have taken it. That is the BULK-PRUNE HAZARD recorded verbatim in
+CLAUDE.md §6.9, and it is why the five were named rather than swept. It is also
+**local-only with no upstream**: `qa-audit-enterprise@{upstream}` resolves to
+"fatal: no upstream configured", and origin carries four heads, none of them
+this one. Per §6.9 pushing it would preserve nothing, because it is a label on a
+commit `main` already contains and its audit doc is present on `main`, verified
+here with `git cat-file -e main:docs/qa-audit-enterprise-2026-05-30.md`.
+
+---
+
+### Open items carried out of the session
+
+**The SheetJS hang is CONTAINED, NOT REPAIRED.** The worker still spins a full
+core until the 10-second timeout terminates it. Nothing upstream closes this:
+`package.json:19` pins `xlsx` at `0.18.5`, which per the SHEETJS VERSION ruling
+in CLAUDE.md §5.2 is the newest version npm carries, the fixes having moved
+off-registry at 0.19+.
+
+**Three commits are unlogged**, named in the scope note above. This file's own
+premise is one entry per session, and `ae4d515`, `a63fcee` and `a9b5ae9` have
+none.
+
+**Both commits rest on FT's own Chrome screening**, not on agent render. Per
+CLAUDE.md §9 the harness can navigate and read but cannot reliably click, and
+every claim above about what these two changes do WHEN USED comes from the
+screens recorded in their commit bodies.
