@@ -1391,6 +1391,81 @@ and `global.css:36` applies the tight one to `h1`. Re-derived from those, the
 figures are **~1016px and ~226px**. The correction makes the problem slightly
 worse, not better, and the shape of the finding is unchanged.
 
+**A SECOND CORRECTION, and this one does not replace a figure, it WITHDRAWS
+one.** The `label 18` term in the tile-height line above is `11 × 1.6`, and 1.6
+never reaches the element it was applied to. `labelStyle`
+(`StatTile.jsx:79-86`) declares `fontSize` and NO `lineHeight`, so it takes
+whatever it inherits. Every roster and overview tile passes an `onClick`, so
+every one of them renders through `ClickableTile`, which is a `<button>`
+(`StatTile.jsx:40`). `global.css:54-57` gives `button` exactly two
+declarations, `font-family: inherit` and `cursor: pointer`: no `font-size` and
+no `line-height`. Verified by grep rather than by reading that one rule: no
+`line-height` or `font-size` declaration targets `button` anywhere in
+`src/styles/` (the only two line-height declarations sit in the `html, body`
+rule at `:20` and the heading rule at `:36`, and the only font-size declaration
+sits at `:19`), and a `find` for `*.css` under `src/` returns `global.css` and
+`tokens.css` and no third stylesheet. The UA stylesheet's `line-height: normal`
+is applied DIRECTLY to the button, and a directly-applied declaration beats an
+inherited value, so `--sh-line-normal` is interrupted one element above the
+label.
+
+**The mechanism is already LOCKED section 7 text and is cited rather than
+restated.** `CLAUDE.md:1565-1569` records that `lg` "computes to 39px (padding
+20 + border 2 + a 17px UA line box), because browsers force `line-height:
+normal` on form controls and inheritance of `--sh-line-normal` never reaches
+them." **The 17px does NOT transfer.** That figure was measured on a `lg`
+`Button`, whose font-size is not `--sh-text-xs`, and a UA line box is computed
+against the font-size it applies to. What transfers is the mechanism sentence.
+The number belongs to a different control.
+
+**NO REPLACEMENT FIGURE IS GIVEN, and that is the point rather than an
+omission.** `normal` resolves from the font's own ascent, descent and line-gap
+metrics, which are not in the source and cannot be derived from any token.
+Supplying a third number would repeat exactly the move that produced the first
+two: this filing was raised at an assumed 1.2, corrected in the paragraph above
+to an assumed 1.6, and both were assumptions about a value the source does not
+carry. **`label 18` is therefore UNSOUND rather than imprecise**, and the
+honest disposition is to withdraw it and say plainly what is not known.
+
+**CONSEQUENCE FOR THE TOTALS: they are UPPER BOUNDS, not estimates.** `tile
+height 97`, `grid with 5 tiles 549`, `grid with 7 tiles 775` and `header row
+top ~1016` are each built on the withdrawn term and each bounds the true value
+from above. The sensitivity is linear and is stated so a later reader can
+rescale without re-deriving: every 1px of error in the label line box moves
+`tile height` by 1px, the five-tile grid by 5px, the seven-tile grid by 7px,
+and the `~1016` total by 7px, since the total carries the seven-tile grid and
+nothing else that depends on the label. **How far below 18 the true value sits
+is NOT asserted here.** The one directional claim this correction makes is that
+a `normal` line box for a text font runs below a 1.6 multiplier, which is a
+property of how font metrics are generally shaped rather than a reading of this
+font's, and it is flagged as such rather than folded in with the token reads.
+
+**THE FINDING ITSELF IS UNCHANGED.** One column at 375px follows from the 345px
+content box and the 180px `minmax` floor, and no line-height question touches
+that derivation at any point.
+
+**Exactly ONE term in the tile computation is affected, which is checkable
+rather than argued.** `labelStyle` is the only style object in `StatTile.jsx`
+that relies on inherited line-height: `valueStyle` declares `1.1` (`:92`),
+`sublabelStyle` declares `1.5` (`:99`), and the `<button>` declares neither,
+which is what interrupts the inheritance in the first place. So `value 31` is
+sound, both `padding 20` terms are token reads of `--sh-space-5`, and `margin
+8` is `--sh-space-2`. Only `label 18` moves.
+
+**The vocabulary gap, recorded because it explains why this went unqualified
+rather than being caught.** A grep of this file for "UA line box", "form
+control", "form controls" and "inheritance" returns no match at all, exit
+status 1. No filing in the queue carries the vocabulary to reason about a
+UA-applied declaration beating an inherited one, so nothing here was positioned
+to notice. The closest is the `/individual/welcome` CTA filing above, which
+reasons about the same `minHeight`-over-`lineHeight` decision in
+`Button.jsx:61-63` but explicitly DECLINES to assert a mechanism and records
+its own height as UNVERIFIED pending a device measurement. That filing stopped
+where this one did not.
+
+**No fix proposed, and no figure proposed: the term is withdrawn rather than
+replaced.**
+
 **Slice 2 added about 226px of it**, and that is worth naming rather than
 leaving for someone to discover. `3b0f26b` took the grid from five tiles to
 seven, adding 'Outreach paused' and 'Not yet invited' so that every `statusFor`
