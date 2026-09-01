@@ -20,22 +20,61 @@
 
 export const MAX_FILE_BYTES = 10 * 1024 * 1024;   // 10 MB (ruled)
 
-// A FLOOR for Excel only, and it exists for a reason worth stating plainly.
-// SheetJS 0.18.5 HANGS INDEFINITELY on a file that carries a ZIP signature and
-// then stops: a hand-built 14-byte local-file header never returns and never
-// throws. On a browser main thread that is a frozen tab with no recovery and
-// no error, and no timeout can interrupt synchronous JS.
+// A FLOOR for Excel only. It is kept, and its old justification is CORRECTED
+// here because this tree has since proved it wrong.
 //
-// What was measured: every truncation of a REAL workbook, down to 1% of its
-// bytes, throws cleanly in about 70ms and is caught below. Random non-ZIP
-// bytes return quickly as garbage text. Only the tiny ZIP-header case hangs,
-// and a genuine .xlsx cannot approach this size, since the container alone
-// needs [Content_Types].xml, a workbook part, a sheet part and their
-// relationships.
+// THE TRIGGER IS THE COMPRESSION-METHOD BYTE AT OFFSET 8, AND ANYONE
+// REPRODUCING THIS MUST SET IT. A ZIP local-file header declaring method 8
+// (DEFLATE) hangs. The same header declaring method 0 (STORED) THROWS in
+// 1-3 ms and is caught below, surfacing as "That file could not be read. It
+// may be corrupt or password-protected."
 //
-// So this floor removes the DEMONSTRATED hang at no cost to any real file. It
-// is NOT a guarantee that no larger input can hang: only moving the parse off
-// the main thread would give that, which is a Worker and is not this slice.
+// THIS OMISSION HAS ALREADY COST AN HOUR. An earlier version of this comment
+// described the input only as a "14-byte ZIP local-file header", so a screen
+// built the obvious thing -- the signature followed by zero padding -- which
+// declares method 0, threw in milliseconds, and read as proof that the hang
+// was a Node-only artifact. It is not. Build the input with the method byte
+// set or you will reproduce nothing.
+//
+// THE INPUT, IN FULL, so it can be rebuilt from this comment alone. A 30-byte
+// local-file header, all little-endian, then padding to any length:
+//   0-3   50 4B 03 04   signature
+//   4-5   14 00         version needed
+//   6-7   00 00         general purpose flag
+//   8-9   08 00         COMPRESSION METHOD 8 = DEFLATE   <-- the trigger
+//   10-11 00 00         last mod time
+//   12-13 00 00         last mod date
+//   14-17 00 00 00 00   CRC-32
+//   18-21 00 00 00 00   compressed size
+//   22-25 00 00 00 00   uncompressed size
+//   26-27 00 00         file name length
+//   28-29 00 00         extra field length
+// Truncating that header to its first 14 bytes hangs identically, so bytes
+// 14-29 are not load-bearing; byte 8 is. Padding may be zeros or noise.
+//
+// THE HANG IS A FULL-CORE CPU SPIN, NOT A WAIT. Measured: 4 seconds of
+// processor time in 4 seconds of wall time. That matters for two reasons. It
+// is why no timeout on the same thread could ever have interrupted it, and it
+// is why this is not a Node artifact -- it is pure JavaScript with no I/O and
+// no runtime services, and Chrome runs it on the same V8 engine.
+//
+// THE HANG IS NOT SIZE-BOUNDED. The earlier note said only a "tiny
+// ZIP-header case" hangs and sized this floor to that belief. MEASURED IN
+// THIS TREE, method byte set to 8: 600 bytes hangs, 5 KB hangs, 100 KB hangs,
+// with zero padding and with noise padding alike, and the same holds for the
+// bytes actually shipped in the built worker chunk. Every one of those is
+// ABOVE this floor. No byte threshold separates the hanging inputs from the
+// safe ones, so this value could not be raised into a guarantee at any figure.
+//
+// What still holds: every truncation of a REAL workbook, down to 1% of its
+// bytes, throws cleanly in 1-2 ms and is caught below, and a genuine .xlsx
+// cannot approach 512 bytes, since the container alone needs
+// [Content_Types].xml, a workbook part, a sheet part and their relationships.
+//
+// So the floor is KEPT for what it actually is: a cheap refusal that settles
+// one known input in about a millisecond without starting a Worker. It is not
+// a safety boundary and nothing downstream may treat it as one. The Worker
+// and its timeout are what contain the rest.
 const MIN_EXCEL_BYTES = 512;
 
 // The picker's `accept` attribute. Concrete extensions AND MIME types, no
@@ -106,8 +145,21 @@ const REFUSE_UNKNOWN =
 export async function readRosterFile(file) {
   if (!file) return { ok: false, error: 'No file was provided.' };
 
+  // A FILE WITH NO USABLE SIZE IS REFUSED, not treated as unbounded. Both
+  // thresholds below used to be written as `typeof file.size === 'number' &&
+  // ...`, which SKIPPED them entirely for an object whose size was absent or
+  // not a number: such an object passed the 10 MB ceiling AND the Excel floor
+  // and went straight to the parser. Refusing is the deliberate choice. The
+  // ceiling exists to fail before touching contents, so treating an unknown
+  // size as small enough would defeat the one thing it is for, and a File from
+  // a picker or a drop always carries a numeric size, so nothing legitimate is
+  // turned away by this.
+  if (typeof file.size !== 'number' || !Number.isFinite(file.size)) {
+    return { ok: false, error: 'That file could not be measured, so it was not read. Try saving it again, or paste the rows.' };
+  }
+
   // BEFORE any read (ruled).
-  if (typeof file.size === 'number' && file.size > MAX_FILE_BYTES) {
+  if (file.size > MAX_FILE_BYTES) {
     const mb = (file.size / (1024 * 1024)).toFixed(1);
     return {
       ok: false,
@@ -131,60 +183,109 @@ export async function readRosterFile(file) {
   }
 }
 
-// Excel. SheetJS is DYNAMICALLY IMPORTED so it lands in its own chunk rather
-// than the main bundle: it is roughly the size of the entire rest of the app,
-// and every visitor to the landing page, the individual surface and the advisor
-// surface would otherwise pay for a spreadsheet parser they never invoke. The
-// import resolves on first Excel file only.
+// Excel. SheetJS NO LONGER LIVES ON THIS THREAD AT ALL: it is imported by
+// rosterExcel.worker.js and bundled into that worker chunk, so this module
+// names the worker and never touches a spreadsheet parser.
+//
+// The chunk stays LAZY, which was the point of the old dynamic import and is
+// preserved by a different mechanism. The worker chunk is fetched when `new
+// Worker` runs, which happens only for an Excel file, so the landing page, the
+// individual surface and the advisor surface still pay nothing for a parser
+// they never invoke. Verified against the build: the main bundle contains zero
+// occurrences of the SheetJS banner and index.html preloads no worker chunk.
 async function readExcel(file) {
-  if (typeof file.size === 'number' && file.size < MIN_EXCEL_BYTES) {
+  // No `typeof` test here: readRosterFile has already refused a file whose
+  // size is not a finite number, so by this point it is one.
+  if (file.size < MIN_EXCEL_BYTES) {
     return { ok: false, error: 'That file is too small to be a spreadsheet. It may be truncated or corrupt.' };
   }
-  const XLSX = await import('xlsx');
-  const wb = XLSX.read(new Uint8Array(await file.arrayBuffer()), { type: 'array' });
+  return parseExcelInWorker(await file.arrayBuffer());
+}
 
-  const names = wb.SheetNames || [];
-  if (names.length === 0) return { ok: false, error: 'That workbook has no sheets.' };
+// PARSE TIMEOUT, CHOSEN BY MEASUREMENT. Real workbooks were generated and
+// timed against this exact SheetJS build: 500 rows (the row cap) parses in
+// 7 ms at 92 KB, 10,000 rows in 69 ms at 1.55 MB, and 50,000 rows in 321 ms
+// at 8.00 MB, which is the slowest parse that can legally reach the parser
+// because MAX_FILE_BYTES refuses anything past 10 MB first.
+//
+// 10 seconds is roughly THIRTY TIMES that slowest legitimate parse. The
+// headroom is deliberate and is not padding for its own sake: those figures
+// come from Node on a desktop, and the operator may be on a phone, where the
+// same work can be several times slower. A timeout that fires on a real
+// 8 MB roster would be a worse defect than the one being contained, so the
+// multiple is sized to make that outcome implausible rather than merely
+// unlikely. Against a hang, any finite figure is an infinite improvement.
+const PARSE_TIMEOUT_MS = 10000;
 
-  // MULTIPLE WORKSHEETS: the FIRST is used, and the others are NAMED in a note
-  // rather than silently dropped. Choosing among them by content would be a
-  // guess, and asking would add a step to every single-sheet import, which is
-  // nearly all of them.
-  const notes = [];
-  if (names.length > 1) {
-    notes.push(`This workbook has ${names.length} sheets. Only "${names[0]}" was read; ${names.slice(1).map((n) => `"${n}"`).join(', ')} ${names.length === 2 ? 'was' : 'were'} ignored.`);
-  }
+/**
+ * Run the workbook through the Worker, with a timer the parse cannot block.
+ *
+ * WHY A TIMER IS POSSIBLE AT ALL NOW. On the main thread it was not: a hang
+ * inside XLSX.read is synchronous, so a setTimeout scheduled beside it could
+ * never be reached. With the parse on another thread this timer runs on a
+ * thread the parse cannot block, which is the whole mechanical point of the
+ * move.
+ *
+ * TERMINATION IS THE ONLY EXIT FROM A HANG, AND IT IS NOT A CURE. terminate()
+ * stops the worker from the outside; it does not make the parse finish, and
+ * until it fires the worker is spinning a core. The operator gets their page
+ * and their work back, and that is all this buys. It is containment.
+ *
+ * ONE WORKER PER PARSE. It is created here, used once and terminated on every
+ * exit path, so a hung worker can never outlive the read that started it and
+ * there is no shared instance to leave poisoned. The chunk is browser-cached
+ * after the first parse, so the cost of this is module instantiation, which is
+ * negligible beside the parse itself.
+ */
+function parseExcelInWorker(buffer) {
+  return new Promise((resolve) => {
+    let worker;
+    try {
+      // `new URL(..., import.meta.url)` is the form Vite recognises to emit a
+      // separate worker chunk. Constructed HERE rather than at module scope so
+      // nothing is spun up until an Excel file is actually chosen.
+      // No { type: 'module' }: the worker imports SheetJS statically so it needs
+      // no code-splitting, which keeps it a CLASSIC worker and leaves vite.config.js
+      // untouched. See the header of rosterExcel.worker.js for why that matters.
+      worker = new Worker(new URL('./rosterExcel.worker.js', import.meta.url));
+    } catch (err) {
+      resolve({ ok: false, error: 'That file could not be read. It may be corrupt or password-protected.' });
+      return;
+    }
 
-  const sheet = wb.Sheets[names[0]];
-  if (!sheet) return { ok: false, error: 'That workbook has no readable sheet.' };
+    let settled = false;
+    const finish = (result) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      worker.terminate();
+      resolve(result);
+    };
 
-  // MERGED CELLS: SheetJS puts a merged range's value in its top-left cell and
-  // leaves the covered cells empty, so a header merged across two columns
-  // yields one label followed by a blank. That blank is carried through
-  // honestly and renders as "Column N" in the mapping step. Un-merging by
-  // spreading the value across the range would invent header labels the file
-  // does not contain.
-  if (Array.isArray(sheet['!merges']) && sheet['!merges'].length > 0) {
-    notes.push('Some cells in this sheet are merged. Merged values stay in their first column and the rest read as empty.');
-  }
+    const timer = setTimeout(() => {
+      finish({
+        ok: false,
+        error: 'That file took too long to read and was stopped. It may be corrupt. Try saving it again as CSV, or paste the rows.',
+      });
+    }, PARSE_TIMEOUT_MS);
 
-  // DISPLAYED VALUE, NOT STORED VALUE. sheet_to_csv emits each cell's FORMATTED
-  // text (the `w` property) in preference to its raw value, which is what the
-  // operator sees in Excel and what a roster means. Verified against this
-  // version: a date cell holding 46036.79 with a display of "1/14/26" emits
-  // "1/14/26". No option is needed to get this, and none is passed, because the
-  // default is already the correct behaviour; passing rawNumbers:false changes
-  // nothing and would imply otherwise.
-  //
-  // CSV rather than TSV: sheet_to_csv quotes any cell containing a comma, a
-  // quote or a newline, and parseRoster's sniffer counts delimiters OUTSIDE
-  // quotes, so a name like "Lovelace, Ada" survives the round trip. A TSV
-  // conversion would have no equivalent guarantee for a cell containing a tab.
-  const text = XLSX.utils.sheet_to_csv(sheet, { blankrows: false });
-  if (text.trim() === '') {
-    return { ok: false, error: `The sheet "${names[0]}" has no rows.` };
-  }
-  return { ok: true, text, notes };
+    worker.onmessage = (event) => {
+      const data = event.data || {};
+      if (data.ok) finish({ ok: true, text: data.text, notes: data.notes || [] });
+      else finish({ ok: false, error: data.error || 'That file could not be read.' });
+    };
+
+    // Fires if the worker module itself fails to load or throws at top level,
+    // which the onmessage handler would never see.
+    worker.onerror = () => {
+      finish({ ok: false, error: 'That file could not be read. It may be corrupt or password-protected.' });
+    };
+
+    // TRANSFERRED, not copied: a 10 MB roster would otherwise be duplicated in
+    // memory on the way across. `buffer` is unusable here afterwards, which is
+    // correct, since nothing on this side reads it again.
+    worker.postMessage({ buffer }, [buffer]);
+  });
 }
 
 /**
