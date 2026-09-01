@@ -1987,3 +1987,93 @@ at all. That makes it a first-impression defect on the customer surface rather
 than a demo-tree cosmetic one.
 
 **No fix proposed.**
+
+**PARKED SCOPING ITEM, not a defect and not a queued build: a StewardHouse iOS
+app.** Recorded so it is FOUND later rather than acted on now. Nothing below
+describes anything wrong with the tree. The founder ruling is dated 2026-09-01
+and is recorded first; everything after it is SCOPING NOTES, which are
+observations from a read-only pass and carry no ruling force.
+
+**FT RULED 2026-09-01, three parts.** An iOS app, IF it is ever built, must be
+a REAL FUNCTIONING APP DESIGNED FOR THE PHONE. It must not be a truncated or
+reflowed view of the desktop surface, and **a PWA or add-to-home-screen wrapper
+around the existing renderer does NOT satisfy this ruling.** Audience scope as
+ruled: individuals certainly, advisors and enterprise possibly, **Operations
+OUT**. And **PARKED**: no design, no build, and no dependency may be added
+toward it, and nothing in the current arc is to be shaped around it.
+
+**SCOPING NOTE, auth: the session rides a COOKIE, and there is no second
+mechanism.** `functions/api/me.js:43` reads the session as
+`auth.api.getSession({ headers: context.request.headers })`, and better-auth's
+own cookie handling is what populates those headers;
+`functions/_lib/auth.js:174` sets `cookieCache: { enabled: false }`, which
+tunes that mechanism rather than replacing it. On the client every
+authenticated call passes `credentials: 'include'` (`AppIdentityContext.jsx:42`
+and every write in `AthletesContext.jsx`, `ClientsContext.jsx` and their
+siblings). **No inbound bearer-token path exists anywhere in the tree**: a grep
+for `Authorization` and `Bearer` across `src/` and `functions/` returns one
+functional hit, `functions/_lib/sender.js:39`, which is the OUTBOUND Resend API
+key and is not an authentication path into this application. A native iOS
+client has no same-origin cookie context, so it would need bearer tokens and a
+token-issuing endpoint, and **neither exists**. **That doubles the
+authentication surface, and it would double it while the auth observability gap
+is still open.** This queue records that gap at `:1106-1111`, which resolves it
+to CLAUDE.md section 11.
+
+**Recorded in passing, verified while following that pointer and NOT a
+correction to the paragraph it concerns**, which is left exactly as written:
+the line numbers inside `:1106-1111` have DRIFTED. It states that section 11
+begins at `CLAUDE.md:2106` and that the filing sits at `:2170-2174`. At HEAD
+the section 11 heading is at `:2170` and the observability filing opens at
+`:2234`. The pointer still resolves by section; only the line numbers are
+stale, and they are stale because CLAUDE.md grew beneath them.
+
+**SCOPING NOTE, magic links: the return path is the hard part, and it is
+UNVERIFIED here.** An emailed link opens the system browser, not an app. Coming
+back into a native app requires universal links, which require an
+Apple-hosted-domain association file and a provisioned Apple Developer team.
+**None of that is established from this tree**, because none of it is in this
+tree: it is an Apple platform requirement, recorded so a later reader does not
+discover it after committing to a direction. What IS established from the tree
+is the shape of the existing flow, which is browser-terminated by construction:
+the verify request sets the session cookie on whichever origin served it and
+then redirects to `BETTER_AUTH_URL` (CLAUDE.md section 9 records the origin
+stranding that follows from exactly this).
+
+**SCOPING NOTE, the Apple Developer account, which is a FOUNDER-JUDGMENT ITEM
+and is NOT resolved here.** An Apple Developer ORGANIZATION account requires a
+legal entity and a D-U-N-S number. **No entity formation is recorded anywhere
+in this repository**: a grep of CLAUDE.md for `LLC`, `incorporat`, `legal
+entity`, `D-U-N-S`, `DUNS`, `Delaware` and `501(c)` returns exit status 1, no
+match, and the only hits across `docs/` are fictional org names in fixtures and
+sample ProPublica records, none of them StewardHouse's own. The alternative is
+an INDIVIDUAL account, which would place StewardHouse's entire iOS presence in
+a personal name. Recorded as the choice it is; nothing here resolves it.
+
+**SCOPING NOTE, honesty-surface duplication, and this is the one that touches
+the guardrails directly.** Every disclosure surface would exist in two
+renderers: `RateDisclosure` (`src/surfaces/enterprise/shared/RateDisclosure.jsx`),
+the consent card (`src/surfaces/individual/RecordKeeping.jsx`), and the "Not
+tracked" language, which a grep places at 30 sites across `src/`. **The current
+discipline holds PARTLY BECAUSE THERE IS ONE RENDERER.** CLAUDE.md section 6
+rule 14 defines the demo-tree byte-identical claim as a per-slice isolation
+proof, and section 7 carries the absence-gating rules it serves: "Demonstrative
+vs LIVE honesty boundary", "Aggregate-default with purposeful drill", and "Path
+B, the structural-not-advisory boundary". Every one of those is enforced today
+by convention over a single codebase, and CLAUDE.md section 6 opens by recording
+that NOTHING in this repository enforces any of it automatically. **Two
+renderers would create a drift surface for precisely the disclosures Path B
+depends on**, and the drift would be invisible to the one check that exists,
+since `npm run build` is `vite build` and would not read a second client at all.
+
+**SCOPING NOTE, App Store review: FLAGGED, NOT RESOLVED.** Review would evaluate
+whether the product gives financial or philanthropic advice. Path B's answer is
+that it does not, and the answer is structural rather than a disclaimer: the
+platform organizes what an advisor or funder decides and does not decide for
+them. That answer would be made to a reviewer who arrives without any of this
+context. **How a reviewer would read it is UNVERIFIED and cannot be established
+from the tree.**
+
+**No path forward is proposed here. Neither PWA nor native is recommended, and
+this item is not ranked against anything else in this queue.** It exists to be
+found.
