@@ -615,3 +615,166 @@ edit, since the commit is now pushed.
 **Three of the five filings rest on source arithmetic, not rendered
 measurement**, and each says so in its own text. The one code change is the
 exception: it was screened by FT locally and confirmed on production.
+
+---
+
+## Session — 2026-09-01 (third)
+
+Every count below was re-proven against the tree at HEAD `2726d40`, not carried
+from session notes.
+
+**Scope, and it is narrower than it first looks.** `git rev-list --count
+55b0434..HEAD` returns ONE. This entry covers TWO commits, because `55b0434` is
+the commit that WROTE the block above and so could not be covered by it, the
+same self-reference the second block records for `ef2f0c4`.
+
+**Two commits named in the session brief are ALREADY COVERED and are referenced
+rather than restated:** `7cff1c1`, the tile-grid floor, at `#### 5.` of the
+second block, and `4cee27a`, the parked athlete soft-delete ruling, at
+`#### 6.`. Neither is repeated here.
+
+**The shape of the session.** One docs commit and one build slice. The build
+slice is the substantive work and is the first change to the authentication path
+since the July outage.
+
+---
+
+### The two commits
+
+#### 1. `55b0434` — Amend the FK filing, file the scanner defect, log the session
+
+Three docs-only edits, 284 insertions with zero deletions across CLAUDE.md and
+this file.
+
+The §10 foreign-key filing was AMENDED rather than rewritten. Its claim that
+local evidence was "a node:sqlite session, not D1" understated it: a stronger
+probe predates the filing by twelve days at `invites/[id].js:65-75`, dated
+2026-08-15, run through `wrangler d1 execute --local` against a `VACUUM INTO`
+scratch copy, exercising CASCADE, SET NULL and a NO ACTION rejection. Local
+enforcement is VERIFIED; production remains unverified, so the conclusion is
+unchanged and only the evidence base moved. The amendment also records the
+delete-path asymmetry and notes the filing is now downstream of the parked
+soft-delete ruling.
+
+§10 gained a new `### Filed —` sub-block for the scanner defect: a matcher built
+by string concatenation lost a backslash twice, once writing the script to disk
+and once in JavaScript's single-quoted string evaluation, leaving the literal
+class `[s>/]` so tags followed by a space never matched. It reported 3 sites
+where there were 20. The lesson recorded is to assert a KNOWN-POSITIVE CONTROL
+before trusting any scan count.
+
+#### 2. `2726d40` — Stamp magic-link send outcomes to auth_send_log
+
+**The session's substantive work, and the first change to the auth path since
+the July outage.** Migration **0021** adds `auth_send_log`, append-only, one row
+per ATTEMPTED send, with a TEXT UUID key, TEXT ISO timestamp and a CHECK on
+outcome. `sendMagicLink` now CATCHES the send failure, STAMPS the outcome, and
+RETHROWS the original error object unwrapped.
+
+**THE FINDING THAT MADE THE RULING LOAD-BEARING, and it is the reason this slice
+is worth a log entry at all.** better-auth's magic-link endpoint awaits the
+callback and then returns `ctx.json({ status: true })` UNCONDITIONALLY
+(`dist/plugins/magic-link/index.mjs:75-81`). It inspects no return value and
+wraps the call in no try/catch. **So swallowing the error would have produced a
+200 and told users their email had been sent when it had not.** FT's no-quiet-
+lies ruling was therefore the difference between a correct implementation and a
+broken one, NOT a preference expressed over a working alternative. Catch-and-
+swallow was never a viable shape here; RETHROW was the only one, and the
+constraint is what surfaced that rather than a design instinct.
+
+The second constraint has its own mechanism: the stamp write carries its OWN
+try/catch and swallows, so a D1 failure inside the stamp cannot replace the send
+error. That is concrete rather than defensive, because §11's diagnosis reads
+`Resend send failed: {status}` to name the cause, and a stamp error surfacing in
+its place would destroy exactly that signal.
+
+**SCREENED END TO END BY FT, on all three paths.** A successful send wrote a
+success row. A DELIBERATE 401 wrote a failure row **with the Resend diagnostic
+intact**, and the user still saw "Sign-in is temporarily unavailable", which is
+the client-observable-unchanged constraint holding under the exact condition it
+was written for. The allowlist refusal wrote NOTHING, as ruled. The slice was
+then merged, the migration applied to remote, and the behaviour verified LIVE IN
+PRODUCTION with a real send.
+
+**THE LIMIT, stated plainly because the commit body states it and the table's
+own docblock states it.** NOTHING READS THIS TABLE. There is no cron, no
+scheduled worker and no triggers block anywhere in this project, so nothing can
+read it on a schedule. **This bought FINDABILITY, not MONITORING.** A human who
+already suspects a problem can now answer "since when" from D1 instead of from a
+live reproduction; nobody is told. Alerting is PARKED, and unparking it needs a
+decision about adding scheduled execution to this project, which would be new
+infrastructure rather than a slice.
+
+The migration docblock carries the blind spot in full: a row exists only where
+the Worker reached the catch block and D1 was writable, a gap means quiet or
+broken and cannot distinguish them, the correlation is adverse, and a success
+row is the only positive signal against no expected-rate baseline.
+
+---
+
+### Operational findings
+
+Two things went wrong in the mechanics of shipping this, both worth the runbook
+because both were silent and neither is in it.
+
+**`d1 migrations list --remote` FAILED WITH 7403 WHILE `d1 execute --remote`
+WORKED**, on the same token, the same database and the same account in the same
+window. `wrangler whoami` showed the `d1 (write)` scope present. So this was not
+a missing permission in any form the tooling reports.
+
+**The workaround used, and it is the transferable part:** read the
+`d1_migrations` table directly with a plain SELECT through `d1 execute --remote`,
+which returned the applied list and established that production stood at `0020`
+with no gaps. The apply itself then ran normally. **The cause is UNKNOWN and is
+recorded as unexplained rather than diagnosed.** Two commands against one
+database disagreed about authorization, and nothing observed explains why.
+
+**`.dev.vars` WAS CORRUPTED TO UTF-16 A SECOND TIME**, by a deliberate paste
+through Notepad. **The failure is silent at every layer**, which is what makes it
+worth recording rather than merely annoying: wrangler prints "Using secrets
+defined in .dev.vars" whether the file is readable or not, and every variable
+loads EMPTY rather than erroring.
+
+**DETECTION: the BOM reads `255 254`.** The check is a one-line node read of the
+first two bytes of the file, comparing against those values; UTF-16LE begins
+`0xFF 0xFE`, and a correct file does not. The repair is a PowerShell in-place
+round-trip, reading the file as `[Text.Encoding]::Unicode` and writing it back
+as ASCII.
+
+**THE VISIBLE TELL AT SERVER START is an absence, which is why it is missable:**
+NO `env.*` secret lines appear in the bindings table wrangler prints on boot.
+Nothing says "these failed to load"; the rows simply are not there, and a reader
+who does not know what the table should contain sees a normal-looking startup.
+
+---
+
+### Branch pruning
+
+**ONE branch was pruned.** `slice-auth-send-stamp` was cut off `main` at
+`55b0434`, carried the auth slice, was merged fast-forward and then deleted.
+Local branches stand at four: `main` and the three audit branches. No `--merged`
+sweep was used, per the §6.9 bulk-prune hazard.
+
+---
+
+### Open items carried out of the session
+
+**Alerting is parked and is now the named next decision.** The table records;
+nothing watches. Unparking requires scheduled execution, which this project has
+never had.
+
+**RETENTION ON `auth_send_log` IS UNBOUNDED AND UNRESOLVED.** Append-only, no
+purge, and Ruling E Clause 3's shortest-defensible-window is counsel-gated and
+unanswered. It joins four existing unpruned tables, with one difference the
+migration records: those grow with deliberate operator actions, and this one
+grows with input from anyone who can reach the sign-in form.
+
+**Two operational findings above are recorded here and NOT yet in the runbook
+sections they belong to.** The 7403 disagreement belongs beside §6.10's remote
+procedure; the `.dev.vars` encoding failure belongs beside §6.12's secrets
+discipline, which today covers reading secrets safely and says nothing about the
+file being unreadable. Neither move is made in this commit.
+
+**The parked rulings from the second block are unchanged**: the iOS app
+(`e396306`) and athlete soft delete (`4cee27a`), each still carrying a
+founder-judgment item left open.
