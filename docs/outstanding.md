@@ -11,10 +11,22 @@ title, a blocker, and a pointer. It carries no evidence and restates no finding.
 holds the narrative of how each session went. Where those disagree with this
 file, they are right and this file is stale.
 
-**As committed: 76 OPEN, 9 PARKED, 6 founder-judgment, 4 answerable only by FT,
-10 ruled out.** The OPEN count breaks down as six ruled tiers, then
-gates-other-work 11, gates-a-stated-commitment 4, BMF-and-Discover 8,
-cheap-and-mechanical 18, large 24, and blocker-undetermined 2.
+**Last swept: 2026-09-01.** Next sweep due 2026-10-01. That date is read at the
+start of every agent session and, once 30 days have passed, it BLOCKS BUILD
+SLICES until a sweep runs. Docs commits, rulings and read-only passes are not
+blocked. The rule, what a sweep is for, and why the interval is 30 days are in
+CLAUDE.md §6, the 30-day sweep.
+
+**REFRESH ON STATE CHANGE (ruled 2026-09-01, FJ-6).** This file is updated when
+an item opens, closes, or moves, and the edit rides the commit that caused the
+change. That is the per-change cadence; the sweep above is the periodic backstop
+for what the cadence misses.
+
+**As committed: 76 OPEN, 9 PARKED, 6 founder-judgment of which 2 are now ruled,
+4 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
+ruled tiers, then gates-other-work 11, gates-a-stated-commitment 4,
+BMF-and-Discover 8, cheap-and-mechanical 18, large 24, and
+blocker-undetermined 2.
 
 **NO LINE NUMBERS INTO DOCS. Citations name a section and a filing title.** That
 rule is load-bearing rather than stylistic, and the commit preceding this file
@@ -457,7 +469,7 @@ Blocker: ruled OPTIMISTIC OFFER PLUS RECOVERY, and unbuilt.
 Detail: CLAUDE.md §5.1, P-7.
 
 **A41 | The 403 copy asserts a present-tense fact the screen contradicts.**
-Blocker: FT has not ruled which arc owns it. See FJ-4.
+Blocker: none. Owned by P-7, ruled 2026-09-01. FJ-4 carries the reasoning.
 Detail: CLAUDE.md §5.1, P-7, its closing NOT RULED note.
 
 **A43 | Advisor pipeline settings persist nothing, and no pipeline endpoint
@@ -618,6 +630,14 @@ holds A39's window open, so ruling here closes it as a side effect.
 **FJ-4 | A41: which arc owns the 403 copy defect?**
 CLAUDE.md §5.1 records it under P-7 while saying it may belong to P-6 slice 2
 instead, and that FT has not ruled which.
+**RULED 2026-09-01: A41 STAYS IN P-7.** It is not moved to P-6 slice 2. A56 is
+that slice, and it is blocked on advisor and enterprise gate emissions in
+`/api/me` that do not exist and that nothing is scheduled to build, so assigning
+A41 there would make an actionable defect unschedulable. P-7 already carries
+A40, ruled but unbuilt, so A41 attaches to a live arc instead. The two are
+adjacent rather than identical: A41 is copy on one screen, A56 is a shared
+string across three gate branches. Kept here rather than deleted so the
+reasoning survives.
 
 **FJ-5 | A54: Marcus unclaimable. The filing says the remedy is a ruling, not a
 patch.**
@@ -628,6 +648,24 @@ No sign-in path recovers the row. What it should become is undecided.
 no update rule. Candidates: refreshed per session alongside
 `docs/session-log.md`, refreshed per arc, or refreshed on demand. Without one it
 becomes the thing it was written to fix.
+**RULED 2026-09-01: REFRESH ON STATE CHANGE.** This file is updated when an item
+opens, closes, or moves, and the edit RIDES THE COMMIT THAT CAUSED THE CHANGE.
+There is no separate refresh cycle, no per-session pass and no per-arc pass.
+The 30-day sweep ruled the same day is NOT a refresh cadence and does not
+qualify this one: it is a periodic audit of what this cadence missed, and
+CLAUDE.md §6, the 30-day sweep, carries it.
+The basis, against the three candidates. F5 closing on 2026-09-01 produced a
+two-line edit; had a docs commit been pending it would have ridden along at zero
+cost. Per session invites narration, which is how the session log stopped being
+readable as a queue. Per arc leaves the file stale for weeks. On demand means it
+rots until someone notices, and not relying on someone noticing is why this file
+exists.
+**The known weakness, stated plainly:** it depends on whoever closes an item
+updating the index in the same commit. That is the same discipline that already
+governs commit messages here, and three commits this year show it does not
+always hold: `82b4a39`, `7cff1c1`, and the nine uncredited advisor closures,
+each of which changed state without the record moving with it. That gap is what
+the 30-day sweep in CLAUDE.md §6 covers.
 **A BROADER QUESTION WAS CONSIDERED AND IS RULED OUT**, recorded so it is not
 reopened: whether this file lets `docs/session-log.md` or commit-message
 discipline carry less. It does not, and neither changes. The sweep that produced

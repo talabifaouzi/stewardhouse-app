@@ -1008,6 +1008,13 @@ them.
 **This records the posture and stops there. Whether to ADD hooks, CI or lint is
 a separate decision, and nothing above argues for it.**
 
+**COUNT NOTE 2026-09-01: the survey above was taken at `9247b36` against
+SEVENTEEN rows, and rule 18 postdates it.** The numbers are left as they were
+measured rather than re-derived, per this file's practice. Rule 18 is a
+PARTIAL-trace row and belongs to neither tally cleanly: its `Last swept:` date
+is checkable in `docs/outstanding.md`, while whether a session actually read
+that date leaves no trace at all.
+
 Every substantive change runs as a **slice**. The rhythm:
 
 1. **Hard git-state gate.** Confirm current branch and HEAD before starting.
@@ -1486,6 +1493,31 @@ Every substantive change runs as a **slice**. The rhythm:
     caught an undocumented route-shadowing risk unprompted by generating the
     route table, proved the batch shape rather than asserting it, and surfaced
     three judgment calls at the right level of detail.
+18. **THE 30-DAY SWEEP, AGENT-CHECKED, BLOCKING FOR BUILD SLICES ONLY (FT-ruled
+    2026-09-01).** `docs/outstanding.md` carries a **`Last swept:`** date in its
+    header. The first value is **2026-09-01**, so the next sweep is due
+    **2026-10-01**, or the next session opened on or after that date. At the
+    start of every agent session the agent READS that date, and if 30 or more
+    days have passed it SAYS SO before doing anything else.
+
+    **WHAT THE GATE BLOCKS: build slices, and nothing else.** Docs commits,
+    rulings, investigation, read-only passes, and the sweep itself all proceed
+    normally. The risk being guarded against is picking the wrong next slice
+    from a stale queue; reading and ruling do not carry it.
+
+    **THIS IS A CONVENTION THE AGENT FOLLOWS, NOT ENFORCEMENT**, and the §6
+    header already says why: there is no hook, no CI and no scheduled execution
+    anywhere in this project. It holds the way the bank rule holds.
+
+    **WHY 30 AND NOT SHORTER.** A gate that fires often enough to be annoying
+    gets waved past, and a waved-past gate is worse than none, because the date
+    advances while nobody sweeps.
+
+    **WHAT A SWEEP IS FOR, one line each.** DIVERGENCE: every open entry
+    re-verified at HEAD, which is what produced the eleven corrections in
+    `d08b20e`. DISCOVERY: items that exist in no queue at all, of which A59 is
+    the example, and the parked lists inside scoping documents that
+    `docs/outstanding.md` names as its own known weak spot.
 
 Stop background shells (dev server, watch loops) at bank time, and LAUNCH them
 as tracked background tasks so `TaskStop` applies at all. `TaskStop` is the
