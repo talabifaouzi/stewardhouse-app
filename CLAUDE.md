@@ -2235,6 +2235,89 @@ case whose answer is already known, before reading the answer you do not know.
 **Full filing, with the complete 20-site enumeration by file and line:**
 `docs/filed-defects.md`, the flow-content-inside-button entry.
 
+### Filed — `d1 migrations list --remote` returned 7403 while `d1 execute --remote` worked (2026-09-01)
+
+**TWO COMMANDS AGAINST ONE DATABASE DISAGREED ABOUT AUTHORIZATION, IN THE SAME
+WINDOW.** `wrangler d1 migrations list --remote` failed with **7403**.
+`wrangler d1 execute --remote` succeeded against the SAME database, on the SAME
+token, under the SAME account, minutes apart.
+
+**IT IS NOT A MISSING PERMISSION IN ANY FORM THE TOOLING REPORTS.**
+`wrangler whoami` showed the **`d1 (write)`** scope present. So the obvious
+first hypothesis is ruled out by the tool that would report it, and the check
+worth running first is the one that returns nothing useful.
+
+**THE WORKAROUND, and it is the transferable part.** `d1_migrations` is an
+ordinary table. Read it directly with a plain SELECT through
+`d1 execute --remote`, which is the command that still works. That returned the
+applied list and established production stood at **0020 with no gaps**, which is
+the exact fact `migrations list` exists to report. **The apply itself then ran
+normally.** The failure was confined to the list subcommand and did not
+extend to applying.
+
+**WHERE THIS FIRES: §6.10's procedure, step (4).** That step has FT run
+`wrangler d1 migrations list --remote` and confirm it reports
+`No migrations to apply!`, and names that command as the closure evidence the
+rule requires, precisely because the apply output cannot distinguish an applied
+migration from an abandoned one. So a reader meets this failure while trying to
+satisfy the one check §6.10 will accept. The SELECT above answers the same
+question from the same database and is the fallback when the subcommand will not
+run.
+
+**THE CAUSE IS UNKNOWN. This is recorded as UNEXPLAINED, not diagnosed.**
+Nothing observed accounts for one subcommand being refused while another
+succeeds on identical credentials against an identical target, and no
+speculation is offered here. A later session that reproduces it should record
+what it finds rather than treat this entry as a diagnosis.
+
+### Filed — `.dev.vars` corrupted to UTF-16 fails SILENTLY at every layer (2026-09-01)
+
+**SECOND OCCURRENCE.** Editing `.dev.vars` in Notepad re-saves it as UTF-16, and
+the file stops working while continuing to look correct in every editor.
+
+**THE FAILURE IS SILENT AT EVERY LAYER, which is the whole finding.** Wrangler
+prints `Using secrets defined in .dev.vars` whether the file is readable or not.
+Nothing errors. Nothing warns. **Every variable loads EMPTY**, so downstream
+code behaves as though the secrets were simply absent rather than unreadable,
+and the failures surface far from the cause: a sender that throws, an auth
+secret that will not sign, a binding that resolves to nothing.
+
+**THE VISIBLE TELL IS AN ABSENCE, which is why it is missable.** At server start
+wrangler prints a bindings table. When the file is corrupt, **NO `env.*` secret
+lines appear in it.** Nothing announces a failure; the rows are simply not there.
+A reader who does not already know what that table should contain sees a
+normal-looking startup, and that is exactly how this got past a first occurrence.
+
+**DETECTION: READ THE FIRST TWO BYTES.** A UTF-16 LE file begins **255 254**
+(`FF FE`). The check by shape: read `.dev.vars` as a BUFFER rather than as text,
+print bytes 0 and 1, and separately attempt to match the expected key line
+interpreted as UTF-8. A healthy file shows neither of those byte values and
+matches the key line; a corrupt one shows `255 254` and matches nothing. Reading
+it as text hides the problem, because the decoder silently produces plausible
+output.
+
+**THE FIX BY SHAPE:** read the file with PowerShell using `Unicode` encoding and
+write it back as **UTF-8 WITHOUT BOM**. Two cautions ride it. The file MUST NOT
+be open in another process or the write fails, which includes the editor that
+caused the problem. And a UTF-8 write that emits a BOM reintroduces a variant of
+the same failure, so the no-BOM half is not optional.
+
+**WHAT THIS ENTRY ADDS THAT THE FIRST OCCURRENCE LACKED: it exists.** The first
+occurrence was NEVER RECORDED IN THIS FILE. A grep of CLAUDE.md at HEAD for
+`UTF-16`, `255 254`, `BOM` and `Notepad` returns exit 1 on all four, so there was
+no warning for the second occurrence to fail to prevent. The recurrence happened
+because nothing was written down, which is a different failure from a written
+warning going unread, and the two call for different responses.
+
+**Beyond existing at all, what it carries is the DETECTION METHOD and the
+VISIBLE TELL**: the `255 254` byte check and the missing `env.*` rows. Knowing
+the file can break is not actionable; knowing how to see that it has broken, in
+under a second, is. **SCOPE NOTE: this sits in §10 for format rather than
+subject.** Its natural sibling is §6.12, secrets discipline, which today covers
+reading secrets SAFELY and says nothing about the file being UNREADABLE. §6.12 is
+a numbered prose rule and a `### Filed —` block would break that structure, so
+this lives here and §6.12 is named as the place a reader might look first.
+
 ---
 
 ## 11. Production incident log
