@@ -2160,10 +2160,80 @@ workshop_attendance). This is MOOT today because all four child tables are empty
 and every live Pending athlete has no children, and it becomes load-bearing for
 any future Pending athlete that acquires them.
 
+**AMENDED 2026-09-01: the sentence above UNDERSTATES the local evidence, and is
+left standing rather than rewritten, because what it got wrong is instructive.**
+It says local reads are "a node:sqlite session, not D1". A STRONGER local probe
+exists and PREDATES this filing by twelve days:
+`functions/api/invites/[id].js:65-75`, dated 2026-08-15, run through
+`wrangler d1 execute --local` against a `VACUUM INTO` scratch copy. That is the
+D1 runtime, not a node:sqlite session. It exercised all three behaviours:
+CASCADE cascaded, SET NULL nulled, and a NO ACTION parent delete was REJECTED
+with "FOREIGN KEY constraint failed". **LOCAL ENFORCEMENT IS THEREFORE
+VERIFIED**, and the probe's own comment says so at `:69`.
+
+**THE FILING'S CONCLUSION IS UNCHANGED. Only its evidence base was
+understated.** Production D1 remains UNVERIFIED, for the reason
+`invites/[id].js:73-74` already gives: checking it needs a remote write, and
+remote writes are FT-only per §6.10. A local probe cannot answer a question
+about the remote runtime, which is the same shape as the bound-parameter entry
+above: a correct measurement of the wrong target.
+
+**THE DELETE-PATH ASYMMETRY, recorded because it is what makes this
+load-bearing rather than theoretical.** Two paths remove an athlete and they do
+not agree about the cascade. `functions/api/athletes.js:446` and
+`functions/api/athletes/[id].js:100` hard-delete the parent and RELY on the four
+inbound CASCADEs to take `athlete_activity`, `athlete_note`,
+`athlete_reflection` and `workshop_attendance` with it.
+`functions/api/athletes/[id].js:119-122`, the anonymize path, deletes those SAME
+four child tables BY HAND before updating the parent. One path trusts the
+constraint and the other does not, in the same file, eighteen lines apart.
+
+**THIS FILING IS NOW DOWNSTREAM OF A RULING.** FT ruled 2026-09-01 that athlete
+deletion should be SOFT rather than hard, parked at the end of
+`docs/filed-defects.md`. If that is built, the two hard-delete paths stop
+existing in their present form and the cascade stops being load-bearing for
+them. **Read the parked entry before treating this as work**, because the
+question this filing asks may be answered by deleting the code that asks it.
+
 **Related, reported and not fixed: OperationsRoster.jsx does not import
 DataTable.** It reimplements the idiom and cites DataTable.jsx by line number in
 comments as its source. A change to DataTable will not break it; it will
 silently drift.
+
+### Filed — a scanner reported 3 sites where there were 20, and only a control caught it (2026-09-01)
+
+**A MATCHER BUILT BY STRING CONCATENATION LOST A BACKSLASH TWICE, AT TWO
+SEPARATE STAGES.** The intended suffix was `'(?=[\\s>/]|$)'`. One backslash was
+consumed writing the script to disk, leaving `'(?=[\s>/]|$)'` in the file.
+JavaScript then consumed the second when it evaluated that single-quoted string,
+because `'\s'` is not a recognised escape and degrades to a bare `s`. The regex
+engine received the literal character class `[s>/]`.
+
+**THE OUTPUT LOOKED LIKE A FINDING RATHER THAN A FAULT, which is the whole
+hazard.** That class required the character after a tag name to be `s`, `>` or
+`/`, so `<p style=`, followed by a SPACE, never matched. Only tags sitting at
+end of line survived. The scan reported **3** sites where there were **20**
+across 7 files. Three is a plausible number for the question being asked;
+nothing in the output announced itself as broken, and the three it did report
+were real.
+
+**THE LESSON, and it is the transferable half: ASSERT A KNOWN-POSITIVE CONTROL
+BEFORE TRUSTING ANY SCAN COUNT.** Three sites were known to match before the
+scan ran, so a scan returning zero for that file was a broken scan regardless of
+what it reported anywhere else. The re-verification asserts that control first
+and exits non-zero if it does not hold, which turns a silent under-count into a
+loud refusal. **AND PREFER REGEX LITERALS OVER CONSTRUCTED STRINGS**: a literal
+cannot lose a backslash the way a string passed through a file write and then a
+string-literal evaluation can.
+
+**SAME FAMILY as the delta-counting hazard at the end of §6 and the
+minified-bundle grep rule in §9.** All three are a check that did not measure
+what it claimed to measure, producing output shaped exactly like a real result.
+The distinguishing move in every case is to verify the instrument against a
+case whose answer is already known, before reading the answer you do not know.
+
+**Full filing, with the complete 20-site enumeration by file and line:**
+`docs/filed-defects.md`, the flow-content-inside-button entry.
 
 ---
 

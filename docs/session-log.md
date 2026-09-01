@@ -401,3 +401,217 @@ none.
 CLAUDE.md §9 the harness can navigate and read but cannot reliably click, and
 every claim above about what these two changes do WHEN USED comes from the
 screens recorded in their commit bodies.
+
+---
+
+## Session — 2026-09-01 (second)
+
+Every line number and count below was re-proven against the tree at HEAD
+`4cee27a`, not carried from session notes.
+
+**Scope, and a boundary worth stating precisely.** `git rev-list --count
+24a6682..HEAD` returns SEVEN, but this entry covers SIX. The seventh is
+`ef2f0c4`, which is the PREVIOUS session's own closing commit: it wrote the
+`## Session — 2026-09-01` block above and the CLAUDE.md size-guard paragraph. A
+log entry cannot cover the commit that wrote the entry before it, so `ef2f0c4`
+is named here rather than logged, and the chain reads continuously.
+
+**The shape of the session.** Six commits, of which **exactly one changed
+code**. The other five are `docs/filed-defects.md` appends: three defect
+filings and two parked rulings. Every one was a pure append with zero
+deletions, verified before each commit by a line-count reconciliation and a
+sha256 of the region above the insertion.
+
+---
+
+### The six commits
+
+#### 1. `d0091c1` — File the empty-authenticated-roster null% sublabel
+
+An authenticated enterprise roster with NO athletes renders the literal string
+`"null% of program"` as the Actively progressing tile's sublabel.
+`consentAware` is `athletes.some(a => typeof a.claimed === 'boolean')`
+(`enterpriseStats.js:38`), which returns false on an empty array without
+invoking its predicate, so control takes the template-literal branch and
+stringifies a null `activelyProgressingPct`. The R4 guard that would catch it is
+nested inside the `consentAware`-true arm and is never reached in the one state
+that produces this null.
+
+Both `EnterpriseRoster.jsx:139-141` and `EnterpriseOverview.jsx:39-41` carry it,
+from character-identical expressions; those are the only two unguarded
+interpolations of the value in `src/`. A non-empty authenticated roster CANNOT
+reach it, established by enumerating every `setAthletes` call site in
+`AthletesContext.jsx` rather than assumed: four insertion paths route through
+`toAthleteElement`, whose `claimed` is `!!row.person_id` (`athletes.js:111`),
+and the fifth writes `claimed: false` (`AthletesContext.jsx:163`).
+
+**A citation collision is recorded in the filing rather than worked around.**
+The rate rule is labelled R4 at `enterpriseStats.js:94-95`, but the R4 in
+CLAUDE.md §5.1 is the unrelated P-3c standalone-consent-card ruling. CLAUDE.md
+carries the rate rule unlabelled in §5, inside FORK 1. The filing cites the code
+and §5, not §5.1.
+
+#### 2. `9ec0f4c` — Withdraw the label line-height term from the stat-grid filing
+
+A second correction inside the stat-grid stacking filing. The `label 18` term
+was `11 × 1.6`, and 1.6 never reaches that element: `labelStyle`
+(`StatTile.jsx:79-86`) declares `fontSize` and no `lineHeight`, and every tile
+renders through `ClickableTile`, which is a `<button>`. `global.css:54-57` gives
+`button` only `font-family: inherit` and `cursor: pointer`, so the UA
+stylesheet's directly-applied `line-height: normal` wins over the inherited
+`--sh-line-normal`. Confirmed by grep: no `line-height` or `font-size`
+declaration targets `button` anywhere in `src/styles/`, and `src/` carries no
+third stylesheet.
+
+**No replacement figure was given, deliberately.** `normal` resolves from the
+font's own ascent, descent and line-gap metrics, which are not in the source,
+and the filing had already been wrong twice from assumed line-heights (1.2, then
+1.6). The term is recorded as UNSOUND and WITHDRAWN rather than corrected a
+third time, and the totals become upper bounds with the linear sensitivity
+stated so a later reader can rescale.
+
+#### 3. `e396306` — Park the iOS app scoping item
+
+FT ruled 2026-09-01 that a StewardHouse iOS app, IF built, must be a real
+functioning app designed for the phone, not a truncated or reflowed desktop
+view, and that a PWA or add-to-home-screen wrapper does not satisfy the ruling.
+Audience: individuals certainly, advisors and enterprise possibly, Operations
+OUT. **PARKED**: no design, no build, no dependency, nothing in the current arc
+shaped around it.
+
+Scoping notes carry the obstacles with their evidence: the session rides a
+cookie (`me.js:43`, `auth.js:174`, `credentials: 'include'` on every client
+call) and no inbound bearer path exists in the tree, the only `Bearer` being the
+outbound Resend key at `sender.js:39`. Magic links, the Apple Developer account
+and App Store review are recorded with their platform requirements marked
+UNVERIFIED, because none is establishable from this repository. The
+honesty-surface note observes that the current discipline holds partly because
+there is ONE renderer.
+
+#### 4. `4cc46de` — File the flow-content-inside-button violation
+
+Flow content is rendered inside `<button>` at **20 sites across 7 files**. The
+HTML content model for `button` is phrasing content; `p`, `div`, `h1`-`h6`,
+`ul`, `li` and `table` are flow content and are not permitted there. The filing
+enumerates every site by file and line.
+
+**`Button.jsx` is CLEAN**, and the filing says so, because it means the shared
+button component is not the problem. It renders a bare `{children}` at `:107`;
+of 124 call sites exactly one passes an element child
+(`CurriculumLibrary.jsx:122`, a `<span>` wrapping a `<Tag>`, which renders a
+`<span>` root at `Tag.jsx:22`). Both phrasing. The 20 sites are all hand-rolled
+`<button>` elements written outside the shared component.
+
+Consequence is stated as what is and is not established: browsers render it
+without visible error, which is why it survived, and whether it changes
+accessibility-tree exposure or screen-reader announcement is UNVERIFIED and
+cannot be established from the tree.
+
+**The count itself is the durable part.** The first scan reported 3 sites, not
+20, because its matcher was built by string concatenation and lost a backslash
+twice. It was caught by asserting a known-positive control. That hazard is now
+also filed in CLAUDE.md §10.
+
+#### 5. `7cff1c1` — Move the enterprise tile-grid floor from 180px to 160px
+
+**The session's only code change.** Four lines across two files: the `minmax`
+floor at `EnterpriseRoster.jsx:429` and `EnterpriseOverview.jsx:233`, and the
+comment above each, which names the number and therefore moved with it.
+
+**Scope was ruled to these two grids only.** Seven other sites carry the
+identical 180px declaration and were deliberately left: `PracticeHome.jsx:69`,
+`Endowment.jsx:281`, `AdvisorPracticeDetail.jsx:387`, `IndividualDetail.jsx:652`,
+`InstitutionDetail.jsx:205`, `OrganizationDetail.jsx:183` and
+`OperationsSurface.jsx:451`. They span three surfaces and hold different content
+at different densities. `ProgramSummary.jsx:288` was already at 160px, so the
+value was not new to the tree.
+
+**Screened locally by FT, and confirmed live on production at 6+1.** At 375px
+the grid goes from ONE column to TWO, so the change reaches the full current
+iPhone range rather than only 390px and above. At 1104px and up every desktop
+viewport gains a column, 5 to 6, wrapping seven tiles as 6+1 rather than 5+2.
+Seven tiles still cannot occupy one row at either floor: that needs 1216px of
+content box against a 1136px ceiling.
+
+**THE COMMIT MESSAGE WAS AMENDED TWICE BEFORE THE MERGE, and the first amend
+corrected a FALSE CLAIM.** The original body asserted, with emphasis, that 375px
+was UNCHANGED at one column. It is not; FT's screen showed two. The scoping
+arithmetic had been right, putting the 2-column threshold at 366px, but it was
+summarized wrong and the error carried into the message. The second amend added
+which boundaries the screen confirms and which remain source arithmetic: the
+four widths screened confirm 366px and 1104px, while 557px, 748px and 928px are
+unscreened. Both amends were message-only, proven by an identical tree hash
+`7537d83e` and an empty `git diff 73c141c HEAD`.
+
+**Not demo-tree byte-identical, and deliberately so**: the grid is ungated, so
+both trees change identically. Nothing leaked between them.
+
+#### 6. `4cee27a` — Park the athlete soft-delete ruling and its gap
+
+FT ruled 2026-09-01 that athlete deletion should be SOFT rather than hard: a
+deleted record hidden from the surface but RETAINED, as notes or metadata, for a
+period, and available if requested. **The retention period is NOT SET** and is a
+founder-judgment item.
+
+Shipped behaviour does not match, at two sites. `athletes.js:446` and
+`athletes/[id].js:100` are true hard deletes, writing no marker and deleting no
+children because both rely on the four inbound `ON DELETE CASCADE` foreign keys.
+The row and its children are unrecoverable. The anonymize path
+(`athletes/[id].js:119-146`) is recorded accurately rather than lumped in: a row
+survives and the surface hides it, which is the ruling's shape, but `name` goes
+to `'redacted'` and every identifying column is NULLed, so it retains nothing.
+
+**Scope is why it is parked.** Twelve `selectFrom('athlete')` sites exist in
+`functions/` and they do not share a predicate: six carry the Sunset exclusion
+and six do not. Missing one leaks a deleted athlete back onto a roster, visibly
+at `me.js:403`. No soft-delete column exists on `athlete`, so it needs a
+migration; `person` carries `soft_deleted_at` from 0001, but
+`invites/[id].js:52-63` records that column as DELIBERATELY UNUSED because the
+purge ruling E assumes does not exist.
+
+**The legal retention standard is explicitly not answered**, and the entry
+states no retention period, no statutory requirement and no compliance claim.
+
+---
+
+### Branch pruning
+
+**ONE branch was pruned this session**, not five. The five recorded under the
+previous entry at `:362-371` were pruned in that session and are not restated
+here.
+
+`slice-tile-floor-160` was cut off `main` at `4cc46de`, carried the tile-floor
+commit, was merged fast-forward, then deleted BY NAME. Before deletion its tip
+and `main` were the same commit, `git rev-list --count main..slice-tile-floor-160`
+returned 0, and `git ls-remote --heads origin slice-tile-floor-160` returned
+zero refs, so nothing was removed from the remote and no ref was orphaned.
+
+Local branches stand at four: `main` and the three audit branches. No
+`--merged` sweep was used, per the §6.9 bulk-prune hazard.
+
+---
+
+### Open items carried out of the session
+
+**Two parked rulings, neither scheduled.** The iOS app (`e396306`) and athlete
+soft delete (`4cee27a`). Both are recorded to be FOUND later rather than acted
+on, and both name a founder-judgment item left open: the Apple Developer account
+identity in one, the retention period in the other.
+
+**The soft-delete ruling makes an open CLAUDE.md filing downstream of itself.**
+The §10 foreign-key entry asks whether production D1 enforces the cascades that
+`athletes.js:446` and `athletes/[id].js:100` depend on. If soft delete is built,
+those two paths stop existing in their present form and the question stops being
+load-bearing for them.
+
+**One supersession banked without confirmation.** `4cee27a`'s body records that
+the ruling supersedes an earlier same-session direction to add a precondition
+guard to the hard-delete paths. That direction could not be located in the
+agent's visible context at write time, and the discrepancy was flagged before
+the commit and again before the push. It banked either way. If the
+characterization is wrong the correction is a new appended entry, not a message
+edit, since the commit is now pushed.
+
+**Three of the five filings rest on source arithmetic, not rendered
+measurement**, and each says so in its own text. The one code change is the
+exception: it was screened by FT locally and confirmed on production.
