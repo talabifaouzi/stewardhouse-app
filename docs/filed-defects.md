@@ -2175,3 +2175,120 @@ a total.** `Button.jsx`'s 124 call sites were checked separately, by the
 element-child pass described above.
 
 **No fix proposed.**
+
+**PARKED SCOPING ITEM, not a defect filing and not a queued build: athlete
+deletion should be SOFT, and today it is HARD.** Recorded so it is FOUND later.
+The founder ruling is dated 2026-09-01 and is recorded first; the gap it opens
+against shipped behaviour is recorded second, and everything after that is
+SCOPING, which carries no ruling force. Nothing here is proposed for build.
+
+**FT RULED 2026-09-01.** Athlete deletion should be SOFT rather than hard. A
+deleted record should be HIDDEN from the surface but RETAINED, as notes or
+metadata, for a period, and available if requested. **The retention period is
+NOT SET**, and setting it is a founder-judgment item that this entry does not
+attempt.
+
+**THE GAP: shipped behaviour does not match the ruling, at two sites.** Both
+are true hard deletes and both leave nothing behind.
+
+`functions/api/athletes.js:446` is the bulk path, a `deleteFrom('athlete')`
+scoped by `id IN (...)`, `institution_id` and `enrollment_status = 'Pending'`.
+`functions/api/athletes/[id].js:100` is the single-record path, the same
+statement scoped by one id. Neither writes a marker of any kind, and neither
+deletes the child rows, because both rely on the four inbound ON DELETE CASCADE
+foreign keys to take `athlete_activity`, `athlete_note`, `athlete_reflection`
+and `workshop_attendance` with the parent. **The row and its children are
+UNRECOVERABLE.** There is no retention window, nothing is hidden rather than
+removed, and if an athlete or an institution asked for the record afterwards
+there would be nothing to produce.
+
+**THE ANONYMIZE PATH IS A DIFFERENT THING, AND IT IS CLOSER TO THE RULING THAN
+THE HARD DELETES ARE, THOUGH IT IS NOT WHAT THE RULING DESCRIBES.** It governs
+every athlete who is NOT Pending; `athletes/[id].js:96` branches on exactly
+that. It deletes the same four child tables EXPLICITLY, at `:119-122`, rather
+than leaving them to the cascade, and then UPDATEs the parent rather than
+removing it (`:123-146`): `email`, `phone`, `notes`, `position`, `badge`,
+`gps_completed_at`, `cert_at`, `join_date`, `last_active_at`,
+`consent_acknowledged_at` and `management_mode` to NULL; `lessons_count`,
+`gifts_count` and `certified` to 0; `person_id` to NULL; `name` to the literal
+string redacted; and `enrollment_status` to Sunset.
+
+So a row SURVIVES and the surface stops showing it, which is the shape the
+ruling asks for. **What it does not do is RETAIN anything.** Migration
+`0009_enterprise_schema.sql:118-119` states the intent in its own words: the
+institutional residual is a stub of name, class and sport only, "almost useless
+by design", and `:127` records that the name is replaced at anonymize time. The
+identity is destroyed rather than hidden, so there is still nothing to produce
+on request. It is a survival mechanism for cohort tallies, not a retention
+mechanism for records. Recorded because the two are easy to conflate on a skim,
+and because the asymmetry is itself the finding: **one delete path was written
+not to trust the cascade and to leave a row behind, and the other was written
+to do neither.**
+
+**SCOPE OF WHAT SOFT DELETE WOULD TOUCH, and this is why it is PARKED rather
+than built.** Retaining a hidden row means every read has to exclude it, and
+the reads are not in one place. Twelve `selectFrom('athlete')` sites exist in
+`functions/`, and they do not share a predicate:
+
+    me.js:403                          institution_id, status != Sunset   <- the roster payload
+    athletes.js:222                    id only  (round-trip re-SELECT)
+    athletes.js:421                    id IN, institution_id
+    athletes/[id].js:70                id, institution_id
+    athletes/[id].js:263               id, institution_id, status != Sunset
+    athletes/[id].js:302               id only  (round-trip re-SELECT)
+    athletes/import.js:308             institution_id, status != Sunset   <- duplicate matching
+    athletes/import.js:352             id IN, institution_id
+    athletes/[id]/invite.js:120        id, institution_id, status != Sunset
+    athletes/[id]/invite.js:234        id only  (round-trip re-SELECT)
+    snapshots.js:153                   institution_id, status != Sunset, delegated, person_id NOT NULL
+    workshops/[id]/attendance.js:140   id IN, institution_id, status != Sunset
+
+Six of the twelve already carry the Sunset exclusion and six do not. **MISSING
+ONE LEAKS A DELETED ATHLETE BACK ONTO A ROSTER**, and `me.js:403` is the site
+where that would be visible, since it is the payload the whole staff surface
+renders from. The three round-trip re-SELECTs are scoped by id alone and are
+reached only after a write the endpoint just performed, which is a reason they
+are probably safe and NOT a reason to skip them.
+
+**The client does no independent filtering, which narrows the surface and is
+worth knowing.** `AthletesContext.jsx:119-120` splices an anonymized athlete
+out of local state and its own comment says it is matching the server's
+exclusion, so the client MIRRORS the server's decision rather than making one.
+No component filters on `enrollment_status` to hide anything. The exclusion is
+a server concern at all twelve sites and only there.
+
+**NO SOFT-DELETE COLUMN EXISTS ON `athlete`, SO THIS REQUIRES A MIGRATION.** A
+grep of `migrations/` for `deleted_at`, `archived_at`, `is_deleted`,
+`purge_after`, `soft_delete` and `retention` finds nothing on `athlete`, and
+the current rebuild at `0020_athlete_pending_status.sql:84-115` has no such
+column. **`person` DOES carry one**, `soft_deleted_at` plus `deletion_state`
+(`0001_initial.sql:130`), added for ruling E's two-phase soft-then-hard
+deletion. That precedent is real and is NOT evidence the pattern is ready to
+copy: `functions/api/invites/[id].js:52-63` records that `soft_deleted_at` is
+DELIBERATELY NOT USED on the person path, because the mandatory background
+purge ruling E assumes "does not exist: there is no cron, no scheduled worker
+and no [triggers] block anywhere in this project", and writing the column
+without a purge leaves rows in a state nothing will ever advance.
+
+**UNRESOLVED, AND EXPLICITLY NOT ANSWERED HERE: what the legal retention
+standard is.** No counsel is retained. Legal structure is parked, and the iOS
+entry above records the same absence from the other direction, that no entity
+formation appears anywhere in this repository. Athletic departments may carry
+record obligations of their own that would flow to StewardHouse as a vendor
+rather than arising from StewardHouse directly, and
+`docs/enterprise-persistence-scoping.md:281-285` already has the controller
+question open, asking whether StewardHouse is processor or joint controller for
+institutional athlete records and listing it among three it marks
+counsel-gated. **This entry states NO retention period, NO statutory
+requirement and NO compliance claim**, because each of those is a legal
+question and the honest answer is that it needs a lawyer rather than an
+internal judgment. Naming a number here would be inventing a standard.
+
+**THIS SUPERSEDES the earlier same-session direction to add a precondition
+guard to the two hard-delete paths.** That work is retired unstarted. A guard
+makes a hard delete safer to perform; it does not make the delete correct, and
+there is no point hardening a code path the ruling says should not exist in
+that form. If soft delete is built, the guard question is answered by the
+design; if it is not built, the guard was never the gap.
+
+**No fix proposed. No design, no schema and no migration is sketched here.**
