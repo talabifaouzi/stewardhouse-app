@@ -22,9 +22,9 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 76 OPEN, 9 PARKED, 6 founder-judgment of which 2 are now ruled,
-4 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers, then gates-other-work 11, gates-a-stated-commitment 4,
+**As committed: 75 OPEN, 9 PARKED, 6 founder-judgment of which 2 are now ruled,
+3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
+ruled tiers holding 8, then gates-other-work 11, gates-a-stated-commitment 4,
 BMF-and-Discover 8, cheap-and-mechanical 18, large 24, and
 blocker-undetermined 2.
 
@@ -49,6 +49,20 @@ list inside a scoping document is therefore the KNOWN WEAK SPOT of a sweep built
 this way**, and anyone extending this file should start there rather than with
 the queue.
 
+**A SECOND KNOWN WEAK SPOT, found 2026-09-02 and recorded plainly.** The sweep
+produced two entries, A11 and F4, from CLAUDE.md's §11 rider and its §5.1
+migration-count correction. Both of those passages carried `2726d40`'s
+commit-time framing, which was accurate when it was written and had been
+overtaken the same day: `docs/session-log.md` recorded the remote apply in its
+third 2026-09-01 entry, banked about two and a half hours before this file
+committed. This header states that `docs/session-log.md` and
+`docs/filed-defects.md` win where they disagree with this file. That is the
+rule. In practice the precedence ran the other way, because the sweep read
+CLAUDE.md as the state of record and did not reconcile it against the session
+log. **So a CLAUDE.md filing whose text predates a later same-day action is the
+second known weak spot of a sweep built this way**, and a sweep should reconcile
+CLAUDE.md against `docs/session-log.md` rather than read it as authoritative.
+
 One recalled item, GivingModeler chart quality, was dropped for having no
 provenance anywhere in CLAUDE.md, `docs/` or `src/`, which means anything parked
 only in conversation is invisible to a sweep of this kind and does not appear
@@ -64,15 +78,17 @@ large. Ties broken by age, oldest first.
 
 ### Tier 0
 
-**A11 | Migration 0021 is not applied to remote, so every production send today
-records nothing.**
-Blocker: FT. Remote migration applies are FT-run-only.
-Detail: CLAUDE.md §5.1, the migration-count correction; CLAUDE.md §11, the filed
-open item on the auth observability gap.
-Sharpened by this sweep: `2726d40` IS live on remote and `auth_send_log` is not,
-and the insert sits inside a swallowing `catch`, so the stamp fails silently by
-design. Sign-in is unaffected. The observability the stamp was built for does
-not exist until the apply runs.
+**A11 was CLOSED 2026-09-02** and has left this section; the remaining IDs are
+not renumbered, since renumbering would break every reference to them.
+**Migration 0021 was applied to remote on 2026-09-01 and verified by a live
+production send**, which stamped a success row 67 seconds after the apply, so
+`auth_send_log` records on production today. The apply and its verifying row sit
+in `docs/session-log.md`, the third 2026-09-01 entry, and in CLAUDE.md §11, the
+filed open item on the auth observability gap.
+
+**Tier 0 now holds nothing, and the heading stays.** The ruled tier numbering
+does not move, so Tier 1 remains Tier 1 and every reference to a tier by number
+still resolves.
 
 ### Tier 1
 
@@ -604,14 +620,23 @@ Explicit, unresolved, and awaiting FT. Nothing below is ruled.
 **FJ-1 | BMF precondition 2: does a durable record satisfy it, or did it ask for
 an active signal?**
 `docs/bmf-load-scoping.md` section 13, "The availability ruling", requires that
-the observability gap be closed and points at CLAUDE.md section 11. The factual
-delta, stated without a recommendation: the send-outcome stamp shipped, so
-magic-link sends no longer record nothing; no endpoint, health check, alert or
-scheduled process reads the table; and because migration 0021 is local-only,
-**no production send is stamped today at all**. If a durable record satisfies
-the precondition, one item stands between here and the BMF load. If an active
-signal was meant, the blocker is scheduled execution, which this project has
-never had.
+the observability gap be closed and points at CLAUDE.md section 11.
+**CORRECTED 2026-09-02, because the clause that used to sit here was false.** It
+said that because migration 0021 was local-only, no production send was stamped
+at all. The migration was applied to remote on 2026-09-01, and a live production
+send stamped a success row 67 seconds later. The stamp records on production
+today.
+The factual delta, stated without a recommendation. Precondition 2 names TWO
+defects in one sentence: "magic-link sends stamp nothing", which is now CLOSED
+in production, and "there is no health check", which is OPEN, is A13, and is
+blocked on scheduled execution. Nothing reads the table.
+**The evidence gate this item was waiting on is therefore cleared, and what
+remains is a reading question**: which of those two defects "the observability
+gap" was meant to name. If it is the first, the precondition is met and the
+rollback path, open item 1 in the same doc, is the only precondition still
+standing between here and the BMF load. If it is the second, or both, the
+blocker is scheduled execution, which this project has never had. **Not ruled
+here.**
 
 **FJ-2 | A9 disposition: a cleanup slice, or a ruling first on what may sit at
 rest in remote D1?**
@@ -683,6 +708,10 @@ and §6.15.
 not renumbered, since renumbering would break every reference to them. The
 answer lives in A39, Tier 1.
 
+**F4 was ANSWERED 2026-09-02** and has left this section on the same terms, with
+no renumbering. Migration 0021 had reached remote on 2026-09-01, which is also
+what closed A11. The answer lives in the Tier 0 note.
+
 **F1 | Is the `+screen` test address bound, or an expired invite?**
 Query class: a single-row SELECT over `person` for that address, reading its
 created timestamp and whether an `auth_user` is bound.
@@ -694,10 +723,6 @@ Query class: an existence check over `person` for that address.
 Query class: a COUNT over `person` grouped by type, soft-deleted excluded.
 CLAUDE.md §9 records three and §12 names one working address; the two are
 unreconciled.
-
-**F4 | Has migration 0021 reached remote?**
-Query class: the remote migrations list, or a plain SELECT over the migrations
-table if that subcommand returns 7403 again. Both are recorded in CLAUDE.md §10.
 
 ---
 

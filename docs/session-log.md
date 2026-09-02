@@ -793,3 +793,130 @@ open rather than assumed.
 **F5 is answered and has left the FT-only section of `docs/outstanding.md`.**
 That section's count moves from 5 to 4, and the remaining IDs are deliberately
 not renumbered.
+
+---
+
+## Session — 2026-09-02
+
+Docs only. No code, no migration, no branch per §6.3. **No write of any kind was
+issued against remote in this session**: every remote fact below came from an
+FT-run read-only SELECT. Tree facts were proven at HEAD `06ed32d`.
+
+**The session opened as a scoping pass on A11**, the Tier 0 entry in
+`docs/outstanding.md`, which said migration 0021 was not applied to remote and
+that every production send therefore recorded nothing.
+
+---
+
+### Both of A11's premises were refuted
+
+**Premise one, that 0021 was not applied to remote: FALSE.** Remote
+`d1_migrations` holds 21 rows, `0001_initial.sql` through
+`0021_auth_send_log.sql`, no gaps, 0021 `applied_at` 2026-09-01 17:21:20 UTC,
+which is 13:21:20 EDT.
+
+**Premise two, that nothing is stamped on production: FALSE.** `auth_send_log`
+exists on remote and holds one row: `attempted_at` 2026-09-01T17:22:27.805Z,
+which is 13:22:27 EDT, outcome `success`, `error_text` null. The remote DDL
+matches `migrations/0021_auth_send_log.sql` column for column, types, NOT NULL
+flags and the `outcome` CHECK included.
+
+**Every timestamp in this entry carries BOTH zones, so the sequence reads
+without converting anything.** The two remote stamps are UTC, and only
+`attempted_at` labels itself, with an explicit `Z`; `applied_at` carries no
+suffix and is UTC as well, which is the pairing worth stating rather than
+leaving to a reader. It precedes `attempted_at` by 67 seconds. So the apply was
+followed a minute later by a real production sign-in send, and the verifying
+event is that live send rather than a smoke. Commit times below are EDT, as
+`git log` reports them here, and are paired the same way.
+
+**One thing re-read along the way and worth recording.** The stamp fires on BOTH
+paths, not only on success. A non-2xx from Resend throws in
+`functions/_lib/sender.js`, lands in the catch at `functions/_lib/auth.js:466`,
+and `'failure'` binds at `:467` with the thrown message. The single remote row
+is a success row because that is what the one production send did, not because
+the failure branch is unreachable.
+
+---
+
+### The session log was right and two other records were not
+
+`docs/session-log.md` already carried the apply, twice, in its third 2026-09-01
+entry: "the slice was then merged, the migration applied to remote, and the
+behaviour verified LIVE IN PRODUCTION with a real send", and separately "the
+apply itself then ran normally". Banked at `0d1f2fe`, 13:30:35 EDT, 17:30:35
+UTC, nine minutes after the apply.
+
+`docs/outstanding.md` committed at `d077ea2`, 15:53:49 EDT, 19:53:49 UTC, about
+two and a half hours later, carrying A11 and F4 as open. Both were produced from
+CLAUDE.md's §11 rider and its §5.1 migration-count correction, which carried
+`2726d40`'s commit-time framing and had been overtaken the same day.
+
+**That file's header already states that the session log wins where it disagrees
+with it.** The rule was right. In practice the precedence ran the other way,
+because CLAUDE.md was read as the state of record and was not reconciled against
+the session log. It is now recorded in that header as the second known weak spot
+of a sweep built this way.
+
+---
+
+### The commit
+
+One docs-only commit, three files.
+
+**`docs/outstanding.md`.** A11 CLOSED and F4 ANSWERED, both removed with named
+notes on the F5 precedent and with no renumbering. Tier 0 kept as an empty
+heading so the ruled tier numbering does not move. FJ-1 corrected, kept OPEN and
+kept in FOUNDER JUDGMENT. Header counts to 75 OPEN and 3 answerable only by FT,
+with the tiers figure made explicit at 8 because it had been left for a reader
+to derive by subtraction. Second known weak spot added to the completeness
+section.
+
+**CLAUDE.md.** §5.1's 0021 local-only sentence and §11's rider 1 both corrected
+to record the apply and the verifying row, with the retired clauses quoted in
+place rather than edited away. Rider 2, unbounded retention, untouched and still
+live. "WHAT STANDS: nothing reads the table" untouched and still true. §10's
+7403 filing amended rather than rewritten.
+
+**`docs/session-log.md`.** This entry.
+
+---
+
+### The third 7403, and the first controlled discriminator
+
+**A third 7403 occurred on 2026-09-02, on the first remote call of the session,
+and the identical command succeeded later in the same session.** That is the
+first time token, account, database and command were all held constant across a
+failure and a success. The 2026-09-01 pair could not do that, because there the
+two commands differed.
+
+`docs/arc-history-individual.md` carries a fourth mention, older than all of
+these and cross-referenced by none of the 7403 records: a first attempt that
+returned a "transient" 7403 masking the real 7500. It is the only place in the
+tree that calls a 7403 transient.
+
+**Recorded in CLAUDE.md §10 as an OBSERVATION.** The cause is still unknown, no
+diagnosis was written, and no runbook rule was added, because the existing
+filing instructs a later session to record what it finds rather than treat the
+entry as an explanation, and one controlled pair is not enough to write a step
+on.
+
+---
+
+### Open items carried out of the session
+
+**FJ-1's evidence gate is cleared and the item stays OPEN.** The false clause is
+gone. What is left is a reading question only FT can settle: BMF precondition 2
+names two defects in one sentence, "magic-link sends stamp nothing", now closed
+on production, and "there is no health check", still open as A13 and blocked on
+scheduled execution. Which of the two "the observability gap" meant decides
+whether the rollback path is the only precondition left before the BMF load.
+Not ruled here.
+
+**A13 and A12 are unchanged.** Nothing reads `auth_send_log`, and its retention
+is still unbounded, waiting on ruling E Clause 3. The apply made the table real
+on production; it did not make anything watch it or prune it.
+
+**A count that was previously derivable only by subtraction is now written
+down.** The tiers portion of the OPEN breakdown carried no figure, so the total
+reconciled only if a reader did the arithmetic. It now reads 8.

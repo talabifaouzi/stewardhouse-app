@@ -543,14 +543,28 @@ it records what was verified on the day, and this paragraph is where the current
 state lives. **0019 and 0020 are applied `--remote`**, confirmed by FT on
 2026-08-27; that confirmation is recorded in §5.2 rather than here, which is why
 this section could read two migrations behind without contradicting itself.
-**0021 (`auth_send_log`) is applied LOCAL ONLY and its `--remote` apply is
-DEFERRED to FT**, per the §6.10 ruling that remote applies are FT-run-only.
-**That deferral is recorded here to satisfy §6.10 branch (b), which requires the
-note in THIS file**; until now it existed only in `2726d40`'s commit message and
-`docs/session-log.md`, which is the silent gap the rule exists to prevent. The
-consequence while it stands: the stamp code is live on production (`2726d40` is
-an ancestor of `origin/main`) and writes nothing, failing silently by design
-because its insert sits inside a swallowing `catch`. See §11.
+**0021 (`auth_send_log`) was recorded here as applied LOCAL ONLY with its
+`--remote` apply DEFERRED to FT**, per the §6.10 ruling that remote applies are
+FT-run-only, and that deferral was recorded in THIS file to satisfy §6.10
+branch (b), which requires the note here rather than only in `2726d40`'s commit
+message and `docs/session-log.md`.
+
+**CORRECTED 2026-09-02: THE DEFERRAL IS DISCHARGED AND 0021 IS APPLIED ON
+REMOTE**, `applied_at` 2026-09-01 17:21:20 UTC, so `migrations/` and remote
+`d1_migrations` both stand at `0001` through `0021` with no gaps. Verified
+2026-09-02 by FT-run read-only probes, every one a SELECT. **The closure
+evidence is a LIVE PRODUCTION SEND**: a success row in remote `auth_send_log`
+at 2026-09-01T17:22:27.805Z, 67 seconds after the apply. So the consequence
+clause this paragraph used to carry, that the stamp code is live on production
+and "writes nothing", is RETIRED. It writes. `2726d40` remains an ancestor of
+`origin/main`. See §11.
+
+**The retired framing was overtaken the same day it was written, and nothing
+surfaced that for a day**, which is the part worth keeping.
+`docs/session-log.md` already carried the apply in its third 2026-09-01 entry,
+banked about two and a half hours before `docs/outstanding.md` committed; this
+paragraph, read as the state of record, is what produced two stale queue entries
+there. That file's header now carries the pattern as its second known weak spot.
 
 **Value correction, from that same 2026-08-17 read: the advisor and enterprise
 gates are NULL, never set, not `0`.** This section and
@@ -2336,6 +2350,31 @@ succeeds on identical credentials against an identical target, and no
 speculation is offered here. A later session that reproduces it should record
 what it finds rather than treat this entry as a diagnosis.
 
+**AMENDED 2026-09-02: A THIRD OCCURRENCE, AND THE FIRST CONTROLLED
+DISCRIMINATOR.** Everything above is unchanged and records what was seen on
+2026-09-01. What follows is added to it.
+
+**The third occurrence was the FIRST REMOTE CALL OF A SESSION, and the IDENTICAL
+COMMAND SUCCEEDED LATER IN THE SAME SESSION.** Token, account, database and
+command were all held constant across the two runs. That is what the 2026-09-01
+pair could not establish: there the two COMMANDS differed, so nothing separated
+"this subcommand is refused" from "this call is refused". Here the only
+difference is position in the session.
+
+**AN EARLIER OCCURRENCE EXISTS THAT NO 7403 RECORD CROSS-REFERENCES.**
+`docs/arc-history-individual.md`, inside its Marcus remote-claim passage,
+records that "a first attempt returned a transient `7403` that masked the real
+`7500`". It predates both occurrences above, it is the only place in the tree
+that calls a 7403 transient, and it is the only other place that pairs one with
+a first attempt.
+
+**RECORDED AS AN OBSERVATION ACROSS ALL THREE. NOT A DIAGNOSIS, AND NOT A
+RULE.** Two of the three sit on a first attempt or a first remote call, and in
+both of those a later run of the same thing worked. The 2026-09-01 pair does not
+record its position in the session, so it neither supports that nor contradicts
+it. **The cause remains unknown**, the paragraph above still binds, and no
+runbook step is written here on the strength of one controlled pair.
+
 ### Filed — `.dev.vars` corrupted to UTF-16 fails SILENTLY at every layer (2026-09-01)
 
 **SECOND OCCURRENCE.** Editing `.dev.vars` in Notepad re-saves it as UTF-16, and
@@ -2469,12 +2508,23 @@ alerting, and this project has no scheduled execution of any kind (no
 discoverable only by a deliberate query someone thinks to run. Alerting is
 parked on that absence.
 
-**TWO RIDERS, both live, both recorded so this is not read as done.** First,
-**migration 0021 is applied LOCAL ONLY** and the `--remote` apply is deferred to
-FT per §6.10; until it runs, no production send is stamped at all, and it fails
-SILENTLY by design, because the insert sits inside a swallowing `catch` so an
-absent table cannot break sign-in. Second, `auth_send_log` **retention is
-unbounded**, waiting on ruling E Clause 3.
+**TWO RIDERS were recorded here so this is not read as done. THE FIRST IS NOW
+CLOSED; THE SECOND STANDS.** First, migration 0021 was recorded as applied LOCAL
+ONLY, with the `--remote` apply deferred to FT per §6.10, and while that stood,
+no production send was stamped at all. **CORRECTED 2026-09-02: it was applied to
+remote on 2026-09-01 at 17:21:20 UTC**, and a live production send stamped a
+success row in remote `auth_send_log` at 2026-09-01T17:22:27.805Z, 67 seconds
+later. A production send IS stamped, so the "no production send is stamped at
+all" clause this rider used to carry is quoted here rather than edited away, and
+is retired. Second, `auth_send_log` **retention is unbounded**, waiting on
+ruling E Clause 3. That rider is unchanged and still live.
+
+**What the correction does NOT touch, stated so it is not read as more than it
+is.** The swallowing `catch` around the insert is unchanged and is still what
+makes an unwritable log unable to break sign-in. The paragraph above this one
+stands in full: nothing reads the table, and a failure is discoverable only by a
+deliberate query someone thinks to run. What the apply changed is that there is
+now something to query.
 
 **This filing is cited as a gating precondition by `docs/bmf-load-scoping.md`
 §13, "The availability ruling", under its sub-heading "RULED as gating the LOAD,
