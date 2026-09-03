@@ -1031,3 +1031,94 @@ no more.
 wrong and what is deferred, in priority order, with blockers. What a pilot
 REQUIRES remains one sentence in CLAUDE.md §5.1 plus an instrument that measures
 only what already exists.
+
+---
+
+## Session — 2026-09-02 (third)
+
+Decision record. Docs only, no code, no migration, no branch, and no remote
+command of any kind. One read-only investigation pass, then this filing.
+
+---
+
+### Ruled
+
+**FJ-1. Build the auth health-check READ SURFACE as an ordinary slice; do not
+block the BMF load on it.** Basis: precondition 2 names two defects, the stamp
+half is closed on production, and blocking a whole surface on a small endpoint is
+the wrong trade. A1, the rollback path, becomes the only standing precondition on
+the BMF load.
+
+**FJ-2. Leave A9 as is, narrow and general both.** Basis: FT ruling 2026-09-02.
+No cleanup slice and no general ruling on what may sit at rest in remote D1.
+
+**FJ-3. The unset advisor and enterprise gates are a GAP, not an intended
+posture, and get fixed as their own scoped slice. Not urgent.** Basis: the gate
+is per-person-row per-namespace so designation is safe in principle, but gate and
+institution scope are separate checks and nothing asks whether the target
+institution or its athletes are seeded. No pilot users exist, so nobody is
+hitting the 403s.
+
+**A39. Guard the window; defer the methodology.** Basis: a deadline with no
+guard is what "nothing guards it" means. The L4 question cannot be judged with
+zero rows.
+
+**NOT RULED, deliberately: FJ-5, the Marcus row.** Deletion is the sound
+disposition on the evidence and the record now says so. Withheld because
+executing it is a remote DELETE against production and whether production D1
+enforces foreign keys is unverified. Sequenced behind A15.
+
+---
+
+### Corrected
+
+**A39 contradicted itself and its own source.** Its bolded sentence claimed
+setting `$.enterprise.demo_gate` closes the window. The only INSERT into
+`cohort_period_snapshot` is `functions/api/snapshots.js:212`, reachable only
+through `POST /api/snapshots`, whose only invoker is a person clicking
+`CohortComparison.jsx:145`. The gate returns `{ person }`. Its title and its
+cited source were both already right. The A69 coupling clause is removed rather
+than corrected: neither ruling FJ-3 nor setting the gate writes a row.
+
+**A13's blocker was wrong for half its own title.** It read SCHEDULED EXECUTION
+for both "nothing reads the table" and "no one is told". That blocker is true of
+alerting only. The entry is split.
+
+**CLAUDE.md §11 listed three absences as one item with one blocker**, which is
+where A13's conflation originated. Amended to separate the read surface from
+alerting. The retention rider and "nothing reads the table" as a statement of
+current fact both stand untouched.
+
+---
+
+### Deferred
+
+**The P-2 L4 methodology question**, until snapshots exist to evaluate.
+
+**A92**, whether `email` may be emitted from a read endpoint, to FT. It is a
+privacy-posture ruling, not infrastructure, and it gates A13 and nothing else.
+
+**FJ-5's execution**, behind A15.
+
+---
+
+### Queue delta
+
+OPEN 87 to 90. Three added: A92 the E8 email-emission ruling, gates other work,
+blocker FT; A93 the snapshot-write guard, Tier 1, blocker none named; A94
+alerting, gates other work, blocker SCHEDULED EXECUTION.
+
+Two blockers changed. A44 and A69 move from FT's designation to a scoping pass on
+which person rows may be designated and against which institutions.
+
+One blocker cleared. A9 moves from an FT ruling to none, ruled leave-as-is, and
+stays OPEN because PARKED requires a named blocker and A9 no longer has one.
+
+One entry re-homed. A13 moves from gates other work to cheap and mechanical, its
+blocker corrected to none for the endpoint itself with A92 governing the column.
+
+Founder-judgment ruled count 2 to 5 of 6. FJ-5 is the sixth and is explicitly
+not ruled.
+
+Tiers 9 to 10; gates-other-work 12 to 13; cheap-and-mechanical 19 to 20. Every
+other group unchanged. Recounted against the body before writing: 10 + 80 = 90.

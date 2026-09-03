@@ -22,11 +22,15 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 87 OPEN, 9 PARKED, 6 founder-judgment of which 2 are now ruled,
+**As committed: 90 OPEN, 9 PARKED, 6 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers holding 9, then gates-other-work 12, gates-a-stated-commitment 7,
-BMF-and-Discover 8, cheap-and-mechanical 19, large 29, and
+ruled tiers holding 10, then gates-other-work 13, gates-a-stated-commitment 7,
+BMF-and-Discover 8, cheap-and-mechanical 20, large 29, and
 blocker-undetermined 3.
+**The sixth founder-judgment item, FJ-5, is NOT RULED and says so explicitly**,
+with the evidence and the reason for withholding recorded on the entry. An
+unruled item and an item nobody has looked at are different states, and the
+count distinguishes them.
 
 **NO LINE NUMBERS INTO DOCS. Citations name a section and a filing title.** That
 rule is load-bearing rather than stylistic, and the commit preceding this file
@@ -113,17 +117,28 @@ it.**
 Blocker: none. It is a deadline, not a dependency.
 Detail: `docs/session-log.md`, the 2026-08-28 and 2026-08-30 entry, under
 rulings that reversed a prior ruling.
-**Setting `$.enterprise.demo_gate` is what closes this window permanently**, and
-CLAUDE.md §5.1 describes that designation as routine and "never a slice". L4's
-mid-series-trend concern is mooted only while `cohort_period_snapshot` holds
-zero rows. If it is ever to be revisited on the merits, that must happen before
-the first write.
-**The zero-row state was OBSERVED on 2026-09-01**, by an FT-run read-only COUNT
-against remote `stewardhouse-pilot`, so the window is confirmed open rather than
-assumed. This is the answer to the former F5.
-Coupled to A69: enterprise writes 403 with no gate set, so the same unset gate
-that makes two surfaces non-functional is what holds this window open, and
-whenever FJ-3 is ruled, A39 must be settled first or it closes as a side effect.
+**CORRECTED 2026-09-02. This entry contradicted itself and its own source.** The
+sentence here said that setting `$.enterprise.demo_gate` is what closes the
+window permanently. That is FALSE, and the entry's own TITLE has the right of it.
+**The window closes on the first snapshot WRITE.** The only INSERT into
+`cohort_period_snapshot` is `functions/api/snapshots.js:212`, reachable only
+through `POST /api/snapshots`, whose only invoker is a person clicking the button
+at `src/surfaces/enterprise/reports/CohortComparison.jsx:145`. The gate returns
+`{ person }` and writes nothing; there is no cron, no scheduled handler and no
+`[triggers]` block. Setting the gate makes the write POSSIBLE. It does not
+perform it.
+The cited source was right all along: `docs/session-log.md`, that entry, reads
+"That window closes the first time a snapshot is written."
+**The coupling clause is REMOVED, not corrected.** It claimed A39 must be settled
+before FJ-3 or the window closes as a side effect. Neither ruling FJ-3 nor
+setting the gate writes a row, so no side effect exists.
+L4's mid-series-trend concern is mooted only while `cohort_period_snapshot` holds
+zero rows. **The zero-row state was OBSERVED on 2026-09-01**, by an FT-run
+read-only COUNT against remote `stewardhouse-pilot`, so the window is confirmed
+open rather than assumed. This is the answer to the former F5.
+**RULED 2026-09-02: GUARD THE WINDOW, DEFER THE METHODOLOGY.** The guard is A93.
+The L4 question itself is DEFERRED until snapshots exist to evaluate: a series
+with zero rows cannot be judged on the merits.
 
 **A80 | `PUT /api/athletes/:id/invite` has no caller, so no path moves an
 imported athlete off `Pending`.**
@@ -136,6 +151,20 @@ proposition depends on it, and its blocker line is "none named". Scope is NOT
 ruled here. Migration 0020 added `'Pending'` to the enum for this transition and
 `src/surfaces/enterprise/shared/athleteStatus.js:7` renders those athletes "Not
 yet invited"; the endpoint is built and gated, and `src/` calls it nowhere.
+
+**A93 | Nothing guards the first snapshot write, which is what closes A39's
+window.**
+Blocker: none named.
+Detail: A39, this tier, which is the deadline this guards; CLAUDE.md §5.1, the
+FORK 1 denominator change.
+**RULED 2026-09-02: a server-side guard on `POST /api/snapshots` that refuses the
+FIRST write until the denominator change is acknowledged.** Server-side because
+the client is not the only caller and a UI-only guard is not a guard. A39's
+blocker line reads "none. It is a deadline, not a dependency", and a deadline
+with no guard is exactly what its title means by "nothing guards it".
+Placed in Tier 1 beside A39 because it is A39's remedy and separating a deadline
+from its guard across priority bands would hide the pairing. Scope, message and
+acknowledgment mechanism are NOT ruled here.
 
 ### Tier 2 — live honesty defects on routes the pilot gate scores as MET
 
@@ -165,10 +194,17 @@ Detail: `docs/filed-defects.md`, the filing on that tile rendering "0 of 0".
 
 **A9 | The D1 org seed carries authored officers, budgets and funders for
 identifiable real organizations, at rest on remote.**
-Blocker: an FT ruling. See FJ-2.
+Blocker: none. **RULED 2026-09-02 (FJ-2): LEAVE AS IS, narrow and general
+both.** No cleanup slice, and no general ruling on what may sit at rest in
+remote D1.
 Detail: `docs/propublica-spike-findings.md`, FT ruling 8, "D1 org seed defanged
 fields". The 2026-08-14 defang covered the fixture side only. Nothing reads the
 `org` table today, so the data is dormant rather than rendered.
+**KEPT OPEN RATHER THAN PARKED, and the reason is the file's own convention.**
+PARKED's preamble requires each item to carry a named blocker, and after the
+ruling this one carries none. So it stays here as the record that the rows exist
+at rest, with nothing scheduled against it. It remains in Tier 3 because tier
+placement is FT-ruled and this slice did not rule a move.
 
 ### Tier 4
 
@@ -212,9 +248,24 @@ Blocker: advisor and enterprise gate emissions in `/api/me`, which do not exist.
 The blocker moved rather than cleared when slice 1 shipped.
 Detail: CLAUDE.md §5.1, the P-6 sub-item on the shared string.
 
-**A13 | Nothing reads `auth_send_log`. The table records and no one is told.**
+**A94 | No alerting on `auth_send_log`. A failure is discoverable only by a
+deliberate query someone thinks to run.**
 Blocker: SCHEDULED EXECUTION, which this project has never had.
-Detail: CLAUDE.md §11, the filed open item on the auth observability gap.
+Detail: CLAUDE.md §11, the auth-observability filing;
+`migrations/0021_auth_send_log.sql`, its retention docblock, on the absence of
+cron, scheduled worker and `[triggers]`.
+**SPLIT OUT OF A13 on 2026-09-02.** A13 carried both halves of its own title
+under one blocker, and SCHEDULED EXECUTION is true of THIS half only. A13 is now
+the read surface and sits in cheap and mechanical.
+
+**A92 | Migration 0021 forbids emitting `email` to any client, so a read
+endpoint must omit the column or the rule must be amended.**
+Blocker: FT. It is a privacy-posture ruling, not infrastructure.
+Detail: `migrations/0021_auth_send_log.sql`, its E8 discipline note and the
+`email` column comment.
+Surfaced 2026-09-02 by the FJ-1 ruling. Gates A13, and nothing else. The two
+answers are not equivalent: omitting the column leaves an operator unable to
+tell which address a failure belongs to.
 
 **A12 | `auth_send_log` retention is unbounded, on the one table Tier 0 is about
 to make live.**
@@ -271,12 +322,19 @@ carries it.
 ### Gates a stated commitment
 
 **A44 | Every advisor write returns 403 in production.**
-Blocker: FT's `$.advisor.demo_gate` designation. See FJ-3.
+Blocker: a scoping pass on which person rows may be designated, and against
+which institutions. See FJ-3.
 Detail: CLAUDE.md §5.1, production gate state.
+Blocker CHANGED 2026-09-02 from "FT's `$.advisor.demo_gate` designation": FJ-3
+ruled the unset gates a GAP rather than an intended posture, so the designation
+is no longer the blocker. The scoping pass is.
 
 **A69 | Every enterprise write returns 403 in production.**
-Blocker: FT's `$.enterprise.demo_gate` designation. See FJ-3, and note A39.
+Blocker: a scoping pass on which person rows may be designated, and against
+which institutions. See FJ-3.
 Detail: CLAUDE.md §5.1, production gate state.
+Blocker CHANGED 2026-09-02 on the same ruling as A44. The A39 coupling note is
+REMOVED: setting this gate cannot close A39's window, because it writes no row.
 
 **A45 | The pilot has no in-product feedback channel.**
 Blocker: a deliberate design problem rather than a restore. It needs explicit
@@ -464,6 +522,21 @@ mobile-as-app violations".
 Blocker: filed as an observation, not a defect.
 Detail: `docs/filed-defects.md`, "Filed as an OBSERVATION, not a defect: the two
 enrollment paths disagree about name shape".
+
+**A13 | Nothing READS `auth_send_log`, because no endpoint was ever written.**
+Blocker: none for the endpoint itself. A92 governs whether `email` may be
+emitted.
+Detail: CLAUDE.md §11, the auth-observability filing; `docs/session-log.md`, the
+third 2026-09-01 entry, its "This bought FINDABILITY, not MONITORING" passage,
+which draws the read-versus-alerting distinction this entry used to collapse.
+**BLOCKER CORRECTED AND ENTRY SPLIT 2026-09-02.** It read SCHEDULED EXECUTION
+for both halves of its own title. That is true of ALERTING only, which is now
+A94. A read endpoint needs an inbound HTTP request and nothing else:
+`requireOps` (`functions/_lib/gate.js:147`) is type-only and reusable, migration
+0021 already created `idx_auth_send_log_attempted_at` for the newest-first
+shape, and `functions/api/roster.js` is the precedent at 32 executable lines.
+**RULED 2026-09-02 (FJ-1): build it as an ordinary slice.** It does not gate the
+BMF load.
 
 **A90 | ADV-044, the radiogroup conversion, is deferred across three segmented
 controls.**
@@ -733,7 +806,9 @@ that shipped; the two share a number and are different items.
 
 ## FOUNDER JUDGMENT
 
-Explicit, unresolved, and awaiting FT. Nothing below is ruled.
+Explicit and awaiting FT unless a RULED line says otherwise. **Ruled items STAY
+here** rather than moving or being deleted, per FJ-4's precedent: the reasoning
+that preceded a ruling is what makes the ruling readable later.
 
 **FJ-1 | BMF precondition 2: does a durable record satisfy it, or did it ask for
 an active signal?**
@@ -744,22 +819,32 @@ said that because migration 0021 was local-only, no production send was stamped
 at all. The migration was applied to remote on 2026-09-01, and a live production
 send stamped a success row 67 seconds later. The stamp records on production
 today.
-The factual delta, stated without a recommendation. Precondition 2 names TWO
-defects in one sentence: "magic-link sends stamp nothing", which is now CLOSED
-in production, and "there is no health check", which is OPEN, is A13, and is
-blocked on scheduled execution. Nothing reads the table.
+The factual delta. Precondition 2 names TWO defects in one sentence:
+"magic-link sends stamp nothing", which is now CLOSED in production, and "there
+is no health check", which is OPEN. Nothing reads the table.
 **The evidence gate this item was waiting on is therefore cleared, and what
-remains is a reading question**: which of those two defects "the observability
-gap" was meant to name. If it is the first, the precondition is met and the
-rollback path, open item 1 in the same doc, is the only precondition still
-standing between here and the BMF load. If it is the second, or both, the
-blocker is scheduled execution, which this project has never had. **Not ruled
-here.**
+remained was a reading question**: which of those two defects "the observability
+gap" was meant to name.
+**RULED 2026-09-02: BUILD THE READ SURFACE AS AN ORDINARY SLICE, AND DO NOT
+BLOCK THE BMF LOAD ON IT.** Basis: precondition 2 names two defects, the stamp
+half is closed on production, and blocking a whole surface on a small endpoint is
+the wrong trade. **BMF proceeds on the rollback path alone, which is A1 and is
+now the only standing precondition.** The read surface is A13; alerting is A94
+and blocks nothing.
+**A SUB-ITEM SURFACED BY THIS RULING is filed as A92**, and it is the one part
+that is not mechanical: migration 0021 forbids emitting `email` to any client
+under E8, so a read endpoint must omit the column or that rule must be amended.
+Blocker FT, because it is a privacy-posture ruling rather than infrastructure.
 
 **FJ-2 | A9 disposition: a cleanup slice, or a ruling first on what may sit at
 rest in remote D1?**
 The seed rows are dormant, unread by any endpoint, and describe real
 organizations. Removing them is small. Ruling on the general question is not.
+**RULED 2026-09-02 by FT: LEAVE AS IS, narrow and general both.** Neither the
+cleanup slice nor the general ruling. Basis: FT ruling 2026-09-02.
+A9 carries the corrected blocker and stays OPEN rather than moving to PARKED,
+because PARKED requires a named blocker and A9 no longer has one; the reasoning
+sits on A9 itself.
 
 **FJ-3 | A44 and A69: the advisor and enterprise gates have never been set, and
 designation is described as "never a slice". Is that the intended posture, or a
@@ -767,8 +852,19 @@ gap?**
 Every write on two of the four surfaces returns 403 in production, and the pilot
 gate's production-usable figure sits far below its capability figure almost
 entirely because of it.
-A39 must be settled before this is ruled: the unset enterprise gate is what
-holds A39's window open, so ruling here closes it as a side effect.
+**RULED 2026-09-02: IT IS A GAP, NOT AN INTENDED POSTURE, and it gets fixed as
+its own scoped slice. NOT URGENT: no pilot users exist, so nobody is hitting the
+403s.** Basis: the gate is per-person-row per-namespace
+(`json_extract(extensions, '$.<ns>.demo_gate')`, `functions/_lib/gate.js:101`,
+`:135`, `:205`, each scoped by `WHERE id = person.id`), so designation is safe in
+principle. BUT the gate and the institution scope are SEPARATE checks
+(`functions/api/snapshots.js:114` then `:127-136`) and nothing in that chain asks
+whether the target institution or its athletes are seeded. So it needs a scoping
+pass, not a blanket flip.
+A44 and A69 stay OPEN with their blocker changed from FT's designation to that
+scoping pass.
+**The A39 coupling recorded here was WRONG and is removed**: neither ruling this
+nor setting the gate closes A39's window, because neither writes a row.
 
 **FJ-4 | A41: which arc owns the 403 copy defect?**
 CLAUDE.md §5.1 records it under P-7 while saying it may belong to P-6 slice 2
@@ -785,6 +881,22 @@ reasoning survives.
 **FJ-5 | A54: Marcus unclaimable. The filing says the remedy is a ruling, not a
 patch.**
 No sign-in path recovers the row. What it should become is undecided.
+**NOT RULED 2026-09-02, DELIBERATELY, and the record says why rather than
+leaving it blank.** On the evidence gathered 2026-09-02, DELETION is the sound
+disposition: no code path reads the row (every `person` read in `functions/` is
+keyed on `auth_user_id`, on `invite_email`, or on a session-resolved id, and this
+row is NULL in both columns); the demo Individual surface is fixture-backed
+through `src/data/individualProfile.js` and reads no D1 at all; the blast radius
+is 1 `person` row plus 3 fictional `gift` rows via
+`migrations/0001_initial.sql:156` ON DELETE CASCADE; and no document rules the
+row be retained. The one read that reaches it is `GET /api/roster`, which selects
+the whole table and renders it in the Accounts view, which is a render rather
+than a dependency.
+**The ruling is WITHHELD because executing it is a remote DELETE against
+production and whether production D1 enforces foreign keys is UNVERIFIED.**
+**FJ-5 is therefore SEQUENCED BEHIND A15.** Four `person` parents are NO ACTION
+and two of those are NOT NULL, so cascade behaviour is load-bearing for any
+delete, and A15 is the item that establishes it.
 
 **FJ-6 | The refresh cadence of THIS FILE, and nothing else.**
 `docs/outstanding.md` is accurate as of the commit that created it and carries

@@ -2508,6 +2508,34 @@ alerting, and this project has no scheduled execution of any kind (no
 discoverable only by a deliberate query someone thinks to run. Alerting is
 parked on that absence.
 
+**AMENDED 2026-09-02: THAT PARAGRAPH LISTS THREE ABSENCES AS THOUGH THEY SHARED
+ONE BLOCKER, AND THEY DO NOT.** Its statement of current fact is UNCHANGED and
+still true: nothing reads the table. What is corrected is the implication that
+scheduled execution blocks all of it. **A READ SURFACE and ALERTING are separate
+items with separate blockers.**
+
+**Only ALERTING is blocked on scheduled execution.** Something that observes the
+table and acts with no human present needs a schedule, and this project has
+never had one.
+
+**A READ SURFACE needs an inbound HTTP request and nothing else.** A Pages
+Function is request-invoked by file path, `requireOps` (`functions/_lib/gate.js`
+:147) is type-only and reusable as-is, and migration 0021 already created
+`idx_auth_send_log_attempted_at` for the newest-first shape the table was built
+for. `functions/api/roster.js` is the precedent: 73 lines, of which 36 are the
+docblock, leaving a gate call, one select, a mapper and a return.
+
+**The distinction was already drawn correctly elsewhere and did not reach here**,
+which is how it propagated into the queue as a single item with one blocker.
+`docs/session-log.md`, the third 2026-09-01 entry, states it: "This bought
+FINDABILITY, not MONITORING."
+
+**ONE PART OF THE READ SURFACE IS NOT MECHANICAL, and it is a ruling rather than
+infrastructure.** This filing's own E8 discipline forbids emitting `email` to any
+client, so a read endpoint must omit the column or that rule must be amended. An
+operator who cannot see the address cannot tell which sign-in a failure belongs
+to, so the two answers are not equivalent. Filed in `docs/outstanding.md`.
+
 **TWO RIDERS were recorded here so this is not read as done. THE FIRST IS NOW
 CLOSED; THE SECOND STANDS.** First, migration 0021 was recorded as applied LOCAL
 ONLY, with the `--remote` apply deferred to FT per §6.10, and while that stood,
