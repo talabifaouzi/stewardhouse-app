@@ -1029,6 +1029,15 @@ PARTIAL-trace row and belongs to neither tally cleanly: its `Last swept:` date
 is checkable in `docs/outstanding.md`, while whether a session actually read
 that date leaves no trace at all.
 
+**COUNT NOTE 2026-09-02: rule 19 postdates the survey too, and the section now
+holds NINETEEN rows.** The eight-and-eight tallies above are left as measured, on
+the same practice. **Rule 19 is a NO-TRACE row and belongs cleanly to the first
+tally**, which is the sharper thing about it: a silent pivot leaves nothing in
+the tree, in the git history or in any log. The only record that a pass was
+dropped mid-flight is the transcript of the session that dropped it, and the
+2026-09-02 case that produced the rule is known only because the same session
+wrote it down afterwards.
+
 Every substantive change runs as a **slice**. The rhythm:
 
 1. **Hard git-state gate.** Confirm current branch and HEAD before starting.
@@ -1532,6 +1541,38 @@ Every substantive change runs as a **slice**. The rhythm:
     `d08b20e`. DISCOVERY: items that exist in no queue at all, of which A59 is
     the example, and the parked lists inside scoping documents that
     `docs/outstanding.md` names as its own known weak spot.
+19. **NEVER PIVOT SILENTLY, AND NEVER PIVOT OVER UNCOMMITTED EDITS (FT-ruled
+    2026-09-02).**
+
+    When a new task arrives while work is in flight, the agent does three things
+    before starting it:
+
+    (a) **STATE WHAT IS IN FLIGHT.** Name the pass or slice, what is complete,
+    what is not, and what will be lost. A one-line acknowledgment that switches
+    tasks is not sufficient: the cost of the switch has to be visible before it
+    is paid.
+
+    (b) **CHECK THE TREE FIRST.** Run `git status --short`. If the working tree
+    carries UNCOMMITTED EDITS from the in-flight work, do NOT start the new task.
+    Report the modified files and stop. Partial edits that outlive the pass that
+    made them are how an unrelated change rides someone else's commit.
+
+    (c) **IF THE IN-FLIGHT WORK IS READ-ONLY AND NEARLY DONE**, say so and offer
+    to finish first. Read-only passes cost only tokens to lose, but they also
+    cost only seconds to complete.
+
+    **FT'S INTERRUPT ALWAYS WINS.** If FT says drop it, it drops, with no
+    argument and no second ask. This rule governs the SILENT pivot and the pivot
+    over uncommitted edits, never FT's explicit instruction.
+
+    **THE CAUSE IS USUALLY UPSTREAM, and the rule says so rather than putting it
+    all on the agent.** A prompt issued into a window that is already working is
+    what creates this. Whoever writes the prompt should not issue one mid-run; if
+    an interrupt is genuinely needed, it should be labelled as one and say what
+    to do with the work in flight. The 2026-09-02 case that produced this rule
+    was exactly that: a queue-document prompt arrived two-thirds through an A80
+    scoping pass, and the pass was lost. It was read-only, so nothing was
+    damaged. The rule exists for the time it is not.
 
 Stop background shells (dev server, watch loops) at bank time, and LAUNCH them
 as tracked background tasks so `TaskStop` applies at all. `TaskStop` is the

@@ -21,3 +21,4 @@ scripts/seed-screen-*.mjs
 bmf-synthetic*.sql
 *.sqlite
 *.jsonl
+QUEUE.md
