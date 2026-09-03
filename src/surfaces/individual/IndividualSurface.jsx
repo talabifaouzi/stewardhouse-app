@@ -153,7 +153,7 @@ function ConsentInterstitial({ institutionName, onChoose, onDismiss }) {
           <Button variant="primary" size="lg" onClick={() => choose('self')} disabled={submitting} style={fullWidthBtnStyle}>
             I'll manage it myself
           </Button>
-          <Button variant="secondary" size="lg" onClick={() => choose('delegated')} disabled={submitting} style={fullWidthBtnStyle}>
+          <Button variant="primary" size="lg" onClick={() => choose('delegated')} disabled={submitting} style={fullWidthBtnStyle}>
             Let program staff manage it
           </Button>
         </div>
