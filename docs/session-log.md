@@ -1317,3 +1317,77 @@ counsel-gated subset is unchanged at three, so the header sentence moves from
 "three of the fifteen" to "three of the twenty" without its list changing.
 
 Recounted against the body before writing: 10 + 89 = 99, and 20 + 54 + 25 = 99.
+
+---
+
+## Session — 2026-09-02 (sixth)
+
+Decision record. Docs only, no code, no migration, no branch, no remote command.
+An A97 scoping pass, then this filing. Every claim was re-verified against the
+tree before it was written, and one was corrected by that check.
+
+---
+
+### Ruled
+
+**BOTH CONSENT-INTERSTITIAL BUTTONS BECOME `variant="secondary"`, AND THE COPY
+STAYS EXACTLY AS IT IS (A97).** Neither option is a house default on a consent
+choice. `Button.jsx:3` already defaults to `secondary` and `:80` falls back to
+it, so `variant="primary"` is an opt-in either way; the ruling removes the
+opt-in rather than moving it to the other button.
+
+**THE CONSEQUENCE LINE WAITS ON A96 (A104).** A line naming what `self` does
+would have to be true under all three A96 outcomes, and whether such a line can
+be written honestly is not established. It is filed rather than attempted.
+
+---
+
+### Filed
+
+**A104, the consent interstitial states no consequence for either option.**
+Blocker A96, Pilot BLOCKING, placed in cheap and mechanical immediately after
+A97 so the pairing is adjacent on the page. The card renders six strings and none
+names an effect.
+
+---
+
+### A97 narrowed
+
+A97's title is the variant, and the swap closes exactly that. Its Detail also
+carried the no-consequence finding, which the swap does NOT close, so that moved
+to A104. **A97 keeps `Blocker: none` and is NOT marked closed**, the slice being
+unbanked. Both entries carry a cross-reference to the other.
+
+**Why the split is the load-bearing part.** Every string currently on the
+interstitial is OUTCOME-INDEPENDENT of A96, which is why the swap can proceed
+without it. Adding a consequence line is the point at which outcome-dependence
+enters. Keeping them as one entry would have blocked a fix that is not blocked.
+
+---
+
+### One claim corrected by verification
+
+**The asymmetry was reported as "the staff side states what delegation ENABLES
+while the athlete side never states what `self` DISABLES". Grep corrects the
+second half.** Two athlete-facing strings DO state the disablement, both in
+`RecordKeeping.jsx` and neither on the interstitial: `:102` `Staff at
+{institutionName} can see your progress, but cannot add to it.` and `:116`
+`While you manage your own record, staff will not be able to record anything
+new.` **What no athlete-facing string says is that NOBODY can record**, which is
+the A96 finding rather than this one.
+
+**And one staff-facing string comes closer to naming the freeze than anything on
+the athlete side**, `PhilanthropicReadiness.jsx:132`: `Athletes who manage their
+own records keep any milestones recorded earlier, but their stage will not
+advance here.` The entry carries the corrected version.
+
+---
+
+### Queue delta
+
+OPEN 99 to 100; cheap-and-mechanical 22 to 23; every other group unchanged.
+Pilot totals 20/54/25 to 21/54/25, undetermined unchanged at 5. The
+counsel-gated subset is unchanged at three, so that sentence moves from "three
+of the twenty" to "three of the twenty-one" without its list changing.
+
+Recounted against the body before writing: 10 + 90 = 100, and 21 + 54 + 25 = 100.

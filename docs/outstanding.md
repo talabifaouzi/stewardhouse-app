@@ -22,22 +22,22 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 99 OPEN, 9 PARKED, 6 founder-judgment of which 5 are now ruled,
+**As committed: 100 OPEN, 9 PARKED, 6 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 10, then gates-other-work 15, gates-a-stated-commitment 7,
-BMF-and-Discover 8, cheap-and-mechanical 22, large 34, and
+BMF-and-Discover 8, cheap-and-mechanical 23, large 34, and
 blocker-undetermined 3.
 **The sixth founder-judgment item, FJ-5, is NOT RULED and says so explicitly**,
 with the evidence and the reason for withholding recorded on the entry. An
 unruled item and an item nobody has looked at are different states, and the
 count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 20 BLOCKING, 54 DEBT, 25 POST**,
+**AGAINST THE PILOT GATE (classified 2026-09-02): 21 BLOCKING, 54 DEBT, 25 POST**,
 of which 5 POST carry "(undetermined)" because their own text does not settle it.
 Every OPEN entry carries a `Pilot:` line; nothing else does. BLOCKING means pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**THREE OF THE TWENTY BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
+**THREE OF THE TWENTY-ONE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
 BUILDING: A47, A84 and A68.** So the pre-pilot path is TWO CHAINS, not one: a
 build chain, and a counsel chain that no slice advances. What moves the counsel
 chain is not uniform, and the record says so in two places rather than one.
@@ -585,11 +585,68 @@ on `I'll manage it myself`, against `:156` `variant="secondary"` on `Let program
 staff manage it`. The body copy at `:145-150` tells the athlete `this account
 and everything in it belongs to you`, and the primary action is the one that
 leads to a record no one can write to.
+**RULED 2026-09-02 by FT: BOTH BUTTONS BECOME `variant="secondary"`, AND THE COPY
+STAYS EXACTLY AS IT IS.** Neither option is a house default on a consent choice.
+`Button.jsx:3` already defaults to `secondary` and `:80` falls back to it, so
+`variant="primary"` is an opt-in either way; this removes the opt-in rather than
+moving it.
 **UNBLOCKED 2026-09-02 by FT.** This entry first carried `Blocker: A96`. FT ruled
 the copy WRONG ON ITS OWN TERMS: telling an athlete the account and everything in
 it belongs to them, while the primary button leads to a record no one can write
 to, is a misleading state whichever way the A96 deliberation lands. A96 stays as
 CONTEXT for what the dead end is; it is no longer a dependency.
+**NARROWED 2026-09-02 TO THE VARIANT ONLY.** This entry previously also carried
+the finding that the interstitial states no consequence for either option. The
+swap does not close that, so it moved to A104, which is blocked on A96 where this
+is not. **The two are one problem seen twice and should be read together:** the
+swap stops the surface recommending the dead end, and A104 is what would tell the
+athlete what the dead end is.
+
+**A104 | The consent interstitial states no consequence for either option.**
+Blocker: A96.
+Pilot: BLOCKING
+Detail: `src/surfaces/individual/IndividualSurface.jsx:112-166`. The card asks
+the athlete to choose and tells them what NEITHER option does. Its complete
+rendered copy is six strings: `Your account, your choice` (`:144`); the body at
+`:146-149`, `You're enrolled in {institutionName}'s program. You can manage your
+StewardHouse account yourself, or have your program staff help manage it for
+you. Either way, this account and everything in it belongs to you, and you can
+change this anytime.`; the two labels `I'll manage it myself` (`:154`) and `Let
+program staff manage it` (`:157`); `Decide later` (`:161`); and the error
+fallback `Something went wrong. Please try again.` (`:128`, `:136`). None names
+an effect.
+**THE ASYMMETRY, and it is narrower than it first reads.** A first pass had it as
+"the staff side states what delegation ENABLES while the athlete side never
+states what `self` DISABLES". **Grep corrects the second half.** Two
+athlete-facing strings DO state the disablement, both in `RecordKeeping.jsx` and
+neither on the interstitial: `:102`, `Staff at {institutionName} can see your
+progress, but cannot add to it.`, and `:116`, `While you manage your own record,
+staff will not be able to record anything new.` **What no athlete-facing string
+says is that NOBODY can record**, which is the A96 finding. The staff side is
+consistent and explicit: `src/components/AthleteProfile.jsx:171-172`,
+`{accessLabel(athlete)} — staff can record progress only once record-keeping is
+delegated.`; `src/components/WorkshopDetail.jsx:152`, `No one on this roster has
+delegated record-keeping, so attendance cannot be recorded here.`; and
+`src/surfaces/enterprise/reports/PhilanthropicReadiness.jsx:132`, which comes
+closest in the whole tree to naming the freeze, `Athletes who manage their own
+records keep any milestones recorded earlier, but their stage will not advance
+here.` **The interstitial is the surface that says nothing at all.**
+**WHY THIS IS BLOCKED ON A96 WHERE A97 IS NOT, which is the load-bearing part.**
+Every string currently on the interstitial is OUTCOME-INDEPENDENT of A96, which
+is why the button swap can proceed without it. **Adding a consequence line is the
+point at which outcome-dependence enters.** A line naming what `self` does would
+have to be true under all three A96 outcomes: no institutional tracking;
+institution-observable facts only; an athlete-facing progression path. Whether
+such a line can be written honestly is NOT established.
+**`RecordKeeping.jsx` already carries four outcome-dependent strings**, so this
+entry and those are one problem rather than two: `:102` `You manage your own
+record.` and, in the same paragraph, `Staff at {institutionName} can see your
+progress, but cannot add to it.`; `:116` `While you manage your own record, staff
+will not be able to record anything new.`; and `:97` `They can record your
+progress through the program, workshops you attend, lessons you complete, and
+your certification.`, whose enumeration stops distinguishing the two modes under
+the institution-observable outcome.
+Paired with A97, which is the variant swap and is not blocked.
 
 **A102 | F-C assumes an offline conversation the import path never mentions.**
 Blocker: none named.
