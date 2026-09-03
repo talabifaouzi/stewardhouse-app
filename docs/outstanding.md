@@ -22,9 +22,9 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 105 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 104 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers holding 10, then gates-other-work 16, gates-a-stated-commitment 7,
+ruled tiers holding 9, then gates-other-work 16, gates-a-stated-commitment 7,
 BMF-and-Discover 8, cheap-and-mechanical 27, large 34, and
 blocker-undetermined 3.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -32,19 +32,19 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 21 BLOCKING, 59 DEBT, 25 POST**,
+**AGAINST THE PILOT GATE (classified 2026-09-02): 20 BLOCKING, 59 DEBT, 25 POST**,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 105. The sentence
+totals above, which remain a count of OPEN entries and sum to 104. The sentence
 here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**FOUR OF THE TWENTY-ONE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
+**FOUR OF THE TWENTY BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
 BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
 chain is not uniform, and the record says so in three places rather than one.
@@ -210,24 +210,111 @@ Detail: `docs/filed-defects.md`, "Filed: `POST /api/snapshots` re-SELECTs
 outside its try".
 
 **A18 | Three unguarded branches render the literal `null%` on the enterprise
-overview and roster.**
+overview and roster. A19 MERGED IN 2026-09-03.**
 Blocker: none named.
 Pilot: BLOCKING
-Detail: `docs/filed-defects.md`, "Filed: the enterprise overview renders a null
-progression rate as the literal `null%`". That filing's own line citations are
-stale; the sites moved.
+Detail, VERIFIED at `39b540f` and replacing the stale pointer this line used to
+carry. Three sites, all the ELSE arm of a `consentAware` ternary whose IF arm is
+correct: `src/surfaces/enterprise/EnterpriseOverview.jsx:41` and
+`src/surfaces/enterprise/EnterpriseRoster.jsx:141`, which are
+character-identical (`` : `${activelyProgressingPct}% of program`; ``), and
+`src/surfaces/enterprise/EnterpriseOverview.jsx:140`, the GPS supplementary
+line. The ternaries they belong to are at `EnterpriseOverview.jsx:39`,
+`EnterpriseRoster.jsx:139` and `EnterpriseOverview.jsx:136`.
+The prior Detail line read "`docs/filed-defects.md` … That filing's own line
+citations are stale; the sites moved." The filings remain the narrative record;
+the citations above are the current ones.
+**THE TRIGGER IS ONE STATE: an authenticated roster with ZERO athletes.** Two
+facts in `src/surfaces/enterprise/shared/enterpriseStats.js` combine.
+`:38` derives `const consentAware = athletes.some((a) => typeof a.claimed ===
+'boolean');`, and `[].some()` returns false without invoking its predicate, so an
+empty roster takes the else arm. `:96-98` return `null` for `gpsRate`,
+`certRate` and `activelyProgressingPct` when `rateBaseTotal` is 0, per the R4
+rule stated at `:94-95`. Both hold at once in exactly this state.
+**TWO WRONG OUTPUTS FROM ONE NULL, and only one contains the word.**
+`EnterpriseOverview.jsx:41` and `EnterpriseRoster.jsx:141` are TEMPLATE LITERALS,
+where `${null}` stringifies to the four characters `null`, so the user sees
+"null% of program". `EnterpriseOverview.jsx:140` is JSX interpolation, where
+`{null}` renders nothing, so the same null produces "GPS completed by 0 of 0
+athletes (%)." with a stranded percent sign. A grep for the string finds two of
+the three.
+**THE DIAGNOSIS CARRIED OVER FROM A19, because it is sharper than this entry's
+own:** the guard EXISTS, is CORRECT, and sits on the WRONG SIDE of the branch.
+`docs/filed-defects.md:1977-1982` states it. The test
+`activelyProgressingPct == null ? 'Not tracked'` lives at
+`EnterpriseOverview.jsx:40` and `EnterpriseRoster.jsx:140`, nested INSIDE the
+`consentAware`-true arm. The one input state that produces a null while
+`consentAware` is false never reaches it. **This is not a missing guard; it is a
+guard placed where the condition it guards against cannot arrive.**
+**ROOT CAUSE, verified 2026-09-03: a correct shared helper that these two files
+do not import.** `src/surfaces/enterprise/shared/RateDisclosure.jsx:24-28`
+exports `fmtRate`, and its docblock states the purpose in the entry's own terms:
+a null rate "renders 'Not tracked', NEVER 'null%'". **Its four consumers are all
+in `reports/`**: `ProgramOutputs.jsx:217`, `:294`, `ProgramSummary.jsx:121`,
+`:122`. Neither `EnterpriseOverview.jsx` nor `EnterpriseRoster.jsx` imports it;
+both restate the guard inline.
+**AND THE BRANCHES GUARD ON THE WRONG VALUE.** They test `consentAware`
+(`enterpriseStats.js:38`), which is false in TWO unrelated states, demo fixtures
+and an empty authenticated roster. The value that actually goes null is
+`rateBaseTotal` (`enterpriseStats.js:96-98`).
+**THE CORRECT PATTERN ALREADY EXISTS ON ANOTHER PAGE and is documented.**
+`src/surfaces/enterprise/reports/ProgramOutputs.jsx:141` derives
+`const rateTracked = rateBaseTotal > 0;` and applies it at `:213-218` and
+`:290-295`. Its intent is stated at `:139-140`: "One convention for absence on
+this page, not two."
+Scope is NOT ruled here.
 
-**A19 | An empty authenticated roster renders `null%` from the guarded branch.**
-Blocker: none named. Distinct from A18: different branch, different trigger.
-Pilot: BLOCKING
-Detail: `docs/filed-defects.md`, "Filed: on the AUTHENTICATED enterprise tree, a
-roster with no athletes renders".
+**A19 was CLOSED 2026-09-03 as a DUPLICATE of A18** and has left this section;
+the remaining IDs are not renumbered, since renumbering would break every
+reference to them. Its title was "An empty authenticated roster renders `null%`
+from the guarded branch."
+**IT IS A STRICT SUBSET, not an overlap.** A19's two sites,
+`src/surfaces/enterprise/EnterpriseRoster.jsx:141` and
+`src/surfaces/enterprise/EnterpriseOverview.jsx:41`, are two of A18's three; A18
+additionally covers `EnterpriseOverview.jsx:140`. Both entries name the same
+else-arm of the same `consentAware` ternary, at `EnterpriseOverview.jsx:39` and
+`EnterpriseRoster.jsx:139`, and both have the same trigger: an authenticated
+roster with zero athletes.
+**A19's ENTRY LINE ASSERTED "Distinct from A18: different branch, different
+trigger". THE 2026-09-03 SCOPING PASS COULD NOT REPRODUCE THAT DISTINCTION AT
+HEAD**, and the claim is recorded here rather than deleted, because a later
+reader meeting A19 in the git history should find why it stopped being separate.
+Both filings describe the same sites, the same branch and the same one input
+state.
+**ITS DIAGNOSIS SURVIVES and is now the load-bearing half of A18**, per the
+carry-over paragraph above: the guard is correct and on the wrong side of the
+branch. Nothing is lost by the merge except a second entry for one defect.
 
 **A20 | The Workshops-held tile reads "0 of 0" for an institution with no
-workshops.**
+workshops. COPY RULED 2026-09-03; the build is not done.**
 Blocker: none named. It is the first screen a new institution sees.
 Pilot: BLOCKING
-Detail: `docs/filed-defects.md`, the filing on that tile rendering "0 of 0".
+Detail: `src/surfaces/enterprise/reports/ProgramOutputs.jsx:239-244`, the tile.
+The expression is `:242`,
+`` value={`${workshopsHeld} of ${workshopsHeld + workshopsScheduled}`} ``, over
+`workshopsHeld` at `:95` and `workshopsScheduled` at `:96`, each a filter on
+`workshops` by `status`. With no workshop rows both are 0 and the tile renders
+"0 of 0" with the sublabel "0 remaining this term". The tile is UNGATED: `:239`
+sits outside the `isAuthenticated` ternary that closes at `:238`.
+**RULED 2026-09-03 by FT: the tile renders "None yet".**
+**None of the three candidates on the filing was ruled.**
+`docs/filed-defects.md:1405` named "None scheduled", "Not tracked", and leaving
+the honest "0 of 0" as it is. FT ruled a fourth string.
+**The reasoning, recorded because it is what distinguishes the four.** "0 of 0"
+reads as a MEASUREMENT OF NOTHING on the first screen a new institution sees.
+"None scheduled" asserts a fact about the FUTURE that the data does not carry:
+`workshopsScheduled` counts rows with a non-`completed` status, and zero such
+rows means none exist, not that none is planned.
+**"Not tracked" is ruled out by a distinction this entry must not lose.** That
+string belongs to R4 and to a CONSENT POPULATION, where the measurement does not
+exist. A workshop count is a COUNT OF ROWS, and zero is a real and correct answer
+to "how many workshops". `docs/filed-defects.md:1381-1389` records this at
+length, including that the resemblance between the two output strings is not a
+reason to treat them alike. **A20 is therefore NOT part of the A18 fix**, shares
+no file with it, and involves no null at all.
+**The copy is ruled; the build is not done**, which is why this stays OPEN and
+BLOCKING. Where the string is applied, whether the sublabel changes with it, and
+whether any sibling tile takes the same treatment are NOT ruled here.
 
 ### Tier 3
 
