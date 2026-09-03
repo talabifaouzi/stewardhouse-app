@@ -22,22 +22,22 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 90 OPEN, 9 PARKED, 6 founder-judgment of which 5 are now ruled,
+**As committed: 99 OPEN, 9 PARKED, 6 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers holding 10, then gates-other-work 13, gates-a-stated-commitment 7,
-BMF-and-Discover 8, cheap-and-mechanical 20, large 29, and
+ruled tiers holding 10, then gates-other-work 15, gates-a-stated-commitment 7,
+BMF-and-Discover 8, cheap-and-mechanical 22, large 34, and
 blocker-undetermined 3.
 **The sixth founder-judgment item, FJ-5, is NOT RULED and says so explicitly**,
 with the evidence and the reason for withholding recorded on the entry. An
 unruled item and an item nobody has looked at are different states, and the
 count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 15 BLOCKING, 50 DEBT, 25 POST**,
+**AGAINST THE PILOT GATE (classified 2026-09-02): 20 BLOCKING, 54 DEBT, 25 POST**,
 of which 5 POST carry "(undetermined)" because their own text does not settle it.
 Every OPEN entry carries a `Pilot:` line; nothing else does. BLOCKING means pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**THREE OF THE FIFTEEN BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
+**THREE OF THE TWENTY BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
 BUILDING: A47, A84 and A68.** So the pre-pilot path is TWO CHAINS, not one: a
 build chain, and a counsel chain that no slice advances. What moves the counsel
 chain is not uniform, and the record says so in two places rather than one.
@@ -365,6 +365,45 @@ which parks the soft-delete build. This is the only pre-pilot requirement found
 outside CLAUDE.md §5.1 and `docs/pilot-gate-criteria.md`, and neither of those
 carries it.
 
+**A96 | A self-managed athlete's record is frozen permanently: no path records
+progression for `management_mode = 'self'`.**
+Blocker: advisory-team deliberation. NOT awaiting an FT ruling.
+Pilot: BLOCKING
+Detail: `functions/api/athletes/[id].js:274-276`, the claim-state gate.
+**DEFERRED 2026-09-02 by FT TO THE ADVISORY TEAM.** Three options to be argued,
+recorded in the order FT gave them and not ranked here: leave it as is, with no
+institutional tracking at all; institution-observable facts only, meaning
+attendance at the institution's own events and athlete-owned facts never; or an
+athlete-facing progression path.
+**VERIFIED BY GREP, and every write site is accounted for.** Four sites write a
+milestone column and none is reachable for `'self'`:
+`functions/api/athletes/[id].js:281-288`, the milestone `set`, gated at `:274`
+on `'delegated'` EXACTLY plus a non-null `person_id`;
+`functions/api/athletes/[id].js:130-139`, the anonymize zeroing, which is
+destruction; `functions/api/athletes.js:205-210`, enrollment, which writes zeros
+at creation; and `functions/api/snapshots.js:157-158`, which reads rather than
+writes. There is no athlete-facing progression endpoint:
+`functions/api/athlete-consent.js` exports `onRequestPost` only and writes
+`management_mode` alone.
+**What can never be recorded, by anyone:** `lessons_count`, `gps_completed_at`,
+`certified` with `cert_at`, `workshop_attendance` rows (blocked at
+`functions/api/workshops/[id]/attendance.js:173-181`), and `enrollment_status`
+progression, since `resolveStatus` runs only inside the gated PUT.
+Coupled to A95: that ruling draws a line between institution-owned and
+athlete-owned records, and whichever way this is decided must sit consistently
+with it. Recorded as an observation, not as a prejudgment of the team's answer.
+
+**A101 | The invite email copy is FT-ruled for one path and already reused on
+another without a ruling.**
+Blocker: an FT ruling on whether the copy extends to imported athletes.
+Pilot: DEBT
+Detail: `functions/_lib/inviteEmail.js:1-10`, which scopes itself to
+`POST /api/invites` and marks its strings FT-ruled copy, `do not reword without
+a ruling`; `functions/api/athletes.js:311` already calls `buildInviteEmail` on
+the roster-add path. The copy names no institution, no program and no inviter,
+and its only concession to an unexpected arrival is the closing line, `If you
+weren't expecting this invitation, you can disregard this message.`
+
 ### Gates a stated commitment
 
 **A44 | Every advisor write returns 403 in production.**
@@ -538,6 +577,30 @@ Blocker: none named. Fixture layer only.
 Pilot: DEBT
 Detail: `docs/5.8-giving-flow-scoping.md`, section 4, carried debt.
 
+**A97 | The consent interstitial makes the dead end the primary button.**
+Blocker: none.
+Pilot: BLOCKING
+Detail: `src/surfaces/individual/IndividualSurface.jsx:153`, `variant="primary"`
+on `I'll manage it myself`, against `:156` `variant="secondary"` on `Let program
+staff manage it`. The body copy at `:145-150` tells the athlete `this account
+and everything in it belongs to you`, and the primary action is the one that
+leads to a record no one can write to.
+**UNBLOCKED 2026-09-02 by FT.** This entry first carried `Blocker: A96`. FT ruled
+the copy WRONG ON ITS OWN TERMS: telling an athlete the account and everything in
+it belongs to them, while the primary button leads to a record no one can write
+to, is a misleading state whichever way the A96 deliberation lands. A96 stays as
+CONTEXT for what the dead end is; it is no longer a dependency.
+
+**A102 | F-C assumes an offline conversation the import path never mentions.**
+Blocker: none named.
+Pilot: DEBT
+Detail: CLAUDE.md §5.2, F-C, which rules the invite `taken after an offline
+conversation and athlete acknowledgment`.
+`src/surfaces/enterprise/AddAthleteModal.jsx:128` instructs the operator on the
+add path: `give them a heads-up that it's coming and why`.
+`src/surfaces/enterprise/ImportRosterModal.jsx` says nothing of the kind: a grep
+of that file for `invite`, `invited` and `pending` returns ZERO matches.
+
 **A57 | Twelve `rgba()` literals sit outside the token system.**
 Blocker: a design question rather than a sweep, namely whether alpha-variant
 whites want tokens at all.
@@ -636,6 +699,110 @@ Detail: CLAUDE.md §5, the Advisor row, its deferred list;
 single-select controls; `Pipeline.jsx:468` names the three-control span.
 
 ### Large
+
+**A95 | An athlete cannot see their own milestones.**
+Blocker: none.
+Pilot: BLOCKING
+Detail: `functions/api/me.js:126-137`, which for a linked athlete selects
+`management_mode` and `institution.name` and emits
+`linkedAthlete = { managementMode, institutionName }` and nothing else. No
+lessons, no GPS date, no certification, no attendance. None of the nine
+Individual routes (`src/surfaces/individual/IndividualSurface.jsx:322-330`)
+displays them. `src/surfaces/individual/RecordKeeping.jsx:116` tells the athlete
+`Progress already recorded stays on your record exactly as it is`, about a
+record they have no way to view.
+**RULED 2026-09-02 by FT: AN ATHLETE MAY SEE THEIR OWN MILESTONES; STAFF NOTES
+STAY INTERNAL.** What the athlete did, meaning lessons, GPS completion,
+certification and workshop attendance, is theirs and should be visible to them.
+Staff and advisor notes are internal working material and are NOT disclosed.
+FT's basis, in his words: an informational call's notes are internal, and the
+platform should not force advisors or staff to share theirs either.
+**The ruling names WHAT is visible, not what the screen is. Scope is NOT ruled
+here.**
+**THE DATA-LAYER SPLIT IS CLEAN ON ONE SIDE AND NOT THE OTHER, and the second
+half is a correction to how this was first reported.** `athlete_note` IS a
+separate table (`migrations/0009_enterprise_schema.sql:268`) and `me.js` never
+names it, verified by grep, so note CONTENT is nowhere near an athlete-facing
+emit. **But `athlete` carries its own free-text `notes` column**
+(`migrations/0020_athlete_pending_status.sql:98`), which sits in
+`ATHLETE_ELEMENT_COLUMNS` (`functions/api/athletes.js:78`) and is emitted by
+`toAthleteElement` (`:109`). So emitting milestone columns is safe only if
+`notes` is excluded by name: it rides the same row and the same column list.
+E8 is what keeps it staff-only today (`functions/api/athletes.js:21-24`,
+`notes is emitted ONLY to the staff's own /api/me block`; `me.js:399-401` says
+the same at the emit site).
+**IMPLEMENTATION CONSTRAINT ON THE RULING, not a separate finding, and the part
+most likely to be lost between here and the build: `notes` must be excluded BY
+NAME from any athlete-facing emit.** A naive "emit the milestone columns"
+implementation reuses `ATHLETE_ELEMENT_COLUMNS`
+(`functions/api/athletes.js:78`) and `toAthleteElement` (`:109`), both of which
+already carry `notes`, and would therefore ship staff-authored notes
+(`migrations/0020_athlete_pending_status.sql:98`) to the athlete. That is the
+precise disclosure this ruling excludes.
+
+**A98 | Nothing syncs `athlete.email` to `person.invite_email`.**
+Blocker: none.
+Pilot: DEBT
+Detail: `person.invite_email` is written at INSERT and NEVER updated, verified
+by grep: the three writers are `functions/api/athletes/[id]/invite.js:210`,
+`functions/api/athletes.js:250` and `functions/api/invites.js:140`, and no
+`updateTable('person')` anywhere sets the column. The one UPDATE that names it,
+`functions/_lib/auth.js:337-342`, has it in the WHERE clause and sets
+`auth_user_id`.
+`bindAthleteRows` (`functions/_lib/auth.js:129-150`) is the only code joining an
+athlete row to a person by email; it fires only from the `createUser` hooks
+(`:356`, `:383`), which run once at first sign-in, and its
+`.where('person_id', 'is', null)` excludes an already-bound row. So a claimed
+athlete's binding is fixed at claim and nothing revisits it.
+CLAUDE.md §5.2 files a CASE-divergence observation and calls it cosmetic. **That
+verdict rests on the two values being the same address, which a genuine edit
+breaks**, and no filing covers the edit case.
+
+**A99 | Three invite refusals instruct an act the product forbids.**
+Blocker: none.
+Pilot: BLOCKING
+Detail: `functions/api/athletes/[id]/invite.js:180` and `:228` both read
+`Update the athlete's email address before inviting.`
+`ALLOWED_MILESTONE_KEYS` (`functions/api/athletes/[id].js:187`) is
+`['lessons', 'gpsCompleted', 'certified']` and rejects `email` as an unpermitted
+field at `:193-196`; no UI offers an edit, `AthleteProfile.jsx:111` rendering the
+address as a read-only `mailto:` link.
+The third refusal, `:147-149`, says the record-keeping mode `needs correcting
+first`, and no staff control writes `management_mode` at all.
+**That third one is arguably CORRECT AS A REFUSAL and wrong only in its copy**:
+staff asserting an athlete's consent choice is precisely what the consent model
+exists to prevent, so the absent control is the design rather than the gap.
+
+**A100 | No actor is assigned to the invite send.**
+Blocker: none.
+Pilot: BLOCKING
+Detail: CLAUDE.md §5.2, SCOPE OF THE ATOMIC UNIT, places the send outside the
+batch and fixes WHEN, `a step after the committed act`, without naming WHO.
+F-C states `There is NO send script`, and
+`functions/api/athletes/[id]/invite.js:55` records `no UI; no send`. A grep of
+that file for `createSender`, `inviteEmail`, `Resend` and `fetch(` returns zero
+matches.
+**RULED 2026-09-02 by FT: INVITED ATHLETES RECEIVE AN EMAIL**, the same as any
+invite, differing only in entry point and in who triggered it. **The actor
+remains UNASSIGNED**: the ruling settles that a send happens, not which code
+performs it.
+
+**A103 | A bulk invite has no outcome-reporting shape.**
+Blocker: none.
+Pilot: DEBT
+Detail: `src/contexts/AthletesContext.jsx:43`, `const [writeError, setWriteError]
+= useState(null)`, is one provider-level string, so a partial failure across N
+invites shows one message with no athlete attached to it.
+**Both precedents exist and they diverge deliberately.** The import reports
+PER-ROW: `functions/api/athletes/import.js:288-301` builds a `rejected` array of
+`{ index, reason }`, and `src/surfaces/enterprise/EnterpriseRoster.jsx:211-228`
+renders each against the staged athlete it names. The bulk delete deliberately
+does NOT: `functions/api/athletes.js:431-440` returns one message, on the stated
+reasoning that naming which ids were absent versus not-yours `would make this an
+existence probe`. **That reason does not apply to invite refusals over roster
+rows the operator is already looking at.**
+**RULED 2026-09-02 by FT: invites are BOTH single and bulk, and most will be
+bulk.**
 
 **A23 | Four of five athlete-state derivations do not route through
 `statusFor`.**

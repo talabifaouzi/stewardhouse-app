@@ -1233,3 +1233,87 @@ a label that looks wrong when someone works the item probably is wrong. A68 is
 the worked example: the entry's text was thinner than the coupling, the first
 pass marked it undetermined rather than guessing, and FT ruled it. Correct the
 rest the same way, on the entry, in the commit that surfaced it, per FJ-6.
+
+---
+
+## Session — 2026-09-02 (fifth)
+
+Decision record. Docs only, no code, no migration, no branch, no remote command.
+An A80 scoping pass across four areas, then this filing. Every claim below was
+re-verified against the tree before it was written, not carried from the pass.
+
+---
+
+### Filed
+
+Nine entries, A95 through A103, continuing the sequence with nothing renumbered.
+Five BLOCKING, four DEBT.
+
+**A95** an athlete cannot see their own milestones. **A96** a self-managed
+athlete's record is frozen permanently. **A97** the consent interstitial makes
+the dead end the primary button. **A98** nothing syncs `athlete.email` to
+`person.invite_email`. **A99** three invite refusals instruct an act the product
+forbids. **A100** no actor is assigned to the invite send. **A101** the invite
+copy is FT-ruled for one path and reused on another. **A102** F-C assumes an
+offline conversation the import path never mentions. **A103** a bulk invite has
+no outcome-reporting shape.
+
+---
+
+### Ruled
+
+**AN ATHLETE MAY SEE THEIR OWN MILESTONES; STAFF NOTES STAY INTERNAL (A95).**
+What the athlete did, lessons, GPS completion, certification and workshop
+attendance, is theirs. Staff and advisor notes are internal working material and
+are not disclosed. FT's basis, in his words: an informational call's notes are
+internal, and the platform should not force advisors or staff to share theirs
+either. The ruling names WHAT is visible, not what the screen is.
+
+**INVITED ATHLETES RECEIVE AN EMAIL (A100).** The same as any invite, differing
+only in entry point and in who triggered it. The actor remains unassigned: the
+ruling settles that a send happens, not which code performs it.
+
+**INVITES ARE BOTH SINGLE AND BULK, AND MOST WILL BE BULK (A103).**
+
+---
+
+### Deferred
+
+**A96 goes to the ADVISORY TEAM, not to FT.** Three options to be argued, in the
+order FT gave them and unranked: leave it as is, with no institutional tracking
+at all; institution-observable facts only, meaning attendance at the
+institution's own events and athlete-owned facts never; or an athlete-facing
+progression path. A95's ruling draws a line between institution-owned and
+athlete-owned records, and whichever way A96 is decided must sit consistently
+with it. That is recorded as an observation, not as a prejudgment.
+
+---
+
+### One correction the verification produced
+
+**A95's data-layer claim was half right as it reached this filing, and the
+filing carries the accurate version.** The pass reported that `athlete_note` is a
+separate table the `/api/me` query does not join, so emitting milestone columns
+exposes no note content. The first half holds and was re-checked: the table is at
+`migrations/0009_enterprise_schema.sql:268` and `me.js` never names it. **The
+conclusion does not follow on its own**, because `athlete` carries its OWN
+free-text `notes` column (`migrations/0020_athlete_pending_status.sql:98`), which
+sits in `ATHLETE_ELEMENT_COLUMNS` (`athletes.js:78`) and is emitted by
+`toAthleteElement` (`:109`). Milestone columns are safe to emit only if `notes`
+is excluded by name, since it rides the same row and the same column list. E8 is
+what keeps it staff-only today.
+
+---
+
+### Queue delta
+
+OPEN 90 to 99. Gates-other-work 13 to 15 (A96, A101); cheap-and-mechanical 20 to
+22 (A97, A102); large 29 to 34 (A95, A98, A99, A100, A103). Tiers unchanged at
+10; gates-a-stated-commitment, BMF-and-Discover and blocker-undetermined all
+unchanged.
+
+Pilot totals 15/50/25 to 20/54/25, undetermined unchanged at 5. The
+counsel-gated subset is unchanged at three, so the header sentence moves from
+"three of the fifteen" to "three of the twenty" without its list changing.
+
+Recounted against the body before writing: 10 + 89 = 99, and 20 + 54 + 25 = 99.
