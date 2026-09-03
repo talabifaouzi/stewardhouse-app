@@ -32,6 +32,27 @@ with the evidence and the reason for withholding recorded on the entry. An
 unruled item and an item nobody has looked at are different states, and the
 count distinguishes them.
 
+**AGAINST THE PILOT GATE (classified 2026-09-02): 15 BLOCKING, 50 DEBT, 25 POST**,
+of which 5 POST carry "(undetermined)" because their own text does not settle it.
+Every OPEN entry carries a `Pilot:` line; nothing else does. BLOCKING means pilot
+cannot open with it unresolved, DEBT means pilot can open with it recorded and
+honest, POST means no pilot user reaches it.
+**THREE OF THE FIFTEEN BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
+BUILDING: A47, A84 and A68.** So the pre-pilot path is TWO CHAINS, not one: a
+build chain, and a counsel chain that no slice advances. What moves the counsel
+chain is not uniform, and the record says so in two places rather than one.
+`docs/ruling-e-deletion-retention.md` names a reviewing attorney for Clauses 3
+and 6, which is A47 and A84. CLAUDE.md §5, the Enterprise row, records the
+operating premise for E3, E6 and E8, dated 2026-07-15, as internal review with
+no external counsel, which is A68. **Nothing in this repository records counsel
+as retained**, and no entry names a date by which either chain moves.
+**THE QUEUE COUNT AND THE PILOT-GATE PERCENTAGE MEASURE DIFFERENT THINGS, AND
+THIS LINE IS WHAT RECONCILES THEM.** `docs/pilot-gate-criteria.md` scores ROUTES
+AND ENDPOINTS THAT EXIST, so 90 open items and a 99% capability figure are not in
+conflict: a defect on a route the instrument scores MET moves no unit, and the
+instrument has no unit at all for work that was never built. Read the gate figure
+for coverage and this line for readiness.
+
 **NO LINE NUMBERS INTO DOCS. Citations name a section and a filing title.** That
 rule is load-bearing rather than stylistic, and the commit preceding this file
 is why: while correcting four rotted pointers it first wrote four fresh ones
@@ -115,6 +136,7 @@ still resolves.
 **A39 | The P-2 L4 window closes on the first snapshot write, and nothing guards
 it.**
 Blocker: none. It is a deadline, not a dependency.
+Pilot: DEBT
 Detail: `docs/session-log.md`, the 2026-08-28 and 2026-08-30 entry, under
 rulings that reversed a prior ruling.
 **CORRECTED 2026-09-02. This entry contradicted itself and its own source.** The
@@ -143,6 +165,7 @@ with zero rows cannot be judged on the merits.
 **A80 | `PUT /api/athletes/:id/invite` has no caller, so no path moves an
 imported athlete off `Pending`.**
 Blocker: none named.
+Pilot: BLOCKING
 Detail: `functions/api/athletes/[id]/invite.js:1-11`, which names the act;
 CLAUDE.md §5.2, the F-C ruling.
 Placed in Tier 1 by FT ruling 2026-09-02 rather than in a blocker group. It is
@@ -155,6 +178,7 @@ yet invited"; the endpoint is built and gated, and `src/` calls it nowhere.
 **A93 | Nothing guards the first snapshot write, which is what closes A39's
 window.**
 Blocker: none named.
+Pilot: DEBT
 Detail: A39, this tier, which is the deadline this guards; CLAUDE.md §5.1, the
 FORK 1 denominator change.
 **RULED 2026-09-02: a server-side guard on `POST /api/snapshots` that refuses the
@@ -170,24 +194,28 @@ acknowledgment mechanism are NOT ruled here.
 
 **A17 | `POST /api/snapshots` returns 500 for a write that committed.**
 Blocker: none named.
+Pilot: BLOCKING
 Detail: `docs/filed-defects.md`, "Filed: `POST /api/snapshots` re-SELECTs
 outside its try".
 
 **A18 | Three unguarded branches render the literal `null%` on the enterprise
 overview and roster.**
 Blocker: none named.
+Pilot: BLOCKING
 Detail: `docs/filed-defects.md`, "Filed: the enterprise overview renders a null
 progression rate as the literal `null%`". That filing's own line citations are
 stale; the sites moved.
 
 **A19 | An empty authenticated roster renders `null%` from the guarded branch.**
 Blocker: none named. Distinct from A18: different branch, different trigger.
+Pilot: BLOCKING
 Detail: `docs/filed-defects.md`, "Filed: on the AUTHENTICATED enterprise tree, a
 roster with no athletes renders".
 
 **A20 | The Workshops-held tile reads "0 of 0" for an institution with no
 workshops.**
 Blocker: none named. It is the first screen a new institution sees.
+Pilot: BLOCKING
 Detail: `docs/filed-defects.md`, the filing on that tile rendering "0 of 0".
 
 ### Tier 3
@@ -197,6 +225,7 @@ identifiable real organizations, at rest on remote.**
 Blocker: none. **RULED 2026-09-02 (FJ-2): LEAVE AS IS, narrow and general
 both.** No cleanup slice, and no general ruling on what may sit at rest in
 remote D1.
+Pilot: POST
 Detail: `docs/propublica-spike-findings.md`, FT ruling 8, "D1 org seed defanged
 fields". The 2026-08-14 defang covered the fixture side only. Nothing reads the
 `org` table today, so the data is dormant rather than rendered.
@@ -210,6 +239,7 @@ placement is FT-ruled and this slice did not rule a move.
 
 **A1 | The BMF import rollback path is untested and gates the production load.**
 Blocker: a failure has never been exercised; the success path is proven atomic.
+Pilot: POST
 Detail: `docs/bmf-load-scoping.md`, open item 1; `docs/filed-defects.md`,
 "Filed: the BMF rollback path is a stated precondition on a production BMF
 load".
@@ -219,6 +249,7 @@ load".
 **A59 | Nav buttons sit at roughly 31px against the LOCKED 44px standard, and
 this was never filed anywhere until this sweep.**
 Blocker: none named.
+Pilot: DEBT
 Detail: CLAUDE.md §7, "Tap targets and control sizing (LOCKED 2026-08-14)",
 which names "the deferred nav slice" in a subordinate clause and nowhere else.
 It appears in no defect queue and in no parked set.
@@ -227,14 +258,18 @@ It appears in no defect queue and in no parked set.
 
 **A47 | Ruling E Clause 3, the charitable-retention floor, is unanswered.**
 Blocker: COUNSEL. Gates A12, A14 and every retention decision.
+Pilot: BLOCKING, and counsel-gated: building cannot close it, but the
+record states this policy is required before pilot.
 Detail: `docs/ruling-e-deletion-retention.md`, Clause 3.
 
 **A46 | Ruling E Clause 6, the subpoena posture, is unanswered.**
 Blocker: COUNSEL. Gates the who-gave-to-whom view and P-C.
+Pilot: POST
 Detail: `docs/ruling-e-deletion-retention.md`, Clause 6.
 
 **A42 | Advisor stage-label renaming is blocked on the Q7 allowlist.**
 Blocker: Q7, itself COUNSEL-gated.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: advisor stage-label renaming, blocked
 on the Q7 allowlist"; `docs/advisor-persistence-schema-draft.md`, the Q4/Q7
 gate.
@@ -246,11 +281,13 @@ nothing here. Same item, two names, no second entry.
 conditions.**
 Blocker: advisor and enterprise gate emissions in `/api/me`, which do not exist.
 The blocker moved rather than cleared when slice 1 shipped.
+Pilot: DEBT
 Detail: CLAUDE.md §5.1, the P-6 sub-item on the shared string.
 
 **A94 | No alerting on `auth_send_log`. A failure is discoverable only by a
 deliberate query someone thinks to run.**
 Blocker: SCHEDULED EXECUTION, which this project has never had.
+Pilot: POST
 Detail: CLAUDE.md §11, the auth-observability filing;
 `migrations/0021_auth_send_log.sql`, its retention docblock, on the absence of
 cron, scheduled worker and `[triggers]`.
@@ -261,6 +298,7 @@ the read surface and sits in cheap and mechanical.
 **A92 | Migration 0021 forbids emitting `email` to any client, so a read
 endpoint must omit the column or the rule must be amended.**
 Blocker: FT. It is a privacy-posture ruling, not infrastructure.
+Pilot: POST
 Detail: `migrations/0021_auth_send_log.sql`, its E8 discipline note and the
 `email` column comment.
 Surfaced 2026-09-02 by the FJ-1 ruling. Gates A13, and nothing else. The two
@@ -272,6 +310,7 @@ to make live.**
 Blocker: A47 for the window itself, and the absent scheduled execution for any
 purge that would enforce it. Setting a window unilaterally would invent the
 standard Clause 3 defers.
+Pilot: POST
 Detail: `migrations/0021_auth_send_log.sql`, its retention docblock.
 
 **A14 | No purge path exists on any of the five append-only tables.**
@@ -279,12 +318,14 @@ Blocker: the same absent scheduled execution, plus A47. Broader than A12 and NOT
 closed by it: `compliance_audit` is an append-only institutional record with its
 own obligations, and three others are athlete-scoped. Closing the narrow one
 must not read as closing this.
+Pilot: POST
 Detail: `migrations/0021_auth_send_log.sql`, its retention docblock, which names
 the four tables it joins.
 
 **A66 | The pilot gate has not been re-scored in 86 commits.**
 Blocker: none named. A re-score additionally needs an FT-run remote gate read
 before any production-usable figure may be reported.
+Pilot: DEBT
 Detail: `docs/pilot-gate-criteria.md`, the re-score log. Several Tier 2 defects
 above sit on routes that log scores MET.
 
@@ -294,12 +335,14 @@ Blocker: it needs a reading pass, not a grep. The bare form is invisible to a
 filename-and-line pattern, and it is also how this project cites a line in a
 source file already named in the sentence, so the two cannot be separated by
 pattern alone.
+Pilot: DEBT
 Detail: the commit message of the preceding correction slice. One instance was
 found and converted; the scope is unknown.
 
 **A15 | Whether production D1 enforces foreign keys is unverified.**
 Blocker: it needs a remote write, which is FT-only. Local enforcement IS
 verified. Gates A16, which is explicitly downstream of it.
+Pilot: POST (undetermined, needs FT)
 Detail: CLAUDE.md §10, the filed block on foreign-key enforcement.
 
 **A74 | Two audit docs are cited from CLAUDE.md and cannot be opened from
@@ -307,12 +350,15 @@ Detail: CLAUDE.md §10, the filed block on foreign-key enforcement.
 Blocker: a disposition. Committing them to `main` argues against §6.9's
 anti-merge posture; amending each pointer to name its branch is the alternative.
 Neither is proposed.
+Pilot: DEBT
 Detail: CLAUDE.md §8, its opening note on the two branch-only pointers.
 
 **A84 | A retention and deletion policy is stated as required BEFORE pilot, and
 no entry cited it as a pilot blocker until this one.**
 Blocker: A47, COUNSEL. The requirement names soft versus hard delete and what
 account deletion does to gift rows; neither is settled.
+Pilot: BLOCKING, and counsel-gated: building cannot close it, but the
+record states this policy is required before pilot.
 Detail: `docs/persistence-scoping-pass.md`, Strand 3, Layer 4, governance.
 Coupled to A12 and A14, which are the unbounded-retention items, and to P-B,
 which parks the soft-delete build. This is the only pre-pilot requirement found
@@ -324,6 +370,7 @@ carries it.
 **A44 | Every advisor write returns 403 in production.**
 Blocker: a scoping pass on which person rows may be designated, and against
 which institutions. See FJ-3.
+Pilot: BLOCKING
 Detail: CLAUDE.md §5.1, production gate state.
 Blocker CHANGED 2026-09-02 from "FT's `$.advisor.demo_gate` designation": FJ-3
 ruled the unset gates a GAP rather than an intended posture, so the designation
@@ -332,17 +379,27 @@ is no longer the blocker. The scoping pass is.
 **A69 | Every enterprise write returns 403 in production.**
 Blocker: a scoping pass on which person rows may be designated, and against
 which institutions. See FJ-3.
+Pilot: BLOCKING
 Detail: CLAUDE.md §5.1, production gate state.
 Blocker CHANGED 2026-09-02 on the same ruling as A44. The A39 coupling note is
 REMOVED: setting this gate cannot close A39's window, because it writes no row.
+**A68 MAY GATE THIS ITEM, cross-referenced 2026-09-02.** The coupling is stated
+in CLAUDE.md §5, the Enterprise row ("until E3/E6/E8 counsel clears", and the
+write arc "gated dark on production pending E3/E6/E8 counsel"), in
+`functions/_lib/gate.js:123-125` ("while the E3 ... / E6 ... / E8 ... counsel
+seams remain open"), and in `docs/enterprise-persistence-scoping.md:524-526`. If
+it holds, the scoping pass named as this item's blocker cannot conclude in
+setting the gate until A68 clears.
 
 **A45 | The pilot has no in-product feedback channel.**
 Blocker: a deliberate design problem rather than a restore. It needs explicit
 consent, a first-party destination and an honest success state.
+Pilot: DEBT
 Detail: CLAUDE.md §5, the Individual row.
 
 **A54 | Marcus Thompson's person row is unclaimable by any path.**
 Blocker: a ruling rather than a patch. See FJ-5.
+Pilot: POST
 Detail: `docs/filed-defects.md`, "Filed: the Marcus Thompson person row is
 structurally unclaimable".
 
@@ -350,12 +407,14 @@ structurally unclaimable".
 in a future slice.**
 Blocker: an integration with the school's compliance system, which is external
 and unscoped.
+Pilot: DEBT
 Detail: `src/surfaces/enterprise/EnterpriseCompliance.jsx:96-101`, the card and
 its own placeholder comment. Tree-invariant: it renders on both trees.
 
 **A82 | The Operations Accounts view tells the operator per-account detail
 arrives in a later release.**
 Blocker: none named.
+Pilot: DEBT
 Detail: `src/surfaces/operations/OperationsRoster.jsx:288-295`. Rows are
 deliberately non-interactive rather than dead-clicking, per the aggregate-default
 guardrail, so the promise is the affordance.
@@ -363,6 +422,7 @@ guardrail, so the promise is the affordance.
 **A83 | The Operations Overview says per-issue and per-activity detail views are
 coming soon.**
 Blocker: none named. A55 is a different target, a CR-level filtered view.
+Pilot: DEBT
 Detail: `src/surfaces/operations/OperationsSurface.jsx:356` and `:378`, two
 footnotes under the Open issues and Recent activity cards.
 
@@ -373,38 +433,46 @@ actually gates the load is A1, in Tier 4.
 
 **A2 | Whether `REVENUE_AMT` serves any v1 query.**
 Blocker: none named.
+Pilot: POST
 Detail: `docs/bmf-load-scoping.md`, open item 2.
 
 **A3 | Whether absence from the BMF is the entire revocation and deductibility
 signal.**
 Blocker: two IRS information-sheet PDFs defeated the spike's tooling.
+Pilot: POST
 Detail: `docs/bmf-load-scoping.md`, open item 3.
 
 **A4 | Whether retained Time Travel history counts toward the 10 GB ceiling.**
 Blocker: unknown to this project; a vendor answer would settle it.
+Pilot: POST
 Detail: `docs/bmf-load-scoping.md`, open item 4.
 
 **A5 | Whether an import FAIL is per-database or per-table.**
 Blocker: the closing experiment was ruled not run.
+Pilot: POST
 Detail: `docs/bmf-load-scoping.md`, open item 5.
 
 **A6 | The Discover NTEE facet is deferred.**
 Blocker: the verbatim label source is unidentified.
+Pilot: POST
 Detail: `docs/discover-surface-spec.md`, "4. NTEE: DEFERRED".
 
 **A7 | Whether a staleness threshold should revert Discover to unavailable.**
 Blocker: unruled.
+Pilot: POST
 Detail: `docs/discover-surface-spec.md`, its closing UNRULED note.
 
 **A8 | The four Discover facets are unbuilt; the page renders an explicit
 unavailable state.**
 Blocker: the BMF ingest, which is A1 and A9.
+Pilot: DEBT
 Detail: `docs/discover-surface-spec.md`; `docs/bmf-load-scoping.md`.
 
 **A10 | One BMF batch zip is malformed and exits non-zero while extracting
 correctly.**
 Blocker: no loader exists yet to guard. A load treating a non-zero exit as
 failure would discard a complete batch.
+Pilot: POST
 Detail: `docs/propublica-spike-findings.md`, its note on the malformed batch.
 
 ### Cheap and mechanical
@@ -412,6 +480,7 @@ Detail: `docs/propublica-spike-findings.md`, its note on the malformed batch.
 **A75 | `docs/bmf-load-scoping.md` cites its own two-preconditions passage one
 line short of where it starts.**
 Blocker: none. A self-citation inside a single file.
+Pilot: DEBT
 Detail: that document, section 13, "The availability ruling".
 
 **A76 | CLAUDE.md's manifest-drift note carries a `me.js` citation that never
@@ -420,6 +489,7 @@ Blocker: none, but it needs a decision rather than a renumber. This is a
 DISTINCT CLASS from a rotted pointer: it was authored wrong, and it was already
 wrong at the docs-only commit that wrote it, which implies docs commits have
 been written without resolving their own anchors.
+Pilot: DEBT
 Detail: CLAUDE.md §5.1, the manifest-drift note.
 
 **A77 | `intake-gifts-join-unified` is recorded parked in one document and
@@ -433,6 +503,7 @@ resolutions (the gated items, resolved by the pass)", records it as
 "**`intake-gifts-join`:** YES (5.8 ruling) — GiveScreen writes feed the live
 store." The persistence pass is the later document, so the rework doc is the one
 that reads stale; which to edit is NOT decided here.
+Pilot: DEBT
 Detail: both documents, at the two anchors quoted above.
 
 **A79 | The ProPublica spike's freshness questions are open, and how many is
@@ -447,85 +518,101 @@ that closes was not established. Carrying seven would assert a count this sweep
 did not verify, which is the failure this file exists to end; carrying none
 would drop a live list. So it is carried as one item whose own scope is unknown,
 the same shape as A73.
+Pilot: POST
 Detail: that document's section 12, and `62cb061`.
 
 **A33 | Three comments are stale, in three different ways.**
 Blocker: none named.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: three comments are stale".
 
 **A50a | The budget literal in `individualProfile` does not match the modeler's
 lookup keys, so the canonical demo user falls through to a default.**
 Blocker: none named. Carried debt since the 5.8 pass.
+Pilot: DEBT
 Detail: `docs/5.8-giving-flow-scoping.md`, section 4, carried debt.
 
 **A50b | Date formats are not unified and `parseGiftDate`'s English-month regex
 survives.**
 Blocker: none named. Fixture layer only.
+Pilot: DEBT
 Detail: `docs/5.8-giving-flow-scoping.md`, section 4, carried debt.
 
 **A57 | Twelve `rgba()` literals sit outside the token system.**
 Blocker: a design question rather than a sweep, namely whether alpha-variant
 whites want tokens at all.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: TWELVE `rgba()` colour literals across
 SEVEN files".
 
 **A61 | Two raw persistence predicates want their contexts.**
 Blocker: none named.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: convert the two raw persistence
 predicates to their contexts".
 
 **A29 | `athlete.badge` has a ruling and no author.**
 Blocker: none named.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: `athlete.badge` has a ruling and no
 author".
 
 **A30 | `athlete_activity` is a table with an event enum, no writer, and three
 consumers reading it as populated.**
 Blocker: deciding which acts emit which enum value.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: `athlete_activity` exists as a table
 with an event enum".
 
 **A35 | `parseRoster.js`'s header docblock denies a file-upload path that has
 existed since 2026-08-27.**
 Blocker: none named. Documentation only.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed as STALE DOCUMENTATION".
 
 **A53 | The `/individual/welcome` CTA falls below the fold on a short viewport.**
 Blocker: none named. Accepted debt under the pilot gate's filed-defect test.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: `/individual/welcome` CTA falls below
 the fold on a short viewport".
 
 **A60 | Line breaks are intermittently missing on the enterprise program
 calendar.**
 Blocker: queued for a full-platform QA pass rather than scheduled alone.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: line breaks intermittently missing".
 
 **A62 | The AppShell retry panel puts a state reset and a navigation 12px
 apart.**
 Blocker: none named.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: the AppShell retry panel puts a state
 reset and a navigation 12px".
 
 **A63 | The plain-vite lever does not establish which failure branch it
 produced.**
 Blocker: none named.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: the plain-vite lever does not establish
 WHICH failure branch".
 
 **A38 | `AddAthleteModal`'s footer carries a small size on all three controls.**
 Blocker: none named. A provable 44px violation, and a size prop on three
 controls.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: two controls were reported as
 mobile-as-app violations".
 
 **A36 | The two enrollment paths disagree about name shape.**
 Blocker: filed as an observation, not a defect.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed as an OBSERVATION, not a defect: the two
 enrollment paths disagree about name shape".
 
 **A13 | Nothing READS `auth_send_log`, because no endpoint was ever written.**
 Blocker: none for the endpoint itself. A92 governs whether `email` may be
 emitted.
+Pilot: POST
 Detail: CLAUDE.md §11, the auth-observability filing; `docs/session-log.md`, the
 third 2026-09-01 entry, its "This bought FINDABILITY, not MONITORING" passage,
 which draws the read-versus-alerting distinction this entry used to collapse.
@@ -541,6 +628,7 @@ BMF load.
 **A90 | ADV-044, the radiogroup conversion, is deferred across three segmented
 controls.**
 Blocker: none named. The disposition is recorded as deferred, not as ruled.
+Pilot: DEBT
 Detail: CLAUDE.md §5, the Advisor row, its deferred list;
 `src/surfaces/advisor/Pipeline.jsx:464-468`,
 `src/surfaces/advisor/LessonEditor.jsx:420-423`,
@@ -552,23 +640,27 @@ single-select controls; `Pipeline.jsx:468` names the three-control span.
 **A23 | Four of five athlete-state derivations do not route through
 `statusFor`.**
 Blocker: none named. This is the root cause; its tile-drill symptom is closed.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed (D3 + D4, ONE item by FT ruling
 2026-08-26)".
 
 **A31 | The staff-writability predicate is hand-maintained in five places, in
 two non-identical forms.**
 Blocker: none named.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: the staff-writability predicate is
 hand-maintained in FIVE places".
 
 **A58 | Flow content is rendered inside `<button>` at 20 sites across 7 files.**
 Blocker: none named. `Button.jsx` itself is clean.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: flow content is rendered inside
 `<button>` at 20 sites across 7 files".
 
 **A21 | The enterprise roster stat grid stacks tall on a phone.**
 Blocker: unruled, namely whether the answer is fewer tiles, a denser tile or a
 collapsed row. Partly mitigated by the tile-grid floor change.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: the enterprise roster's stat grid
 stacks into seven full-width rows".
 
@@ -576,77 +668,92 @@ stacks into seven full-width rows".
 categories no longer partition the roster.**
 Blocker: it wants ruling together with A24. Unreachable on both real rosters
 today.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: the `certified` and `not-yet-invited`
 categories overlap".
 
 **A24 | `resolveStatus` strands a Pending athlete, with certification its only
 exit.**
 Blocker: none named.
+Pilot: BLOCKING
 Detail: `docs/filed-defects.md`, "Filed (F-C)".
 
 **A25 | One imported athlete discards a whole attendance batch.**
 Blocker: none named.
+Pilot: BLOCKING
 Detail: `docs/filed-defects.md`, "Filed (G1)".
 
 **A26 | Persisted rate columns fall back to 0 where the render layer says "Not
 tracked".**
 Blocker: none named.
+Pilot: BLOCKING
 Detail: `docs/filed-defects.md`, "Filed (F-D)".
 
 **A27 | The render side and the persisted side divide by different
 populations.**
 Blocker: observable only through A39's window.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: the render side and the persisted side
 divide by different populations".
 
 **A28 | `management_mode` carries no CHECK, so the disclosure's buckets are not
 exhaustive.**
 Blocker: none named. It can only under-count.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: `management_mode` carries no CHECK".
 
 **A32 | CLAUDE.md's E3 snapshot-survival claim is unverifiable from the tree.**
 Blocker: it would need snapshot rows to have existed and an anonymize to have
 run.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: CLAUDE.md's E3 snapshot-survival claim
 is UNVERIFIABLE from the tree".
 
 **A34 | `suggestMapping`'s containment fallback is unaudited for headers outside
 the candidate vocabulary.**
 Blocker: the shape of a fix is genuinely unobvious.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: `suggestMapping`'s containment fallback
 claims a column".
 
 **A37 | No mobile render check has been performed on the sites now rendering
 Pending status.**
 Blocker: it needs a render, not a fix.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: no mobile render check has been
 performed".
 
 **A40 | P-7 defect 2: the milestone editor copies its gate at mount and
 `/api/me` is fetch-once.**
 Blocker: ruled OPTIMISTIC OFFER PLUS RECOVERY, and unbuilt.
+Pilot: DEBT
 Detail: CLAUDE.md §5.1, P-7.
 
 **A41 | The 403 copy asserts a present-tense fact the screen contradicts.**
 Blocker: none. Owned by P-7, ruled 2026-09-01. FJ-4 carries the reasoning.
+Pilot: BLOCKING
 Detail: CLAUDE.md §5.1, P-7, its closing NOT RULED note.
 
 **A43 | Advisor pipeline settings persist nothing, and no pipeline endpoint
 exists.**
 Blocker: none named. Deliberately excluded from P-4 and still its own slice.
+Pilot: BLOCKING
 Detail: CLAUDE.md §5, the Advisor row, known defects.
 
 **A16 | Two athlete delete paths trust the FK cascade while a third deletes the
 same children by hand.**
 Blocker: downstream of the parked soft-delete ruling, P-B.
+Pilot: POST
 Detail: CLAUDE.md §10, the filed block on foreign-key enforcement.
 
 **A52 | `GiftRow` extract-or-migrate is an open FT ruling.**
 Blocker: FT to rule at the migration slice.
+Pilot: DEBT
 Detail: `docs/5.8-giving-flow-scoping.md`, section 5d.
 
 **A55 | QA-023, uneven tab order, is the last open Operations audit finding.**
 Blocker: a future CR-level filtered view.
+Pilot: DEBT
 Detail: `docs/qa-audit-operations-2026-06-09.md`, on the `qa-audit-operations`
 branch. See A74.
 
@@ -654,14 +761,17 @@ branch. See A74.
 **NOT WORK. This is a record, not a queued item**, kept so a future scan does
 not rediscover it as new. Nothing is expected to be done about it.
 Blocker: not applicable.
+Pilot: DEBT
 Detail: `docs/filed-defects.md`, "(b) PROBABLY FINE".
 
 **A65 | Whether section 6 gains a guardrail check, and of what shape.**
 Blocker: unruled.
+Pilot: DEBT
 Detail: `docs/guardrail-violation-findings.md`, its Open section, item 1.
 
 **A67 | Four residual items from the enterprise schema draft.**
 Blocker: each was flagged for a build-time micro-ruling that has not been made.
+Pilot: POST (undetermined, needs FT)
 Detail: `docs/enterprise-persistence-schema-draft.md`, section 9, open items.
 
 **A78 | Five residual items from the ADVISOR schema draft: `client.giving_plan`
@@ -669,6 +779,7 @@ shape versioning, the `doc.body` size ceiling, the cohort-level `sessions`
 array, the `practice_lesson.base_id` orphan check, and the Q11 revisit
 thresholds.**
 Blocker: each was flagged for a build-time micro-ruling that has not been made.
+Pilot: POST (undetermined, needs FT)
 Detail: `docs/advisor-persistence-schema-draft.md`, section 9, "Open items
 (small — flag, don't decide)", whose preamble reads "A handful of narrow items
 remain — flagged here for the build slice or a future micro-ruling rather than
@@ -678,11 +789,26 @@ the first pass.
 
 **A68 | Enterprise counsel-gated seams E3, E6 and E8.**
 Blocker: COUNSEL.
+Pilot: BLOCKING, and counsel-gated: building cannot close it. It gates A69, so
+the enterprise surface stays non-functional in production until it clears.
 Detail: `docs/enterprise-persistence-scoping.md`, section 6.2.
+**PROMOTED from POST (undetermined) to BLOCKING by FT ruling 2026-09-02.** The
+first pass labelled it undetermined because this entry's own text does not state
+the coupling. FT ruled the coupling in, and it is verified rather than inferred:
+CLAUDE.md §5, the Enterprise row, records the gate as staying dark "until
+E3/E6/E8 counsel clears" and the write arc as "gated dark on production pending
+E3/E6/E8 counsel"; `functions/_lib/gate.js:123-125` records it as dark "while the
+E3 ... / E6 ... / E8 ... counsel seams remain open";
+`docs/enterprise-persistence-scoping.md:524-526` records that "the enterprise
+gate ships until E3/E6/E8 counsel clears"; and that document's §11 rulings table
+carries a live counsel-status field reading `pending` on all three. The present
+tense in "remain open" is what makes it a standing condition rather than a record
+of the past.
 
 **A85 | Lesson deletion has no endpoint, and the authenticated advisor is told
 so after the attempt.**
 Blocker: none named.
+Pilot: DEBT
 Detail: `src/contexts/PracticeContentContext.jsx:96-104`. The demo branch
 filters locally and returns true; the authenticated branch sets a write error
 reading "Removing lessons is not yet supported." and returns false. No DELETE
@@ -690,12 +816,14 @@ route exists under `functions/api/practice-content`.
 
 **A86 | Workshops can be created but not edited or deleted.**
 Blocker: the Q6 ruling, which put both out of scope for E-Write-3a.
+Pilot: DEBT
 Detail: CLAUDE.md §5, the Enterprise row, E-Write-3a. `functions/api/workshops.js`
 exports `onRequestPost` only, and no `workshops/[id].js` exists.
 
 **A87 | Cohort-detail theme flags persist nothing, on both trees, and the
 disclosure that says so is ungated.**
 Blocker: none named.
+Pilot: DEBT
 Detail: `src/surfaces/advisor/CohortDetail.jsx:130-139`, `toggleFlag`, which
 writes React state and calls no endpoint; its disclosure at `:361` carries no
 `isAuthenticated` test, so it renders to a real advisor too. Sibling of A43,
@@ -708,6 +836,7 @@ the authenticated tree. This is one site, not three.
 **A88 | Cohort signals have no store; the surface reads a demo simulation
 module.**
 Blocker: none named.
+Pilot: POST
 Detail: `src/data/cohortSignals.js:1-5`, which names itself DEMO SIMULATION ONLY
 and says to replace it "when persistence lands"; consumed at
 `src/surfaces/individual/CohortView.jsx:7,190`.
@@ -716,6 +845,7 @@ and says to replace it "when persistence lands"; consumed at
 NULL facilitator.**
 Blocker: the E4 wiring itself, named as deferred in two places and scoped in
 neither.
+Pilot: DEBT
 Detail: `functions/api/workshops.js:10-12`, which accepts no facilitator from the
 body; `src/surfaces/enterprise/ScheduleWorkshopModal.jsx:13-14`, which does not
 collect one.
@@ -727,17 +857,20 @@ parked.
 
 **A48 | The account-settings page, except consent reversibility, which shipped.**
 Blocker: UNDETERMINED. Recorded as a founder decision with nothing named.
+Pilot: POST (undetermined, needs FT)
 Detail: CLAUDE.md §5, the Individual row.
 
 **A49 | Geo-selection weighting, AI-drafted org descriptions, and the Discover
 design pass.**
 Blocker: UNDETERMINED for all three; none is named.
+Pilot: POST
 Detail: CLAUDE.md §5, the Individual row.
 
 **A91 | "Enterprise routing follow-ups / invite runbook" is queued against a
 standing list that does not exist in the repository.**
 Blocker: UNDETERMINED, and it cannot be named until the list is recovered. The
 scope is unrecoverable from the tree.
+Pilot: POST (undetermined, needs FT)
 Detail: CLAUDE.md §5, the Enterprise row, its NEXT post-arc queue, which reads
 "per the standing list". A grep for that phrase returns that one occurrence and
 nothing else in CLAUDE.md or `docs/`, so the list is referenced and absent.
@@ -865,6 +998,12 @@ A44 and A69 stay OPEN with their blocker changed from FT's designation to that
 scoping pass.
 **The A39 coupling recorded here was WRONG and is removed**: neither ruling this
 nor setting the gate closes A39's window, because neither writes a row.
+**CROSS-REFERENCE added 2026-09-02, which does NOT alter the ruling above.** The
+scoping pass this ruling calls for MAY ITSELF BE BLOCKED BY A68 on the enterprise
+side: CLAUDE.md §5, the Enterprise row, `functions/_lib/gate.js:123-125` and
+`docs/enterprise-persistence-scoping.md:524-526` each record the enterprise gate
+as staying dark until the E3, E6 and E8 counsel seams clear. So the pass can be
+scoped and the advisor half acted on, while the enterprise half waits on A68.
 
 **FJ-4 | A41: which arc owns the 403 copy defect?**
 CLAUDE.md §5.1 records it under P-7 while saying it may belong to P-6 slice 2

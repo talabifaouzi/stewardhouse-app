@@ -1122,3 +1122,114 @@ not ruled.
 
 Tiers 9 to 10; gates-other-work 12 to 13; cheap-and-mechanical 19 to 20. Every
 other group unchanged. Recounted against the body before writing: 10 + 80 = 90.
+
+---
+
+## Session — 2026-09-02 (fourth)
+
+Decision record. Docs only, no code, no migration, no branch, no remote command.
+A classification pass over `docs/outstanding.md`, and nothing else: no blocker,
+tier, group, ID or ordering was changed.
+
+---
+
+### Classified
+
+Every OPEN entry gained one line, `Pilot: BLOCKING | DEBT | POST`, placed after
+its Blocker line. PARKED, FOUNDER JUDGMENT, ANSWERABLE ONLY BY FT and RULED OUT
+got none.
+
+**BLOCKING** means pilot cannot open with it unresolved: a real user of any
+surface would hit it, be misled by it, or be unable to complete a core act.
+**DEBT** means pilot can open with it if it is recorded and honest. **POST**
+means no pilot user reaches it.
+
+---
+
+### Totals
+
+15 BLOCKING, 50 DEBT, 25 POST. 90 lines for 90 entries, verified by grep against
+the file after writing.
+
+**5 of the 25 POST carry "(undetermined)"**: A15, A67, A78, A48, A91. Each was
+labelled POST because its own text does not settle the question, and the marker
+makes the uncertainty visible rather than guessed.
+
+**The 15 BLOCKING, in file order.** A80, the athlete invite act with no caller.
+A17, A18, A19 and A20, the four Tier 2 live honesty defects. A47 and A84, the
+retention policy the record states is required before pilot. A44 and A69, every
+advisor and every enterprise write returning 403. A24, a Pending athlete stranded
+with certification its only exit. A25, one imported athlete discarding a whole
+attendance batch. A26, persisted rate columns storing 0 where the render says
+"Not tracked". A41, 403 copy asserting what the screen contradicts. A43, advisor
+pipeline settings persisting nothing with no disclosure. A68, the enterprise
+counsel seams.
+
+---
+
+### A68 promoted, by ruling rather than by inference
+
+**FT RULED 2026-09-02 that A68 is BLOCKING**, moving it from the POST
+(undetermined) the first pass gave it. The first pass declined to promote it
+because A68's own entry does not state the coupling to A69, and the
+classification rule was to judge each entry on its own text.
+
+**The coupling was VERIFIED before the label changed**, in four places, and all
+four use standing conditional language rather than a point-in-time observation.
+CLAUDE.md §5, the Enterprise row: the gate stays dark "until E3/E6/E8 counsel
+clears", and the write arc is "gated dark on production pending E3/E6/E8
+counsel". `functions/_lib/gate.js:123-125`: dark "while the E3 ... / E6 ... /
+E8 ... counsel seams remain open". `docs/enterprise-persistence-scoping.md`
+:524-526: "the enterprise gate ships until E3/E6/E8 counsel clears". And that
+document's §11 rulings table carries a live counsel-status field, defined as
+`pending` / `confirmed` / `overridden`, reading `pending` on all three.
+
+**What settles it is the present tense.** "remain open" is a condition on
+current state; a historical note would read "were open".
+
+Cross-references were added on A69 and on FJ-3's ruling recording the same
+coupling. **FJ-3's ruling itself is unaltered**, and the cross-reference says so:
+the scoping pass it ruled can still be scoped, and the advisor half acted on,
+while the enterprise half waits on A68.
+
+---
+
+### The build chain and the counsel chain
+
+**Three of the fifteen BLOCKING items are counsel-gated and cannot be closed by
+building: A47, A84 and A68.** The pre-pilot path is therefore two chains, and no
+slice advances the second one.
+
+**What moves the counsel chain is not uniform, and the record splits it.**
+`docs/ruling-e-deletion-retention.md` names a reviewing attorney for Clauses 3
+and 6, which are A47 and A84. CLAUDE.md §5, the Enterprise row, records the
+operating premise for E3, E6 and E8, dated 2026-07-15, as internal review with no
+external counsel, which is A68. **Nothing in this repository records counsel as
+retained**, and no entry names a date by which either chain moves.
+
+**A12 and A14 are POST while A47 and A84 are BLOCKING**, and the split is
+deliberate: the retention POLICY is the pre-pilot requirement, while the purge
+MECHANISM needs scheduled execution, which this project has never had and which
+cannot arrive before pilot.
+
+---
+
+### Reconciliation added to the header
+
+The three totals, the counsel-chain sentence, and one statement that the queue
+count and the pilot-gate percentage measure different things.
+`docs/pilot-gate-criteria.md` scores routes and endpoints that EXIST, so 90 open
+items and a 99% capability figure are not in conflict: a defect on a route the
+instrument scores MET moves no unit, and the instrument has no unit at all for
+work never built.
+
+---
+
+### Standing
+
+**This is a FIRST PASS and is expected to be corrected by use.** Each label was
+judged from the entry's own text, which is thinner than the filing behind it, so
+a label that looks wrong when someone works the item probably is wrong. A68 is
+the worked example: the entry's text was thinner than the coupling, the first
+pass marked it undetermined rather than guessing, and FT ruled it. Correct the
+rest the same way, on the entry, in the commit that surfaced it, per FJ-6.
