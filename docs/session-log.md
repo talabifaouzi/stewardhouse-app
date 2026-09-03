@@ -1491,3 +1491,139 @@ the three totals, which is why the Pilot lines sum to 102 while OPEN sums to 101
 
 Recounted against the body before writing: 10 + 15 + 7 + 8 + 24 + 34 + 3 = 101,
 and 20 + 56 + 25 = 101.
+
+---
+
+## Session — 2026-09-03 (closing)
+
+**This entry covers the WHOLE DAY, not one slice.** Eight commits were banked
+across seven working sessions; the seven per-session entries above carry their
+own detail and this one does not repeat it.
+
+**A DATE DISCREPANCY A LATER READER WILL MEET.** Seven entries sit under two
+dates. `## Session — 2026-09-02` covers `8c1689d`, which WAS banked 2026-09-02
+and is correctly dated. The five headed `(second)` through `(sixth)` cover
+2026-09-03 commits under a 2026-09-02 heading: the date was wrong in the prompts
+that produced them and was caught late in the day. **They are NOT retroactively
+changed**, because each records what it recorded when it was written.
+`d0258e6`'s commit message carries the same error into immutable history.
+
+---
+
+### Banked
+
+| Commit | Subject | Pushed |
+|---|---|---|
+| `9af2705` | File twelve deferred-feature items the defect queue could not see | yes |
+| `04db42a` | Rule FJ-1, FJ-2 and FJ-3, correct A39 and A13, and split the read surface from alerting | yes |
+| `ab18de2` | Classify every open item against the pilot gate | yes |
+| `d0258e6` | Ignore QUEUE.md, and add section 6 rule 19 on silent pivots | yes |
+| `7ab623f` | File nine A80 findings, and record three rulings and one deferral | yes |
+| `9ff661f` | File A104, narrow A97 to the variant, and record two consent rulings | yes |
+| `2d984ea` | Make both consent-interstitial buttons primary | yes |
+| `28ea227` | Close A97, and file the three findings its slice surfaced | yes |
+
+**`2d984ea` is the day's only code commit.** Every other one is docs, and
+`d0258e6` touched neither `docs/outstanding.md` nor this file.
+
+---
+
+### Ruled
+
+| Item | Ruling | Basis |
+|---|---|---|
+| FJ-1 | Build the auth health-check READ SURFACE as an ordinary slice; do not block the BMF load on it. | Precondition 2 names two defects, the stamp half is closed on production, and blocking a whole surface on a small endpoint is the wrong trade. |
+| FJ-2 | Leave A9 as is, narrow and general both. | No cleanup slice, and no general ruling on what may sit at rest in remote D1. |
+| FJ-3 | The unset advisor and enterprise gates are a GAP, not an intended posture; fixed as their own scoped slice, not urgent. | The gate is per-person-row per-namespace so designation is safe in principle, but gate and institution scope are separate checks and nothing asks whether the target institution is seeded. |
+| A39 | Guard the window, defer the methodology. | A series with zero rows cannot be judged on the merits. |
+| A93 | A server-side guard on `POST /api/snapshots` refusing the FIRST write until the denominator change is acknowledged. | The client is not the only caller, so a UI-only guard is not a guard. |
+| A95 | An athlete may see their own milestones; staff notes stay internal. | What the athlete did is theirs; an informational call's notes are internal, and the platform should not force staff to share theirs. |
+| A100 | Invited athletes receive an email, the same as any invite. | It differs only in entry point and in who triggered it. The actor stays unassigned. |
+| A103 | Invites are BOTH single and bulk, and most will be bulk. | Stated by FT. No scope ruled. |
+| A97 | Both consent-interstitial buttons become `variant="secondary"`. | Neither option is a house default on a consent choice. |
+| A97 | REVERSED mid-slice to both `variant="primary"`. | Two secondary buttons would be `--sh-card` on a `--sh-card` card at 1.290:1, below WCAG 1.4.11's 3:1. Equal weight was the ruling; secondary was the assumption about how to express it. |
+| A104 | The consequence line waits on A96. | It would have to be true under all three A96 outcomes, and whether it can be written honestly is not established. |
+
+---
+
+### Deferred
+
+| To | What | Why |
+|---|---|---|
+| Advisory team | A96, the self-managed athlete's frozen record. Three options: leave as is; institution-observable facts only; an athlete-facing progression path. | Not an FT ruling. Its entry says so on its blocker line. |
+| Counsel | Nothing NEW. A47, A84 and A68 were CLASSIFIED as counsel-gated in `ab18de2`, not newly sent. | Nothing in this repository records counsel as retained. |
+| Withheld | FJ-5, the Marcus row. Deletion is sound on the evidence and the ruling is deliberately not made. | Executing it is a remote DELETE against production, and whether production D1 enforces foreign keys is unverified. Sequenced behind A15. |
+| Deferred in place | A39's L4 methodology; A97's scope beyond the variant; A95's, A100's and A103's scope. | Each ruling names WHAT, not what the screen or the slice is. |
+
+---
+
+### Queue delta
+
+| | Open of day (`8c1689d`) | Close of day (`28ea227`) |
+|---|---|---|
+| OPEN | 75 | 101 |
+| PARKED | 9 | 9 |
+| Founder judgment | 6, of which 2 ruled | 7, of which 5 ruled |
+| Answerable only by FT | 3 | 3 |
+| Ruled out | 10 | 10 |
+| Pilot gate | not yet classified | 20 BLOCKING / 56 DEBT / 25 POST |
+
+**What moved, per commit.** `9af2705` +12 (A80 to A91, deferred-feature items no
+defect queue could see). `04db42a` +3 (A92, A93, A94, from the FJ-1 and A39
+rulings). `ab18de2` +0, and the first pilot classification at 15/50/25.
+`7ab623f` +9 (A95 to A103), and 15/50/25 to 20/54/25. `9ff661f` +1 (A104), and
+20/54/25 to 21/54/25. `28ea227` A97 out, A105 and A106 in, FJ-7 added, and
+21/54/25 to 20/56/25.
+
+**Net for the day: +26 OPEN, +1 founder-judgment item, +3 founder-judgment
+rulings.** The rise is filing, not regression: nothing built today broke
+anything, and A97 is the only item closed.
+
+---
+
+### Open at close, in priority order
+
+Tier 0 is empty. **Tier 1 holds the next three:**
+
+1. **A80**, `PUT /api/athletes/:id/invite` has no caller, so no path moves an
+   imported athlete off `Pending`. Blocker none named. Pilot BLOCKING. It is the
+   terminal step of the shipped roster-import arc.
+2. **A39**, the P-2 L4 window closes on the first snapshot write and nothing
+   guards it. Blocker none; it is a deadline, not a dependency.
+3. **A93**, the server-side guard that closes A39. Blocker none named.
+
+Below them: Tier 2's four live honesty defects on routes the pilot gate scores
+as MET (A17, A18, A19, A20), then A9, A1, A59, and the grouped bands. **Three
+BLOCKING items are counsel-gated and no slice advances them:** A47, A84, A68.
+
+---
+
+### Protocol added
+
+**CLAUDE.md section 6 gained ONE numbered row, rule 19, carrying TWO
+prohibitions** (`d0258e6`): never pivot silently, and never pivot over
+uncommitted edits. Source: a queue-document prompt arrived two-thirds through
+the A80 scoping pass and the pass was lost. It was read-only, so nothing was
+damaged. FT's explicit interrupt always wins, and the rule says the cause is
+usually upstream.
+
+**`.gitignore` gained QUEUE.md** in the same commit. It is a generated view of
+`docs/outstanding.md`, ignored so it cannot become a second source of truth. **No
+generator exists in the repo**; it is produced by an agent prompt on demand.
+
+The other CLAUDE.md change today (`04db42a`) was a section 11 amendment, not a
+protocol rule: it split the auth read surface from alerting, which had been
+recorded as sharing one blocker.
+
+---
+
+### Audit of this log, run before this entry was written
+
+**`d0258e6` HAS NO SESSION-LOG ENTRY**, and this entry does not retroactively
+create one. It moved no queue item, which is likely why the FJ-6 per-change
+cadence missed it: that cadence fires when an item opens, closes or moves.
+**A commit that changes only protocol or configuration is a gap in the cadence
+as ruled**, and is recorded here rather than fixed.
+
+Every other commit today has an entry, and **no entry names a commit that is not
+on `main`.** Only three entries name shas at all.
