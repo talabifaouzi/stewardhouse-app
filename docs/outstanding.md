@@ -22,37 +22,41 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 101 OPEN, 9 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 105 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers holding 10, then gates-other-work 15, gates-a-stated-commitment 7,
-BMF-and-Discover 8, cheap-and-mechanical 24, large 34, and
+ruled tiers holding 10, then gates-other-work 16, gates-a-stated-commitment 7,
+BMF-and-Discover 8, cheap-and-mechanical 27, large 34, and
 blocker-undetermined 3.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 20 BLOCKING, 56 DEBT, 25 POST**,
+**AGAINST THE PILOT GATE (classified 2026-09-02): 21 BLOCKING, 59 DEBT, 25 POST**,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 101. The sentence
+totals above, which remain a count of OPEN entries and sum to 105. The sentence
 here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**THREE OF THE TWENTY BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
-BUILDING: A47, A84 and A68.** So the pre-pilot path is TWO CHAINS, not one: a
-build chain, and a counsel chain that no slice advances. What moves the counsel
-chain is not uniform, and the record says so in two places rather than one.
+**FOUR OF THE TWENTY-ONE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
+BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not one:
+a build chain, and a counsel chain that no slice advances. What moves the counsel
+chain is not uniform, and the record says so in three places rather than one.
 `docs/ruling-e-deletion-retention.md` names a reviewing attorney for Clauses 3
 and 6, which is A47 and A84. CLAUDE.md §5, the Enterprise row, records the
 operating premise for E3, E6 and E8, dated 2026-07-15, as internal review with
-no external counsel, which is A68. **Nothing in this repository records counsel
-as retained**, and no entry names a date by which either chain moves.
+no external counsel, which is A68. **A110 is NEW on 2026-09-03**, and its gate is
+stated in the schema itself: `migrations/0009_enterprise_schema.sql:298-306`
+marks the `athlete_reflection` pre-claim visibility posture counsel-gated on the
+exact institutional consent language. It was THREE until the A96 ruling made that
+table something the product will write to. **Nothing in this repository records
+counsel as retained**, and no entry names a date by which either chain moves.
 **THE QUEUE COUNT AND THE PILOT-GATE PERCENTAGE MEASURE DIFFERENT THINGS, AND
 THIS LINE IS WHAT RECONCILES THEM.** `docs/pilot-gate-criteria.md` scores ROUTES
 AND ENDPOINTS THAT EXIST, so 90 open items and a 99% capability figure are not in
@@ -360,6 +364,30 @@ Neither is proposed.
 Pilot: DEBT
 Detail: CLAUDE.md §8, its opening note on the two branch-only pointers.
 
+**A110 | The `athlete_reflection` pre-claim visibility posture is counsel-gated
+and unanswered.**
+Blocker: COUNSEL.
+Pilot: BLOCKING, and counsel-gated: building cannot close it.
+Detail: `migrations/0009_enterprise_schema.sql:298-306`, which states the gap in
+its own words. Before an athlete claims an individual account there is no
+signed-in athlete session, so the per-reflection visibility toggle "is not
+directly athlete-controllable". The interim posture is program-level consent
+captured at seed or roster-add time, and the docblock marks the exact
+institutional consent language as counsel-gated.
+**The column defaults to VISIBLE.** `:316`,
+`visible_to_institution INTEGER NOT NULL DEFAULT 1`, so an unclaimed athlete's
+reflection is institution-visible by default and by schema.
+**Nothing reads or writes the column today**, so the gap is latent rather than
+live: a grep for `visible_to_institution` across `functions/` and `src/` returns
+nothing, and the table's only code path is a `deleteFrom` at
+`functions/api/athletes/[id].js:121`.
+**It becomes live the moment A96's build ships**, because A96 ruling 1 gives the
+athlete authorship of reflections and ruling 3 makes sharing their affirmative
+choice, which is precisely what this docblock says cannot be honoured before
+claim.
+Filed 2026-09-03 from the A96 inventory pass. **This is the FOURTH counsel-gated
+BLOCKING item**, joining A47, A84 and A68.
+
 **A84 | A retention and deletion policy is stated as required BEFORE pilot, and
 no entry cited it as a pilot blocker until this one.**
 Blocker: A47, COUNSEL. The requirement names soft versus hard delete and what
@@ -372,33 +400,160 @@ which parks the soft-delete build. This is the only pre-pilot requirement found
 outside CLAUDE.md §5.1 and `docs/pilot-gate-criteria.md`, and neither of those
 carries it.
 
-**A96 | A self-managed athlete's record is frozen permanently: no path records
-progression for `management_mode = 'self'`.**
-Blocker: advisory-team deliberation. NOT awaiting an FT ruling.
+**A96 | A self-managed athlete has no way to record anything about their own
+practice. RULED 2026-09-03; the build is not done.**
+Blocker: none. The advisory-team deliberation this entry carried is CLOSED.
 Pilot: BLOCKING
 Detail: `functions/api/athletes/[id].js:274-276`, the claim-state gate.
-**DEFERRED 2026-09-02 by FT TO THE ADVISORY TEAM.** Three options to be argued,
-recorded in the order FT gave them and not ranked here: leave it as is, with no
-institutional tracking at all; institution-observable facts only, meaning
-attendance at the institution's own events and athlete-owned facts never; or an
-athlete-facing progression path.
-**VERIFIED BY GREP, and every write site is accounted for.** Four sites write a
-milestone column and none is reachable for `'self'`:
-`functions/api/athletes/[id].js:281-288`, the milestone `set`, gated at `:274`
-on `'delegated'` EXACTLY plus a non-null `person_id`;
+**The title CHANGED and the old one is quoted here rather than deleted:** "A
+self-managed athlete's record is frozen permanently: no path records progression
+for `management_mode = 'self'`." That framing asked whether the INSTITUTION could
+track a self-managed athlete. The ruling reframes it: the athlete records for
+themselves, and institutional access is a separate question answered by ruling 3.
+
+**RULED 2026-09-03 by FT. Six rulings.**
+1. **Authorship determines ownership.** An athlete may author, save, delete and
+   share their own records.
+2. **A self-managed athlete may log for themselves whatever an advisor would log
+   about a client:** lesson completions, notes, reflections, organization
+   research, lesson takeaways. **EXCLUDING personal financial information.**
+   `gift` remains the separate, already-working financial record.
+3. **Sharing is the athlete's affirmative choice, per relationship**, whether to
+   staff, to an advisor, or to an appointed manager. Never automatic.
+4. **Joining a cohort makes membership visible within that cohort and to staff
+   and advisors, disclosed at join.** What is shared INTO a cohort is opt-in item
+   by item.
+5. **Cohort is a general grouping primitive**, for learning, giving focus or
+   program track. It is not giving-specific. An athlete may leave a cohort or
+   switch to another.
+6. **Pilot scope.**
+
+**BUILD SHAPE, FT-recorded 2026-09-03: phone-first and deliberately minimal.**
+Recorded here because the ruling names WHAT may be recorded and this names the
+SHAPE it takes. Scope beyond this is not ruled.
+- **ONE athlete-authored record type**: text, date, optional attachment
+  (`none` | `lesson` | `org`). That one shape covers reflections, notes, lesson
+  takeaways and thoughts on an organization.
+- **Binary acts are the SAME record with empty text.** Lesson completed, org
+  saved: the tap creates the row, and text is optional on top. **Not a separate
+  mechanism**, which is the part most likely to be re-invented as one.
+- **A saved-org relation is the one genuinely NEW structure.** A list of orgs
+  under consideration must be LISTABLE; a note that merely mentions an org is
+  not. Nothing at HEAD can express this (see the org finding below).
+- **Connections is a DERIVED VIEW and stores nothing**: cohort members, orgs
+  given to, orgs saved. Contact is a link out to public contact information.
+  **NO in-platform messaging**, ruled out as a moderation, retention and safety
+  surface given a young-user population.
+- **Sharing generalizes `athlete_reflection`'s inert `visible_to_institution`
+  bit** to per-relationship, per-item.
+- **Speech-to-text is DEFERRED.** Text only, no stored audio.
+- **NO amount field, no capacity prompt, no financial framing anywhere in the
+  journal UI.** Free text cannot be constrained; the UI must not INVITE financial
+  entry.
+
+**THREE PRIOR DETERMINATIONS ARE AMENDED. Stated as amendments rather than
+silently absorbed, because each governs code that ships today.**
+
+**D5 (2026-07-16) is CORRECTED, not reversed.** It was recorded as "self-managed:
+staff write NOTHING, 0015:9, no carve-out". Line 9 of
+`migrations/0015_athlete_management_mode.sql` reads:
+`--   'self'      — athlete-managed. Staff have READ-ONLY access; no staff writes.`
+That line forbids STAFF writes and GRANTS staff READ access, which presupposes
+content to read. **It never addressed athlete writes at all.** The "no carve-out"
+reading was over-read from a line that was silent on the question.
+
+**D6 is AMENDED by ruling 4.** The attendance gate requires
+`management_mode = 'delegated'` EXACTLY
+(`functions/api/workshops/[id]/attendance.js:174`). Under ruling 4,
+**membership, not mode, governs what is recordable in a shared space.**
+
+**FORK 1 MOVES WITH D6**, because its writable denominator was DEFINED as the D6
+gate set: `src/surfaces/enterprise/shared/enterpriseStats.js:37`,
+`const isWritable = (a) => a.claimed === true && a.managementMode === 'delegated';`
+A change to what is recordable changes what that denominator counts.
+
+**WHAT EXISTS AT HEAD, verified 2026-09-03 rather than assumed.**
+
+`athlete_reflection` EXISTS and is WHOLLY INERT.
+`migrations/0009_enterprise_schema.sql:311-318`, carrying
+`visible_to_institution INTEGER NOT NULL DEFAULT 1` at `:316`. Its docblock
+(`:277-309`) describes athlete-authored content with an athlete-controlled
+per-reflection toggle. **The only code path that touches the table is a
+`deleteFrom` at `functions/api/athletes/[id].js:121`.** No INSERT, no SELECT, no
+UPDATE anywhere in `functions/`. Its pre-claim posture is marked COUNSEL-GATED at
+`:298-306` and is now filed as A110.
+
+`athlete_note` SEPARATES SUBJECT FROM AUTHOR, and is the only place in the schema
+that does. `migrations/0009_enterprise_schema.sql:268-274`: `athlete_id` at
+`:270` is the subject; `author_person_id TEXT NOT NULL REFERENCES person(id)` at
+`:271` is the writer, commented "staff person who wrote the note". No write path
+exists; the `deleteFrom` at `functions/api/athletes/[id].js:120` is the only
+statement. **Under ruling 1 an athlete is a legal value for that column**, and the
+comment's staff assumption no longer holds.
+
+**Staff already see athlete reflections, rendered from a FIXTURE rather than from
+D1.** `src/components/AthleteProfile.jsx:208-219` renders
+`src/data/enterpriseFixtures.js:748`. No athlete authored them, and none can.
+
+`scenario` IS THE WORKING PRECEDENT for owner-scoped author, save and delete.
+`migrations/0001_initial.sql:185-192`: `owner_person_id` NOT NULL; the INSERT
+sets it (`functions/api/scenarios.js:118`); SELECT and DELETE both scope on it
+(`functions/api/scenarios.js:147`, `functions/api/scenarios/[id].js:53-54`).
+**It carries no sharing concept**, which is exactly what rulings 3 and 4 add.
+
+**Lesson completion has exactly ONE representation, and it records no lesson.**
+`athlete.lessons_count` (`migrations/0009_enterprise_schema.sql:197`), a bare
+integer 0 to 9, validated at `functions/api/athletes/[id].js:202-205`. No lesson
+identity, no date, no per-lesson row. **WHICH lessons were completed is recorded
+nowhere.** `athlete_activity` names `'lesson_completed'`
+(`migrations/0009_enterprise_schema.sql:236`) and has no INSERT path anywhere.
+
+**Organization research does not exist in ANY form.** No table, column or fixture
+records interest in a nonprofit. **The only person-to-org link in the schema is a
+completed gift**, `migrations/0001_initial.sql:157`. This is what makes the
+saved-org relation the one genuinely new structure in the build shape above.
+
+**No sharing, visibility, permission, grant or audience concept exists anywhere**
+beyond the one inert bit above.
+
+**Advisor content types**, in `migrations/0007_advisor_schema.sql`: `client`,
+`client_session`, `client_note`, `practice_lesson`, `doc_category`, `doc`,
+`cohort`, `cohort_member`. **Only the free-text `giving_plan` (`:88`) can carry
+financial content; no typed financial column exists in the advisor schema.**
+
+**CONSTRAINTS, recorded so they are not rediscovered.**
+- **E9/Q9 applies to athlete-authored content as it does everywhere:** no rank,
+  score, priority, ordering, progression, rating, grade or status column. 48
+  guardrail lines across 8 migrations.
+- **`client_note` is insert-only**, with no PUT and no DELETE endpoint. Ruling 1
+  grants a delete right, so athlete-authored records **DIVERGE from the advisor
+  mirror here deliberately**, and the divergence is a decision rather than an
+  oversight.
+
+**STILL OPEN, FOUNDER-JUDGMENT, UNRULED.** Recorded on this entry rather than
+opened as FJ items, because each is a question about this build and none is
+answerable without it.
+- Can an athlete un-share something already shared, and what does revocation mean
+  once it has been seen?
+- What happens to items shared into a cohort when the athlete leaves it?
+- Who may create a cohort, and does the institution have any say?
+- Are pooled funds categorically out under Path B, or a counsel-chain question?
+- Does an athlete-logged lesson completion count the same as a staff-logged one
+  in enterprise rates? **LIVE rather than theoretical under the recorded build
+  shape**, since `lessons_count` would gain a second source.
+
+**THE PRIOR VERIFICATION STANDS and is kept, because it is what the ruling was
+made against.** Four sites write a milestone column and none is reachable for
+`'self'`: `functions/api/athletes/[id].js:281-288`, the milestone `set`, gated at
+`:274` on `'delegated'` EXACTLY plus a non-null `person_id`;
 `functions/api/athletes/[id].js:130-139`, the anonymize zeroing, which is
 destruction; `functions/api/athletes.js:205-210`, enrollment, which writes zeros
 at creation; and `functions/api/snapshots.js:157-158`, which reads rather than
 writes. There is no athlete-facing progression endpoint:
 `functions/api/athlete-consent.js` exports `onRequestPost` only and writes
 `management_mode` alone.
-**What can never be recorded, by anyone:** `lessons_count`, `gps_completed_at`,
-`certified` with `cert_at`, `workshop_attendance` rows (blocked at
-`functions/api/workshops/[id]/attendance.js:173-181`), and `enrollment_status`
-progression, since `resolveStatus` runs only inside the gated PUT.
-Coupled to A95: that ruling draws a line between institution-owned and
-athlete-owned records, and whichever way this is decided must sit consistently
-with it. Recorded as an observation, not as a prejudgment of the team's answer.
+Coupled to A95, whose ruling drew the line between institution-owned and
+athlete-owned records. Ruling 1 sits consistently with it: authorship decides.
 
 **A101 | The invite email copy is FT-ruled for one path and already reused on
 another without a ruling.**
@@ -610,7 +765,7 @@ surface recommending the dead end; A104 is what would tell the athlete what the
 dead end is, and it remains blocked on A96 where this was not.
 
 **A104 | The consent interstitial states no consequence for either option.**
-Blocker: A96.
+Blocker: none. **UNBLOCKED 2026-09-03 by the A96 ruling.**
 Pilot: BLOCKING
 Detail: `src/surfaces/individual/IndividualSurface.jsx:112-166`. The card asks
 the athlete to choose and tells them what NEITHER option does. Its complete
@@ -654,6 +809,13 @@ will not be able to record anything new.`; and `:97` `They can record your
 progress through the program, workshops you attend, lessons you complete, and
 your certification.`, whose enumeration stops distinguishing the two modes under
 the institution-observable outcome.
+**UNBLOCKED 2026-09-03, and the unblocking carries a condition.** A96 is RULED,
+so the three outcomes a consequence line had to be true under are now one. **But
+the copy depends on whether the athlete write path SHIPS BEFORE PILOT.** If it
+does not, the interstitial must describe TODAY's behaviour, in which a
+self-managed athlete can record nothing, and NOT the ruled behaviour. Writing the
+ruled behaviour into copy the build has not reached would be the exact §7 defect
+this queue exists to catch. Which of the two ships first is not settled here.
 Paired with A97, the variant swap, which was not blocked and CLOSED 2026-09-03
 by `2d984ea`, and its closure note sits directly above this entry. The pairing is
 unchanged by that: the swap stopped the surface recommending the dead end, and
@@ -720,6 +882,67 @@ while the other has only precedence.
 RecordKeeping's other two primaries, `:134` and `:139`, are the
 mutually-exclusive flip branches and are NOT part of this: they render one button
 at a time, so no weighting between two options exists there to disagree about.
+
+**A107 | Six independently-restated gating predicates define the writable set,
+and two comments assert an equivalence nothing enforces.**
+Blocker: none.
+Pilot: DEBT
+Detail: six sites decide who staff may write for, and **not one imports from
+another**. `functions/api/athletes/[id].js:274`,
+`functions/api/workshops/[id]/attendance.js:174`,
+`functions/api/snapshots.js:163-164`,
+`src/surfaces/enterprise/shared/enterpriseStats.js:37`,
+`src/components/AthleteProfile.jsx:53`, `src/components/WorkshopDetail.jsx:68`.
+Three are server-side and three client-side. A grep for a shared export
+(`export const isWritable`, `export function isWritable`, `export.*canRecord`)
+returns nothing.
+**They already differ in FORM.** `snapshots.js` writes `person_id is not null` in
+SQL; `athletes/[id].js` and `attendance.js` write `person_id == null` in JS; the
+three client sites substitute the derived boolean `claimed`
+(`functions/api/athletes.js:111`, `claimed: !!row.person_id`) for `person_id`
+entirely.
+**TWO COMMENTS ASSERT AN EQUIVALENCE NOTHING ENFORCES**, which is the part that
+makes this a filing rather than a style note:
+`src/surfaces/enterprise/shared/enterpriseStats.js:28` says its predicate is
+"exactly the predicate the PUT /api/athletes/:id gate enforces", and
+`src/surfaces/enterprise/shared/RateDisclosure.jsx:9` makes the same claim. No
+test, no import and no build step checks either. Filed 2026-09-03 from the A96
+inventory pass. Scope is NOT ruled here.
+**Coupled to A96 ruling 4**, which amends D6 and therefore changes what these six
+must agree ON, not merely whether they agree.
+
+**A108 | The cohort-comparison consent caveat renders whenever authenticated,
+even when nothing is excluded.**
+Blocker: none.
+Pilot: DEBT
+Detail: `src/surfaces/enterprise/reports/CohortComparison.jsx:223-227` gates on
+`isAuthenticated` alone, defined at `:92` as `const isAuthenticated =
+!!appIdentity;`. It is not gated on `consentAware`, on snapshot count, or on
+whether any athlete is actually excluded, so it renders on every authenticated
+load of the route.
+**The sibling behaves differently**, which is what makes this worth filing rather
+than accepting: `src/surfaces/enterprise/shared/RateDisclosure.jsx:62` returns
+null when nothing is excluded (`if (!consentAware || excludedTotal == null ||
+excludedTotal <= 0) return null;`). One caveat suppresses itself and the other
+does not. Filed 2026-09-03. Which behaviour is right is NOT ruled.
+
+**A109 | `/api/me` exports `onRequest` with no method branch, so every HTTP
+method is served identically.**
+Blocker: none.
+Pilot: DEBT
+Detail: `functions/api/me.js:40` exports `onRequest`, not `onRequestGet`. A grep
+for `request.method`, `onRequestGet`, `onRequestPost`, `onRequestPut` and
+`onRequestDelete` in that file returns nothing, so a POST, PUT or DELETE to
+`/api/me` is served the same body as a GET rather than being refused.
+**It is one of only TWO such exports in `functions/`**, the other being
+`functions/api/auth/[[route]].js:55`, which is a catch-all router and needs it.
+Every other handler in `functions/` is method-specific and relies on Cloudflare
+Pages to auto-405 the rest, an idiom `functions/api/athlete-consent.js:34`
+documents explicitly.
+**The handler MUTATES NOTHING**, verified: every database call in the file is
+`.selectFrom(...)`, and the two matches for a mutation verb are comments (`:3`,
+`:555`). So this is a shape defect rather than a write exposure. Filed
+2026-09-03.
 
 **A102 | F-C assumes an offline conversation the import path never mentions.**
 Blocker: none named.
@@ -1231,6 +1454,28 @@ open.
 Detail: `docs/individual-rework-scoping.md`, its "Open design calls still
 parked" list. NOT its table row 5.7, which describes the CohortView coupling
 that shipped; the two share a number and are different items.
+
+**P-J | Nonprofit accounts as a fourth user-facing surface.**
+Blocker: the nonprofit side does not exist. **Banked by FT 2026-09-03 and NOT to
+be built or scoped unless and until it does.** Outside pilot, and conditional
+rather than sequenced.
+Detail: nonprofits logging in; athletes OPTING to be visible to organizations
+seeking funders; org-initiated contact. Recorded so the idea is not lost and not
+so it is queued.
+**IT REVERSES PATH B's DIRECTION OF FLOW, which is why it is parked rather than
+filed as work.** CLAUDE.md §7 states the platform surfaces options and never
+prescribes, and its connection model is explicit that "Funders initiate;
+nonprofits don't push." A surface where organizations seek funders inverts that:
+exposure flows IN under Path B today, and this would let solicitation flow OUT.
+**It warrants the same scrutiny FT applied to third-party athlete-vetting
+products in the vendor review notes**, and for the same reason: a marketplace
+that matches parties is a different product from a platform that organizes what
+one party decides, however similar the two look at the record level.
+**It also interacts with A96 ruling 3 and the A96 build shape.** Ruling 3 makes
+sharing the athlete's affirmative choice per relationship, and the build shape
+rules out in-platform messaging on moderation, retention and safety grounds given
+a young-user population. An org-initiated contact path would reopen exactly that
+question with a party that is not on the platform's roster at all.
 
 ---
 
