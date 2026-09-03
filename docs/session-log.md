@@ -920,3 +920,114 @@ on production; it did not make anything watch it or prune it.
 **A count that was previously derivable only by subtraction is now written
 down.** The tiers portion of the OPEN breakdown carried no figure, so the total
 reconciled only if a reader did the arithmetic. It now reads 8.
+
+---
+
+## Session — 2026-09-02 (second)
+
+Two commits. The first banked and pushed the correction slice logged above; this
+entry covers the read-only investigation pass that followed it and the filing
+commit that closed what the pass found. No code, no migration, no branch.
+
+**The question scoped**, and it was not a defect question: `docs/outstanding.md`
+indexes defects and debt, and nothing indexes WHAT REMAINS TO BE BUILT. The pass
+gathered evidence for whether such an index should exist. It built nothing and
+ruled nothing.
+
+---
+
+### The absent artifact, which is the finding
+
+**No document enumerates required features that are not yet built**, and the
+three candidates each decline the role in their own text.
+
+`docs/pilot-gate-criteria.md` **exists and is the instrument**, ruled 2026-08-14,
+with five rulings, a counting method and a re-score log. It cannot carry unbuilt
+features by construction: its units are one per user-facing DESTINATION and one
+per exported HTTP handler, so a feature with no route and no handler has no unit.
+It says so of itself, "This instrument measures the tree as it stands", and two
+of its own rows record the percentage RISING because units were deleted.
+
+`docs/outstanding.md` is scoped to defects and debt by its own header.
+`docs/filed-defects.md` carries the closest artifact, the parked-work set, and
+disclaims the role twice: "proposes no build", and "No item here is marked as
+belonging in an app, and none is ranked."
+
+**A grep for a roadmap or backlog across CLAUDE.md and `docs/` returns two hits
+and neither is one.**
+
+---
+
+### The pilot gate figures are stale, and by how much
+
+**The last score is 2026-08-18 at `fbc1a9a`: capability 80/81 = 99%,
+production-usable 57/81 = 70%.** That is A66, which records the gate as
+un-rescored, and the pass measured the drift: `grep -c "^export async function
+onRequest" functions/api/` returns **38** where the instrument records **35**,
+twice, at `87f36f0`. The three new handlers are `athletes/import.js`
+`onRequestPost`, `athletes/[id]/invite.js` `onRequestPut`, and `athletes.js`
+`onRequestDelete`.
+
+**THE CAPABILITY-VERSUS-USABLE GAP IS ENTIRELY THE TWO ZERO GATES**, which the
+instrument states in its own §4: "The gap of 24 units (~29 percentage points) is
+entirely the two zero gates." Setting `$.advisor.demo_gate` and
+`$.enterprise.demo_gate` would close it without a line of code. That is A44, A69
+and FJ-3, and it is FT's step rather than a slice.
+
+---
+
+### Twelve items outside the queue
+
+**How they were found is the transferable part.** A grep of `src/` for `TODO`,
+`FIXME`, `HACK` and `XXX` returns **ZERO matches**, so there are no conventional
+markers to sweep. The tree records deferral as PROSE instead, in ordinary
+comments and in rendered copy: "a later slice", "not yet supported", "coming
+soon", "arrives in a later release". Reading for that prose surfaced all twelve.
+An index built from defect filings cannot see any of it.
+
+**A80 is the sharpest, and it is the terminal step of a shipped arc.**
+`PUT /api/athletes/:id/invite` is built, gated, and ruled a staff act; `src/`
+calls it nowhere. Migration 0020 added `'Pending'` to the athlete enum for
+exactly this transition, and `athleteStatus.js:7` renders those athletes "Not yet
+invited". There is no path in the product from that state to Invited. FT ruled it
+into Tier 1 beside A39 rather than into a blocker group.
+
+**One item shrank on re-derivation, and the correction is recorded rather than
+quietly applied.** The pass first reported THREE advisor session-scoped writes
+that never persist. Re-reading the branches showed two of them,
+`ClientWorkspace.jsx:1054` and `CohortDetail.jsx:496`, are correctly gated to the
+demo tree, and both of those writes DO persist on the authenticated tree. Only
+`CohortDetail.jsx:130-139`, the theme flags, persists nothing on either tree, and
+its disclosure at `:361` is ungated. **One site, not three**, filed as A87.
+
+---
+
+### The commit
+
+`docs/outstanding.md`: twelve entries added as A80 through A91, continuing the
+existing sequence with nothing renumbered, each placed by the group its blocker
+dictates. A42 gained a cross-reference recording that CLAUDE.md calls the same
+item the "Stage Rename sibling slice", so a name search finds it. Header counts
+to 87 OPEN with the full sub-breakdown recounted against the body first. A third
+known weak spot added to the completeness section.
+
+**A84 is not one of the twelve and is worth naming separately.**
+`docs/persistence-scoping-pass.md`, Strand 3, Layer 4 states that a retention and
+deletion policy must exist BEFORE pilot. No entry cited it as a pilot blocker.
+It is the only pre-pilot requirement anywhere outside CLAUDE.md §5.1 and the
+criteria doc, and neither of those carries it.
+
+`docs/session-log.md`: this entry.
+
+---
+
+### Open items carried out of the session
+
+**Nothing was ruled about scope.** A80 is placed and its basis recorded; what to
+build is not decided here. The other eleven carry the blocker the tree names and
+no more.
+
+**The queue is now 87 OPEN and still is not a build plan.** It indexes what is
+wrong and what is deferred, in priority order, with blockers. What a pilot
+REQUIRES remains one sentence in CLAUDE.md §5.1 plus an instrument that measures
+only what already exists.

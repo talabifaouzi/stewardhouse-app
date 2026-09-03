@@ -22,11 +22,11 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 75 OPEN, 9 PARKED, 6 founder-judgment of which 2 are now ruled,
+**As committed: 87 OPEN, 9 PARKED, 6 founder-judgment of which 2 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers holding 8, then gates-other-work 11, gates-a-stated-commitment 4,
-BMF-and-Discover 8, cheap-and-mechanical 18, large 24, and
-blocker-undetermined 2.
+ruled tiers holding 9, then gates-other-work 12, gates-a-stated-commitment 7,
+BMF-and-Discover 8, cheap-and-mechanical 19, large 29, and
+blocker-undetermined 3.
 
 **NO LINE NUMBERS INTO DOCS. Citations name a section and a filing title.** That
 rule is load-bearing rather than stylistic, and the commit preceding this file
@@ -62,6 +62,22 @@ CLAUDE.md as the state of record and did not reconcile it against the session
 log. **So a CLAUDE.md filing whose text predates a later same-day action is the
 second known weak spot of a sweep built this way**, and a sweep should reconcile
 CLAUDE.md against `docs/session-log.md` rather than read it as authoritative.
+
+**A THIRD KNOWN WEAK SPOT, found 2026-09-02: THIS FILE INDEXES DEFECTS AND DEBT,
+AND DEFERRED FEATURE WORK IS NEITHER.** Twelve items of unbuilt or deferred
+capability were found outside it, recorded only in code comments, in CLAUDE.md
+surface rows, or nowhere at all. They are now filed as A80 through A91 and A42
+carries a cross-reference. **One of them, A80, is the terminal step of a shipped
+arc**: the roster-import endpoint that moves an athlete off `Pending` is built
+and gated and has no caller, so the transition migration 0020 exists to allow
+cannot be performed. **How they were found, because the method is the
+transferable part.** A grep of `src/` for `TODO`, `FIXME`, `HACK` and `XXX`
+returns ZERO matches, so there are no conventional markers to sweep. What the
+tree carries instead is DEFERRAL PROSE, in ordinary comments and in rendered
+copy, phrases like "a later slice", "not yet supported", "coming soon" and
+"arrives in a later release". Reading for that prose is what surfaced all twelve.
+**An index built from defect filings cannot see any of it**, because none of it
+was ever filed as a defect.
 
 One recalled item, GivingModeler chart quality, was dropped for having no
 provenance anywhere in CLAUDE.md, `docs/` or `src/`, which means anything parked
@@ -108,6 +124,18 @@ assumed. This is the answer to the former F5.
 Coupled to A69: enterprise writes 403 with no gate set, so the same unset gate
 that makes two surfaces non-functional is what holds this window open, and
 whenever FJ-3 is ruled, A39 must be settled first or it closes as a side effect.
+
+**A80 | `PUT /api/athletes/:id/invite` has no caller, so no path moves an
+imported athlete off `Pending`.**
+Blocker: none named.
+Detail: `functions/api/athletes/[id]/invite.js:1-11`, which names the act;
+CLAUDE.md §5.2, the F-C ruling.
+Placed in Tier 1 by FT ruling 2026-09-02 rather than in a blocker group. It is
+the terminal step of the shipped roster-import arc, the enterprise value
+proposition depends on it, and its blocker line is "none named". Scope is NOT
+ruled here. Migration 0020 added `'Pending'` to the enum for this transition and
+`src/surfaces/enterprise/shared/athleteStatus.js:7` renders those athletes "Not
+yet invited"; the endpoint is built and gated, and `src/` calls it nowhere.
 
 ### Tier 2 — live honesty defects on routes the pilot gate scores as MET
 
@@ -174,6 +202,9 @@ Blocker: Q7, itself COUNSEL-gated.
 Detail: `docs/filed-defects.md`, "Filed: advisor stage-label renaming, blocked
 on the Q7 allowlist"; `docs/advisor-persistence-schema-draft.md`, the Q4/Q7
 gate.
+Cross-reference added 2026-09-02: CLAUDE.md §5, the Advisor row, calls this the
+"Stage Rename sibling slice", which is why a name search for that phrase finds
+nothing here. Same item, two names, no second entry.
 
 **A56 | P-6 slice 2, the shared 'Not authorized' string across three gate
 conditions.**
@@ -227,6 +258,16 @@ anti-merge posture; amending each pointer to name its branch is the alternative.
 Neither is proposed.
 Detail: CLAUDE.md §8, its opening note on the two branch-only pointers.
 
+**A84 | A retention and deletion policy is stated as required BEFORE pilot, and
+no entry cited it as a pilot blocker until this one.**
+Blocker: A47, COUNSEL. The requirement names soft versus hard delete and what
+account deletion does to gift rows; neither is settled.
+Detail: `docs/persistence-scoping-pass.md`, Strand 3, Layer 4, governance.
+Coupled to A12 and A14, which are the unbounded-retention items, and to P-B,
+which parks the soft-delete build. This is the only pre-pilot requirement found
+outside CLAUDE.md §5.1 and `docs/pilot-gate-criteria.md`, and neither of those
+carries it.
+
 ### Gates a stated commitment
 
 **A44 | Every advisor write returns 403 in production.**
@@ -246,6 +287,26 @@ Detail: CLAUDE.md §5, the Individual row.
 Blocker: a ruling rather than a patch. See FJ-5.
 Detail: `docs/filed-defects.md`, "Filed: the Marcus Thompson person row is
 structurally unclaimable".
+
+**A81 | The compliance surface renders a card promising NIL disclosure tracking
+in a future slice.**
+Blocker: an integration with the school's compliance system, which is external
+and unscoped.
+Detail: `src/surfaces/enterprise/EnterpriseCompliance.jsx:96-101`, the card and
+its own placeholder comment. Tree-invariant: it renders on both trees.
+
+**A82 | The Operations Accounts view tells the operator per-account detail
+arrives in a later release.**
+Blocker: none named.
+Detail: `src/surfaces/operations/OperationsRoster.jsx:288-295`. Rows are
+deliberately non-interactive rather than dead-clicking, per the aggregate-default
+guardrail, so the promise is the affordance.
+
+**A83 | The Operations Overview says per-issue and per-activity detail views are
+coming soon.**
+Blocker: none named. A55 is a different target, a CR-level filtered view.
+Detail: `src/surfaces/operations/OperationsSurface.jsx:356` and `:378`, two
+footnotes under the Open issues and Recent activity cards.
 
 ### BMF and Discover — open questions
 
@@ -404,6 +465,15 @@ Blocker: filed as an observation, not a defect.
 Detail: `docs/filed-defects.md`, "Filed as an OBSERVATION, not a defect: the two
 enrollment paths disagree about name shape".
 
+**A90 | ADV-044, the radiogroup conversion, is deferred across three segmented
+controls.**
+Blocker: none named. The disposition is recorded as deferred, not as ruled.
+Detail: CLAUDE.md §5, the Advisor row, its deferred list;
+`src/surfaces/advisor/Pipeline.jsx:464-468`,
+`src/surfaces/advisor/LessonEditor.jsx:420-423`,
+`src/components/SegmentedControl.jsx:12-15`. All three keep `aria-pressed` on
+single-select controls; `Pipeline.jsx:468` names the three-control span.
+
 ### Large
 
 **A23 | Four of five athlete-state derivations do not route through
@@ -537,6 +607,46 @@ the first pass.
 Blocker: COUNSEL.
 Detail: `docs/enterprise-persistence-scoping.md`, section 6.2.
 
+**A85 | Lesson deletion has no endpoint, and the authenticated advisor is told
+so after the attempt.**
+Blocker: none named.
+Detail: `src/contexts/PracticeContentContext.jsx:96-104`. The demo branch
+filters locally and returns true; the authenticated branch sets a write error
+reading "Removing lessons is not yet supported." and returns false. No DELETE
+route exists under `functions/api/practice-content`.
+
+**A86 | Workshops can be created but not edited or deleted.**
+Blocker: the Q6 ruling, which put both out of scope for E-Write-3a.
+Detail: CLAUDE.md §5, the Enterprise row, E-Write-3a. `functions/api/workshops.js`
+exports `onRequestPost` only, and no `workshops/[id].js` exists.
+
+**A87 | Cohort-detail theme flags persist nothing, on both trees, and the
+disclosure that says so is ungated.**
+Blocker: none named.
+Detail: `src/surfaces/advisor/CohortDetail.jsx:130-139`, `toggleFlag`, which
+writes React state and calls no endpoint; its disclosure at `:361` carries no
+`isAuthenticated` test, so it renders to a real advisor too. Sibling of A43,
+which is the same shape on Pipeline.
+Recorded because a first pass over-counted this: the two adjacent
+not-yet-persisted strings, `ClientWorkspace.jsx:1054` and `CohortDetail.jsx:496`,
+are both correctly gated to the demo tree, and both of those writes DO persist on
+the authenticated tree. This is one site, not three.
+
+**A88 | Cohort signals have no store; the surface reads a demo simulation
+module.**
+Blocker: none named.
+Detail: `src/data/cohortSignals.js:1-5`, which names itself DEMO SIMULATION ONLY
+and says to replace it "when persistence lands"; consumed at
+`src/surfaces/individual/CohortView.jsx:7,190`.
+
+**A89 | E4 facilitator-person wiring is deferred, so every workshop carries a
+NULL facilitator.**
+Blocker: the E4 wiring itself, named as deferred in two places and scoped in
+neither.
+Detail: `functions/api/workshops.js:10-12`, which accepts no facilitator from the
+body; `src/surfaces/enterprise/ScheduleWorkshopModal.jsx:13-14`, which does not
+collect one.
+
 ### Blocker undetermined
 
 Placed here rather than in PARKED, because an item with no named blocker is not
@@ -550,6 +660,14 @@ Detail: CLAUDE.md §5, the Individual row.
 design pass.**
 Blocker: UNDETERMINED for all three; none is named.
 Detail: CLAUDE.md §5, the Individual row.
+
+**A91 | "Enterprise routing follow-ups / invite runbook" is queued against a
+standing list that does not exist in the repository.**
+Blocker: UNDETERMINED, and it cannot be named until the list is recovered. The
+scope is unrecoverable from the tree.
+Detail: CLAUDE.md §5, the Enterprise row, its NEXT post-arc queue, which reads
+"per the standing list". A grep for that phrase returns that one occurrence and
+nothing else in CLAUDE.md or `docs/`, so the list is referenced and absent.
 
 ---
 
