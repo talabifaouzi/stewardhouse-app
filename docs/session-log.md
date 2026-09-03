@@ -1391,3 +1391,103 @@ counsel-gated subset is unchanged at three, so that sentence moves from "three
 of the twenty" to "three of the twenty-one" without its list changing.
 
 Recounted against the body before writing: 10 + 90 = 100, and 21 + 54 + 25 = 100.
+
+---
+
+## Session — 2026-09-03
+
+One build slice, banked and pushed, then this filing. The slice was one line.
+The ruling behind it changed mid-slice, and that reversal is the part worth
+reading.
+
+---
+
+### Banked
+
+**`2d984ea`, both consent-interstitial buttons become `variant="primary"`.**
+One file, one line, net against `9ff661f`:
+`src/surfaces/individual/IndividualSurface.jsx:156` moved from
+`variant="secondary"` to `variant="primary"`, joining `:153`. No string, label
+or heading changed. Fast-forward merged, branch `slice-a97-consent-variant`
+deleted by name per §6.9, pushed to origin on FT's instruction. Build clean.
+
+---
+
+### The ruling reversed mid-slice, and why
+
+**FT ruled BOTH SECONDARY. The slice was built that way, verified, and held.**
+Verification then reported that two secondary buttons would both be `--sh-card`
+on a `--sh-card` interstitial card, separated only by `--sh-border-thin` at
+**1.290:1**, below WCAG 1.4.11's 3:1 for identifying a control as a control. On
+a card whose entire interaction is choosing between two options, neither option
+reading as a button is a worse defect than the one being fixed.
+**FT REVERSED TO BOTH PRIMARY on that finding**, and named the distinction
+precisely: equal weight was the ruling, secondary was the assumption about how to
+express it. Primary expresses it too, at **4.486:1**, and keeps the affordance.
+**The ruling did not change. Its expression did.**
+**The reversal is the case for the HOLD.** §6.6 exists so a verified spec meets
+FT before it banks, and here the verification step produced a fact that changed
+the answer. Had the slice committed on approval of the spec alone, a compliant
+one-line change would have shipped an unreadable pair of controls.
+
+---
+
+### Filed
+
+**A105, secondary buttons are invisible as controls on untinted cards.** Blocker
+none, Pilot DEBT **proposed and explicitly not ruled**. The chain is
+`Button.jsx:21` (secondary base is `--sh-card`), `Card.jsx:20` (an untinted Card
+is `--sh-card`), `Button.jsx:23` into `tokens.css:117` (the only boundary is
+`0.5px #E8E2D6`), giving 1.290:1. **The interstitial is where it surfaced, not
+where it lives**, and the A97 swap closed exactly one instance of it. Counted:
+124 `<Button>` sites, 29 secondary, and **0 relying on the default**; 155
+`<Card>` sites, 134 untinted. **How many of the 29 sit inside an untinted Card is
+UNVERIFIED and was not estimated**, because a Button's nearest Card ancestor is
+usually in another component, so it is a render question. 29 is the ceiling.
+
+**FJ-7, `--sh-text-on-accent` on `--sh-bronze` misses WCAG 1.4.3 by 0.014.**
+4.486:1 against 4.5:1 for 14px/500 label text at `size="lg"`; 8.947:1 on hover,
+which passes but is not a resting state and does not exist on touch. Carried by
+all 57 `variant="primary"` sites. **Filed as founder-judgment rather than OPEN
+because `--sh-bronze` is a §7 locked token and no build slice may move it.** Two
+directions stated, neither recommended: adjust the token, or accept the shortfall
+and record it. The entry notes that the current state is the second one
+undeclared.
+
+**A106, the two consent surfaces disagree about weighting.** Blocker none, Pilot
+DEBT. The interstitial now renders both options equal; `RecordKeeping.jsx:145`
+and `:148` still render the same two options primary and secondary, inside the
+`mode === null` branch whose own comment calls them "equal options". **The
+interstitial's weighting is FT-ruled and RecordKeeping's is not ruled either
+way**, so the entry is not that RecordKeeping is wrong.
+
+---
+
+### One instrument corrected before its output was used
+
+The Button census first returned **100 of 124** call sites. The parser's
+delimiter guard mishandled CRLF, so every site whose tag opened at a line ending
+was skipped. It was caught by cross-checking against three independent greps,
+which agree at 57 primary / 29 secondary / 38 ghost. **A count that plausible is
+exactly the shape CLAUDE.md §10's scanner-control filing warns about**, and the
+control is the same one that filing prescribes: verify the instrument against a
+figure already known before reading the figure you do not know.
+
+---
+
+### Queue delta
+
+OPEN 100 to 101; cheap-and-mechanical 23 to 24 (A97 out, A105 and A106 in); every
+other group unchanged. Founder judgment 6 to 7, unruled 1 to 2. Pilot totals
+21/54/25 to 20/56/25, undetermined unchanged at 5. The counsel-gated subset is
+unchanged at three, so that sentence moves from "three of the twenty-one" to
+"three of the twenty" without its list changing.
+
+**One header invariant was made false by this filing and was amended rather than
+left standing.** "Every OPEN entry carries a `Pilot:` line; nothing else does"
+stopped being true when FJ-7 took a `Pilot:` line under FT's instruction. The
+header now names FJ-7 as the single exception and states that its line is outside
+the three totals, which is why the Pilot lines sum to 102 while OPEN sums to 101.
+
+Recounted against the body before writing: 10 + 15 + 7 + 8 + 24 + 34 + 3 = 101,
+and 20 + 56 + 25 = 101.

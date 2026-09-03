@@ -22,22 +22,29 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 100 OPEN, 9 PARKED, 6 founder-judgment of which 5 are now ruled,
+**As committed: 101 OPEN, 9 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 10, then gates-other-work 15, gates-a-stated-commitment 7,
-BMF-and-Discover 8, cheap-and-mechanical 23, large 34, and
+BMF-and-Discover 8, cheap-and-mechanical 24, large 34, and
 blocker-undetermined 3.
-**The sixth founder-judgment item, FJ-5, is NOT RULED and says so explicitly**,
-with the evidence and the reason for withholding recorded on the entry. An
-unruled item and an item nobody has looked at are different states, and the
-count distinguishes them.
+**TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
+and FJ-7, with the evidence and the reason for withholding recorded on each
+entry. An unruled item and an item nobody has looked at are different states,
+and the count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 21 BLOCKING, 54 DEBT, 25 POST**,
-of which 5 POST carry "(undetermined)" because their own text does not settle it.
-Every OPEN entry carries a `Pilot:` line; nothing else does. BLOCKING means pilot
+**AGAINST THE PILOT GATE (classified 2026-09-02): 20 BLOCKING, 56 DEBT, 25 POST**,
+of which 5 POST carry "(undetermined)" because their own text does not settle it,
+and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
+own line. A total has to place it somewhere, and DEBT is where its proposal
+puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
+CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
+ruled DEBT at the same time as filing it. That line is NOT counted in the three
+totals above, which remain a count of OPEN entries and sum to 101. The sentence
+here previously read "nothing else does", which FJ-7 made false. BLOCKING means
+pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**THREE OF THE TWENTY-ONE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
+**THREE OF THE TWENTY BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
 BUILDING: A47, A84 and A68.** So the pre-pilot path is TWO CHAINS, not one: a
 build chain, and a counsel chain that no slice advances. What moves the counsel
 chain is not uniform, and the record says so in two places rather than one.
@@ -577,30 +584,30 @@ Blocker: none named. Fixture layer only.
 Pilot: DEBT
 Detail: `docs/5.8-giving-flow-scoping.md`, section 4, carried debt.
 
-**A97 | The consent interstitial makes the dead end the primary button.**
-Blocker: none.
-Pilot: BLOCKING
-Detail: `src/surfaces/individual/IndividualSurface.jsx:153`, `variant="primary"`
-on `I'll manage it myself`, against `:156` `variant="secondary"` on `Let program
-staff manage it`. The body copy at `:145-150` tells the athlete `this account
-and everything in it belongs to you`, and the primary action is the one that
-leads to a record no one can write to.
-**RULED 2026-09-02 by FT: BOTH BUTTONS BECOME `variant="secondary"`, AND THE COPY
-STAYS EXACTLY AS IT IS.** Neither option is a house default on a consent choice.
-`Button.jsx:3` already defaults to `secondary` and `:80` falls back to it, so
-`variant="primary"` is an opt-in either way; this removes the opt-in rather than
-moving it.
-**UNBLOCKED 2026-09-02 by FT.** This entry first carried `Blocker: A96`. FT ruled
-the copy WRONG ON ITS OWN TERMS: telling an athlete the account and everything in
-it belongs to them, while the primary button leads to a record no one can write
-to, is a misleading state whichever way the A96 deliberation lands. A96 stays as
-CONTEXT for what the dead end is; it is no longer a dependency.
-**NARROWED 2026-09-02 TO THE VARIANT ONLY.** This entry previously also carried
-the finding that the interstitial states no consequence for either option. The
-swap does not close that, so it moved to A104, which is blocked on A96 where this
-is not. **The two are one problem seen twice and should be read together:** the
-swap stops the surface recommending the dead end, and A104 is what would tell the
-athlete what the dead end is.
+**A97 was CLOSED 2026-09-03 by `2d984ea`** and has left this section; the
+remaining IDs are not renumbered, since renumbering would break every reference
+to them. Both consent-interstitial buttons now carry `variant="primary"`
+(`src/surfaces/individual/IndividualSurface.jsx:153` and `:156`), so neither
+option is weighted above the other and the defect the entry's title named is not
+in the tree. **The note sits HERE rather than at the top of the section**, which
+is where the Tier 0 and F5 closure notes sit, so that the A104 pairing the sixth
+2026-09-02 session deliberately made adjacent stays adjacent.
+**FT FIRST RULED BOTH SECONDARY, AND A CONTRAST FINDING REVERSED IT TO BOTH
+PRIMARY.** The 2026-09-02 ruling recorded on the closed entry was
+`variant="secondary"` on both. Verification before the build reported that two
+secondary buttons would both be `--sh-card` on a `--sh-card` interstitial card,
+bounded only by `--sh-border-thin` at 1.290:1, below WCAG 1.4.11's 3:1 for
+identifying a control as a control. FT reversed to both-primary on that finding:
+equal weight was the ruling and secondary was the assumption about how to express
+it, and primary expresses it while keeping the affordance at 4.486:1. **What was
+ruled did not change; how it is expressed did.**
+**The reversal produced two filings rather than none.** The contrast condition is
+not confined to this card and is A105 below; the shortfall on the primary token
+that the same measurement exposed is FJ-7, because `--sh-bronze` is a locked §7
+token and no build slice may move it.
+**A104 IS UNAFFECTED AND STILL OPEN, immediately below.** The swap stopped the
+surface recommending the dead end; A104 is what would tell the athlete what the
+dead end is, and it remains blocked on A96 where this was not.
 
 **A104 | The consent interstitial states no consequence for either option.**
 Blocker: A96.
@@ -631,7 +638,8 @@ delegated record-keeping, so attendance cannot be recorded here.`; and
 closest in the whole tree to naming the freeze, `Athletes who manage their own
 records keep any milestones recorded earlier, but their stage will not advance
 here.` **The interstitial is the surface that says nothing at all.**
-**WHY THIS IS BLOCKED ON A96 WHERE A97 IS NOT, which is the load-bearing part.**
+**WHY THIS IS BLOCKED ON A96 WHERE A97 WAS NOT, which is the load-bearing part
+and is why A97 could close on 2026-09-03 while this stayed open.**
 Every string currently on the interstitial is OUTCOME-INDEPENDENT of A96, which
 is why the button swap can proceed without it. **Adding a consequence line is the
 point at which outcome-dependence enters.** A line naming what `self` does would
@@ -646,7 +654,72 @@ will not be able to record anything new.`; and `:97` `They can record your
 progress through the program, workshops you attend, lessons you complete, and
 your certification.`, whose enumeration stops distinguishing the two modes under
 the institution-observable outcome.
-Paired with A97, which is the variant swap and is not blocked.
+Paired with A97, the variant swap, which was not blocked and CLOSED 2026-09-03
+by `2d984ea`, and its closure note sits directly above this entry. The pairing is
+unchanged by that: the swap stopped the surface recommending the dead end, and
+this entry is what would tell the athlete what the dead end is. **A97 closing
+does not advance this one by a step.**
+
+**A105 | Secondary buttons are invisible as controls on untinted cards.**
+Blocker: none.
+Pilot: DEBT (PROPOSED 2026-09-03, NOT RULED. FT's call.) One line of reasoning:
+it degrades an affordance rather than asserting anything false, and the label
+stays legible at 7.398:1, so a pilot can open with it recorded. But the proposal
+rests on a denominator this entry could not verify, and a survey showing the
+condition on a control a pilot user must find would move it to BLOCKING.
+Detail: three source facts, each verified at `2d984ea` rather than assumed.
+`src/components/Button.jsx:21` resolves the `secondary` base background to
+`var(--sh-card)`. `src/components/Card.jsx:20` renders `background: tint ?
+'var(--sh-bg-tint)' : 'var(--sh-card)'`, so a Card with no `tint` prop is also
+`--sh-card`. The only boundary between them is `Button.jsx:23`,
+`border: var(--sh-border-thin)`, which `tokens.css:117` resolves to
+`0.5px solid var(--sh-card-border)`, `#E8E2D6`.
+**THE RATIO IS 1.290:1 AGAINST `#FFFFFF`**, below WCAG 1.4.11's 3:1 for
+identifying a UI component. The control is white on white and the hairline is
+the only thing separating it from the surface it sits on; the label itself is
+fine at 7.398:1, so what fails is the button reading as a BUTTON, not as text.
+**THE COUNT, with the unverified part named rather than guessed.** `src/` holds
+**124 `<Button>` call sites**: 57 primary, 29 secondary, 38 ghost, and **0 that
+rely on the default**. That last figure is worth recording because it removes a
+whole class of hidden instances: `Button.jsx:3`'s `variant = 'secondary'` and
+`:80`'s `|| variants.secondary` fallback are reachable by no site in the tree
+today. It also holds **155 `<Card>` sites, 134 of which pass no `tint` prop**.
+**How many of the 29 secondary buttons actually render inside an untinted Card is
+UNVERIFIED**, and deliberately not estimated: a Button's nearest Card ancestor is
+frequently in a different component, so the question is a render question and not
+a grep question. 29 is the ceiling.
+**WHERE THIS SURFACED IS NOT WHERE IT LIVES.** It was found on the consent
+interstitial during the A97 build, and the A97 swap removed it from that one card
+by moving both buttons to primary. **That closed one instance of a
+component-level condition and none of the others.** The condition belongs to
+`Button.jsx`'s secondary base or to `--sh-border-thin`, and any remedy is a
+component or token decision rather than a per-site one.
+The counting instrument was itself checked before its output was trusted, per
+CLAUDE.md §10, the scanner-control filing: a first parser returned 100 of 124
+sites because its delimiter guard mishandled CRLF, and the corrected figures were
+confirmed against three independent greps that agree at 57 / 29 / 38.
+
+**A106 | The two consent surfaces disagree about weighting.**
+Blocker: none.
+Pilot: DEBT
+Detail: the same two options are offered on two surfaces with two different
+weightings, and only one of the two is ruled.
+`src/surfaces/individual/IndividualSurface.jsx:153` and `:156` now both read
+`<Button variant="primary" size="lg" …>`, carrying `I'll manage it myself` and
+`Let program staff manage it`. `src/surfaces/individual/RecordKeeping.jsx:145`
+reads `<Button variant="primary" size="lg" …>` on `I'll manage it myself` and
+`:148` reads `<Button variant="secondary" size="lg" …>` on `Let program staff
+manage it`, inside the `mode === null` branch, the branch that by its own
+comment at `:128-131` "offers both as equal options" because "this is a first
+choice, not a flip".
+**THE INTERSTITIAL'S WEIGHTING IS THE FT-RULED ONE. RECORDKEEPING'S IS NOT RULED
+EITHER WAY**, and was not in the A97 slice's scope by explicit instruction. So
+this entry is not "RecordKeeping is wrong"; it is that two surfaces asking one
+question answer it differently, and one of the two answers has a ruling behind it
+while the other has only precedence.
+RecordKeeping's other two primaries, `:134` and `:139`, are the
+mutually-exclusive flip branches and are NOT part of this: they render one button
+at a time, so no weighting between two options exists there to disagree about.
 
 **A102 | F-C assumes an offline conversation the import path never mentions.**
 Blocker: none named.
@@ -1289,6 +1362,46 @@ reopened: whether this file lets `docs/session-log.md` or commit-message
 discipline carry less. It does not, and neither changes. The sweep that produced
 this file was possible BECAUSE of them, and the session log uniquely holds
 rulings that never became commits, which no commit history can recover.
+
+**FJ-7 | `--sh-text-on-accent` on `--sh-bronze` misses WCAG 1.4.3 by 0.014.
+Adjust a locked brand token, or accept the shortfall and record it?**
+Pilot: DEBT
+**NOT RULED. This is here rather than in OPEN because no build slice may close
+it:** `--sh-bronze` is a §7 locked brand token, and §7 names brand-token
+deviations non-negotiable alongside Path B violations. Moving it is FT's call and
+nobody else's, which makes this a founder-judgment item by construction rather
+than by triage.
+The measurement, recomputed at `2d984ea` and confirmed twice before being
+written here. `--sh-text-on-accent` (`#FFFFFF`) on `--sh-bronze` (`#8B7355`) is
+**4.486:1**. WCAG 1.4.3 requires **4.5:1** for text that is not large, and the
+`lg` label is `var(--sh-text-base)` = 14px at `fontWeight: 500`, which is neither
+18.66px bold nor 24px, so the 4.5:1 threshold is the applicable one. **It misses
+by 0.014.** On hover the fill becomes `--sh-bronze-deep` (`#5A453A`) and the
+ratio is **8.947:1**, which passes, but hover is not a resting state and does
+not exist on touch.
+**The same colour PASSES as a boundary.** `--sh-bronze` against `--sh-card` is
+the same 4.486:1 measured against 1.4.11's 3:1, which it clears comfortably. That
+is why the A97 reversal to both-primary was sound on its own terms and this entry
+is not an argument against it: the fill is fine, the white label on it is not.
+**Carried by all 57 `variant="primary"` sites in `src/`**, so this is a property
+of the token pair and not of any screen. The A97 swap took one card from one
+instance to two; it did not create the condition and closing it would not be
+undone by reverting that slice.
+**THE TWO DIRECTIONS, STATED PLAINLY, WITH NEITHER RECOMMENDED.**
+(a) **Adjust the token.** Darkening `--sh-bronze` far enough to clear 4.5:1
+against white text would clear it at all 57 sites at once. The cost is that
+`--sh-bronze` is the brand accent and appears far beyond buttons: focus rings
+(`global.css:60`), borders, and accent text. The change is therefore a brand
+decision with a blast radius well past this finding.
+(b) **Accept the shortfall and record it.** 0.014 is below any plausible
+perceptual threshold and no user is misled by it; the cost is that §7 states WCAG
+AA without qualification, so accepting means §7 gains a named, dated exception
+rather than being quietly untrue.
+**Nothing here recommends either.** What this entry establishes is that the
+figure is measured rather than estimated, that the decision cannot be delegated
+to a build slice, and that the current state is direction (b) undeclared: the
+shortfall is being accepted today without having been recorded anywhere until
+now.
 
 ---
 
