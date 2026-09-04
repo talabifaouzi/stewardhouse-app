@@ -160,6 +160,14 @@ export default function ProgramOutputs() {
     totalWorkshopAttendances, avgLessonsPerAthlete,
   } = stats;
 
+  // A20: the denominator the Workshops-held tile already displayed, named
+  // once. workshopsHeld and workshopsScheduled partition `workshops` on
+  // status === 'completed', so this sum is workshops.length on every path,
+  // whatever status values the rows carry. Guarding the tile on the same
+  // expression it renders means the guard and the denominator cannot
+  // disagree.
+  const workshopsTotal = workshopsHeld + workshopsScheduled;
+
   // Empty roster → honest page-level line (unchanged). Passing this guard no
   // longer reveals fixture data.
   if (athletes.length === 0) {
@@ -236,11 +244,30 @@ export default function ProgramOutputs() {
               sublabel={`${totalGifts} gifts total (tracked + untracked)`}
             />
           )}
+          {/* A20. Value RULED 2026-09-03 by FT, sublabel RULED 2026-09-04.
+              With no workshop rows this read "0 of 0", a measurement of
+              nothing on the first screen a new institution sees.
+
+              THE SUBLABEL DROPS in that state, and it follows from the
+              TILE'S NATURE rather than from a page convention, because this
+              page has TWO absence treatments and not one. The fmtRate tiles
+              drop the sublabel where a RATE DOES NOT EXIST. The NT tiles
+              carry explanatory copy where a VALUE IS UNSOURCED. Workshops
+              held is neither: a workshop count is a count of rows, zero is a
+              real and correct answer, and "None yet" already states it
+              completely, so nothing is left for a sublabel to say. That is
+              the same distinction A20 drew to rule out "Not tracked".
+              Mechanism follows the fmtRate tiles (:225, :307): an explicit
+              undefined, on the same expression as the value guard.
+
+              The comment at :137-140 claims one convention where there are
+              two, and its citations have rotted; filed as A111, and
+              deliberately NOT corrected here. */}
           <StatTile
             variant="inline"
             label="Workshops held"
-            value={`${workshopsHeld} of ${workshopsHeld + workshopsScheduled}`}
-            sublabel={`${workshopsScheduled} remaining this term`}
+            value={workshopsTotal === 0 ? 'None yet' : `${workshopsHeld} of ${workshopsTotal}`}
+            sublabel={workshopsTotal === 0 ? undefined : `${workshopsScheduled} remaining this term`}
           />
         </div>
       </Card>

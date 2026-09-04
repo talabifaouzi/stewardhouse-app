@@ -24,27 +24,37 @@ for what the cadence misses.
 
 **As committed: 103 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers holding 8, then gates-other-work 16, gates-a-stated-commitment 7,
-BMF-and-Discover 8, cheap-and-mechanical 27, large 34, and
+ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
+BMF-and-Discover 8, cheap-and-mechanical 28, large 34, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A18 CLOSED.** Its entry sat in
-Tier 2, one of the six ruled tiers, so OPEN moves 104 to 103 and the tiers move
-9 to 8: 8 + 16 + 7 + 8 + 27 + 34 + 3 = 103. A18 was BLOCKING and is not one of
-the four counsel-gated items, so BLOCKING moves 20 to 19: 19 + 59 + 25 = 103.
-**THE BUILD CHAIN MOVES TOO, 16 to 15, and this is the figure a totals edit
-misses.** The two-chains sentence below defines it as BLOCKING minus the
-counsel-gated four, so 19 - 4 = 15. It is DERIVED and is written in commit
-messages rather than stated anywhere in this file, which is exactly why
-correcting the totals above does not correct it and why a grep for a changed
-number cannot find it.
-Nothing else moved: PARKED, founder-judgment, FT-only, ruled-out, DEBT, POST,
-the counsel-gated four, and the other six group counts are all unchanged.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A20 CLOSED AND A111 FILED, in one
+commit.** Two state changes in opposite directions, which is why two figures a
+reader would expect to move do not.
+A20 sat in Tier 2, so the six ruled tiers move 8 to 7. A111 is filed into
+cheap-and-mechanical, which moves 27 to 28. **OPEN therefore does NOT move**: one
+out and one in, so it stays 103, and 7 + 16 + 7 + 8 + 28 + 34 + 3 = 103. The
+restatement further down, "sum to 103", does not move either, for the same
+reason.
+A20 was BLOCKING, so BLOCKING moves 19 to 18. A111 is DEBT, matching the
+precedent its two closest siblings set: A33, stale comments, and A76, a rotted
+citation, are both DEBT and both sit in cheap-and-mechanical. So DEBT moves 59
+to 60, POST is unchanged, and 18 + 60 + 25 = 103.
+**THE BUILD CHAIN MOVES, 15 to 14, and it is the figure a totals edit misses.**
+The two-chains sentence below defines it as BLOCKING minus the counsel-gated
+four, so 18 - 4 = 14. A111 does not enter it, being neither BLOCKING nor
+counsel-gated. It is DERIVED and is written in commit messages rather than
+stated anywhere in this file, which is exactly why correcting the totals above
+does not correct it and why a grep for a changed number cannot find it.
+This block records the LAST change only and is REPLACED rather than appended, so
+it never accumulates into a changelog. The entry it replaced recorded A18.
+Nothing else moved: PARKED, founder-judgment, FT-only, ruled-out, POST, the
+counsel-gated four, and the other five group counts are all unchanged.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 19 BLOCKING, 59 DEBT, 25 POST**,
+**AGAINST THE PILOT GATE (classified 2026-09-02): 18 BLOCKING, 60 DEBT, 25 POST**,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
@@ -56,7 +66,7 @@ here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**FOUR OF THE NINETEEN BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
+**FOUR OF THE EIGHTEEN BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
 BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
 chain is not uniform, and the record says so in three places rather than one.
@@ -262,36 +272,40 @@ state.
 carry-over paragraph above: the guard is correct and on the wrong side of the
 branch. Nothing is lost by the merge except a second entry for one defect.
 
-**A20 | The Workshops-held tile reads "0 of 0" for an institution with no
-workshops. COPY RULED 2026-09-03; the build is not done.**
-Blocker: none named. It is the first screen a new institution sees.
-Pilot: BLOCKING
-Detail: `src/surfaces/enterprise/reports/ProgramOutputs.jsx:239-244`, the tile.
-The expression is `:242`,
-`` value={`${workshopsHeld} of ${workshopsHeld + workshopsScheduled}`} ``, over
-`workshopsHeld` at `:95` and `workshopsScheduled` at `:96`, each a filter on
-`workshops` by `status`. With no workshop rows both are 0 and the tile renders
-"0 of 0" with the sublabel "0 remaining this term". The tile is UNGATED: `:239`
-sits outside the `isAuthenticated` ternary that closes at `:238`.
-**RULED 2026-09-03 by FT: the tile renders "None yet".**
-**None of the three candidates on the filing was ruled.**
-`docs/filed-defects.md:1405` named "None scheduled", "Not tracked", and leaving
-the honest "0 of 0" as it is. FT ruled a fourth string.
-**The reasoning, recorded because it is what distinguishes the four.** "0 of 0"
-reads as a MEASUREMENT OF NOTHING on the first screen a new institution sees.
-"None scheduled" asserts a fact about the FUTURE that the data does not carry:
-`workshopsScheduled` counts rows with a non-`completed` status, and zero such
-rows means none exist, not that none is planned.
-**"Not tracked" is ruled out by a distinction this entry must not lose.** That
-string belongs to R4 and to a CONSENT POPULATION, where the measurement does not
-exist. A workshop count is a COUNT OF ROWS, and zero is a real and correct answer
-to "how many workshops". `docs/filed-defects.md:1381-1389` records this at
-length, including that the resemblance between the two output strings is not a
-reason to treat them alike. **A20 is therefore NOT part of the A18 fix**, shares
-no file with it, and involves no null at all.
-**The copy is ruled; the build is not done**, which is why this stays OPEN and
-BLOCKING. Where the string is applied, whether the sublabel changes with it, and
-whether any sibling tile takes the same treatment are NOT ruled here.
+**A20 was CLOSED 2026-09-04** and has left this section; the remaining IDs are
+not renumbered, since renumbering would break every reference to them. Its title
+was "The Workshops-held tile reads "0 of 0" for an institution with no
+workshops". FT ruled the value "None yet" on 2026-09-03 and the sublabel on
+2026-09-04.
+**WHAT CLOSED IT, VALUE:** `src/surfaces/enterprise/reports/ProgramOutputs.jsx`
+names the denominator the tile already displayed as `workshopsTotal` and renders
+"None yet" when it is 0. `workshopsHeld` and `workshopsScheduled` partition
+`workshops` on `status === 'completed'`, so that sum is `workshops.length` on
+every path; the guard and the denominator are one expression and cannot
+disagree.
+**WHAT CLOSED IT, SUBLABEL: FT RULED 2026-09-04 that it DROPS in that state**,
+and the reason is the tile's nature rather than a page convention. This page has
+TWO absence treatments, not one. The fmtRate tiles drop the sublabel where a
+RATE DOES NOT EXIST. The NT tiles carry explanatory copy where a VALUE IS
+UNSOURCED. Workshops held is neither: a workshop count is a count of rows, zero
+is a real and correct answer, and "None yet" states it completely, so nothing is
+left for a sublabel to say. That is the same distinction this entry drew to rule
+out "Not tracked". Mechanism follows the fmtRate tiles: an explicit `undefined`,
+gated on the same expression as the value.
+**A PRIOR RULING ON THIS POINT WAS WITHDRAWN AND RE-MADE**, recorded because the
+reason is now A111. The first sublabel ruling instructed the drop as "the
+absence convention this page already states at the NT tiles and the fmtRate
+tiles", asserting that convention as established fact. No such single convention
+exists. The claim originated in the comment at `ProgramOutputs.jsx:137-140`; a
+slice report repeated it by quoting the comment rather than opening the tiles;
+the assistant's review turn restated it as established fact with the rotted
+`:194` and `:220` citations; and the assistant then wrote it into the ruling
+prompt as settled. FOUR links, none of which read the tiles, and FT ruled on the
+premise in good faith. The slice STOPPED rather than build on it, and the ruling
+above was re-made against the tiles.
+**Whether any sibling tile takes the same treatment is still NOT ruled.** FT
+ruled it a copy pass across six tiles rather than a defect, so it is
+deliberately not filed.
 
 ### Tier 3
 
@@ -1114,6 +1128,41 @@ Detail: CLAUDE.md §5, the Advisor row, its deferred list;
 `src/surfaces/advisor/LessonEditor.jsx:420-423`,
 `src/components/SegmentedControl.jsx:12-15`. All three keep `aria-pressed` on
 single-select controls; `Pipeline.jsx:468` names the three-control span.
+
+**A111 | ProgramOutputs claims one absence convention where it implements two,
+and the comment saying so has rotted.**
+Blocker: none named.
+Pilot: DEBT
+Detail: `src/surfaces/enterprise/reports/ProgramOutputs.jsx:137-140`. It reads
+"Both tiles fall back to the page's existing NT constant as their VALUE, with no
+sublabel, which is what the two unsourced tiles above already do (value={NT} at
+:194 and :220). One convention for absence on this page, not two."
+**The comment contains three errors of its own.** The page implements TWO absence
+treatments: the fmtRate tiles drop the sublabel where a rate does not exist,
+while the NT tiles carry explanatory copy ("No gift-dollar source yet", "No gift
+source yet") where a value is unsourced. The NT tiles therefore do NOT render
+"with no sublabel", which is what the comment asserts of them. And both
+citations have ROTTED: `:194` is a `<Card>` opening tag and `:220` is a bare
+`)}`, neither of which is a tile.
+**THIS COMMENT CAUSED A DOCUMENTED ERROR IN THE A20 SLICE, 2026-09-04**, which
+is why it is filed rather than left. The error passed through FOUR links, and
+naming fewer would misplace it. The comment stated a convention the page does
+not implement. A slice report then quoted the comment as evidence that the NT
+tiles drop their sublabel, without opening the tiles. The assistant's review
+turn then restated the claim as established fact, repeating the rotted `:194`
+and `:220` citations and describing the page as having an established
+convention that drops the sublabel. The assistant then wrote the ruling prompt,
+asserting that convention in its own voice and instructing a drop on the
+strength of it: "the absence convention this page already states at the NT tiles
+and the fmtRate tiles". FT ruled on that premise in good faith, handed to him
+already stated as true, from a comment no link in the chain had checked. The
+error surfaced when the tiles were finally read; the ruling was withdrawn and
+re-made on the tiles themselves. The OUTCOME was the same; the REASONING was
+not.
+**Fixing the comment is deliberately NOT part of the A20 slice**, which filed it
+and stopped. Whether the fix corrects the comment, reconciles the two
+treatments, or rules that two treatments are correct and names them as two, is
+NOT ruled here.
 
 ### Large
 
