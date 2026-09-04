@@ -22,42 +22,42 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 104 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 103 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
+ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
 BMF-and-Discover 8, cheap-and-mechanical 29, large 34, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A66 PARTLY CLOSED by the pilot-gate
-refresh. NO FIGURE IN THIS FILE MOVES, and every one is shown so that is
-checkable rather than asserted.** A66 is amended, not closed: its blocker
-narrows to the FT-run remote gate read, and an entry with a narrowed blocker is
-still an OPEN entry in the same group with the same Pilot.
-So **OPEN stays 104** and the breakdown is unchanged at
-7 + 16 + 7 + 8 + 29 + 34 + 3 = 104, as does the "sum to 104" restatement.
-Gates-other-work stays 16, since A66 neither leaves nor moves. The pilot split
-is untouched at 20 BLOCKING, 60 DEBT, 24 POST, summing to 104, and the
-counsel-gated line stays FOUR OF THE TWENTY. **THE BUILD CHAIN STAYS 16**, being
-BLOCKING minus the counsel-gated four, neither of which moved.
-**PARTLY CLOSING AN ITEM IS NOT CLOSING IT, and the count is where that
-distinction has to hold.** Most of what A66 asked for is now done, which is
-exactly the state in which an entry gets quietly counted as closed. It is not.
-The figure it exists to produce has one of its two columns unreported, and that
-column needs an FT-run remote read.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A66 CLOSED.** The FT-run remote
+gate read happened, which was the whole of its remaining blocker, so the
+re-score gained its second column and the entry has nothing left. It sat in
+gates-other-work at Pilot DEBT.
+**OPEN moves 104 to 103** and gates-other-work 16 to 15, so the breakdown is
+7 + 15 + 7 + 8 + 29 + 34 + 3 = 103. The restatement further down moves with it,
+to "sum to 103". DEBT moves 60 to 59 and 20 + 59 + 24 = 103; BLOCKING and POST
+are both unchanged.
+**THE BUILD CHAIN DOES NOT MOVE and stays 16**, being BLOCKING minus the
+counsel-gated four, and A66 was neither. The counsel-gated line below stays FOUR
+OF THE TWENTY for the same reason.
+**THE PREVIOUS BLOCK SAID PARTLY CLOSING AN ITEM IS NOT CLOSING IT. It was
+right, and one commit later the distinction paid.** The entry was left open on
+one missing column; that column arrived the same day, and the entry closed for
+the reason it named rather than by being tidied away.
 This block records the LAST change only and is REPLACED rather than appended, so
-it never accumulates into a changelog. The entry it replaced recorded A1 and A8.
+it never accumulates into a changelog. The entry it replaced recorded A66's
+partial closure.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 20 BLOCKING, 60 DEBT, 24 POST**,
+**AGAINST THE PILOT GATE (classified 2026-09-02): 20 BLOCKING, 59 DEBT, 24 POST**,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 104. The sentence
+totals above, which remain a count of OPEN entries and sum to 103. The sentence
 here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
@@ -425,29 +425,32 @@ Pilot: POST
 Detail: `migrations/0021_auth_send_log.sql`, its retention docblock, which names
 the four tables it joins.
 
-**A66 | The pilot gate has not been re-scored in 86 commits. PARTLY CLOSED
-2026-09-04: a capability row landed; production-usable did not.**
-Blocker: **narrowed to the FT-run remote gate read alone.** Everything else this
-entry asked for is done.
-Pilot: DEBT
-Detail: `docs/pilot-gate-criteria.md`, the re-score log, newest row.
-**WHAT THE 2026-09-04 REFRESH DID.** Denominators re-derived under §2 at HEAD
-(routes 48 unchanged, endpoints 33 to 36 surface, denominator 81 to 84), every
-status re-verified rather than carried forward, and a capability row written.
-**WHAT IT COULD NOT DO, which is why this stays OPEN.** §2.6 requires gate
-values re-verified against remote D1 before any production-usable figure may be
-reported, that read is FT-run per CLAUDE.md §6.15, and it has not happened since
-2026-08-17. The row reports capability and leaves production-usable unreported
-rather than carrying a stale figure against a new denominator. **This entry
-closes when that read happens and the row gains its second column**, which is
-what its blocker line said from the start.
-**THE CLAUSE "Several Tier 2 defects above sit on routes that log scores MET" IS
-CORRECTED.** Tier 2 held A17, A18 and A20 when it was written. A18 and A20 both
-closed 2026-09-04, so Tier 2 holds **A17 alone**: one defect, not several.
-**ONE UNIT IS UNVERIFIED AND IS FT'S TO RULE**, so the row carries a range rather
-than a figure: Individual criterion 4, `discover`, whose evidence cited a file
-`65f2a28` deleted and which no ruling in §1 reaches. That is A8's subject from
-the instrument's side.
+**A66 was CLOSED 2026-09-04** and has left this section; the remaining IDs are
+not renumbered, since renumbering would break every reference to them. Its
+title was "The pilot gate has not been re-scored in 86 commits."
+**WHAT CLOSED IT: the re-score landed in two halves on the same day, and its
+blocker was discharged between them.** The capability half was written first
+against `be8d01a`, deliberately leaving production-usable unreported because
+§2.6 requires gate values re-verified against remote D1 and that read is FT-run
+per CLAUDE.md §6.15. FT then ran it: six read-only aggregate counts over
+`person`, soft-deleted excluded, all three §2.6 claims holding unchanged from
+2026-08-17 (advisor gated 0 of 2, staff gated 0 of 4, ops gated 1 of 2). The
+second row followed at `6fb6572` carrying both columns, capability 83/84 = 99%
+and production-usable 57/84 = 68%.
+**THE BLOCKER LINE WAS RIGHT AND IS WHAT CLOSED IT.** This entry said from the
+start that a re-score "additionally needs an FT-run remote gate read before any
+production-usable figure may be reported", and on 2026-09-04 that was narrowed
+to the whole of its remaining blocker. The read happened, so nothing is left.
+**TWO THINGS THE CLOSING RE-SCORE SETTLED THAT THIS ENTRY DID NOT ASK FOR.**
+Individual criterion 4 was UNVERIFIED in the first row and FT ruled it MET, so
+the capability figure is a number rather than a range. And FT ruled that no
+replacement is built for Ruling A's lost caveat example, so
+`docs/pilot-gate-criteria.md` §5.1 stands as a decision rather than as an open
+defect; it returns when Discover ships, which is A8.
+**The corrected clause is recorded here rather than lost with the entry:** its
+Detail line read "Several Tier 2 defects above sit on routes that log scores
+MET", which was written when Tier 2 held A17, A18 and A20. A18 and A20 both
+closed 2026-09-04, so Tier 2 holds A17 alone.
 
 **A73 | Bare intra-document line references cannot be found by a citation
 scan.**
