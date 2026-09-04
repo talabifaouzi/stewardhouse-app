@@ -22,46 +22,42 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 103 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 104 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
-BMF-and-Discover 8, cheap-and-mechanical 28, large 34, and
+BMF-and-Discover 8, cheap-and-mechanical 29, large 34, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A20 CLOSED AND A111 FILED, in one
-commit.** Two state changes in opposite directions, which is why two figures a
-reader would expect to move do not.
-A20 sat in Tier 2, so the six ruled tiers move 8 to 7. A111 is filed into
-cheap-and-mechanical, which moves 27 to 28. **OPEN therefore does NOT move**: one
-out and one in, so it stays 103, and 7 + 16 + 7 + 8 + 28 + 34 + 3 = 103. The
-restatement further down, "sum to 103", does not move either, for the same
-reason.
-A20 was BLOCKING, so BLOCKING moves 19 to 18. A111 is DEBT, matching the
-precedent its two closest siblings set: A33, stale comments, and A76, a rotted
-citation, are both DEBT and both sit in cheap-and-mechanical. So DEBT moves 59
-to 60, POST is unchanged, and 18 + 60 + 25 = 103.
-**THE BUILD CHAIN MOVES, 15 to 14, and it is the figure a totals edit misses.**
-The two-chains sentence below defines it as BLOCKING minus the counsel-gated
-four, so 18 - 4 = 14. A111 does not enter it, being neither BLOCKING nor
-counsel-gated. It is DERIVED and is written in commit messages rather than
-stated anywhere in this file, which is exactly why correcting the totals above
-does not correct it and why a grep for a changed number cannot find it.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A112 FILED.** One item in and none
+out, so OPEN moves 103 to 104 and cheap-and-mechanical moves 28 to 29:
+7 + 16 + 7 + 8 + 29 + 34 + 3 = 104. The restatement further down moves with it,
+to "sum to 104". A112 is DEBT, matching the precedent every copy and UI-polish
+entry sets (A38, A53, A60, A105, A106 and A111 are all DEBT and all sit in
+cheap-and-mechanical), so DEBT moves 60 to 61 and 18 + 61 + 25 = 104.
+**THE BUILD CHAIN DOES NOT MOVE and stays 14**, which is worth saying because
+the two blocks before this one both moved it. The two-chains sentence below
+defines it as BLOCKING minus the counsel-gated four; A112 is neither, so
+BLOCKING stays 18 and 18 - 4 = 14. It is DERIVED and is written in commit
+messages rather than stated anywhere in this file, so its NOT moving is exactly
+as invisible as its moving would be, and is recorded for the same reason.
 This block records the LAST change only and is REPLACED rather than appended, so
-it never accumulates into a changelog. The entry it replaced recorded A18.
-Nothing else moved: PARKED, founder-judgment, FT-only, ruled-out, POST, the
-counsel-gated four, and the other five group counts are all unchanged.
+it never accumulates into a changelog. The entry it replaced recorded A20 and
+A111.
+Nothing else moved: the six ruled tiers, PARKED, founder-judgment, FT-only,
+ruled-out, BLOCKING, POST, the counsel-gated four, and the other five group
+counts are all unchanged.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 18 BLOCKING, 60 DEBT, 25 POST**,
+**AGAINST THE PILOT GATE (classified 2026-09-02): 18 BLOCKING, 61 DEBT, 25 POST**,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 103. The sentence
+totals above, which remain a count of OPEN entries and sum to 104. The sentence
 here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
@@ -1163,6 +1159,47 @@ not.
 and stopped. Whether the fix corrects the comment, reconciles the two
 treatments, or rules that two treatments are correct and names them as two, is
 NOT ruled here.
+
+**A112 | Counts are interpolated bare into plural nouns, so a one-athlete
+institution reads "Across 1 athletes" on its first visit.**
+Blocker: none named.
+Pilot: DEBT
+Detail: observed by FT 2026-09-04 during the A20 render check, against a seeded
+one-athlete roster. The reported site is
+`src/surfaces/enterprise/reports/ProgramOutputs.jsx:309`, whose sublabel is
+"Across N athletes, M average per athlete".
+**SEVEN SITES, and what separates them is whether a real institution can reach
+them.**
+**THREE ARE UNGATED and render on both trees.** `ProgramOutputs.jsx:309`
+above. `ProgramOutputs.jsx:315`, "N workshops x M eligible", which reads
+"1 workshops" at exactly one workshop; zero is correct, so this one appears only
+at 1, and "eligible" is an adjective and is fine. And
+`src/surfaces/enterprise/shared/categoryFilters.js:72`, in `buildModalTitle`,
+"LABEL - N athletes", which EnterpriseOverview and EnterpriseRoster both use and
+which fires whenever a tile filter matches exactly one athlete.
+**FOUR ARE DEMO-ONLY and no real institution reaches them.**
+`ProgramOutputs.jsx:218` and `:244` are the else arms of `isAuthenticated`
+ternaries whose auth twins render the "Not tracked" tiles, and the demo fixture
+holds 33 gifts across 16 athletes, so neither shows 1 today.
+`EnterpriseOverview.jsx:67` and `ProgramSummary.jsx:106` are
+engagement-week modal titles, and engagement is gated to "Not tracked" on the
+auth tree.
+**THE SURFACE ALREADY CARRIES THREE CORRECT TREATMENTS AND THEY DISAGREE WITH
+EACH OTHER**, which is why this is one filing rather than a find-and-replace.
+`EnterpriseRoster.jsx:216`, `ImportRosterModal.jsx:337` and `:438`
+append a conditional "s" to the noun. `shared/RateDisclosure.jsx:64-65` and
+`:71` branch the whole clause and carry verb agreement, "1 athlete is"
+against "N athletes are". `EnterpriseRoster.jsx:245-246` uses the
+parenthetical "row(s)" and "set(s)". Which treatment a fix adopts is NOT ruled
+here, and neither is whether the demo-only four are in scope.
+**CHECKED AND CLEARED, recorded so a later sweep does not re-flag them:**
+`ProgramOutputs.jsx:270` ("N remaining this term") has no noun after the
+count; `Endowment.jsx:176` ("N years x ...") is driven by a three-option
+control of 5, 10 and 20, so 1 is unreachable, and `:164` ("End of N-year
+horizon") is a hyphenated attributive; `PhilanthropicReadiness.jsx:146` and
+every `CohortComparison.jsx` string are "N of M" forms;
+`ProgramSummary.jsx:238` ("N attended") and `:96` (status labels) carry
+no count noun.
 
 ### Large
 
