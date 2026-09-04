@@ -27,30 +27,32 @@ for what the cadence misses.
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
 BMF-and-Discover 8, cheap-and-mechanical 29, large 34, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A112 FILED.** One item in and none
-out, so OPEN moves 103 to 104 and cheap-and-mechanical moves 28 to 29:
-7 + 16 + 7 + 8 + 29 + 34 + 3 = 104. The restatement further down moves with it,
-to "sum to 104". A112 is DEBT, matching the precedent every copy and UI-polish
-entry sets (A38, A53, A60, A105, A106 and A111 are all DEBT and all sit in
-cheap-and-mechanical), so DEBT moves 60 to 61 and 18 + 61 + 25 = 104.
-**THE BUILD CHAIN DOES NOT MOVE and stays 14**, which is worth saying because
-the two blocks before this one both moved it. The two-chains sentence below
-defines it as BLOCKING minus the counsel-gated four; A112 is neither, so
-BLOCKING stays 18 and 18 - 4 = 14. It is DERIVED and is written in commit
-messages rather than stated anywhere in this file, so its NOT moving is exactly
-as invisible as its moving would be, and is recorded for the same reason.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A8 RECLASSIFIED DEBT to BLOCKING
+by FT ruling, retitled, and its group preamble corrected.** No entry opened,
+closed or changed group, so **OPEN stays 104** and the breakdown is unchanged at
+7 + 16 + 7 + 8 + 29 + 34 + 3 = 104. The restatement further down, "sum to 104",
+does not move either.
+**WHAT MOVES IS THE PILOT SPLIT, and it moves in both directions at once.**
+BLOCKING 18 to 19 and DEBT 61 to 60, one entry crossing between them, so the sum
+holds: 19 + 60 + 25 = 104. POST is unchanged. The counsel-gated denominator
+below moves with BLOCKING, EIGHTEEN to NINETEEN, while the numerator stays FOUR,
+since A8 is blocked by an ingest rather than by counsel.
+**THE BUILD CHAIN MOVES, 14 to 15.** The two-chains sentence below defines it as
+BLOCKING minus the counsel-gated four, so 19 - 4 = 15. It is DERIVED and is
+written in commit messages rather than stated anywhere in this file, which is
+exactly why correcting the totals above does not correct it and why a grep for a
+changed number cannot find it.
+**A RECLASSIFICATION MOVES NO TOTAL AND STILL CHANGES WHAT THE QUEUE MEANS.**
+OPEN reads 104 before and after; what changed is that one of those 104 now says
+pilot cannot open without it.
 This block records the LAST change only and is REPLACED rather than appended, so
-it never accumulates into a changelog. The entry it replaced recorded A20 and
-A111.
-Nothing else moved: the six ruled tiers, PARKED, founder-judgment, FT-only,
-ruled-out, BLOCKING, POST, the counsel-gated four, and the other five group
-counts are all unchanged.
+it never accumulates into a changelog. The entry it replaced recorded A112.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 18 BLOCKING, 61 DEBT, 25 POST**,
+**AGAINST THE PILOT GATE (classified 2026-09-02): 19 BLOCKING, 60 DEBT, 25 POST**,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
@@ -62,7 +64,7 @@ here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**FOUR OF THE EIGHTEEN BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
+**FOUR OF THE NINETEEN BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
 BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
 chain is not uniform, and the record says so in three places rather than one.
@@ -703,8 +705,10 @@ footnotes under the Open issues and Recent activity cards.
 
 ### BMF and Discover — open questions
 
-These feed the Discover surface and none of them gates it. The item that
-actually gates the load is A1, in Tier 4.
+Every entry here EXCEPT A8 feeds the Discover surface without gating it. A8 IS
+the surface, an intended capability that is not built, which is a different kind
+of thing from the questions around it. The item that actually gates the load is
+A1, in Tier 4.
 
 **A2 | Whether `REVENUE_AMT` serves any v1 query.**
 Blocker: none named.
@@ -737,11 +741,52 @@ Blocker: unruled.
 Pilot: POST
 Detail: `docs/discover-surface-spec.md`, its closing UNRULED note.
 
-**A8 | The four Discover facets are unbuilt; the page renders an explicit
-unavailable state.**
-Blocker: the BMF ingest, which is A1 and A9.
-Pilot: DEBT
+**A8 | Discover is an INTENDED CAPABILITY and it is not built. The four facets
+are unbuilt and the route renders an unavailable state.**
+Blocker: the BMF ingest, which is A1 and A9. **See the note under A1 on its own
+classification, which this ruling puts in question.**
+Pilot: BLOCKING
 Detail: `docs/discover-surface-spec.md`; `docs/bmf-load-scoping.md`.
+**FT RULED 2026-09-04: THE CAPABILITY IS INTENDED, AND PILOT CANNOT OPEN
+WITHOUT IT. Pilot moves DEBT to BLOCKING.** The reasoning: two of the three
+pilot metrics run through organizations found on the platform, so a pilot with
+no discovery has no path to them. The prior DEBT classification was not a
+judgement that pilot could open without Discover; it predated anyone asking.
+**RETITLED the same day, and the old title is quoted here rather than deleted
+because it is what let this read as settled:** "The four Discover facets are
+unbuilt; the page renders an explicit unavailable state." That makes the PAGE
+STATE the subject and describes something finished. The subject is the
+CAPABILITY.
+**NO DOCUMENT IN THIS REPOSITORY RECORDS AN FT RULING TO REMOVE THE
+CAPABILITY.** Verified 2026-09-04 across `docs/`, CLAUDE.md and
+`docs/session-log.md`, which carries no entry on it at all. The sole ruling
+text is one clause inside the commit message of `65f2a28`: "FT ruled removal
+now rather than coupling the two." That is a SEQUENCING decision, taking a live
+violation down rather than leaving it standing until the ingest lands, and the
+clause itself names the two precedents it follows, P-5 (`eb75092`) and the
+feedback removal (`fbc1a9a`).
+**WHAT WAS ACTUALLY REMOVED WAS THE SCORING MECHANISM, and removing it was
+correct.** `Discover.jsx:43-52` computed a weighted score, cut the catalog at
+`score > 0`, and sorted descending; results were then grouped into three
+evaluative buckets whose copy asserted that some organizations have "Trust you
+can't buy" and that others are "doing bold work" whose growth the funder's
+support helps. That is a §7 no-scoring violation and a Path B recommendation,
+and the cutoff leaked besides: an unconditional National bonus cleared 7 of the
+17 orgs for any cause selection with zero cause overlap. **The mechanism was
+the defect. The capability was not.**
+**BOTH SURROUNDING DOCUMENTS TREAT THE REBUILD AS INTENDED.**
+`docs/discover-surface-spec.md` was FT-ruled 2026-08-17, the DAY BEFORE the
+removal, and specifies the replacement: four combinable facets, nothing scored,
+alphabetical results with the count leading. `docs/bmf-load-scoping.md` says it
+outright: "`DiscoverUnavailable.jsx` becomes the fallback, not a deletion", the
+route renders results once the load stamp is complete and the unavailable state
+otherwise, and "the name `Discover.jsx` was deliberately left free".
+**`docs/pilot-gate-criteria.md` SCORES THIS SURFACE MET ON A DELETED FILE.**
+Individual criterion 4, "`discover` applies Ruling A's correct response", is MET
+with evidence "Defanged `42851cd`; caveat `Discover.jsx:99,107`". That file was
+deleted by `65f2a28`. The same citation is Ruling A's ONLY caveat-branch
+example and one of §2.4's three reference implementations. The criterion is
+therefore UNVERIFIED rather than met. That file is not edited here.
 
 **A10 | One BMF batch zip is malformed and exits non-zero while extracting
 correctly.**
