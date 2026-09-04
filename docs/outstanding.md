@@ -27,32 +27,34 @@ for what the cadence misses.
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
 BMF-and-Discover 8, cheap-and-mechanical 29, large 34, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A8 RECLASSIFIED DEBT to BLOCKING
-by FT ruling, retitled, and its group preamble corrected.** No entry opened,
-closed or changed group, so **OPEN stays 104** and the breakdown is unchanged at
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A1 RECLASSIFIED POST to BLOCKING
+by FT ruling, and A9 removed from A8's blocker line.** No entry opened, closed
+or changed group, so **OPEN stays 104** and the breakdown is unchanged at
 7 + 16 + 7 + 8 + 29 + 34 + 3 = 104. The restatement further down, "sum to 104",
-does not move either.
-**WHAT MOVES IS THE PILOT SPLIT, and it moves in both directions at once.**
-BLOCKING 18 to 19 and DEBT 61 to 60, one entry crossing between them, so the sum
-holds: 19 + 60 + 25 = 104. POST is unchanged. The counsel-gated denominator
-below moves with BLOCKING, EIGHTEEN to NINETEEN, while the numerator stays FOUR,
-since A8 is blocked by an ingest rather than by counsel.
-**THE BUILD CHAIN MOVES, 14 to 15.** The two-chains sentence below defines it as
-BLOCKING minus the counsel-gated four, so 19 - 4 = 15. It is DERIVED and is
-written in commit messages rather than stated anywhere in this file, which is
-exactly why correcting the totals above does not correct it and why a grep for a
-changed number cannot find it.
-**A RECLASSIFICATION MOVES NO TOTAL AND STILL CHANGES WHAT THE QUEUE MEANS.**
-OPEN reads 104 before and after; what changed is that one of those 104 now says
-pilot cannot open without it.
+does not move either. **Nor does the BMF-and-Discover group count**: A9 leaving
+a blocker LINE is not A9 leaving a section, and it sits in Tier 3 throughout.
+**WHAT MOVES IS THE PILOT SPLIT, in both directions at once.** BLOCKING 19 to 20
+and POST 25 to 24, one entry crossing between them, so the sum holds:
+20 + 60 + 24 = 104. DEBT is unchanged. The counsel-gated denominator below moves
+with BLOCKING, NINETEEN to TWENTY, while the numerator stays FOUR, since A1 is
+blocked by an unexercised failure path rather than by counsel.
+**THE BUILD CHAIN MOVES, 15 to 16**, being BLOCKING minus the counsel-gated
+four, 20 - 4 = 16. It is DERIVED and is written in commit messages rather than
+stated anywhere in this file, which is exactly why correcting the totals above
+does not correct it and why a grep for a changed number cannot find it.
+**ONE FIGURE WAS VERIFIED RATHER THAN REASONED, and it is recorded because the
+reasoning would have been right for the wrong cause.** The five POST entries
+carrying "(undetermined)" are A15, A67, A78, A48 and A91; A1 is not among them,
+its Pilot line being a bare "POST". So that figure holds at 5 because A1 was
+never in the set, not because a POST-to-BLOCKING move happens to preserve it.
 This block records the LAST change only and is REPLACED rather than appended, so
-it never accumulates into a changelog. The entry it replaced recorded A112.
+it never accumulates into a changelog. The entry it replaced recorded A8.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 19 BLOCKING, 60 DEBT, 25 POST**,
+**AGAINST THE PILOT GATE (classified 2026-09-02): 20 BLOCKING, 60 DEBT, 24 POST**,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
@@ -64,7 +66,7 @@ here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**FOUR OF THE NINETEEN BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
+**FOUR OF THE TWENTY BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
 BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
 chain is not uniform, and the record says so in three places rather than one.
@@ -326,10 +328,28 @@ placement is FT-ruled and this slice did not rule a move.
 
 **A1 | The BMF import rollback path is untested and gates the production load.**
 Blocker: a failure has never been exercised; the success path is proven atomic.
-Pilot: POST
+Pilot: BLOCKING
 Detail: `docs/bmf-load-scoping.md`, open item 1; `docs/filed-defects.md`,
 "Filed: the BMF rollback path is a stated precondition on a production BMF
 load".
+**FT RULED 2026-09-04: POST moves to BLOCKING.** A8 is BLOCKING and A1 gates
+it. POST is defined in this file as "no pilot user reaches it", and every
+organization a pilot user sees will have arrived through the BMF import, so a
+pilot user reaches A1 through the whole surface. **The prior POST
+classification predated the Discover ruling and was not a judgement made
+against it.**
+**IT CLOSES BY AN FT-RUN REMOTE WRITE, NOT BY AN AGENT SLICE.** Closing it
+means deliberately exercising a failure against the real target, and every
+`--remote` write is FT-only per CLAUDE.md §6.10 and §6.15. An agent can prepare
+the exercise; it cannot run it.
+**FJ-1 ALREADY NAMED IT THE SOLE STANDING PRECONDITION**, ruling 2026-09-02
+that BMF "proceeds on the rollback path alone, which is A1". With this ruling
+that sentence carries more weight than it did: A1 is now the only item between
+the queue and the ingest, and the ingest is now BLOCKING.
+**TIER PLACEMENT CONSIDERED AND LEFT UNCHANGED 2026-09-04.** A1 stays alone in
+Tier 4. FT has not ruled a move, and tier placement is FT-ruled, which is the
+precedent A9's entry states in its own words. Recorded so a later reader knows
+this was looked at rather than missed.
 
 ### Tier 5
 
@@ -743,8 +763,7 @@ Detail: `docs/discover-surface-spec.md`, its closing UNRULED note.
 
 **A8 | Discover is an INTENDED CAPABILITY and it is not built. The four facets
 are unbuilt and the route renders an unavailable state.**
-Blocker: the BMF ingest, which is A1 and A9. **See the note under A1 on its own
-classification, which this ruling puts in question.**
+Blocker: the BMF ingest, which is A1. A1 is BLOCKING as of 2026-09-04.
 Pilot: BLOCKING
 Detail: `docs/discover-surface-spec.md`; `docs/bmf-load-scoping.md`.
 **FT RULED 2026-09-04: THE CAPABILITY IS INTENDED, AND PILOT CANNOT OPEN
@@ -787,6 +806,21 @@ with evidence "Defanged `42851cd`; caveat `Discover.jsx:99,107`". That file was
 deleted by `65f2a28`. The same citation is Ruling A's ONLY caveat-branch
 example and one of §2.4's three reference implementations. The criterion is
 therefore UNVERIFIED rather than met. That file is not edited here.
+**A9 LEFT THIS BLOCKER LINE 2026-09-04, as a plain statement of fact rather
+than a condition.** `docs/discover-surface-spec.md` sources every facet by name:
+geography from BMF `CITY` and `STATE`, recognition era from BMF `RULING`, the
+card's name and city from the same load, and total expenses from the 990 XML.
+Its dependency section states that the BMF load "is the WHOLE of the v1
+dependency". **Neither that document nor `docs/bmf-load-scoping.md` names the
+D1 `org` table, `orgsData.js` or the 17 records as a source for the rebuilt
+surface**, for the directory or for anything on an organization's profile. The
+load plan meets A9's subject directly, under its heading "A new table, not the
+existing `org` table", and rules the org seed's defanged fields "unrelated
+work". So A9's data stays dormant, no pilot user reaches it through Discover,
+and it was never a prerequisite for A8.
+**A9'S OWN ENTRY AND FJ-2 ARE UNTOUCHED.** FJ-2's LEAVE AS IS ruling of
+2026-09-02 stands, A9 stays OPEN in Tier 3 at Pilot POST, and the rows still
+sit at rest on remote. What changed is only whether A9 gates A8.
 
 **A10 | One BMF batch zip is malformed and exits non-zero while extracting
 correctly.**
