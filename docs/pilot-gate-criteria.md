@@ -27,8 +27,10 @@ responses, and which one applies is a test, not a preference:
   USER**. Current sites: `CohortView.jsx:34`, `IndividualSurface.jsx:291,343`,
   `Learn.jsx:10`, `Team.jsx:12`, all via `useFixtureIsolated()`.
 - **CAVEAT** (render the fixture, label it) when the fixture describes **THIRD
-  PARTIES the user is browsing**. Current site: `Discover.jsx:99,107`, via the
+  PARTIES the user is browsing**. Named site: `Discover.jsx:99,107`, via the
   raw `!!useOptionalAppIdentity()` presence test plus a §7-idiom caveat.
+  **THAT FILE WAS DELETED AT `65f2a28` AND THIS BRANCH NOW HAS NO LIVE EXAMPLE.
+  No replacement is chosen here; see §5.1.**
 
 **Why Rule A and not "by pilot utility":** it fits every existing site exactly,
 and it is a test rather than a per-screen judgment, so two auditors reach the
@@ -119,6 +121,14 @@ Two auditors must reach the same denominator. These are the unit rules.
 Total exported handlers at HEAD: **35** (`grep -rn "export async function
 onRequest" functions/api/ | wc -l`).
 
+**Re-derived 2026-09-04 at `be8d01a`: 38.** The three additions are all
+Enterprise and all shipped in the roster-import arc: `athletes.js`
+`onRequestDelete` (`58c6042`, bulk hard delete for Pending),
+`athletes/import.js` `onRequestPost` (`e01f92e`) and
+`athletes/[id]/invite.js` `onRequestPut` (`ff9e404`). Each calls
+`requireGatedEnterprise` as its first gate, verified at HEAD, so each is built
+and gated as designed and scores MET under §2.3. No handler was removed.
+
 **Re-derived 2026-08-17 at `87f36f0`: still 35, but by coincidence rather than
 by stasis.** P-4 deleted `docs/[id].js` `onRequestPut` and `1c9d69d` added
 `invites/[id].js` `onRequestDelete`, so the total is unchanged while the
@@ -169,7 +179,8 @@ score it as met.
 
 Reference implementations: `OperationsSurface.jsx:301-312` (demo tree),
 `OperationsRoster.jsx:240-250` (demo tree), `Discover.jsx:99-109` (authenticated
-tree, condition inverted per Ruling A).
+tree, condition inverted per Ruling A). **THE THIRD WAS DELETED AT `65f2a28`, so
+the two survivors are BOTH demo-tree. No replacement is chosen here; see §5.1.**
 
 ### 2.5 The filed-defect test (Gap 4, ruled)
 
@@ -219,16 +230,52 @@ learned; this paragraph is where the correction lives.
 | 1 | Onboarding (5 routes) completes and persists intake | MET | `Questions.jsx:21` POST `/api/intake` |
 | 2 | Home, plan, give, history, record-keeping live | MET | `GiveScreen.jsx:84`, `GivingModeler.jsx:133,84`, `RecordKeeping.jsx:64` |
 | 3 | No route renders another person's data | MET | `useFixtureIsolated()` called at 10 sites (was 5; `bce9044` added Team's) |
-| 4 | `discover` applies Ruling A's correct response | MET | Defanged `42851cd`; caveat `Discover.jsx:99,107` |
+| 4 | `discover` applies Ruling A's correct response | **UNVERIFIED** | Evidence file DELETED; see the note below |
 | 5 | `learn`, `team`, `cohort` honest | MET (Ruling C) | Isolated |
 | 6 | `feedback` persists or is removed | MET (by REMOVAL) | `fbc1a9a` deleted `Feedback.jsx` and its three references; the route unit is gone rather than earned, see below |
 | 7 | Touch targets meet the §7 44px standard | MET | `Button.jsx` `lg` `minHeight: '44px'`; measured 44px |
 | 8 | Every CTA reachable at phone height | MET (Ruling 2.5) | `/individual/welcome` below-fold is accepted debt |
 
-**Routes 14/14** (feedback REMOVED at `fbc1a9a`, so the unit is gone from the
-denominator rather than met; it was 14/15 with feedback out). **Endpoints 7/7**
+**CRITERION 4 IS UNVERIFIED AS OF 2026-09-04, AND ITS DISPOSITION IS FT'S TO
+RULE. It is deliberately not scored here.**
+**What the criterion tests:** that the `discover` route applies Ruling A's
+correct response, ISOLATE or CAVEAT, to whatever fixture content it renders.
+**What the route renders now:** neither. `65f2a28` deleted `Discover.jsx` and
+mounted `DiscoverUnavailable.jsx` at the same path. It renders no fixture
+content at all, on either tree, so there is nothing for Ruling A to be applied
+to. Its four sentences say the directory is being rebuilt on IRS filings, what
+it will let a funder narrow by, that there is nothing to browse yet, and that
+what used to be there was illustrative.
+**The evidence cell cited a file that no longer exists**, "Defanged `42851cd`;
+caveat `Discover.jsx:99,107`", which is why this cannot be carried forward.
+**WHAT EACH RULING WOULD SAY, and none of them fits.**
+Ruling A decides ISOLATE against CAVEAT by claim subject. Both arms presuppose
+fixture content is rendering. Neither arm is reachable, so Ruling A returns
+nothing rather than returning an answer.
+Ruling B admits caveated fixture content as complete. There is no fixture
+content and no caveat, so B does not reach it either. Note that B's own first
+consequence, "Discover is COMPLETE at `42851cd`", describes a page that no
+longer exists.
+Ruling C admits honest-but-empty: "a route that correctly renders an absent
+state for a user with no such data". The fit is close and still wrong. C's
+subject is a user who HAS no such data while the capability exists; here the
+CAPABILITY does not exist for anyone, which is a different absence. Reading C
+onto it would let any unbuilt surface score complete by explaining itself.
+**THE INSTRUMENT HAS NO DISPOSITION FOR A ROUTE WHOSE CAPABILITY IS INTENDED,
+UNBUILT, AND WHICH EXPLAINS ITS OWN ABSENCE.** The log has handled two kinds of
+removal, both of which vacated the denominator: `setup` at P-5 and `feedback`
+at `fbc1a9a`. This is a third kind, where the destination REMAINS and the
+capability behind it does not, so neither precedent covers it.
+**FT RULED 2026-09-04 that the capability is intended and pilot cannot open
+without it**, and `docs/outstanding.md` A8 is BLOCKING accordingly. That ruling
+settles what the platform owes; it does not settle how this instrument scores
+the route, which is a separate question and is not answered here.
+
+**Routes 13/14 PLUS ONE UNVERIFIED** (feedback REMOVED at `fbc1a9a`, so that unit
+is gone from the denominator rather than met; `discover` is the unverified one
+and is neither met nor failed in the row below). **Endpoints 7/7**
 (`athlete-consent` 1, `gifts` 2, `intake` 1, `scenarios` 2, `scenarios/[id]` 1;
-all ungated and live in production). **Individual = 21/21.**
+all ungated and live in production). **Individual = 20/21 met plus 1 unverified.**
 
 **Criterion 6 was met by removal, and the unit count cannot show what that
 bought.** The scoring change is subtraction: one route unit leaves the
@@ -302,7 +349,7 @@ Two readings were considered and REJECTED, recorded so they are not re-litigated
 **Endpoints 13/13** (`docs/[id]` PUT was deleted by P-4, so it no longer scores
 at all; §2.3's note predicted exactly this). **Advisor = 26/27.**
 
-### Enterprise — 10 routes + 10 endpoints = 20 units
+### Enterprise — 10 routes + 13 endpoints = 23 units
 
 Routes: `index`, `roster`, `compliance`, `program`, plus the six
 `EnterpriseReports` destinations (`index`, `summary`, `cohort`, `readiness`,
@@ -319,8 +366,9 @@ below already read 10/10 and 20/20.
 | 5 | `setup` removed or made to persist | **CEASED TO EXIST** (P-5) | The wizard is gone. This criterion did NOT become met: the thing it measured no longer exists, so the unit left the denominator rather than passing |
 
 **Routes 10/10** (P-5 removed the `setup` unit entirely; it was the one NOT MET).
-**Endpoints 10/10.** **Enterprise = 20/20**, with criterion 1 unauditable and
-provisionally scored MET.
+**Endpoints 13/13** as of 2026-09-04, up from 10: see §2.2's re-derivation for the
+three roster-import handlers and their gates. **Enterprise = 23/23**, with
+criterion 1 unauditable and provisionally scored MET.
 
 ### Operations/Admin — 10 routes + 3 endpoints = 13 units
 
@@ -501,6 +549,33 @@ for every route that reads it. Until that table exists, Enterprise criterion 1
 is scored MET provisionally and should be treated as the least reliable entry in
 this document.
 
+## 5.1 Ruling A's caveat branch has no live example (found 2026-09-04)
+
+**A DEFECT IN THE INSTRUMENT, reported and deliberately NOT repaired.**
+Repairing it means choosing a replacement example, and choosing which site
+exemplifies a ruling is itself a ruling.
+
+Ruling A is a two-branch test, ISOLATE against CAVEAT. **The ISOLATE branch names
+five live sites** through `useFixtureIsolated()`. **The CAVEAT branch named
+exactly one, `Discover.jsx:99,107`, and `65f2a28` deleted the file.**
+
+The same citation did double duty, so one deletion cost the instrument twice.
+It was §1's only CAVEAT site, and it was one of §2.4's three reference
+implementations for the caveat test itself, and the only one on the
+AUTHENTICATED tree. **The two survivors, `OperationsSurface.jsx:301-312` and
+`OperationsRoster.jsx:240-250`, are both demo-tree**, and §1 records that the
+authenticated case is the one that differs: a demo "is already understood as
+demonstrative and a signed-in user is not."
+
+**What this costs.** Ruling A still states a test two auditors could apply. What
+it no longer carries is a worked instance of half of it, and no worked instance
+at all of the harder half. §1's own justification for the ruling was that "it
+fits every existing site exactly"; one of the sites it was ruled to fit is gone.
+
+**What it does NOT cost.** No score depends on it. Individual criterion 4 is
+unverified for a different reason, stated in §3, and no other criterion invokes
+the caveat branch.
+
 ---
 
 ## 6. Re-score log
@@ -514,6 +589,7 @@ this document.
 | 2026-08-17 | `87f36f0` | 80/82 = 98% | 57/82 = 70% | **Full re-verification of every §3 status against the tree**, as the re-score rule requires, not only the two Operations closures that prompted it. Denominator 81 → 82: `DELETE /api/invites/:id` (`1c9d69d`) is a THIRD Operations endpoint, so Operations 12/12 → 13/13. Advisor 27 → 26, a CORRECTION rather than a regression: `pipeline` was never met and the P-4 row overstated its routes as 14/14. Criteria 4 (`537cc08`) and 6 (`5fa42c9`) closed and moved NO unit directly; what they did was resolve the contingent Accounts ruling in the MET direction. §3's Advisor and Enterprise headers were stale and are corrected here. Gate values VERIFIED against remote D1 2026-08-17 by FT, read-only aggregate, soft-deleted excluded (agent-run `--remote` is barred by CLAUDE.md §6.15), so 57/82 stands on current evidence rather than on figures carried from 2026-07-16. All three claims hold. The advisor and enterprise gates read NULL rather than the `0` recorded until now, which changes no behaviour because every gate check is a strict `!== 1`; see §2.6. |
 | 2026-08-18 | `1632fbf` | 80/82 = 98% | 57/82 = 70% | P-6 slice 1: the `/api/me` ops block (`ops.writesEnabled`) and the four type-rejection messages. **NO unit moved, and that is the correct outcome rather than a scoring miss.** Criterion 3 flips NOT MET to MET, but it is a defect on the Accounts route that criterion 1 already scores, and `me.js` is shared infrastructure already at 2/2, so neither denominator nor numerator changes. Capability and production-usable are both unchanged from `87f36f0`. What the slice bought is CORRECTNESS, not reach: an ungated ops operator is now told before the click that invite creation and withdrawal are unavailable, instead of discovering it by losing a modal and a form to a 403. Criterion 3 is scored on a narrowed reading, recorded at §3, because `userRole` stays null by FT ruling. Gate values unchanged since the 2026-08-17 FT read. |
 | 2026-08-18 | `fbc1a9a` | 80/81 = 99% | 57/81 = 70% | Feedback route REMOVED, not persisted. Individual routes 14/15 → 14/14, Individual 21/22 → 21/21. Denominator 82 → 81. **This is the P-5 pattern: the unit was removed, not fixed**, so both numerators are unchanged and the percentage rises without capability being built. Read it as subtraction. What it bought sits outside the instrument: four honesty defects retired (a false transit claim, an unconsented behavioral block, a silent clipboard write, and a success state that rendered on failure), plus `formsubmit.co` and a personal email address gone from the production bundle, verified one to zero each. Gate values unchanged since the 2026-08-17 FT read. |
+| 2026-09-04 | `be8d01a` | 83/84 = 99% **or** 82/84 = 98% | **NOT REPORTED** | **CAPABILITY ONLY.** Denominators re-derived under §2 at HEAD: routes 48, UNCHANGED, since no destination was added or removed in 104 commits (`65f2a28` swapped `Discover.jsx` for `DiscoverUnavailable.jsx` at the same path, which is a component change, not a unit change); endpoints 33 → 36 surface, all three additions Enterprise and all three MET, so Enterprise 20/20 → 23/23 and the denominator 81 → 84. **The figure is a RANGE because one unit is UNVERIFIED and its disposition is FT's**: Individual criterion 4, `discover`, whose evidence cited a file `65f2a28` deleted and which no ruling in §1 reaches (§3). 83 if it scores MET, 82 if NOT MET. Advisor `pipeline` remains the one standing NOT MET. **PRODUCTION-USABLE IS NOT REPORTED AND NO FIGURE IS CARRIED FORWARD FROM THE 2026-08-18 ROW.** §2.6 requires gate values re-verified against remote D1 before any production-usable figure, that read is FT-run per CLAUDE.md §6.15, and it has not happened since 2026-08-17. Reporting the old 57/81 against a new denominator would be a figure nobody measured. **The FT-run remote gate read is the precondition for reporting it.** §5.1 filed: Ruling A's caveat branch lost its only live example to the same deletion. |
 
 **Two consecutive rows now show a flat numerator, and they are flat for
 DIFFERENT reasons.** The `87f36f0` row was flat because two opposite movements

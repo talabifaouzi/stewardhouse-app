@@ -27,28 +27,24 @@ for what the cadence misses.
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
 BMF-and-Discover 8, cheap-and-mechanical 29, large 34, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A1 RECLASSIFIED POST to BLOCKING
-by FT ruling, and A9 removed from A8's blocker line.** No entry opened, closed
-or changed group, so **OPEN stays 104** and the breakdown is unchanged at
-7 + 16 + 7 + 8 + 29 + 34 + 3 = 104. The restatement further down, "sum to 104",
-does not move either. **Nor does the BMF-and-Discover group count**: A9 leaving
-a blocker LINE is not A9 leaving a section, and it sits in Tier 3 throughout.
-**WHAT MOVES IS THE PILOT SPLIT, in both directions at once.** BLOCKING 19 to 20
-and POST 25 to 24, one entry crossing between them, so the sum holds:
-20 + 60 + 24 = 104. DEBT is unchanged. The counsel-gated denominator below moves
-with BLOCKING, NINETEEN to TWENTY, while the numerator stays FOUR, since A1 is
-blocked by an unexercised failure path rather than by counsel.
-**THE BUILD CHAIN MOVES, 15 to 16**, being BLOCKING minus the counsel-gated
-four, 20 - 4 = 16. It is DERIVED and is written in commit messages rather than
-stated anywhere in this file, which is exactly why correcting the totals above
-does not correct it and why a grep for a changed number cannot find it.
-**ONE FIGURE WAS VERIFIED RATHER THAN REASONED, and it is recorded because the
-reasoning would have been right for the wrong cause.** The five POST entries
-carrying "(undetermined)" are A15, A67, A78, A48 and A91; A1 is not among them,
-its Pilot line being a bare "POST". So that figure holds at 5 because A1 was
-never in the set, not because a POST-to-BLOCKING move happens to preserve it.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A66 PARTLY CLOSED by the pilot-gate
+refresh. NO FIGURE IN THIS FILE MOVES, and every one is shown so that is
+checkable rather than asserted.** A66 is amended, not closed: its blocker
+narrows to the FT-run remote gate read, and an entry with a narrowed blocker is
+still an OPEN entry in the same group with the same Pilot.
+So **OPEN stays 104** and the breakdown is unchanged at
+7 + 16 + 7 + 8 + 29 + 34 + 3 = 104, as does the "sum to 104" restatement.
+Gates-other-work stays 16, since A66 neither leaves nor moves. The pilot split
+is untouched at 20 BLOCKING, 60 DEBT, 24 POST, summing to 104, and the
+counsel-gated line stays FOUR OF THE TWENTY. **THE BUILD CHAIN STAYS 16**, being
+BLOCKING minus the counsel-gated four, neither of which moved.
+**PARTLY CLOSING AN ITEM IS NOT CLOSING IT, and the count is where that
+distinction has to hold.** Most of what A66 asked for is now done, which is
+exactly the state in which an entry gets quietly counted as closed. It is not.
+The figure it exists to produce has one of its two columns unreported, and that
+column needs an FT-run remote read.
 This block records the LAST change only and is REPLACED rather than appended, so
-it never accumulates into a changelog. The entry it replaced recorded A8.
+it never accumulates into a changelog. The entry it replaced recorded A1 and A8.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
@@ -429,12 +425,29 @@ Pilot: POST
 Detail: `migrations/0021_auth_send_log.sql`, its retention docblock, which names
 the four tables it joins.
 
-**A66 | The pilot gate has not been re-scored in 86 commits.**
-Blocker: none named. A re-score additionally needs an FT-run remote gate read
-before any production-usable figure may be reported.
+**A66 | The pilot gate has not been re-scored in 86 commits. PARTLY CLOSED
+2026-09-04: a capability row landed; production-usable did not.**
+Blocker: **narrowed to the FT-run remote gate read alone.** Everything else this
+entry asked for is done.
 Pilot: DEBT
-Detail: `docs/pilot-gate-criteria.md`, the re-score log. Several Tier 2 defects
-above sit on routes that log scores MET.
+Detail: `docs/pilot-gate-criteria.md`, the re-score log, newest row.
+**WHAT THE 2026-09-04 REFRESH DID.** Denominators re-derived under §2 at HEAD
+(routes 48 unchanged, endpoints 33 to 36 surface, denominator 81 to 84), every
+status re-verified rather than carried forward, and a capability row written.
+**WHAT IT COULD NOT DO, which is why this stays OPEN.** §2.6 requires gate
+values re-verified against remote D1 before any production-usable figure may be
+reported, that read is FT-run per CLAUDE.md §6.15, and it has not happened since
+2026-08-17. The row reports capability and leaves production-usable unreported
+rather than carrying a stale figure against a new denominator. **This entry
+closes when that read happens and the row gains its second column**, which is
+what its blocker line said from the start.
+**THE CLAUSE "Several Tier 2 defects above sit on routes that log scores MET" IS
+CORRECTED.** Tier 2 held A17, A18 and A20 when it was written. A18 and A20 both
+closed 2026-09-04, so Tier 2 holds **A17 alone**: one defect, not several.
+**ONE UNIT IS UNVERIFIED AND IS FT'S TO RULE**, so the row carries a range rather
+than a figure: Individual criterion 4, `discover`, whose evidence cited a file
+`65f2a28` deleted and which no ruling in §1 reaches. That is A8's subject from
+the instrument's side.
 
 **A73 | Bare intra-document line references cannot be found by a citation
 scan.**
