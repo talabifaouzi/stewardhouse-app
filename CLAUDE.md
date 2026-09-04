@@ -1118,7 +1118,20 @@ Every substantive change runs as a **slice**. The rhythm:
     `wrangler d1 migrations apply --remote` step in the same ship operation,
     OR (b) explicitly carry forward a named "local-only, remote-apply DEFERRED
     to [specific gate]" note in CLAUDE.md so the deferral is a documented
-    decision, never a silent gap. Discovered 2026-06-30 when migration 0003
+    decision, never a silent gap.
+    **BRANCH (c), ADDED 2026-09-04 (BMF arc R5), AND IT IS A STANDING
+    OBLIGATION RATHER THAN A PER-COMMIT CHOICE.** Once the BMF sandbox database
+    exists, **it receives every migration that lands on live, from its creation
+    onward.** This is not an alternative to (a) or (b): a migration reaching
+    live still takes one of those two, and (c) rides alongside whichever it
+    took. **The reasoning: a test environment that drifts behind the live
+    schema produces confident wrong answers, which is worse than having none**,
+    because a green result on a stale schema reads exactly like a green result
+    on the current one. It is FT-run like all remote D1 work. **It is
+    deliberately NOT filed in `docs/outstanding.md`**, because a standing
+    obligation has no completion state and would sit in a counted queue
+    permanently; the sandbox itself is filed there as A114, and this rule is
+    what that entry points at. Discovered 2026-06-30 when migration 0003
     (`21d746a`, shipped 2026-06-25 local-only) was found unapplied on remote
     5 days later — latent risk only, never triggered (no remote sign-in had
     occurred in the gap window), but the same gap could have hard-failed

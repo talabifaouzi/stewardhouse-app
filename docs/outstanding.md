@@ -22,27 +22,32 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 103 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 107 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
-BMF-and-Discover 8, cheap-and-mechanical 29, large 34, and
+BMF-and-Discover 11, cheap-and-mechanical 30, large 34, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: the forward-looking state recorded
-in the header above. NO COUNT MOVES.** Nothing opened, closed, changed group or
-changed Pilot; what this commit adds is prose about items whose status earlier
-commits today already settled. **OPEN stays 103**, the breakdown stays
-7 + 15 + 7 + 8 + 29 + 34 + 3 = 103, the "sum to 103" restatement stays, the
-pilot split stays 20 BLOCKING, 59 DEBT and 24 POST summing to 103, the
-counsel-gated line stays FOUR OF THE TWENTY, and **the build chain stays 16**,
-being BLOCKING minus the counsel-gated four with neither term moving.
-**THE ONE FIGURE THIS COMMIT INTRODUCES IS NOT A QUEUE COUNT AND MUST NOT BECOME
-ONE.** The 26-unit capability-to-production-usable spread is 83 minus 57 from
-`docs/pilot-gate-criteria.md` at `6fb6572`. It measures gates, not open work,
-and it is recorded above as context for reading that document rather than as
-something this file tracks.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: FOUR ENTRIES FILED ON THE A1
+RULINGS.** A113 the loader build, A114 the sandbox, A115 the build-chain
+definition question, and A116 whether a sandbox result transfers to production.
+Nothing closed, and nothing already open changed group or Pilot.
+**OPEN moves 103 to 107.** BMF-and-Discover moves 8 to 11 on A113, A114 and
+A116; cheap-and-mechanical moves 29 to 30 on A115. The breakdown is therefore
+7 + 15 + 7 + 11 + 30 + 34 + 3 = 107, and the restatement further down moves with
+it, to "sum to 107".
+**BLOCKING moves 20 to 22** on A113 and A114, which gate A8 by the same
+reasoning that made A1 BLOCKING. **POST moves 24 to 26** on A115 and A116. DEBT
+is unchanged at 59, and 22 + 59 + 26 = 107. The counsel-gated line moves to FOUR
+OF THE TWENTY-TWO, the four themselves being unchanged.
+**THE BUILD CHAIN MOVES 16 TO 18**, being BLOCKING minus the counsel-gated four.
+**The figure KEEPS ITS NAME AND ITS DEFINITION** per the same-day ruling; what
+moved it is two new BLOCKING entries arriving through the unchanged definition,
+not a redefinition. **That a figure named for work building closes now
+demonstrably contains items no build can close is FILED AS A115 and is
+deliberately NOT resolved here.**
 This block records the LAST change only and is REPLACED rather than appended, so
-it never accumulates into a changelog. The entry it replaced recorded A66's
-closure.
+it never accumulates into a changelog. The entry it replaced recorded that no
+count moved.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
@@ -55,13 +60,14 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 103. The sentence
+totals above, which remain a count of OPEN entries and sum to 107. The sentence
 here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**FOUR OF THE TWENTY BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
-BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not one:
+**FOUR OF THE TWENTY-TWO BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
+BY BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not
+one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
 chain is not uniform, and the record says so in three places rather than one.
 `docs/ruling-e-deletion-retention.md` names a reviewing attorney for Clauses 3
@@ -75,44 +81,68 @@ table something the product will write to. **Nothing in this repository records
 counsel as retained**, and no entry names a date by which either chain moves.
 **THE PRE-PILOT CRITICAL PATH, AS IT STANDS AFTER THE 2026-09-04 RULINGS. Read
 this first if the question is what comes next.**
-**A1 to the BMF ingest to A8, AS FILED. It is recorded here, not asserted:
-whether the chain is walkable in that order is itself one of the ten open
-questions below.** FT ruled 2026-09-04 that Discover is an intended capability
-and that pilot cannot open without it, so A8 is BLOCKING. A8's blocker is the
-BMF ingest, and FJ-1 already named A1 the sole standing precondition on that
-ingest. **That is the filing, and it is the whole of what is established.**
-Whether building shortens the chain is NOT established, because whether A1 is a
-build at all is unsettled, for the reasons the next paragraph records.
-**A1'S APPROACH IS UNSCOPED AND UNRULED, AND TEN OPEN QUESTIONS SIT BEFORE FT.**
-A scoping pass on 2026-09-04 established, by execution and grep at HEAD, that
-**A1's subject does not exist as code.** There is no BMF importer: no endpoint,
-no script, no migration and no `bmf` table. The only `bmf` strings under `src/`
-are comments, at `AppShell.jsx:34` and `DiscoverUnavailable.jsx:18`.
-`docs/bmf-load-scoping.md` is a plan for a loader, not a loader.
-**A1 AS FILED CANNOT BE EXERCISED.** It asks whether the import rollback is a
-transaction or a compensating replay. That guarantee is a client-side string,
-printed before the import runs and only on the `--remote` path
-(`wrangler-dist/cli.js:231186`, ahead of the init call at `:231190`), which §7 of
-the scoping doc already calls the most load-bearing unverified fact in the plan
-(`:412`). Testing it needs a remote import; a remote import at useful fidelity
-needs the loader; and the loader is the thing A1 gates.
-**NO NON-LIVE TARGET EXISTS.** `stewardhouse-pilot` is the only D1 database
-configured (`wrangler.toml:12-16`), no `preview_database_id` appears anywhere in
-the tree, and the throwaway `bmf-window-probe` was deleted 2026-08-19
-(`docs/bmf-load-scoping.md:507`). **Standing up another throwaway is itself a
-remote act and is FT-run on that basis alone**, per CLAUDE.md §6.15 category (3),
-which holds independently of whatever method is eventually chosen.
+**THE CHAIN IS FIVE STEPS, NOT THREE, AND A1 GATES ONLY THE LAST.** FT ruled
+2026-09-04 that Discover is an intended capability and that pilot cannot open
+without it, so A8 is BLOCKING. Its blocker is the BMF ingest, and the ingest is:
+create the sandbox (A114), apply the ruled-table migration to it, build the
+loader (A113), test it on the sandbox, then run the production load. **A1 gates
+the RUN, and none of the four steps before it.**
+**THE EARLIER READING PUT A1 AT THE HEAD OF A CYCLE, AND THE RULING BROKE IT.**
+FJ-1 named A1 the sole standing precondition on the ingest, which read as a gate
+on all of it, and A8's blocker line said "the BMF ingest, which is A1". Under
+that equation A1 needed a remote import, the import needed the loader, and the
+loader was the thing A1 gated. **R1 ruled that A1 gates running the load rather
+than writing it**, so the loader build is reachable today and the order above is
+walkable. The first buildable step is A114, which is FT-run.
+**A1'S APPROACH IS NOW PARTLY RULED: THREE OF THE TEN QUESTIONS ARE ANSWERED AND
+SEVEN STAY OPEN.** A scoping pass on 2026-09-04 established, by execution and
+grep at HEAD, that **A1's subject does not exist as code.** There is no BMF
+importer: no endpoint, no script, no migration and no `bmf` table. The only
+`bmf` strings under `src/` are comments, at `AppShell.jsx:34` and
+`DiscoverUnavailable.jsx:18`. `docs/bmf-load-scoping.md` is a plan for a loader,
+not a loader.
+**WHAT A1 ASKS, AND WHY IT COULD NOT BE EXERCISED.** It asks whether the import
+rollback is a transaction or a compensating replay. That guarantee is a
+client-side string, printed before the import runs and only on the `--remote`
+path (`wrangler-dist/cli.js:231186`, ahead of the init call at `:231190`), which
+§7 of the scoping doc already calls the most load-bearing unverified fact in the
+plan (`:412`). Exercising it needs a remote import, and until the ruling the
+import needed a loader that A1 was thought to gate. **R1 and R2 removed both
+obstacles**: the loader is no longer gated by A1, and there is now a target
+authorized to run against.
+**THE TARGET IS RULED, AND IT IS NOT A THROWAWAY.** `stewardhouse-pilot` was the
+only D1 database configured (`wrangler.toml:12-16`), no `preview_database_id`
+appears anywhere in the tree, and the prior throwaway `bmf-window-probe` was
+deleted 2026-08-19 (`docs/bmf-load-scoping.md:507`). R2 authorizes a STANDING
+second database, retained as infrastructure rather than spent on one test, filed
+as A114. Creating it is a remote act and is FT-run on that basis alone, per
+CLAUDE.md §6.15 category (3).
 **WHAT THE FOUR BANKED RUNS DO AND DO NOT ESTABLISH.** The experiment's `CREATE`
 omits the PRIMARY KEY that §1 rules on EIN (`scripts/d1-window-generate.mjs:85`
 against `docs/bmf-load-scoping.md:60`), so those runs could not have produced a
 constraint violation, and their measured windows are LOWER BOUNDS: the ruled
 table also carries indexes, whose build cost §1 measured separately (`:137`).
+**This is the reasoning R2's sequence rests on**: a loader written against the
+existing shape would carry a duplicate-EIN path that nothing had exercised until
+the production run, which is why the sandbox and its table come first.
 **Twelve failure modes were enumerated; §4 names four and omits eight**,
 including the escaping mode that §2's own script contract already names.
 **AND A SINGLE RUN WOULD SETTLE NOTHING EITHER WAY**, because an import that
 never began and one that rolled back perfectly leave the same observable state,
 which is the void-versus-clean hazard open item 5 already records for a
 neighbouring probe (`:1216-1221`).
+**THE THREE ANSWERED, so none is re-litigated:** the chain order and what A1
+gates (R1); the target, its permanence and its protocol (R2, R4, R5); and
+whether A1 splits, which it does not.
+**THE SEVEN THAT STAY OPEN, and each says so on its own entry rather than
+resting on this list:** whether A1 is a question about the service or about this
+load; what data fidelity an answer requires beyond the ruled table shape; what
+counts as evidence that a rollback recovered; whether §4 is amended before the
+loader is written or after; whether sign-in behaviour during the unavailability
+window must be settled before the run; whether a sandbox result transfers to
+production, filed as A116; and whether the load proceeds on accepted risk if no
+experiment this project can run will close A1. **None of these is answered by
+adjacency to a ruling on another.**
 
 **WHAT 2026-09-04 CLOSED, AND WHY THE BUILD CHAIN DID NOT SHORTEN.** Three
 entries closed: A18 and A20, both BLOCKING live-honesty defects on the
@@ -400,17 +430,39 @@ pilot user reaches A1 through the whole surface. **The prior POST
 classification predated the Discover ruling and was not a judgement made
 against it.**
 **IT CLOSES BY AN FT-RUN REMOTE WRITE, NOT BY AN AGENT SLICE.** Closing it
-means deliberately exercising a failure against the real target, and every
-`--remote` write is FT-only per CLAUDE.md §6.10 and §6.15. An agent can prepare
-the exercise; it cannot run it.
+means deliberately exercising a failure, and every `--remote` write is FT-only
+per CLAUDE.md §6.10 and §6.15. An agent can prepare the exercise; it cannot run
+it.
+**CORRECTED 2026-09-04 (R4): THE EXERCISE HAPPENS ON THE SANDBOX.** The sentence
+above read "against the real target", which R4 now forbids. Deliberate failure
+induction against the live database is NOT authorized; testing happens on A114,
+and the first production load runs against live at a time FT chooses.
 **FJ-1 ALREADY NAMED IT THE SOLE STANDING PRECONDITION**, ruling 2026-09-02
 that BMF "proceeds on the rollback path alone, which is A1". With this ruling
 that sentence carries more weight than it did: A1 is now the only item between
 the queue and the ingest, and the ingest is now BLOCKING.
-**TIER PLACEMENT CONSIDERED AND LEFT UNCHANGED 2026-09-04.** A1 stays alone in
-Tier 4. FT has not ruled a move, and tier placement is FT-ruled, which is the
-precedent A9's entry states in its own words. Recorded so a later reader knows
-this was looked at rather than missed.
+**FT RULED 2026-09-04 (R1): A1 GATES RUNNING THE LOAD, NOT BUILDING THE
+LOADER.** The order is create the sandbox, apply the ruled-table migration to
+it, build the loader, test it on the sandbox, then run the production load.
+**FJ-1's "sole standing precondition" is UNCHANGED IN SUBSTANCE AND NARROWER IN
+SCOPE**: it is the sole precondition on the RUN. The loader build is A113 and
+the sandbox A114, and this entry gates neither. The sentence above saying A1 is
+"the only item between the queue and the ingest" was true under the prior
+reading and is superseded by this one.
+**A1 STAYS ONE FILING (ruled 2026-09-04).** Removing a false dependency is not a
+split: A1's subject is a single question, and "write the loader" was never
+inside it but hung off it.
+**STILL UNRULED ON THIS ENTRY, AND NOT MADE RULED BY ADJACENCY:** what counts as
+evidence that a rollback recovered, given that an import which never began and
+one that rolled back cleanly leave the same observable state; what data fidelity
+an answer requires beyond the ruled table shape; whether A1 is a question about
+the service or only about this load; and whether the load proceeds on accepted
+risk if no experiment this project can run will close it.
+**TIER PLACEMENT CONSIDERED AND LEFT UNCHANGED 2026-09-04, TWICE.** A1 stays
+alone in Tier 4, re-affirmed after the ruling above. FT has not ruled a move,
+and tier placement is FT-ruled, which is the precedent A9's entry states in its
+own words. Recorded so a later reader knows this was looked at rather than
+missed.
 
 ### Tier 5
 
@@ -844,7 +896,13 @@ Detail: `docs/discover-surface-spec.md`, its closing UNRULED note.
 
 **A8 | Discover is an INTENDED CAPABILITY and it is not built. The four facets
 are unbuilt and the route renders an unavailable state.**
-Blocker: the BMF ingest, which is A1. A1 is BLOCKING as of 2026-09-04.
+Blocker: the BMF ingest, which is FIVE STEPS: create the sandbox (A114), apply
+the ruled-table migration to it, build the loader (A113), test it on the
+sandbox, then run the production load. **A1 gates the RUN and nothing before
+it**, per the 2026-09-04 ruling; A113 and A114 are not gated by A1 and are
+reachable today. **The prior line read "the BMF ingest, which is A1", which
+equated the ingest with one of its five steps** and would tell a reader A8 is
+one answered question from unblocking.
 Pilot: BLOCKING
 Detail: `docs/discover-surface-spec.md`; `docs/bmf-load-scoping.md`.
 **FT RULED 2026-09-04: THE CAPABILITY IS INTENDED, AND PILOT CANNOT OPEN
@@ -909,6 +967,75 @@ Blocker: no loader exists yet to guard. A load treating a non-zero exit as
 failure would discard a complete batch.
 Pilot: POST
 Detail: `docs/propublica-spike-findings.md`, its note on the malformed batch.
+
+**A113 | The BMF loader does not exist. It is the first buildable step toward
+A8.**
+Blocker: the sandbox, A114, which must exist first so the loader is written
+against a table that already carries the ruled `PRIMARY KEY` on `EIN` plus
+indexes.
+Pilot: BLOCKING
+Detail: `docs/bmf-load-scoping.md`, §2 for the script shape, §1 for the table,
+§4 for the failure modes.
+**FT RULED 2026-09-04 (R1): NOT GATED BY A1.** A1 gates running the production
+load, not writing the loader, so this entry is reachable now. It is the first
+step of the five in A8's blocker line that produces code.
+**FAILURE HANDLING IS IN SCOPE FOR THIS SLICE, NOT DEFERRED (R3).** Recovery is
+restart-from-the-top, consistent with the aside-swap shape and with §4's finding
+that this project has no resumable write and should not invent one.
+**THE STAMP TABLE RIDES THIS SLICE, ruled 2026-09-04, and is NOT a separate
+entry.** §1 rules a stamp table and nothing implements it. Completion is written
+LAST and on success only, so a finished load and a load that stopped partway are
+distinguishable. **The reasoning, recorded because it is why this is not its own
+entry:** a loader that cannot report whether it finished ships the quiet-lie
+failure this project rules against, and separating the two invites shipping the
+loader without it.
+**NOT SCOPED. A ruling ends the rule step only**, and this build has had no
+scope pass. Twelve failure modes are enumerated in the 2026-09-04 pass and §4
+names four of them, so the scope pass inherits eight the doc does not carry.
+
+**A114 | The BMF sandbox database is authorized and does not exist.**
+Blocker: none. It is FT-run remote work that nothing prevents.
+Pilot: BLOCKING
+Detail: CLAUDE.md §6.10 and §6.15 category (3); `docs/bmf-load-scoping.md` §1
+for the table shape it must carry.
+**FT RULED 2026-09-04 (R2): A STANDING SECOND D1 DATABASE, NOT A THROWAWAY.** It
+is retained until all testing tasks are complete and is framed as ongoing
+infrastructure for future feature work. The prior probe `bmf-window-probe`,
+created and deleted on 2026-08-19, is not the precedent for this one.
+**IT IS CREATED BEFORE THE LOADER IS BUILT, and that sequence is the ruling.**
+Create the sandbox, apply the migration creating the ruled BMF table to it, then
+build the loader against a table that exists. The reasoning: the only existing
+artifact, `scripts/d1-window-generate.mjs:85`, declares no `PRIMARY KEY` at all,
+so a loader written against that shape would carry a duplicate-EIN path that
+nothing exercised until the production run.
+**WHY THIS IS FILED WHEN THE `demo_gate` DESIGNATION IS NOT.** That exclusion
+covers FT-run steps gating nothing else in this queue. This one gates a build
+and holds a ruled sequence position, so it is work with a place in an order
+rather than a standing business decision.
+**R5 IS A STANDING OBLIGATION AND IS DELIBERATELY NOT AN ENTRY HERE.** The
+sandbox receives every migration that lands on live, from creation onward, and
+that has no completion state, so a counted queue is the wrong home for it. It
+lives in CLAUDE.md §6.10 as a third branch.
+
+**A116 | Whether a sandbox result transfers to production.**
+Blocker: unruled. FT has not ruled it, and it is recorded as open rather than
+inferred from the rulings around it.
+Pilot: POST
+Detail: CLAUDE.md §10, the bound-parameter filing and the foreign-key filing,
+which are the same shape.
+**R2 AND R4 MAKE THE SANDBOX THE ENTIRE TEST VENUE.** R4 forbids deliberate
+failure induction against live, so the whole test programme for the loader and
+for A1 runs somewhere that is not production. **R5 closes SCHEMA drift only**;
+it says nothing about runtime behaviour, and runtime behaviour is exactly what
+A1 asks about.
+**THIS IS THE §10 "CORRECT MEASUREMENT OF THE WRONG TARGET" PATTERN AIMED AT THE
+TEST PLAN ITSELF.** The two filings there reached opposite dispositions on the
+same shape: a local foreign-key probe was accepted as evidence about local and
+refused as evidence about remote. Nothing yet says which disposition a sandbox
+result inherits.
+**UNRULED, AND THE PILOT LINE IS PART OF WHAT IS UNRULED.** POST is recorded
+because no pilot user reaches this question; whether it should rise is open,
+since it does not gate the run but does bear on what the run's result is worth.
 
 ### Cheap and mechanical
 
@@ -1360,6 +1487,28 @@ horizon") is a hyphenated attributive; `PhilanthropicReadiness.jsx:146` and
 every `CohortComparison.jsx` string are "N of M" forms;
 `ProgramSummary.jsx:238` ("N attended") and `:96` (status labels) carry
 no count noun.
+
+**A115 | The build-chain figure is named for work that building closes and
+contains at least one item no build can close.**
+Blocker: needs an FT ruling on the definition and on the name.
+Pilot: POST
+Detail: this file's header, the counsel-gated paragraph, which defines the
+figure as BLOCKING minus the counsel-gated four.
+**FT RULED 2026-09-04: THE FIGURE KEEPS ITS NAME AND ITS DEFINITION FOR NOW**,
+because several documents depend on it and renaming today costs more than the
+inaccuracy does. The question is FILED rather than resolved, and this entry is
+that filing.
+**WHAT MAKES IT INACCURATE.** A1 is BLOCKING and is not counsel-gated, so it
+counts toward the chain, and R1 with R4 together establish that no build closes
+it: it closes by exercising a rollback on the sandbox and by FT running the
+production load at a time FT chooses. A114 is the same shape, being FT-run
+remote work with no slice behind it. So the figure counts at least two items
+that building cannot move.
+**THE TWO SUB-QUESTIONS, NEITHER RULED.** Whether a figure named for
+build-closable work should exclude items no build can close, which would take it
+from 18 to 16 today; and what it should be called if the definition changes.
+**RECORDED SO THE NUMBER IS NOT READ AS A PLAN.** Anyone reading the chain
+figure as "slices remaining" is over-reading it by at least two.
 
 ### Large
 
