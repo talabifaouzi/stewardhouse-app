@@ -12,7 +12,7 @@ import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 import { formatDate } from '../../utils/formatDate.js';
 import { computeStats } from './shared/enterpriseStats.js';
-import RateDisclosure from './shared/RateDisclosure.jsx';
+import RateDisclosure, { fmtRate } from './shared/RateDisclosure.jsx';
 import { statusFor, STATUS_ORDER, accessLabel, ACCESS_ORDER, YEAR_ORDER } from './shared/athleteStatus.js';
 import { CATEGORY_CONFIG, STATUS_CATEGORY_KEYS, countByCategory, buildModalTitle } from './shared/categoryFilters.js';
 import AddAthleteModal from './AddAthleteModal.jsx';
@@ -134,11 +134,22 @@ export default function EnterpriseRoster() {
   // them; nothing was removed from the derivation, only from this file's local
   // binding. `stats` itself is still passed whole to RateDisclosure below.
   const categoryCount = countByCategory(athletes);
+  // A18: the absence guard belongs on rateBaseTotal, which is what actually
+  // goes null (R4, enterpriseStats.js:94-98), not on consentAware, which is
+  // false on the demo tree AND on an empty authenticated roster alike.
+  // Guarding on consentAware put the null test inside the consentAware-true
+  // arm, which the one null-producing state with consentAware false, an empty
+  // roster, never entered: it rendered the literal "null%" instead.
+  // Derived once, matching the convention at reports/ProgramOutputs.jsx:141.
+  const rateTracked = rateBaseTotal > 0;
   // FORK 1 rate line. Belongs to the Actively progressing tile and to no other,
   // so it is named here and attached by key below rather than positionally.
-  const activelyProgressingSublabel = consentAware
-    ? (activelyProgressingPct == null ? 'Not tracked' : `${rateActive} of ${rateBaseTotal} tracked`)
-    : `${activelyProgressingPct}% of program`;
+  // Absence reads through the shared fmtRate rather than a restatement of it.
+  const activelyProgressingSublabel = !rateTracked
+    ? fmtRate(activelyProgressingPct)
+    : consentAware
+      ? `${rateActive} of ${rateBaseTotal} tracked`
+      : `${activelyProgressingPct}% of program`;
   // Sorting moved INTO DataTable (SORTING RULED 2026-08-27): it owns the chosen
   // column, and DEFAULT_ROSTER_SORT is what it falls back to when none is
   // chosen. Keeping the sort here as well would mean two orderings racing, and

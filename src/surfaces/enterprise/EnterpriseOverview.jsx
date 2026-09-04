@@ -13,7 +13,7 @@ import { useAthletes } from '../../contexts/AthletesContext.jsx';
 import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { useInstitutionEyebrow } from './shared/useInstitutionEyebrow.js';
 import { computeStats, engagementBounds } from './shared/enterpriseStats.js';
-import RateDisclosure from './shared/RateDisclosure.jsx';
+import RateDisclosure, { fmtRate } from './shared/RateDisclosure.jsx';
 import { CATEGORY_CONFIG, STATUS_CATEGORY_KEYS, countByCategory, buildModalTitle } from './shared/categoryFilters.js';
 
 export default function EnterpriseOverview() {
@@ -34,11 +34,22 @@ export default function EnterpriseOverview() {
   // exports all four and ProgramSummary still reads three of them; nothing was
   // removed from the derivation, only from this file's local binding.
   const categoryCount = countByCategory(athletes);
+  // A18: the absence guard belongs on rateBaseTotal, which is what actually
+  // goes null (R4, enterpriseStats.js:94-98), not on consentAware, which is
+  // false on the demo tree AND on an empty authenticated roster alike.
+  // Guarding on consentAware put the null test inside the consentAware-true
+  // arm, which the one null-producing state with consentAware false, an empty
+  // roster, never entered: it rendered the literal "null%" instead.
+  // Derived once, matching the convention at reports/ProgramOutputs.jsx:141.
+  const rateTracked = rateBaseTotal > 0;
   // FORK 1 rate line. Belongs to the Actively progressing tile and to no other,
   // so it is named here and attached by key below rather than positionally.
-  const activelyProgressingSublabel = consentAware
-    ? (activelyProgressingPct == null ? 'Not tracked' : `${rateActive} of ${rateBaseTotal} tracked`)
-    : `${activelyProgressingPct}% of program`;
+  // Absence reads through the shared fmtRate rather than a restatement of it.
+  const activelyProgressingSublabel = !rateTracked
+    ? fmtRate(activelyProgressingPct)
+    : consentAware
+      ? `${rateActive} of ${rateBaseTotal} tracked`
+      : `${activelyProgressingPct}% of program`;
   const { min: engagementMin, max: engagementMax } = engagementBounds(engagementTimeline);
   const [activeCategory, setActiveCategory] = useState(null);
   const [activeWeek, setActiveWeek] = useState(null);
@@ -133,11 +144,22 @@ export default function EnterpriseOverview() {
           carrying no `claimed` booleans (which falls through to the third
           branch). Demo tree renders the same string as before. */}
       <p style={supplementaryStyle}>
-        {consentAware
-          ? (rateBaseTotal === 0
-              ? <>GPS completion is not tracked yet — no athlete has delegated record-keeping.</>
-              : <>GPS completed by {rateGps} of {rateBaseTotal} athletes with delegated record-keeping ({gpsRate}%).</>)
-          : <>GPS completed by {gpsD} of {tot} athletes ({gpsRate}%).</>}
+        {/* Copy ruling 2026-09-04: the untracked arm serves TWO states and
+            named only one of them. Only the empty roster is fixed by adding
+            an athlete, so it says so. `tot` is athletes.length
+            (enterpriseStats.js:13, assigned once from the array this
+            component passes in at :28), so `tot === 0` is roster emptiness
+            exactly. Staged import rows sit in that same array carrying
+            claimed:false (AthletesContext.jsx:163), so a staged-only roster
+            has tot > 0 and reads as the none-delegated case rather than as
+            empty, which is right: those rows are on screen. */}
+        {!rateTracked
+          ? (tot === 0
+              ? <>GPS completion is not tracked yet — no athletes have been added.</>
+              : <>GPS completion is not tracked yet — no athlete has delegated record-keeping.</>)
+          : consentAware
+            ? <>GPS completed by {rateGps} of {rateBaseTotal} athletes with delegated record-keeping ({gpsRate}%).</>
+            : <>GPS completed by {gpsD} of {tot} athletes ({gpsRate}%).</>}
         {' '}
         {isAuthenticated
           ? <>Total gifts are not tracked.</>

@@ -22,29 +22,41 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 104 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 103 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers holding 9, then gates-other-work 16, gates-a-stated-commitment 7,
+ruled tiers holding 8, then gates-other-work 16, gates-a-stated-commitment 7,
 BMF-and-Discover 8, cheap-and-mechanical 27, large 34, and
 blocker-undetermined 3.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A18 CLOSED.** Its entry sat in
+Tier 2, one of the six ruled tiers, so OPEN moves 104 to 103 and the tiers move
+9 to 8: 8 + 16 + 7 + 8 + 27 + 34 + 3 = 103. A18 was BLOCKING and is not one of
+the four counsel-gated items, so BLOCKING moves 20 to 19: 19 + 59 + 25 = 103.
+**THE BUILD CHAIN MOVES TOO, 16 to 15, and this is the figure a totals edit
+misses.** The two-chains sentence below defines it as BLOCKING minus the
+counsel-gated four, so 19 - 4 = 15. It is DERIVED and is written in commit
+messages rather than stated anywhere in this file, which is exactly why
+correcting the totals above does not correct it and why a grep for a changed
+number cannot find it.
+Nothing else moved: PARKED, founder-judgment, FT-only, ruled-out, DEBT, POST,
+the counsel-gated four, and the other six group counts are all unchanged.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 20 BLOCKING, 59 DEBT, 25 POST**,
+**AGAINST THE PILOT GATE (classified 2026-09-02): 19 BLOCKING, 59 DEBT, 25 POST**,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 104. The sentence
+totals above, which remain a count of OPEN entries and sum to 103. The sentence
 here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**FOUR OF THE TWENTY BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
+**FOUR OF THE NINETEEN BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED BY
 BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
 chain is not uniform, and the record says so in three places rather than one.
@@ -59,10 +71,10 @@ table something the product will write to. **Nothing in this repository records
 counsel as retained**, and no entry names a date by which either chain moves.
 **THE QUEUE COUNT AND THE PILOT-GATE PERCENTAGE MEASURE DIFFERENT THINGS, AND
 THIS LINE IS WHAT RECONCILES THEM.** `docs/pilot-gate-criteria.md` scores ROUTES
-AND ENDPOINTS THAT EXIST, so 90 open items and a 99% capability figure are not in
-conflict: a defect on a route the instrument scores MET moves no unit, and the
-instrument has no unit at all for work that was never built. Read the gate figure
-for coverage and this line for readiness.
+AND ENDPOINTS THAT EXIST, so the OPEN count stated above and a 99% capability
+figure are not in conflict: a defect on a route the instrument scores MET moves
+no unit, and the instrument has no unit at all for work that was never built.
+Read the gate figure for coverage and this line for readiness.
 
 **NO LINE NUMBERS INTO DOCS. Citations name a section and a filing title.** That
 rule is load-bearing rather than stylistic, and the commit preceding this file
@@ -209,60 +221,25 @@ Pilot: BLOCKING
 Detail: `docs/filed-defects.md`, "Filed: `POST /api/snapshots` re-SELECTs
 outside its try".
 
-**A18 | Three unguarded branches render the literal `null%` on the enterprise
-overview and roster. A19 MERGED IN 2026-09-03.**
-Blocker: none named.
-Pilot: BLOCKING
-Detail, VERIFIED at `39b540f` and replacing the stale pointer this line used to
-carry. Three sites, all the ELSE arm of a `consentAware` ternary whose IF arm is
-correct: `src/surfaces/enterprise/EnterpriseOverview.jsx:41` and
-`src/surfaces/enterprise/EnterpriseRoster.jsx:141`, which are
-character-identical (`` : `${activelyProgressingPct}% of program`; ``), and
-`src/surfaces/enterprise/EnterpriseOverview.jsx:140`, the GPS supplementary
-line. The ternaries they belong to are at `EnterpriseOverview.jsx:39`,
-`EnterpriseRoster.jsx:139` and `EnterpriseOverview.jsx:136`.
-The prior Detail line read "`docs/filed-defects.md` … That filing's own line
-citations are stale; the sites moved." The filings remain the narrative record;
-the citations above are the current ones.
-**THE TRIGGER IS ONE STATE: an authenticated roster with ZERO athletes.** Two
-facts in `src/surfaces/enterprise/shared/enterpriseStats.js` combine.
-`:38` derives `const consentAware = athletes.some((a) => typeof a.claimed ===
-'boolean');`, and `[].some()` returns false without invoking its predicate, so an
-empty roster takes the else arm. `:96-98` return `null` for `gpsRate`,
-`certRate` and `activelyProgressingPct` when `rateBaseTotal` is 0, per the R4
-rule stated at `:94-95`. Both hold at once in exactly this state.
-**TWO WRONG OUTPUTS FROM ONE NULL, and only one contains the word.**
-`EnterpriseOverview.jsx:41` and `EnterpriseRoster.jsx:141` are TEMPLATE LITERALS,
-where `${null}` stringifies to the four characters `null`, so the user sees
-"null% of program". `EnterpriseOverview.jsx:140` is JSX interpolation, where
-`{null}` renders nothing, so the same null produces "GPS completed by 0 of 0
-athletes (%)." with a stranded percent sign. A grep for the string finds two of
-the three.
-**THE DIAGNOSIS CARRIED OVER FROM A19, because it is sharper than this entry's
-own:** the guard EXISTS, is CORRECT, and sits on the WRONG SIDE of the branch.
-`docs/filed-defects.md:1977-1982` states it. The test
-`activelyProgressingPct == null ? 'Not tracked'` lives at
-`EnterpriseOverview.jsx:40` and `EnterpriseRoster.jsx:140`, nested INSIDE the
-`consentAware`-true arm. The one input state that produces a null while
-`consentAware` is false never reaches it. **This is not a missing guard; it is a
-guard placed where the condition it guards against cannot arrive.**
-**ROOT CAUSE, verified 2026-09-03: a correct shared helper that these two files
-do not import.** `src/surfaces/enterprise/shared/RateDisclosure.jsx:24-28`
-exports `fmtRate`, and its docblock states the purpose in the entry's own terms:
-a null rate "renders 'Not tracked', NEVER 'null%'". **Its four consumers are all
-in `reports/`**: `ProgramOutputs.jsx:217`, `:294`, `ProgramSummary.jsx:121`,
-`:122`. Neither `EnterpriseOverview.jsx` nor `EnterpriseRoster.jsx` imports it;
-both restate the guard inline.
-**AND THE BRANCHES GUARD ON THE WRONG VALUE.** They test `consentAware`
-(`enterpriseStats.js:38`), which is false in TWO unrelated states, demo fixtures
-and an empty authenticated roster. The value that actually goes null is
-`rateBaseTotal` (`enterpriseStats.js:96-98`).
-**THE CORRECT PATTERN ALREADY EXISTS ON ANOTHER PAGE and is documented.**
-`src/surfaces/enterprise/reports/ProgramOutputs.jsx:141` derives
-`const rateTracked = rateBaseTotal > 0;` and applies it at `:213-218` and
-`:290-295`. Its intent is stated at `:139-140`: "One convention for absence on
-this page, not two."
-Scope is NOT ruled here.
+**A18 was CLOSED 2026-09-04** and has left this section; the remaining IDs are
+not renumbered, since renumbering would break every reference to them. Its title
+was "Three unguarded branches render the literal `null%` on the enterprise
+overview and roster", and it had absorbed A19 on 2026-09-03.
+**WHAT CLOSED IT: the guard moved off `consentAware` and onto `rateBaseTotal`,
+and the absence string now comes from the shared `fmtRate`.**
+`EnterpriseOverview.jsx` and `EnterpriseRoster.jsx` both import `fmtRate` from
+`shared/RateDisclosure.jsx`, derive `const rateTracked = rateBaseTotal > 0` once,
+and test it before `consentAware`, so the absence arm is now reached in every
+state that produces a null. `reports/ProgramOutputs.jsx:139-141` is where that
+derivation and the one-convention-for-absence framing already live; the arm
+ORDER is this slice's, not that page's. The inline restatements of the guard are
+gone: `activelyProgressingPct == null` at both sublabels, and the nested
+`rateBaseTotal === 0` at the GPS line.
+**One change of shape fixed all three sites**, including the GPS supplementary
+line, which rendered a stranded percent rather than the word and so could not be
+found by grepping for the string.
+**A20 is UNAFFECTED and still OPEN**, per its own entry below: it shares no file
+with this fix and involves no null.
 
 **A19 was CLOSED 2026-09-03 as a DUPLICATE of A18** and has left this section;
 the remaining IDs are not renumbered, since renumbering would break every
