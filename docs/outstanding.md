@@ -27,24 +27,22 @@ for what the cadence misses.
 ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
 BMF-and-Discover 8, cheap-and-mechanical 29, large 34, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: A66 CLOSED.** The FT-run remote
-gate read happened, which was the whole of its remaining blocker, so the
-re-score gained its second column and the entry has nothing left. It sat in
-gates-other-work at Pilot DEBT.
-**OPEN moves 104 to 103** and gates-other-work 16 to 15, so the breakdown is
-7 + 15 + 7 + 8 + 29 + 34 + 3 = 103. The restatement further down moves with it,
-to "sum to 103". DEBT moves 60 to 59 and 20 + 59 + 24 = 103; BLOCKING and POST
-are both unchanged.
-**THE BUILD CHAIN DOES NOT MOVE and stays 16**, being BLOCKING minus the
-counsel-gated four, and A66 was neither. The counsel-gated line below stays FOUR
-OF THE TWENTY for the same reason.
-**THE PREVIOUS BLOCK SAID PARTLY CLOSING AN ITEM IS NOT CLOSING IT. It was
-right, and one commit later the distinction paid.** The entry was left open on
-one missing column; that column arrived the same day, and the entry closed for
-the reason it named rather than by being tidied away.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: the forward-looking state recorded
+in the header above. NO COUNT MOVES.** Nothing opened, closed, changed group or
+changed Pilot; what this commit adds is prose about items whose status earlier
+commits today already settled. **OPEN stays 103**, the breakdown stays
+7 + 15 + 7 + 8 + 29 + 34 + 3 = 103, the "sum to 103" restatement stays, the
+pilot split stays 20 BLOCKING, 59 DEBT and 24 POST summing to 103, the
+counsel-gated line stays FOUR OF THE TWENTY, and **the build chain stays 16**,
+being BLOCKING minus the counsel-gated four with neither term moving.
+**THE ONE FIGURE THIS COMMIT INTRODUCES IS NOT A QUEUE COUNT AND MUST NOT BECOME
+ONE.** The 26-unit capability-to-production-usable spread is 83 minus 57 from
+`docs/pilot-gate-criteria.md` at `6fb6572`. It measures gates, not open work,
+and it is recorded above as context for reading that document rather than as
+something this file tracks.
 This block records the LAST change only and is REPLACED rather than appended, so
 it never accumulates into a changelog. The entry it replaced recorded A66's
-partial closure.
+closure.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
@@ -75,6 +73,73 @@ marks the `athlete_reflection` pre-claim visibility posture counsel-gated on the
 exact institutional consent language. It was THREE until the A96 ruling made that
 table something the product will write to. **Nothing in this repository records
 counsel as retained**, and no entry names a date by which either chain moves.
+**THE PRE-PILOT CRITICAL PATH, AS IT STANDS AFTER THE 2026-09-04 RULINGS. Read
+this first if the question is what comes next.**
+**A1 to the BMF ingest to A8, AS FILED. It is recorded here, not asserted:
+whether the chain is walkable in that order is itself one of the ten open
+questions below.** FT ruled 2026-09-04 that Discover is an intended capability
+and that pilot cannot open without it, so A8 is BLOCKING. A8's blocker is the
+BMF ingest, and FJ-1 already named A1 the sole standing precondition on that
+ingest. **That is the filing, and it is the whole of what is established.**
+Whether building shortens the chain is NOT established, because whether A1 is a
+build at all is unsettled, for the reasons the next paragraph records.
+**A1'S APPROACH IS UNSCOPED AND UNRULED, AND TEN OPEN QUESTIONS SIT BEFORE FT.**
+A scoping pass on 2026-09-04 established, by execution and grep at HEAD, that
+**A1's subject does not exist as code.** There is no BMF importer: no endpoint,
+no script, no migration and no `bmf` table. The only `bmf` strings under `src/`
+are comments, at `AppShell.jsx:34` and `DiscoverUnavailable.jsx:18`.
+`docs/bmf-load-scoping.md` is a plan for a loader, not a loader.
+**A1 AS FILED CANNOT BE EXERCISED.** It asks whether the import rollback is a
+transaction or a compensating replay. That guarantee is a client-side string,
+printed before the import runs and only on the `--remote` path
+(`wrangler-dist/cli.js:231186`, ahead of the init call at `:231190`), which §7 of
+the scoping doc already calls the most load-bearing unverified fact in the plan
+(`:412`). Testing it needs a remote import; a remote import at useful fidelity
+needs the loader; and the loader is the thing A1 gates.
+**NO NON-LIVE TARGET EXISTS.** `stewardhouse-pilot` is the only D1 database
+configured (`wrangler.toml:12-16`), no `preview_database_id` appears anywhere in
+the tree, and the throwaway `bmf-window-probe` was deleted 2026-08-19
+(`docs/bmf-load-scoping.md:507`). **Standing up another throwaway is itself a
+remote act and is FT-run on that basis alone**, per CLAUDE.md §6.15 category (3),
+which holds independently of whatever method is eventually chosen.
+**WHAT THE FOUR BANKED RUNS DO AND DO NOT ESTABLISH.** The experiment's `CREATE`
+omits the PRIMARY KEY that §1 rules on EIN (`scripts/d1-window-generate.mjs:85`
+against `docs/bmf-load-scoping.md:60`), so those runs could not have produced a
+constraint violation, and their measured windows are LOWER BOUNDS: the ruled
+table also carries indexes, whose build cost §1 measured separately (`:137`).
+**Twelve failure modes were enumerated; §4 names four and omits eight**,
+including the escaping mode that §2's own script contract already names.
+**AND A SINGLE RUN WOULD SETTLE NOTHING EITHER WAY**, because an import that
+never began and one that rolled back perfectly leave the same observable state,
+which is the void-versus-clean hazard open item 5 already records for a
+neighbouring probe (`:1216-1221`).
+
+**WHAT 2026-09-04 CLOSED, AND WHY THE BUILD CHAIN DID NOT SHORTEN.** Three
+entries closed: A18 and A20, both BLOCKING live-honesty defects on the
+enterprise surface, and A66, the pilot-gate re-score. **The build chain ended
+the day exactly where it started, at 16.** It fell 16 to 14 on the two BLOCKING
+closures, then rose 14 to 16 when A8 moved DEBT to BLOCKING and A1 moved POST to
+BLOCKING. The chain is BLOCKING minus the four counsel-gated items, so it tracks
+the BLOCKING count and nothing else.
+**Three closures and a chain no shorter is not a contradiction.** What the day
+mostly did was RECLASSIFY: two items already open were found to be pilot-
+blocking and now say so. **A shorter chain is not the same as less work, and
+today is the case that proves it**: the queue got MORE honest and no easier.
+
+**THE CAPABILITY-TO-PRODUCTION-USABLE SPREAD IS 26 UNITS, AND IT IS NOT UNBUILT
+WORK. This is CONTEXT for reading the gate figures. It is deliberately NOT an
+open item and must not become one.** `docs/pilot-gate-criteria.md` at
+`6fb6572` scores capability 83/84 and production-usable 57/84. **The whole of
+the 26-unit gap is two unset demo gates.** Advisor's 13 write endpoints and
+Enterprise's 13 are built, gated as designed, and return 403 to every caller,
+because no advisor row and no staff row carries a gate: verified by an FT-run
+remote read on 2026-09-04, advisor gated 0 of 2 and staff gated 0 of 4.
+**They are built and DARK.** Setting `$.advisor.demo_gate` and
+`$.enterprise.demo_gate` would close most of that gap without a line of code,
+and that designation is FT's deliberate per-institution step per
+`docs/enterprise-provisioning-runbook.md` §3(e). It is never a slice, so it has
+no entry here and should not be given one.
+
 **THE QUEUE COUNT AND THE PILOT-GATE PERCENTAGE MEASURE DIFFERENT THINGS, AND
 THIS LINE IS WHAT RECONCILES THEM.** `docs/pilot-gate-criteria.md` scores ROUTES
 AND ENDPOINTS THAT EXIST, so the OPEN count stated above and a 99% capability
