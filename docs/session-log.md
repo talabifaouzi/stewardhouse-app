@@ -2277,3 +2277,27 @@ demonstrated by the pass itself:** the instrument said 15 and the work was wrong
 **§10 filed blocks 8 → 15**, plus one governing statement that is not a block.
 **OPEN does not move: 109**, because nothing in the queue changed. `migrations/`
 22 files, both databases at 22.
+
+### `origin/main` ADVANCING WHILE THE AGENT NEVER PUSHED IS EXPECTED, NOT AN ANOMALY
+
+**Recorded so a later session does not re-open it. This applies to the whole day,
+not only to the promotion pass above.** During the A113 scope pass the agent
+found `origin/main` equal to local HEAD after fourteen unpushed commits, with
+reflog entries reading "update by push", and stopped to investigate rather than
+assume. **The explanation is mundane and is now confirmed: FT pushes manually
+from PowerShell at the end of each approval batch, including two batches before
+this session.** There is **no hook, no scheduled job and no auto-sync** —
+verified at the time: zero non-sample hooks, no `core.hooksPath`, no push alias
+or `push.default` config. **The "update by push" reflog lines are FT's terminal.**
+**SO THE INSTRUCTION HELD.** "Do not push" was given to the AGENT and the agent
+did not push; FT pushing is a separate act by a separate actor. **An agent seeing
+0/0 against origin after a run of unpushed commits should read it as FT having
+pushed**, not as a state change to diagnose. **This is a two-actor workflow that
+reads as one when only one side is visible**, which is why it looked anomalous
+and why it is written down rather than filed: it is not a hazard and not a
+defect, so it belongs in neither `docs/outstanding.md` nor CLAUDE.md §10.
+**Also verified at the time, and worth keeping:** across all fourteen commits
+there were **zero files under `src/` and zero under `functions/`** — only
+`CLAUDE.md`, four `docs/` files and `migrations/0022_bmf_table.sql`. Every
+resulting Pages deploy therefore rebuilt an identical app, and a deploy does not
+apply migrations, **so no behavioural change reached production.**
