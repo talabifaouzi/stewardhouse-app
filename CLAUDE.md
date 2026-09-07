@@ -2392,6 +2392,36 @@ browser screening of auth-gated surfaces.
 - **`VACUUM INTO` before any destructive rebuild — never `cp`.** A filesystem copy of a live SQLite database silently loses WAL contents: the copy looks intact and is missing the most recent committed writes. `VACUUM INTO` produces a consistent point-in-time snapshot. Use it for the scratch copy that proves a rebuild is non-destructive before touching the real store.
 - **The §2 start command runs an INTERNAL wrangler path, and that is the trade.** It invokes `node_modules/wrangler/wrangler-dist/cli.js` directly, which is a bundle path rather than a documented interface; `npx wrangler` is the supported invocation and is exactly the form §6 records as defective for teardown. **A wrangler upgrade may move or rename it.** The failure mode is benign and loud: the command fails to START, not to stop, so it cannot silently reintroduce the teardown hazard. **The check: if it stops working after an upgrade, verify the path exists before assuming anything else.** This section already depends on that same internal path at `wrangler-dist/cli.js:302057`, so the exposure is not new; what is new is that a start command now rests on it too.
 
+### THE RULE THE VERIFICATION FILINGS BELOW SHARE (promoted 2026-09-07)
+
+**EVERY CHECK ANSWERS A QUESTION ABOUT THE INSTRUMENT. ONLY READING THE OUTPUT
+ANSWERS THE QUESTION ABOUT THE WORK.**
+
+**This governs the filings below and their two siblings elsewhere** — the
+delta-counting hazard at the end of §6 and the minified-bundle grep rule in §9 —
+so it is stated once, here, rather than repeated in each. **It is placed as a
+governing statement and NOT as a `### Filed —` block, because every block below
+opens with a mechanism that bit someone and this has none: it is what several of
+them have in common.**
+
+**THE EVIDENCE IS FAILURES WHERE THE INSTRUMENT WAS CLEAN AND THE WORK WAS
+WRONG.** A shell carriage-return escape mangled a paragraph mid-sentence with
+every check passing. An anchor-on-header replacement orphaned nineteen lines with
+its exactly-once assertion reporting success. A render requirement caught a
+missing space that a bundle grep had confirmed present and correct. **All three
+were caught by reading the output — the printed diff, the rendered page — and by
+nothing else.**
+
+**IT DOES NOT REPLACE THE CONTROLS DISCIPLINE AND DOES NOT SUBSUME IT.** Controls
+verify the INSTRUMENT and are what catch a matcher fault: the blind enumerator,
+the trailer substring, the empty pattern. **The diff verifies the WORK.** They
+fail independently, and a session that does one is not covered for the other.
+
+**STATED WITH ITS LIMIT:** this generalises from one day's failures plus the
+§6.14 render precedent, not from a measured pattern across the project's history.
+It is recorded because the mechanism was visible each time, not because the
+sample is large.
+
 ### Filed — an invocation flag created a persistent second local D1 store (2026-07-16)
 
 On **2026-07-16T18:55:18Z** a second store `7202f096….sqlite` came into
@@ -2675,6 +2705,28 @@ case whose answer is already known, before reading the answer you do not know.
 **Full filing, with the complete 20-site enumeration by file and line:**
 `docs/filed-defects.md`, the flow-content-inside-button entry.
 
+**AMENDED 2026-09-07, PROMOTION PASS 1: A CONTROL IS NOT ENOUGH IF EVERY CONTROL
+SHARES THE PROPERTY THE DEFECT EXPLOITS.** This filing's rule — assert a
+known-positive control — was FOLLOWED and still missed a defect, which is why
+the amendment matters more than the instance.
+
+**The instance.** The OPEN-entry enumerator for `docs/outstanding.md` was
+`^\*\*A[0-9]+ \| `, which is BLIND to letter-suffixed IDs. **FIVE controls were
+asserted before the count was trusted and all five passed** — and every one was
+a plain-numeric ID, so the control set could not see the defect. The count read
+108 where the file states 110; the gap is `A50a` and `A50b`. **The pattern that
+reproduces the stated count is `^\*\*A[0-9]+[a-z]? \| `.**
+
+**IT RECURRED BECAUSE IT WAS NEVER FILED HERE.** It was recorded in
+`docs/session-log.md` and nowhere a session reads, so a later session reproduced
+it and reported 108 across four commits before a suffix-aware re-count caught it.
+
+**THE AMENDED RULE: CONTROLS MUST SPAN THE FORMAT VARIANTS THE CHECK MAY
+ENCOUNTER, not merely confirm that the check ran.** Before trusting a count, ask
+what shapes the data can take and whether a control exercises each one. **Five
+passing controls established that the enumerator worked on the shape it was
+given, and said nothing about the shape it was not.**
+
 ### Filed — `d1 migrations list --remote` returned 7403 while `d1 execute --remote` worked (2026-09-01)
 
 **TWO COMMANDS AGAINST ONE DATABASE DISAGREED ABOUT AUTHORIZATION, IN THE SAME
@@ -2807,11 +2859,175 @@ warning going unread, and the two call for different responses.
 **Beyond existing at all, what it carries is the DETECTION METHOD and the
 VISIBLE TELL**: the `255 254` byte check and the missing `env.*` rows. Knowing
 the file can break is not actionable; knowing how to see that it has broken, in
-under a second, is. **SCOPE NOTE: this sits in §10 for format rather than
+under a second, is.
+
+**SCOPE NOTE: this sits in §10 for format rather than
 subject.** Its natural sibling is §6.12, secrets discipline, which today covers
 reading secrets SAFELY and says nothing about the file being UNREADABLE. §6.12 is
 a numbered prose rule and a `### Filed —` block would break that structure, so
 this lives here and §6.12 is named as the place a reader might look first.
+
+**AMENDED 2026-09-07, PROMOTION PASS 1: WHAT WRANGLER ITSELF DOES WITH A BOM,
+which decides whether a corrupted config fails loudly or quietly.**
+`removeBOMAndValidate` **THROWS on UTF-16 and UTF-32** with "Configuration file
+contains {encoding} byte order marker", then **silently STRIPS a UTF-8 BOM** via
+`if (content.charCodeAt(0) === 65279) return content.slice(1)`.
+
+**SO THE TWO CORRUPTIONS BEHAVE OPPOSITELY, and that is the thing to know
+BEFORE debugging one.** A wide BOM on a `.toml` config fails with a named error.
+**A UTF-8 BOM is tolerated and invisible.** And `.dev.vars` is not a config file
+in that path at all, which is why the failure this entry describes stays silent
+where a `.toml` would have shouted.
+
+**WORKED CASE:** `bmf-sandbox.toml` carries a UTF-8 BOM and one stray CRLF, both
+harmless for exactly this reason, both left alone by ruling. **The §10 Notepad
+hazard did NOT occur there:** no `FF FE`, no NUL bytes. **Check which of the
+three you have before assuming this entry's silent failure**, because only the
+wide BOMs are silent in a config and only `.dev.vars` is silent in general.
+
+### Filed — a trailer check matching bare "claude" fires on the word CLAUDE.md (promoted 2026-09-07)
+
+**A COMMIT-TRAILER CHECK THAT GREPS FOR A BARE CASE-INSENSITIVE `claude` WILL
+FIRE ON THE FILENAME `CLAUDE.md`.** That filename appears in a large share of
+this project's commit messages, so the check reports a trailer violation on
+commits that carry none.
+
+**WHY IT MATTERS MORE THAN A NUISANCE:** §6.7 makes trailers non-negotiable, so a
+check that cries wolf on the most-edited file in the repo trains a reader to wave
+it past — and the next wave-past is the one that had a real trailer behind it.
+
+**THE FIX IS AN ANCHORED PATTERN PLUS TWO CONTROLS.** Match anchored trailer
+forms only — `^Key: value` with hyphenated keys, plus the named keys and the
+footer text. **Then prove the matcher discriminates**: a positive control with a
+real trailer at line start must return 1, and a negative control with the same
+text MID-LINE must return 0. **The negative control is the one that matters
+here**, because it is exactly the case that produced the false positive, and a
+positive control alone cannot distinguish an anchored pattern from an unanchored
+one.
+
+### Filed — a carriage-return escape written into patch content does not survive the shell (promoted 2026-09-07)
+
+**WRITING A SHELL CARRIAGE-RETURN ESCAPE LITERALLY INTO TEXT YOU ARE PATCHING
+INTO A FILE CORRUPTS THE TEXT.** The token does not survive the shell; it lands
+as a real line break and cuts the sentence mid-line.
+
+**IT HAS RECURRED, AND THE SECOND TIME WAS WHILE WRITING THE PARAGRAPH THAT
+DESCRIBED THE FIRST.** Documenting a hazard does not prevent it. **The earlier
+repair had worked by NAMING the escape in prose instead of writing it, and that
+lesson was available and not applied.**
+
+**WHAT TO DO INSTEAD, in order of reliability.** Write the repair from a SCRIPT
+FILE, where the shell performs no expansion. Failing that, NAME the escape in
+words rather than reproducing it. **Assume any content describing shell escapes
+is itself subject to them.**
+
+**AND IT IS INVISIBLE TO EVERY CHECK, which is why it belongs here.** Counts are
+unchanged, controls hold, line endings are preserved, assertions report success —
+and the prose is broken. **The printed diff is the only thing that catches it**,
+which is the bank rule stated as a measured cost rather than as protocol.
+
+### Filed — an exactly-once assertion PASSES when you anchor on a block's header (promoted 2026-09-07)
+
+**WHEN REPLACING A BLOCK OF TEXT, ANCHOR ON ITS FULL EXTENT, NEVER ON ITS
+HEADER.** A header anchor matches exactly once, SATISFIES the exactly-once
+assertion, and leaves the body orphaned below the replacement.
+
+**THE OBSERVED COST:** nineteen lines survived a replacement in
+`docs/outstanding.md`, so the file briefly carried two arithmetic blocks with
+contradicting counts, one saying a change was the second consecutive zero and one
+saying the third.
+
+**IT IS NOT A MATCHER FAULT AND NO CONTROL CAN CATCH IT.** The matcher was
+CORRECT — it matched exactly what it was told to match. **What was too narrow was
+the SPECIFICATION**, so verifying the instrument proves nothing here.
+
+**THE CHEAP POST-CONDITION: assert the old block's CLOSING line is GONE.** That
+is a check on the OUTCOME rather than on the matcher, which is the only kind that
+can see this. **A deletion should also assert the extracted block contains
+exactly the boundary markers you expect** — one header, and the known last line —
+before the write happens.
+
+### Filed — `d1 create` has no `--json` and cannot write a TOML config (promoted 2026-09-07)
+
+**`wrangler d1 create` WILL NOT GIVE YOU THE `database_id` IN A PARSEABLE FORM,
+AND WILL NOT WRITE IT TO A `.toml` CONFIG. Copy it by hand.**
+
+**Its arguments are `name`, `location`, `jurisdiction` plus `use-remote`,
+`update-config` and `binding`. `--json` is neither among them nor a global
+flag.** The id arrives INSIDE A PRINTED TOML BLOCK, not on a line of its own, so
+a script that greps for it is parsing prose.
+
+**AND THE CONFIG WRITE IS UNREACHABLE AGAINST A `.toml`**, because it is gated on
+`JSON_CONFIG_FORMATS = ["json","jsonc"]`. **So `--update-config` and `--binding`
+are INERT here and fail silently** — they do not error, they simply do nothing.
+
+**This binds any future database-provisioning runbook**, which must state the
+hand-copy step rather than assume the tool performs it.
+
+### Filed — `d1 export` DEFAULTS TO LOCAL when neither flag is given (promoted 2026-09-07)
+
+**`wrangler d1 export` WITH NEITHER `--local` NOR `--remote` EXPORTS THE LOCAL
+DATABASE.** Neither flag carries a default and the handler branches on `remote`
+being truthy, so the omission resolves to local.
+
+**THE FAILURE IS A CONFIDENT WRONG ANSWER: you believe you hold a production
+export and you hold a dev-store one.** Nothing in the output announces which it
+took, and a local store can be arbitrarily stale or, per the filing above, not
+even the store you think is bound.
+
+**ALWAYS PASS THE FLAG EXPLICITLY.** And note two further properties before
+reaching for this command: **`d1 export --remote` IS ITSELF AN AVAILABILITY
+EVENT**, warning in its own confirmation that the database will be unavailable to
+serve queries — which is what disqualified an exported `.sql` as the BMF backup
+artifact — and **its download link is a presigned URL valid ONE HOUR.**
+
+### Filed — migration filenames need not be contiguous, and nothing validates it (promoted 2026-09-07)
+
+**NOTHING ANYWHERE CHECKS THAT MIGRATION NUMBERS ARE CONTIGUOUS.**
+`getUnappliedMigrationNames` is a pure set difference on NAMES against
+`d1_migrations.name`, and ordering comes from `leadingMigrationNumber` sorting
+numerically with a lexicographic fallback. **A gap would apply cleanly and
+silently.**
+
+**WHY THIS IS FILED RATHER THAN LEFT AS TRIVIA:** this record repeatedly cites
+contiguity AS EVIDENCE — "`0001` through `0022`, contiguous" appears as a
+verification result in several places. **It is an OBSERVATION, not a check.**
+Reading it as a check is a false confidence with a citation habit behind it, and
+FT ruled it promotable on exactly that ground.
+
+**SO WHEN CONTIGUITY IS ASSERTED, SAY IT WAS OBSERVED**, and if it ever matters,
+observe it deliberately rather than inferring it from a tool that never looked.
+**One caution for anyone checking:** a naive case-insensitive grep for `gap`
+returns three hits in `cli.js` that are all the letters inside `xdgAppPaths`.
+
+### Filed — `A && B && C || D` reports D when A fails, which reads exactly like a clean result (promoted 2026-09-07)
+
+**IN A SHELL CHAIN, A FAILURE ANYWHERE BEFORE THE `||` FIRES THE FALLBACK. If
+that fallback prints "nothing found", it is INDISTINGUISHABLE from the search
+having run and found nothing.**
+
+**THE OBSERVED CASE:** a chain ending in a pointer search reported **"no live
+pointers remain"** from a `grep` that NEVER EXECUTED, because `python` was absent
+on this machine and the chain short-circuited at the first command. **Both
+pointers were intact**, and were about to be deleted on the strength of that
+report.
+
+**IT IS THE SIBLING OF EVERY OTHER FILING IN THIS SECTION AND NOT A DUPLICATE OF
+ANY.** Those are matchers that reported WRONGLY. **This is a matcher that NEVER
+RAN, with the shell supplying an output that reads like a result.** The failure
+arrives through CONTROL FLOW rather than through pattern construction.
+
+**WHAT TO DO: separate the commands, or assert that the precondition actually
+ran, or choose a fallback message that CANNOT be mistaken for a clean result.**
+"No matches" and "the search never happened" must not print the same way.
+
+**A RELATED TRAP IN THE SAME FAMILY:** a control that legitimately returns ZERO
+sets a non-zero exit and will terminate an `&&` chain early, truncating the rest
+of a verification. **Separate the checks, or use `;`.**
+
+**AND THE EXISTING DISCIPLINE HELD EVEN THOUGH THE MECHANISM WAS NEW: a control
+is what caught it**, and caught it twice more while this filing was being
+written. **Recording a hazard does not prevent it. Only a control does.**
 
 ### Filed — a line-ending check that COULD NOT FAIL, for the SECOND time (2026-09-07)
 

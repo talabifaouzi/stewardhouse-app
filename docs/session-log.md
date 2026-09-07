@@ -2201,3 +2201,79 @@ went 22 → 21.
 - **OPEN stands at 110**, corrected this session from the 108 that four commits
   reported. The deltas were right; the level was wrong by two, and the cause was
   finding 1 above sitting unpromoted in this file.
+
+---
+
+## Session — 2026-09-07 (fourth): PROMOTION PASS 1
+
+**The first promotion pass under rule 18's third purpose, covering the WHOLE log
+per the first-pass exception.** The list was not re-derived; it was taken
+item-by-item from the entry above, which exists so this pass would not repeat
+that work. **Every item was re-verified ABSENT from CLAUDE.md before promotion**,
+with four positive controls proving the matcher finds strings that are present.
+**Zero had been promoted incidentally.** Four items returned a hit outside §10 —
+rule 18's own demonstration paragraphs and one unrelated use of "short-circuits"
+in §5.2 — and a section-scoped count returned 0, so all ten stood.
+
+### Promoted — TWO amendments
+
+- **Item 1, the OPEN-enumerator blind to letter-suffixed IDs** → amended into
+  §10's scanner filing. **The amended rule: controls must span the FORMAT
+  VARIANTS the check may encounter.** Five controls passed and all five were
+  plain-numeric IDs, so the control set could not see the defect.
+- **Item 2, wrangler's BOM handling** → amended into §10's UTF-16 filing. It
+  THROWS on the wide BOMs and silently STRIPS a UTF-8 one, so the two corruptions
+  behave oppositely and the entry's silent failure applies to only one of them.
+
+### Promoted — SEVEN new `### Filed —` blocks
+
+Trailer check firing on the word `CLAUDE.md`; the carriage-return escape that
+does not survive the shell; anchor-on-header passing its exactly-once assertion;
+`d1 create` having no `--json` and an unreachable config write; `d1 export`
+defaulting to LOCAL; migration filenames not being contiguity-checked; and
+`A && B && C || D` reporting the fallback when `A` fails.
+
+**All seven are written as WARNINGS, not history**: each opens with the mechanism
+in the present tense, carries the incident as evidence rather than as subject, and
+names a replacement practice. **None had to be padded to fit that shape**, which
+was the test for whether an item belonged here at all.
+
+### Promoted — ONE governing statement, NOT a filed block
+
+**Item 6** — *every check answers a question about the INSTRUMENT; only reading
+the OUTPUT answers the question about the WORK* — was placed at the HEAD of §10's
+filing series rather than as a ninth block. **Reasoning: every block opens with a
+mechanism that bit someone, and this has none.** It is what several of them have
+in common, and it governs two siblings outside §10 as well, the delta-counting
+hazard in §6 and the minified-bundle grep in §9, which it names so that it
+governs the family rather than one section.
+
+### LEFT — five, JUDGED, and not to be re-judged
+
+**Rule 18 records dispositions so the same judgement is not re-made every 30
+days. These five are judged; a later sweep skips them.**
+
+- **The `awk` orphan heuristic** — one-off ad-hoc script, no recurrence surface.
+- **The edit script that failed SAFELY** — a counter-example, not a hazard; it
+  belongs to the amended scanner filing rather than standing alone.
+- **The Button-census CRLF delimiter bug** — subsumed by the line-ending filing.
+- **The A95 `notes`-column correction** — a ruling's reasoning, recorded where
+  the ruling lives; excluded by the criterion.
+- **The OPEN-versus-READY gap** — an observation FT has not ruled a defect. **The
+  one leave that can rot**, since nothing else will surface it.
+
+### One repair, recorded because it was caught by a post-condition and not by review
+
+The seven new blocks were first inserted **inside** the UTF-16 filing, splitting
+it and orphaning its scope note and its fresh amendment below them, and the
+insertion also **concatenated two lines**. **Counts were unchanged and correct
+throughout** — 15 blocks either way — so no count check could have seen it. It
+was caught by printing the heading order and repaired by script with assertions
+on the boundaries. **That is the governing statement promoted in this same pass,
+demonstrated by the pass itself:** the instrument said 15 and the work was wrong.
+
+### Counts
+
+**§10 filed blocks 8 → 15**, plus one governing statement that is not a block.
+**OPEN does not move: 109**, because nothing in the queue changed. `migrations/`
+22 files, both databases at 22.
