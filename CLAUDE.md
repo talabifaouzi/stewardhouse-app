@@ -733,6 +733,46 @@ here the source never existed. **The rule that follows is that A COUNT IS NOT A
 LIST.** When this record cites a quantity of things, the things belong somewhere
 enumerable, because **a count survives restatement and a list does not.**
 
+**A SECOND RULE ABOUT FIGURES, PROMOTED HERE 2026-09-07 AND PLACED BESIDE ITS
+NEAREST SIBLING: A DATED FIGURE DESCRIBING AN EVENT IS CORRECTLY FROZEN; A DATED
+FIGURE DESCRIBING A STATE IS A LIVE COUNT WEARING A DATE, AND MUST BE MAINTAINED
+OR IT LIES.** The date is not the tell. What the figure describes is.
+
+**THREE INSTANCES, WHICH ARE WHAT MAKE IT A RULE RATHER THAN AN OBSERVATION.**
+
+1. **The pilot-gate classification snapshot.** Its parenthetical dated the
+   classification ACT, which is genuinely fixed; the three TOTALS beside it were
+   LIVE and drifted, from 20/59/24 to 21/61/27 while the paragraph's own "sum to"
+   clause was maintained forward. **Pairing a frozen act with live totals made a
+   live count look archival**, which is why nobody updated it for days.
+2. **`docs/bmf-load-scoping.md` §15's heading count, three times in one day.**
+   Each value was true when written and made false hours later by the next batch
+   of rulings. A count of headings in a growing section is a state figure by
+   construction.
+3. **A117's three title corrections, named as the CONTRAST because they are the
+   EVENT case behaving correctly.** "Is not written", then "applied nowhere",
+   then "applied to the sandbox, not to live" — each true when written, each
+   corrected the moment the work moved, and the entry showing a title corrected
+   three times in one day is the system working rather than a record that kept
+   being wrong.
+
+**WHY IT WAS PROMOTED, and the mechanism is rule 18's.** It had fired across at
+least three documents while living as a SINGLE-FILE NOTE in
+`docs/outstanding.md`'s header, framed as local to that file and **reachable from
+this one by nothing.** That is exactly the shape §6's promotion step exists for,
+and **this is the second finding to reach §5.1 that way.**
+
+**THE `docs/outstanding.md` INSTANCE STAYS.** It is correct where it is and
+governs that file's own figures; this is the durable home, not a replacement.
+
+**ONE THING THIS RULE COST BEFORE IT WAS PROMOTED, recorded because it is the
+argument for promoting anything.** The §15 paragraph cited it as "§5.1's
+event-versus-state test" when it was not in §5.1 at all, that false citation was
+then read back as fact when framing the ruling that removed it, and the citation
+survived only because the text carrying it was deleted for other reasons.
+**A rule cited to a place it does not live is indistinguishable from a rule that
+is filed**, until someone greps.
+
 ---
 
 ## 5.2 ARC: ENTERPRISE ROSTER IMPORT (FT-ruled 2026-08-26)
