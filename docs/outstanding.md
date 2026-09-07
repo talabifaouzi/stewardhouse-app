@@ -1159,9 +1159,41 @@ result inherits.
 **UNRULED, AND THE PILOT LINE IS PART OF WHAT IS UNRULED.** POST is recorded
 because no pilot user reaches this question; whether it should rise is open,
 since it does not gate the run but does bear on what the run's result is worth.
+**TWO DATA POINTS EXIST AS OF 2026-09-07, AND THIS ENTRY STAYS OPEN.** They are
+recorded as EVIDENCE, not as an answer, and they are of different kinds, which is
+why neither settles the question and why both are worth having.
+**(1) SCHEMA PARITY.** Migration 0022 applied to `bmf-sandbox` produced eleven
+objects matching, object for object, what D6 had measured against a local
+`VACUUM INTO` copy of the 21-migration store.
+**(2) RUNTIME-BEHAVIOUR PARITY.** Remote D1 on the sandbox REJECTED an orphan
+child INSERT with `FOREIGN KEY constraint failed … [code: 7500]`, closing the
+CLAUDE.md §10 foreign-key filing's remote half. **This is the kind of evidence
+the entry says it lacks:** §10's two filings reached opposite dispositions on the
+same shape, and runtime behaviour — not schema — is what A1 asks about.
+**WHY THEY DO NOT CLOSE IT.** Both are observations of `bmf-sandbox`, and the
+question is whether a sandbox result TRANSFERS. **Two agreements do not establish
+a general rule**, and nothing here says which disposition a sandbox result
+inherits when it disagrees. FT has not ruled it, and it is not inferred from the
+rulings around it.
 
-**A117 | The BMF table migration is WRITTEN and APPLIED NOWHERE. A8's chain named
-the step and gave it no ID.**
+**A117 | The BMF table migration is WRITTEN and APPLIED TO THE SANDBOX, NOT TO
+LIVE. A8's chain named the step and gave it no ID.**
+**TITLE CORRECTED A SECOND TIME, 2026-09-07, HOURS AFTER THE FIRST.** It read
+"APPLIED NOWHERE", true when written and made false the same day by FT's sandbox
+apply. **ONE OF THE THREE REMAINDERS IS NOW DISCHARGED**, and they are restated
+here rather than left to be recomputed: (1) the apply to `bmf-sandbox` is **DONE**
+— FT-run 2026-09-07, one migration, 9 commands, `d1_migrations` 21 → 22, verified
+read-only as eleven objects and three empty tables; (2) the apply to LIVE
+`stewardhouse-pilot` is **NOT DONE** and stays FT-run under §6.10 branch (b),
+whose note is in CLAUDE.md §5.1; (3) R13a regeneration from A113's loader
+constant is **NOT DONE** and waits on A113. **The sandbox standing at 22 against
+live's 21 is §6.10 branch (c) running in its ruled order, not drift.**
+**THIS LIST SUPERSEDES THE ONE IN THE PARAGRAPH DIRECTLY BELOW**, whose item (1)
+reads "the file is applied to NO store — not the local dev store, not the
+sandbox, not remote". That was true when written this morning and the sandbox
+half of it is now false. Both are kept, in reverse chronological order, so the
+entry shows a title corrected twice in one day rather than a title that was
+always right.
 **TITLE CORRECTED ON AUTHORING, 2026-09-07.** It read "The BMF table migration is
 not written", which this entry's own commit made false. **The entry does NOT
 close**, and the three things it still carries are named here rather than left to
@@ -1411,6 +1443,20 @@ below is no longer the only copy**, so R13a's regeneration test has a subject: i
 is the proposal, the file is the artifact, and A113's constant will be the source.
 The paragraph is kept rather than rewritten because it records what had to be true
 before the file could exist.
+**A COMMENT IN THE BLOCK BELOW IS NOW FALSE, AND IT IS DELIBERATELY NOT
+CORRECTED.** The `load_check` comment reads "D1 REMOTE FK ENFORCEMENT IS
+UNVERIFIED (CLAUDE.md §10); local is verified" (`:1542`, and the identical line
+at `migrations/0022_bmf_table.sql:147`). **Remote enforcement was verified on
+`bmf-sandbox` on 2026-09-07** and CLAUDE.md §10 now records the closure.
+**TWO REASONS NOT TO EDIT EITHER, and the second is the stronger.** First, R13a's
+proof that the file derives from this block is BYTE-IDENTITY, so correcting one
+without the other breaks it and correcting both is a change to a reviewed
+artifact for a comment. Second, and decisive: **`migrations/0022_bmf_table.sql`
+HAS BEEN APPLIED.** Wrangler tracks applied migrations by NAME, not by hash, so
+an edit would not re-run and the file on disk would stop matching what the
+sandbox actually received. **An applied migration is a historical record of what
+ran**, and a stale comment inside one is better than a file that misrepresents
+it. The correction lives here and in §10.
 
 ```sql
 -- R13, AUTHORITY: THE LOADER IS AUTHORITATIVE FOR THIS DDL AND THIS FILE DERIVES

@@ -566,6 +566,33 @@ sharper than the 0021 case it sits beneath: 0021 was local-applied with only the
 `--remote` half deferred, whereas **0022 is applied to NO store at all** — not
 the local dev store, not `bmf-sandbox`, not remote. `migrations/` therefore runs
 `0001` through **`0022`** while every applied count stays at 21.
+
+**CORRECTED 2026-09-07, THE SAME DAY: 0022 IS APPLIED TO `bmf-sandbox` AND NOT
+TO LIVE.** The paragraph above said it was "applied to NO store at all" and
+named `bmf-sandbox` among the three it had not reached; that is quoted rather
+than edited so the change is visible where the stale claim sits. **FT applied it
+to the sandbox on 2026-09-07: one migration, 9 commands, `d1_migrations` 21 → 22.**
+Closure was taken by a direct SELECT on `d1_migrations` rather than by
+`migrations list`, which returned 7403 — see §10's fourth-occurrence amendment.
+
+**VERIFIED READ-ONLY ON THE SANDBOX AFTERWARD: eleven objects, matching what D6
+measured against the local `VACUUM INTO` copy exactly.** Three tables (`bmf`,
+`load_check`, `load_stamp`), five explicit indexes (`idx_bmf_name`,
+`idx_bmf_ruling`, `idx_bmf_state_city`, `idx_load_check_stamp_id`,
+`idx_load_stamp_source_date`) and three PK autoindexes. **All three tables
+empty: 0, 0, 0.**
+
+**§6.10 BRANCH (b) STILL BINDS, NARROWED TO LIVE.** The remote apply against
+`stewardhouse-pilot` is DEFERRED TO FT and has not happened. The applied counts
+are now **sandbox 22, live 21**.
+
+**THE SANDBOX BEING AHEAD IS THE RULED ORDER, NOT DRIFT, and the distinction is
+the whole point of branch (c).** Drift is the sandbox falling BEHIND live, where
+a green result on a stale schema reads exactly like a green result on the current
+one. **Sandbox-ahead is the opposite condition and is what "tested before it
+reaches live" means**: the paragraph below already names the ordering as sandbox
+first, then live, and this is that ordering running. A reader meeting 22-versus-21
+should read it as the rule working.
 **THE GATE IS FT's DELIBERATE STEP, not a slice**, and the ordering that gate
 should follow is the one A114's chain already rules: sandbox first, then live.
 **§6.10 BRANCH (c) RIDES ALONGSIDE**: `bmf-sandbox` exists as of 2026-09-07 and
@@ -2493,6 +2520,36 @@ remote writes are FT-only per §6.10. A local probe cannot answer a question
 about the remote runtime, which is the same shape as the bound-parameter entry
 above: a correct measurement of the wrong target.
 
+**ANSWERED 2026-09-07, FT-RUN ON `bmf-sandbox`: REMOTE D1 ENFORCES FOREIGN
+KEYS.** The paragraph above is left standing rather than rewritten, per this
+file's practice, and what it said is quoted here so the correction is visible
+where the stale claim is: **"Production D1 remains UNVERIFIED, for the reason
+`invites/[id].js:73-74` already gives: checking it needs a remote write, and
+remote writes are FT-only per §6.10."** The requirement was real; what changed is
+that a remote write became SAFE to make.
+
+**THE EVIDENCE.** An INSERT into `load_check` carrying a `stamp_id` with no
+matching `load_stamp` row was REJECTED remotely:
+
+```
+FOREIGN KEY constraint failed: SQLITE_CONSTRAINT
+(extended: SQLITE_CONSTRAINT_FOREIGNKEY) [code: 7500]
+```
+
+**HOW IT WAS ANSWERED IS THE PART WORTH KEEPING.** This question sat unverified
+from 2026-08-27 not because it was hard but because **there was nowhere safe to
+ask it**: the only remote database was production, and the probe is by
+construction a deliberate constraint violation. The sandbox had existed for
+HOURS. The alternative was writing a deliberate violation to production, which
+is why nobody did it for eleven days. **A question can be blocked by the absence
+of a venue rather than by the absence of a method**, and that shape will recur.
+
+**WHAT IT DOES NOT SETTLE.** The result is from `bmf-sandbox`, not from
+`stewardhouse-pilot`. Whether a sandbox result transfers is **A116, and this does
+not close it** — see that entry, which now carries this as its second data point.
+**Nor does it retire the DELETE-PATH ASYMMETRY below**, which is about two code
+paths disagreeing and is untouched by the engine's behaviour being known.
+
 **THE DELETE-PATH ASYMMETRY, recorded because it is what makes this
 load-bearing rather than theoretical.** Two paths remove an athlete and they do
 not agree about the cascade. `functions/api/athletes.js:446` and
@@ -2609,6 +2666,36 @@ both of those a later run of the same thing worked. The 2026-09-01 pair does not
 record its position in the session, so it neither supports that nor contradicts
 it. **The cause remains unknown**, the paragraph above still binds, and no
 runbook step is written here on the strength of one controlled pair.
+
+**AMENDED 2026-09-07: A FOURTH OCCURRENCE, AND IT NARROWS THE NOTE FROM THE
+SESSION TO THE ENDPOINT.** FT-run against `bmf-sandbox`.
+`d1 migrations list --remote` returned **7403 on the session's first remote
+call**. **Immediately afterward `d1 execute --remote` SUCCEEDED TWICE against
+the SAME database, on the same token, in the same session**, returning 21.
+
+**THAT IS EVIDENCE THE PRIOR THREE DID NOT HAVE.** The token was demonstrably
+valid at the moment the refusal happened, so the failure is **specific to the
+migrations endpoint** and is NOT a property of the session, the credential, or
+first-call position. **The "first remote call of a session" reading, which two
+of the three earlier occurrences supported, is therefore weakened rather than
+strengthened**: this one also sat on a first call, and a different command on
+that same first-call session worked.
+
+**FT RE-LOGGED IN AS A PRECAUTION, and it was unnecessary.** Recorded because
+the instinct on a 7403 is to suspect the credential, and this occurrence is the
+one that rules the credential out. **A re-login is not the fix and should not
+become a habit**, since it costs a step and treats a cause the evidence excludes.
+
+**CLOSURE WAS TAKEN BY DIRECT TABLE READ**, the workaround this filing already
+prescribes: a plain SELECT against `d1_migrations` through `d1 execute --remote`,
+which reported the count before and after. **§6.10 step (4) names
+`migrations list` as the closure evidence it will accept, and that command is the
+one that will not run.** The SELECT answers the same question from the same
+database and remains the fallback.
+
+**STILL NOT A DIAGNOSIS.** Nothing observed explains why one endpoint is refused
+while another succeeds on identical credentials. What is now established is
+WHERE the fault is not.
 
 ### Filed — `.dev.vars` corrupted to UTF-16 fails SILENTLY at every layer (2026-09-01)
 
