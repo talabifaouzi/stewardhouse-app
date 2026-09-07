@@ -1008,6 +1008,20 @@ loader without it.
 **NOT SCOPED. A ruling ends the rule step only**, and this build has had no
 scope pass. Twelve failure modes are enumerated in the 2026-09-04 pass and §4
 names four of them, so the scope pass inherits eight the doc does not carry.
+**AN INPUT THE SCOPE PASS MUST WEIGH, RULED 2026-09-07 (Q7): NOTHING IN THIS
+PROJECT ALERTS ON A BAD LOAD.** There is no scheduled execution of any kind, so
+a load that completes and is WRONG is discoverable only by someone looking. That
+raises the value of the loader verifying its own result BEFORE completing the
+swap, the swap being the point after which the previous generation is gone.
+**THIS IS AN INPUT, NOT THE ANSWER.** How a wrong load gets detected is UNRULED
+and is deliberately not settled here. Self-verification is one candidate among
+others, and the scope pass must WEIGH it rather than inherit it as decided.
+**THE CONNECTION TO A94 IS DRAWN HERE BECAUSE NOTHING ELSE DRAWS IT.** A94
+records the same absence on the auth side: `auth_send_log` is written and
+nothing reads it, so a send failure is discoverable only by a deliberate query
+someone thinks to run. **Same shape, different table, and neither entry pointed
+at the other until now** — a durable record that no process observes. A loader
+that writes a stamp nothing reads would be the third instance of it.
 
 **A114 | The BMF sandbox database is authorized and does not exist.**
 Blocker: none. It is FT-run remote work that nothing prevents.

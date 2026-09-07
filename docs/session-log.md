@@ -1627,3 +1627,175 @@ as ruled**, and is recorded here rather than fixed.
 
 Every other commit today has an entry, and **no entry names a commit that is not
 on `main`.** Only three entries name shas at all.
+
+---
+
+## Session — 2026-09-04 to 2026-09-07
+
+**ONE COMMIT, AND THE REST IS RULINGS THAT PRODUCED NO CODE.** `6e76fd8` is the
+only bank. Everything else recorded here is decisions and findings that would
+otherwise exist only in a chat transcript, which is the gap this file exists to
+close.
+
+**DATE SPAN, stated because this file already carries one date discrepancy.**
+The commit is dated 2026-09-04. The session continued without a break and the
+later rulings were made on 2026-09-07. Entries inside `docs/outstanding.md`
+dated 2026-09-04 are correct for what they date; Q7 and Q9 below are 2026-09-07.
+
+---
+
+### Banked
+
+**`6e76fd8`** filed A117, the BMF table migration, and recorded the Q1 and Q2
+sandbox rulings on A114. OPEN 107 to 108, BLOCKING 22 to 23, build chain 18 to
+19. **A8's ingest chain went from five steps to six, and the sixth was SEPARATED
+rather than added**: writing the migration had been folded into applying it.
+
+**Q1 ruled the sandbox stays OUT of `wrangler.toml`.** Q2 then resolved the fork
+rather than trading it off: a separate `bmf-sandbox.toml` passed with `--config`
+leaves production config untouched AND keeps the migrations runner. The
+isolation is tool-enforced, since `pages dev` and `pages deploy` both throw on
+`--config`, so no Pages command can reach the sandbox config at all.
+
+---
+
+### Ruled, with no commit
+
+**Q7: FT RUNS EVERY STEP OF THE BMF LOAD, INCLUDING THE UNDO.** There is no
+second operator, so time-to-recovery is bounded by FT's availability. **This is
+the half of Q7 with no home in the queue**: it is a ruling about a recovery path
+that does not exist, so it fits no current entry and no section of
+`docs/bmf-load-scoping.md`. It belongs in that doc when a recovery section is
+written, which is after the eight questions below are answered. Recorded here so
+it survives the conversation that produced it. The other half of Q7, that
+nothing alerts on a bad load and the scope pass must therefore weigh loader
+self-verification, went onto A113 in this commit.
+
+**Q9: THE PROMOTION AND RECOVERY PATH IS SCOPED TO THE BMF LOAD, NOT TO
+ENVIRONMENT PROMOTION GENERALLY.** The BMF path has real mechanism behind it,
+being the retained dated table, the stamp and the two-rename undo. A general
+rule would be discipline the tooling cannot enforce: both configs share one
+`migrations/` directory and the runner applies everything pending in one shot.
+**The general question is deliberately unanswered rather than dropped.**
+
+**PROMOTION DISSOLVED UNDER INVESTIGATION RATHER THAN BEING DEFERRED**, which is
+why nothing was filed for it. There is no promotion OPERATION for schema: one
+file set, two targets, byte-identical files, the only differences being the
+target, the per-database `d1_migrations` table and which set is pending. For
+data, no supported mechanism copies rows between D1 databases at all. What
+remained was ordering discipline, and Q9 set that aside.
+
+**RECOVERY WAS JUDGED TOO EARLY TO FILE, AND FT ADOPTED THAT JUDGEMENT.** An
+entry would have carried two ruled facts against eight undecided ones, where the
+eight are the substance. It also fails A114's own filing test, which asks
+whether an item gates a build AND holds a ruled sequence position: recovery
+gates the production load but has no ruled position, because nobody has ruled
+whether the undo is built before the first load or reached for after one goes
+wrong. **The eight that remain unruled**: the recovery window; retained dated
+table versus exported `.sql` as the artifact; whether a pre-load export is
+acceptable given it is itself an availability event; whether undo is table-level
+or database-level and what §9's Time Travel disqualification covers; how a wrong
+load gets detected; whether the stamp must distinguish completed-but-wrong from
+stopped-partway; whether sandbox-before-production ordering becomes a rule and
+what enforces it; and whether the sandbox's existence reopens §13's option (b).
+
+---
+
+### Findings
+
+**THE REMOTE `--file` PATH HAS NO CLIENT-SIDE TRANSACTION, so a four-statement
+load file INHERITS A1's unverified rollback guarantee rather than adding to it.**
+`executeRemotely` in the pinned wrangler 4.111.0 contains zero occurrences of
+`batch` or `splitSqlQuery`: with `--file` it computes an md5 etag, calls the
+import API, uploads to R2 and polls; with `--command` it posts a single `query`
+call. The `db.batch()` implicit transaction §1 relies on is a LOCAL-path
+property only. **What this settles is narrower than it first looks**: adding a
+fourth statement does not change the shape of the remote operation, which is one
+file, one etag, one import, one poll either way, so the retained-dated-table
+variant adds no atomicity risk beyond the one A1 already tracks. **It had been
+recorded as "still atomic" earlier the same day, which was an overclaim carried
+over from the local path, and the correction is the finding.**
+
+**THE EM-DASH RULE IS SCOPED TO EXTERNAL-FACING CONTENT ONLY.** Repo docs,
+commit messages and internal artifacts carry no such constraint. **The prior
+framing as a blanket prohibition was wrong**, and it is recorded because a rule
+applied wider than it was written costs edits nobody asked for.
+
+**NO ADVISOR-SCREENING OR ADVISOR-QUESTION CONTENT EXISTS ANYWHERE IN THE TREE.**
+Not shipped, not dark, not planned. Verified by grep at HEAD. The nearest
+analogue is lesson u2, "How to vet a nonprofit", which screens GRANTEES rather
+than advisors and shares none of the relevant questions.
+
+**WHETHER ADVISOR-SCREENING CONTENT FALLS INSIDE PATH B IS UNRULED, AND IT IS
+FILED NOWHERE.** Recorded here as an open question rather than as a queue entry,
+deliberately. The nonprofit analogue was ruled exposure-only, which is
+suggestive and is not a ruling about advisors.
+
+---
+
+### Instrument failures, and the generalization
+
+**TWO CHECKS WRITTEN IN-SESSION RETURNED CONFIDENT WRONG ANSWERS, and a third
+false positive was reported from an earlier session.** All three are the
+CLAUDE.md §10 scanner shape: output that reads like a finding rather than a
+fault.
+
+**1. The OPEN-entry enumerator was blind to letter-suffixed IDs.**
+`^\*\*A[0-9]+ \| ` returned 105 where the file stated 107. **Five controls were
+asserted before the count was trusted, and all five passed**: A8, A113, A114,
+A115 and A116, each present exactly once. **Every one was a plain-numeric ID**,
+so the control set could not see the defect. The cause was A50a and A50b. The
+pattern that reproduces the stated count is `^\*\*A[0-9]+[a-z]? \| `.
+
+**2. An `awk` nearest-preceding-bold-line heuristic reported an orphan entry
+that did not exist.** It correctly surfaced A50a and A50b, then flagged a
+`Pilot:` line whose entry header sat above an intervening bold paragraph. Two
+true positives and one false one from the same run.
+
+**3. FT-REPORTED, from an earlier session and not observed here: a trailer check
+matching a bare case-insensitive "claude" fired on the word CLAUDE.md in a
+commit body.** The replacement matches anchored trailer forms, `^Key: value`
+with hyphenated keys, plus named keys and the footer text, and returned zero on
+`6e76fd8`.
+
+**A FOURTH HYPOTHESIS WAS RAISED AND DISPROVED, recorded because a later reader
+will reach for it too.** The enumerator was suspected of being under-scoped,
+file-wide rather than limited to the OPEN section. **It is not.** PARKED and
+ANSWERABLE-ONLY-BY-FT contain ZERO A-headers, so scoping changes nothing:
+measured at HEAD, naive file-wide and naive OPEN-only both return 106, and
+suffix-aware OPEN-only returns 108. **There was ONE enumerator defect with ONE
+cause, not two.**
+
+**THE GENERALIZATION: a check's controls must span the FORMAT VARIANTS the check
+may encounter, not merely confirm that the check ran.** Five passing controls
+established that the enumerator worked on the shape it was given, and said
+nothing about the shape it was not. This is §10's known-positive-control filing
+one turn further in: **having a control is not sufficient if every control
+shares the property the defect exploits.**
+
+**One instrument failed SAFELY the same day, and it is the counter-example worth
+keeping.** The edit script asserted that each replacement matched exactly once,
+so when LF patterns were run against a CRLF file it refused with zero matches
+rather than writing a mangled document. **That is the assertion the enumerator
+lacked.**
+
+**AND A FIFTH INSTRUMENT FAILED WHILE THIS SECTION WAS BEING WRITTEN**, caught
+by that same assertion. The line-ending check used to decide how to patch these
+two files was a `grep -c` against a shell ANSI-C carriage-return escape, and in
+this shell that escape evaluated to an EMPTY PATTERN, which matches every line.
+It reported "2173 of 2173" and "1629 of 1629", figures that read as confirmation
+and assert nothing. **It happened to be RIGHT about `docs/outstanding.md`, which
+is CRLF, and WRONG about `docs/session-log.md`, which is LF-only**, so the patch
+script converted its patterns to CRLF and matched nothing. Counting CRLF pairs
+directly gives 2297 and 0. **A check whose failure mode is "matches everything"
+cannot be distinguished from success by reading its output**, which is the
+enumerator's defect arriving from the opposite direction.
+
+**A SIXTH, recorded because it is the same lesson a third time in one day:
+writing the paragraph above CORRUPTED it.** The carriage-return escape was
+embedded literally in the patch content, did not survive the shell, and landed
+in the file as a line break mid-sentence. **The printed diff caught it. No check
+did**, because no check was looking at prose. Printing the full diff before
+committing is the only thing that stood between that and a mangled permanent
+record, which is the argument for the bank rule stated as a measured cost rather
+than as protocol.
