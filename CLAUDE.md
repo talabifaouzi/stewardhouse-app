@@ -586,6 +586,41 @@ empty: 0, 0, 0.**
 `stewardhouse-pilot` is DEFERRED TO FT and has not happened. The applied counts
 are now **sandbox 22, live 21**.
 
+**CORRECTED THE SAME DAY, AND BRANCH (b) IS NOW DISCHARGED FOR 0022.** The
+paragraph above said the live apply "is DEFERRED TO FT and has not happened",
+quoted rather than deleted because this is the third state that sentence has
+described in one day. **FT applied 0022 to `stewardhouse-pilot` on 2026-09-07.**
+Pre-check by direct SELECT on `d1_migrations` returned 21; the prompt listed
+exactly one migration, `0022_bmf_table.sql`; **9 commands executed in 2.91 ms**;
+`d1_migrations` went **21 → 22**. Closure was taken by direct SELECT rather than
+`migrations list`, consistent with §10's 7403 narrowing.
+
+**VERIFIED READ-ONLY AFTERWARD: `bmf`, `load_stamp` and `load_check` all present
+and all empty, 0/0/0. `person` returns 12** — the seeded six plus six real rows
+accumulated since launch — **so production is intact and serving.**
+
+**SANDBOX AND LIVE ARE BACK IN LOCKSTEP AT 22, which is R5's steady state.** The
+gap lasted roughly ten minutes and was the ruled order running, sandbox first
+then live. **Branch (b) is discharged for 0022 and branch (c) is satisfied.**
+
+**BOTH APPLIES EXECUTED 9 COMMANDS**, so sandbox and production received
+byte-identical work. That is a third data point on A116, alongside schema parity
+and runtime-behaviour parity, and like the others it is **evidence rather than an
+answer**; A116 stays open.
+
+**THE PRODUCTION AVAILABILITY WINDOW WAS UNDER 3 ms, AND IT SAYS NOTHING ABOUT
+THE LOAD.** The migration creates EMPTY tables, which is why it is fast. §12 of
+`docs/bmf-load-scoping.md` measured the import window at **14,359 to 17,647 ms**
+against 1.9M rows, MODE FAIL, and that measurement is untouched by this one.
+**A reader must not generalise from a fast DDL apply to a fast load**, and this
+sentence exists because the 2.91 ms figure sits in this record where someone
+could.
+
+**PRODUCTION NOW CARRIES A `bmf` TABLE THAT NOTHING READS, AND THAT IS CORRECT
+BY RULING.** R11f: the table is the swap's FIRST GENERATION, and on load one
+there would be nothing to rename away without it. **Its emptiness is the design,
+not an incomplete step.**
+
 **THE SANDBOX BEING AHEAD IS THE RULED ORDER, NOT DRIFT, and the distinction is
 the whole point of branch (c).** Drift is the sandbox falling BEHIND live, where
 a green result on a stale schema reads exactly like a green result on the current
@@ -1250,6 +1285,17 @@ Every substantive change runs as a **slice**. The rhythm:
     `b52292d6-d2a9-4d53-b115-5b57322f4b58`, region ENAM, all 21 migrations
     applied. Its config is `bmf-sandbox.toml` at the repo root, tracked, and
     every sandbox command passes `--config bmf-sandbox.toml` explicitly.
+    **UPDATED 2026-09-07: BOTH DATABASES NOW STAND AT 22**, 0022 having been
+    applied to the sandbox and then to live the same day. "All 21" above was
+    true when written.
+    **THE TWO ARE ADDRESSED BY OPPOSITE CONFIG PATHS, AND THAT IS WHAT MAKES A
+    CROSSED APPLY STRUCTURALLY HARD RATHER THAN MERELY UNLIKELY.** The sandbox
+    apply REQUIRED `--config bmf-sandbox.toml`; the live apply REQUIRED ITS
+    ABSENCE, reading `wrangler.toml`. **Neither could have reached the other
+    database by accident**, because each is selected by a flag the other cannot
+    tolerate. This is the separation Q1 preserved by keeping the sandbox out of
+    `wrangler.toml`, and it is recorded here rather than left as a property
+    someone would have to reconstruct from two config files.
     **WHAT IT CONTAINS, AND THE TRAP IT SETS. Relocated here from A114 before
     that entry closed, because closing an entry DELETES it and these outlive the
     act of creating the database.** Applying all 21 seeds **44 rows, measured

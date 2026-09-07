@@ -1000,6 +1000,20 @@ the most code, and no longer the first one that produces any.**
 Blocker: the sandbox, A114, and the migration that creates the table, A117. Both
 must land first so the loader is written against a table that already carries
 the ruled `PRIMARY KEY` on `EIN` plus indexes.
+**BLOCKER DISCHARGED IN SUBSTANCE 2026-09-07, and this note exists because the
+line above does not say so.** A114 closed when `bmf-sandbox` was created, and
+0022 is now applied to the sandbox AND to live, so **the table exists with the
+ruled shape on both databases** — which is precisely what the clause above says
+the blocker is for. **A113 is reachable.**
+**READ THE BLOCKER AS A STATE, NOT AS AN ENTRY.** A117 remains OPEN on one
+remainder, R13a regeneration, which is A113's own work; so a reader following
+"Blocker: … A117" literally concludes A113 is blocked by an entry that is
+waiting on A113. **It is not.** The blocker was ever the TABLE EXISTING, and it
+does.
+**FILED, NOT FIXED: a blocker line that names an ENTRY when what it needs is a
+STATE will misread the moment that entry stays open for an unrelated reason.**
+Whether to rewrite this line, and whether R13a belongs here rather than on A117,
+is FT's to rule — see the question recorded at the end of A117.
 Pilot: BLOCKING
 Detail: `docs/bmf-load-scoping.md`, §2 for the script shape, §1 for the table,
 §4 for the failure modes.
@@ -1175,9 +1189,45 @@ question is whether a sandbox result TRANSFERS. **Two agreements do not establis
 a general rule**, and nothing here says which disposition a sandbox result
 inherits when it disagrees. FT has not ruled it, and it is not inferred from the
 rulings around it.
+**(3) IDENTICAL WORK, added 2026-09-07 when 0022 reached live.** Both applies
+executed **9 commands**, so the sandbox and production received byte-identical
+work from the same file. **It is the weakest of the three and is recorded as
+such:** it establishes that the same input produced the same command count, not
+that the two engines would agree where they could differ. **Three agreements
+still do not answer whether a result TRANSFERS**, because every one of them is a
+case where the two AGREED, and the question is what to do when they do not. **The
+entry stays open.**
 
-**A117 | The BMF table migration is WRITTEN and APPLIED TO THE SANDBOX, NOT TO
-LIVE. A8's chain named the step and gave it no ID.**
+**A117 | The BMF table migration is WRITTEN and APPLIED TO BOTH DATABASES. It
+stays OPEN on ONE remainder. A8's chain named the step and gave it no ID.**
+**TITLE CORRECTED A THIRD TIME IN ONE DAY, 2026-09-07, and that is recorded
+plainly rather than smoothed.** It has read "is not written", then "APPLIED
+NOWHERE", then "APPLIED TO THE SANDBOX, NOT TO LIVE", each true when written and
+each made false within hours by the next act. **An entry title is a claim with a
+timestamp it does not carry**, and this one moved three times while the work
+moved three times, which is the system behaving correctly rather than a record
+that keeps being wrong.
+**TWO OF THREE REMAINDERS ARE NOW DISCHARGED.** (1) `bmf-sandbox`: **DONE**,
+FT-run 2026-09-07. (2) LIVE `stewardhouse-pilot`: **DONE**, FT-run the same day —
+9 commands in 2.91 ms, `d1_migrations` 21 → 22, verified read-only as three
+present and empty tables with `person` at 12, so production is intact and
+serving. **§6.10 branch (b) is DISCHARGED for 0022** and both databases stand at
+22, R5's steady state. (3) **R13a regeneration from A113's loader constant:
+NOT DONE**, and it waits on A113.
+**SO THE ENTRY DOES NOT CLOSE, judged against its own text.** It states "the
+entry does NOT close" and names three things it carries; one stands. **The OPEN
+count does not move.**
+**BUT THE STANDING REMAINDER IS NOT THIS ENTRY'S WORK, AND THAT CREATES AN
+APPARENT CIRCLE FT SHOULD RULE ON.** R13a is discharged by the A113 slice, which
+regenerates this file from the loader's constant and proves byte-identity —
+work A117 cannot do. Meanwhile **A113's blocker line names A117**. Read
+literally, each waits on the other. **Nothing is actually stuck** (see the note
+on A113, whose blocker is discharged in substance), but the queue reads as
+circular, and it will read that way to whoever meets it next.
+**THE QUESTION, NOT DECIDED HERE: does R13a live on A117, keeping it open until
+A113 completes, or does it move to A113 as an obligation of that slice, letting
+A117 close?** The second is tidier and the first is what the entry currently
+says. **FT has not ruled it and the agent has not moved it.**
 **TITLE CORRECTED A SECOND TIME, 2026-09-07, HOURS AFTER THE FIRST.** It read
 "APPLIED NOWHERE", true when written and made false the same day by FT's sandbox
 apply. **ONE OF THE THREE REMAINDERS IS NOW DISCHARGED**, and they are restated
