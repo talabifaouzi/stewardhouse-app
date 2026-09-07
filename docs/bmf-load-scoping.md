@@ -1223,6 +1223,15 @@ re-import, which reruns the very operation being recovered from.
 
 **Undo is two renames on metadata**: no data movement, no outage, no re-parse.
 
+**R11f, ADDED 2026-09-07: THE MIGRATION IS THIS SWAP'S FIRST GENERATION, and
+that is why the empty table it creates is CORRECT rather than merely harmless.**
+This ruling renames live to a dated name and the aside into place. **On load ONE
+there is nothing to rename away unless the migration created it.** R8e defines
+first-run behaviour for the TREND CHECK and nothing defines it for the SWAP;
+**the migration supplies it**, silently, and that went unrecorded until the A117
+scope pass. **One consequence, flagged and NOT resolved:** generation 1 is then
+an EMPTY table, so a recovery to it under R7 would restore nothing.
+
 ### R6a. CONDITION on R6: the undo file must be safe to rerun
 
 The undo file is itself a remote `d1 execute --file`, so **it carries the same

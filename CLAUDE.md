@@ -603,6 +603,28 @@ drift does not propagate its corrections to the manifest that cites it.** The
 re-score and the manifest read the same tree and disagreed, with the newer
 reading sitting in the doc CLAUDE.md points at rather than in CLAUDE.md itself.
 
+**Third instance, 2026-09-07, and it is a DIFFERENT MECHANISM rather than
+another case of the two above.** Both of those are a claim that was TRUE when
+written and went stale. This one was never checkable at all: **a COUNT cited
+repeatedly whose referent was never written down.** `docs/outstanding.md`
+asserts "twelve failure modes" three times and no document enumerates twelve.
+`docs/bmf-load-scoping.md` §1, `docs/discover-surface-spec.md` and that plan's
+own preamble all name "the four-part load stamp" and **no document names the
+four parts**; only one is even inferable, a source date. Both surfaced in the
+same week, each when someone tried to USE the referent rather than restate it.
+**FILED SEPARATELY FROM A111, WHICH IS THE NEAREST NEIGHBOUR AND IS NOT THE SAME
+THING.** A111 records a false claim that propagated through four links until it
+reached a ruling. Its claim was FALSE AND CHECKABLE: open the tiles and the
+comment is wrong. **A count without a list is not false** — nothing establishes
+there were not twelve modes or four parts — and its cost differs in kind.
+A111's cost was ACTING ON A FALSE PREMISE. This one's cost is BEING UNABLE TO
+ACT AT ALL, because a build inherits "handle the twelve" with no list of twelve.
+**What the two share is the transferable half: a claim accepted on restatement
+without anyone going to the source.** In A111 the source existed and was wrong;
+here the source never existed. **The rule that follows is that A COUNT IS NOT A
+LIST.** When this record cites a quantity of things, the things belong somewhere
+enumerable, because **a count survives restatement and a list does not.**
+
 ---
 
 ## 5.2 ARC: ENTERPRISE ROSTER IMPORT (FT-ruled 2026-08-26)

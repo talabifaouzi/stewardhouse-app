@@ -27,20 +27,27 @@ for what the cadence misses.
 ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
 BMF-and-Discover 11, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: NOTHING MOVED. R10 RULES AN INPUT,
-AND AN INPUT IS NOT AN ENTRY.** The index set is ruled and recorded on A117, on
-A113 and in `docs/bmf-load-scoping.md` §1. **No entry opened, closed, or changed
-group or Pilot**, so OPEN stays at 110, BLOCKING at 22, DEBT at 61 and POST at
-27, the breakdown stays 7 + 15 + 7 + 11 + 32 + 35 + 3 = 110, the restatement
-further down stays at "sum to 110", the counsel-gated line stays at FOUR OF THE
-TWENTY-TWO, and the build chain stays at 18.
-**A ZERO-MOVEMENT CHANGE IS RECORDED RATHER THAN SKIPPED**, because the reason
-it is zero is the substance: **A117's blocker line named TWO conditions and R10
-closed ONE.** The scope pass, and Q4, still block it, so the entry does not move
-even though the thing that was loudest about it is now settled.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: NOTHING MOVED, FOR THE SECOND
+CONSECUTIVE CHANGE. R11 RULES A PLACEMENT, AND A PLACEMENT IS NOT AN ENTRY.**
+Q4 is ruled option (a) and recorded on A117, with R11f in
+`docs/bmf-load-scoping.md` §15 and the count-is-not-a-list pattern in CLAUDE.md
+§5.1. **No entry opened, closed, or changed group or Pilot**, so OPEN stays at
+110, BLOCKING at 22, DEBT at 61 and POST at 27, the breakdown stays
+7 + 15 + 7 + 11 + 32 + 35 + 3 = 110, the restatement further down stays at "sum
+to 110", the counsel-gated line stays at FOUR OF THE TWENTY-TWO, and the build
+chain stays at 18.
+**WHY ZERO AGAIN, AND IT IS NOT THE SAME REASON AS LAST TIME.** R10 left A117
+blocked because its line named two conditions and closed one. **R11 and the
+scope pass DISCHARGE BOTH**, so A117 is unblocked by its own line — and it still
+does not move, because **the migration is not written and an unblocked entry is
+still an open one.** What the pass added is a NEW question the line never named:
+whether the stamp DDL rides A117.
+**TWO CONSECUTIVE ZERO-MOVEMENT CHANGES ARE WORTH NAMING TOGETHER**, because a
+reader watching only the totals would see a queue that has not moved in two
+commits while the thing blocking its longest chain was resolved.
 This block records the LAST change only and is REPLACED rather than appended, so
-it never accumulates into a changelog. The entry it replaced recorded two
-entries filed from the landing-page pass and one defect fixed rather than filed.
+it never accumulates into a changelog. The entry it replaced recorded R10, the
+ruled index set, and also moved nothing.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
 dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 105 rather than 107, because
@@ -1142,10 +1149,14 @@ since it does not gate the run but does bear on what the run's result is worth.
 
 **A117 | The BMF table migration is not written. A8's chain named the step and
 gave it no ID.**
-Blocker: a scope pass, and Q4. **The open INPUT closed 2026-09-07 (R10)**; the
-other half of this line did not. This read "none for the writing itself. It
-needs a scope pass, and one of its inputs is open in the plan it implements"
-until then.
+Blocker: **BOTH HALVES OF THIS LINE ARE NOW DISCHARGED.** The scope pass ran
+2026-09-07, read-only; Q4 is ruled the same day (R11). What remains is NOT from
+this line and arose from the pass: **whether the stamp DDL rides this entry.**
+If it does, this entry needs the four stamp parts, which are enumerated nowhere.
+**So the BMF table is writable and the migration is not writable IN FULL** until
+that is ruled. This line read "a scope pass, and Q4" until then, and before that
+"none for the writing itself. It needs a scope pass, and one of its inputs is
+open in the plan it implements".
 Pilot: BLOCKING
 Detail: `docs/bmf-load-scoping.md` §1 for the ruled table shape; A114 for the
 sandbox it is applied to.
@@ -1186,13 +1197,57 @@ reads "Next number is `0019`. The tree runs `0001` through `0018`, contiguous",
 which was true when written. `0019`, `0020` and `0021` are now taken by
 `person_invited_at`, `athlete_pending_status` and `auth_send_log`. The next free
 number is `0022`.
-**Q4 IS UNRULED AND IS THE SHARPEST QUESTION ON THIS ENTRY:** whether the file
-lands in `migrations/`. If it does, it enters LIVE's unapplied queue the moment
-it banks, and the runner applies every unapplied migration in one loop after a
-single confirmation, so the next `migrations apply --remote stewardhouse-pilot`
-would carry the BMF table onto production. **Nothing in the tooling scopes a
-migration to one database**, and the shared `migrations/` directory that makes
-R5 lockstep cheap is the same property that makes this unavoidable.
+**Q4 RULED 2026-09-07 (R11), OPTION (a): THE FILE LANDS IN `migrations/` WITH
+THE REST**, and production takes it on the next apply. Unanimous across four
+advisory seats.
+**R11a, THE DECIDING ARGUMENT IS ASYMMETRY, NOT COST.** Option (a)'s downside is
+a harmless empty table arriving early on production, undoable by one migration
+on two databases. Option (c)'s downside is a **silent divergence in what each
+database considers a migration, discovered at an unknown later date.** Those are
+not comparable.
+**R11b, OPTION (b) IS AN ERROR RATHER THAN A TRADEOFF**, and is recorded as one:
+a separate `migrations_dir` for the sandbox does not weaken R5, **it inverts
+it**, because the sandbox would stop receiving the main 21 migrations entirely.
+**R11c, OPTION (c) IS RECORDED AS CONSIDERED AND REFUSED**, so a reader who
+discovers `migrations_pattern` independently finds it weighed rather than
+missed. It would put the file in a subdirectory and scope it by glob. **Three
+objections.** Its glob semantics were never executed and **the risky one fails
+silently**: if `**/*.sql` does not match top-level files, the sandbox stops
+receiving the main migrations with nothing failing loudly. It makes the two
+databases **structurally** different in what they consider a migration, where
+today they differ only in what they have **applied**. And what it buys is
+deferring an empty table production needs anyway.
+**R11d, THE GLOB TEST IS NOT RUN.** Two seats independently reasoned its result
+cannot change the answer, since it removes one objection of three. **The
+semantics remain UNVERIFIED**, and this line exists so they are never read as
+tested and passed. minimatch is bundled inside `wrangler-dist/cli.js` and is not
+separately resolvable, so the pass could not execute them.
+**R11e, A FALSE SENTENCE CORRECTED. This entry asserted: "Nothing in the tooling
+scopes a migration to one database."** That is FALSE, verified from source.
+`migrations_pattern` is a per-block minimatch glob doing exactly that:
+`getDatabaseInfoFromConfig` reads it off the individual binding, and
+`getMigrationNames` builds a `Minimatch` from it and returns only matching
+files. The sentence is quoted rather than deleted because **what made it dangerous
+is that it read as settled.** The rest of that paragraph was accurate: the file
+does enter live's unapplied queue on bank, and the runner applies every pending
+migration in one loop after a single confirmation.
+**THE PATTERN THIS SENTENCE BELONGS TO IS RECORDED IN CLAUDE.md §5.1**, the
+manifest-drift note, as its third instance, because it is about how this record
+fails rather than about the BMF table and would be buried when this entry closes.
+**R11f, THE MIGRATION IS THE SWAP'S FIRST GENERATION**, which is why the empty
+table is CORRECT rather than merely harmless: R6 renames live to a dated name
+and the aside into place, and **on load one there is nothing to rename away
+unless this migration created it.** R8e defines first-run behaviour for the
+trend check and nothing defines it for the swap. See `docs/bmf-load-scoping.md`
+§15, R6.
+**STILL UNRULED ON THIS ENTRY, FOUR, all raised by the pass rather than
+inherited:** whether the stamp DDL rides this entry or a later migration, given
+R9 puts the SHAPE in A113 and A113 is blocked on this entry, which is a fresh
+circularity; **what the four parts of the load stamp are**, cited in three
+documents and enumerated in none; how this migration's SQL and A113's JavaScript
+aside DDL stay in agreement, since neither can import the other; and whether
+generation 1 being an EMPTY table is acceptable, given R7 retains three for
+recovery and a recovery to it would restore nothing.
 **R6b, A STANDING CONDITION ON THIS TABLE'S COLUMNS, ruled 2026-09-07.** The
 compliance answer for retaining generations of this table holds BECAUSE the table
 carries only the seven IRS fields. **If it ever carries anything derived, computed
