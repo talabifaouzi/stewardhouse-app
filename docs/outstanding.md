@@ -1250,6 +1250,31 @@ they are cached,
 which `.gitignore` does not currently cover; whether credential staleness
 mid-import stays unhandled as §4 records it; and whether the pass's proposed
 slice-1 boundary is right.
+**ALL SIX RULED 2026-09-07 AS R16 THROUGH R21. THE COUNT IS NOW ZERO**, and the
+list above is kept rather than deleted so the mapping is checkable: R16 the
+constraint assertions, R17 the trend, R18 the exact counts as provenance, R19 the
+cache, R20 the pre-flight, R21 the slice-1 boundary. Full text at
+`docs/bmf-load-scoping.md` §15.
+**WHAT THAT LEAVES OPEN ON THIS ENTRY IS ONE THING, AND THE ENTRY ALREADY NAMES
+IT:** "**NOT SCOPED. A ruling ends the rule step only**, and this build has had
+no scope pass." **That is still true.** Six rulings end the rule step; the scope
+step has not run, and six rulings do not authorize a slice.
+**SO THE ENTRY'S STATE IS: UNBLOCKED, FULLY RULED, NOT SCOPED.** Its blocker is
+discharged in substance — the sandbox exists and the table exists with the ruled
+shape on both databases — and nothing in the rule step remains.
+**TWO ITEMS ARE NOW OPEN THAT WERE NOT BEFORE, and neither blocks.** The two
+UNMEASURED BANDS, R17's ±10% trend band and R8-4's null-rate band, are revisited
+TOGETHER once three or four real extracts exist; neither should be tuned alone.
+And **R17c's GAP**: the trend check catches a halved file and misses a small
+systematic drop, roughly 78,000 organizations at 4%, which is the failure most
+likely to occur.
+**R21a BINDS THE SCOPE PASS WHEN IT RUNS: slice 1's definition of done is written
+BEFORE it is built.** Its output is a roughly 152 MB gitignored artifact that goes
+nowhere until slice 2 exists, so done is a file on disk and a set of numbers
+matching, and the proof includes a row-level check on a quoted EIN carrying a
+leading zero (R21b), not only the distributional figures.
+**ONE CODE CHANGE IS OWED BY THE BUILD AND IS NOT MADE HERE:** the `.gitignore`
+line for `.bmf-cache/`, the root cache path ruled under R19.
 
 **A116 | Whether a sandbox result transfers to production.**
 Blocker: unruled. FT has not ruled it, and it is recorded as open rather than

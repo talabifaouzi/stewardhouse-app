@@ -504,6 +504,22 @@ start of a short command. **The same staleness arriving partway through a
 multi-minute import would not be**, and nothing in this section covers it. The
 remote path in section 7 runs long enough for it to matter. Recorded, not solved.
 
+**R20, 2026-09-07: A PRE-FLIGHT CREDENTIAL CHECK RUNS BEFORE THE MULTI-MINUTE
+REMOTE CALL — a cheap authenticated read that exercises the credential, and on
+failure REPORTS AND STOPS.** It never auto-relogins (R20a): §10 records that a
+precautionary re-login was unnecessary and should not become a habit.
+
+**THE PARAGRAPH ABOVE IS NOT RETIRED BY IT AND STANDS FOR THE MID-CALL CASE.**
+The pre-flight **cannot prevent a token expiring DURING the call**, which is
+exactly what that paragraph describes, so "credential staleness mid-load is
+UNADDRESSED, recorded not solved" remains true as written.
+
+**WHAT THE PRE-FLIGHT DOES BUY, stated so the two are not confused.** It
+addresses starting a long operation with an ALREADY-STALE token — the more common
+case, and the one that wastes the most time. **And it moves that failure to
+second zero, where "did it partially apply" has an unambiguous answer**, which
+the mid-call failure does not.
+
 ### The enumeration, derived 2026-09-07
 
 **TWENTY-SIX MODES. THE COUNT MOVED BECAUSE A LIST REPLACED A NUMBER, NOT
@@ -599,6 +615,23 @@ is close to a checksum because the numbers are specific:
 - NULL `RULING` must equal **0**
 - Per-file contribution: eo1 **278,014**, eo2 **719,134**, eo3 **955,286**,
   eo_xx **2,391**, eo_pr **2,515**
+
+**R18, 2026-09-07: THE EXACT COUNTS ABOVE VERIFY THE MEASURED EXTRACT AND ARE NOT
+A RECURRING TEST.** They were measured from ONE extract in 2026-08. **The IRS
+regenerates this file monthly, so a later extract cannot reproduce them, and
+asserting them on a recurring load would fail on the second load by
+construction.**
+
+**WHAT THEY ARE INSTEAD: the PROVENANCE of R8-4's band centre.** 569,235 and
+574,447 over 1,957,340 are **29.08%** and **29.35%**, and those rates — within a
+band — are what a recurring load checks. This is the R8d provenance pattern
+applied where it had not yet been applied: the measurement stays, next to the
+constant it produced, labelled as its origin rather than as its test.
+
+**THE DISTINCTION IS LOAD-BEARING FOR THE FIRST LOAD ONLY.** Against the 2026-08
+extract these exact figures ARE the check, and that is the one run where a
+column-shift bug is caught by an exact equality. **Every load after it checks
+rates.**
 
 **Any parsing error that shifts a column produces a different null count**, so
 these catch positional drift that a row count cannot.
@@ -1392,16 +1425,24 @@ the LOADER rather than on a separate recovery path**, which is why no recovery
 entry was filed: the work's sequence position is inside A113. §1's swap model,
 stamp table and peak-storage figure carry amendment markers pointing here.
 
-**R13 AND R14 SIT IN THIS SECTION AND ARE NOT AMONG THE TWELVE.** They came from
-the A117 DDL review later the same day, not from the recovery ruling, and they
-are here because they govern the generation tables R6 and R7 create. **The twelve
-is enumerated above rather than left as a number**, so a reader who counts does
-not have to guess which two postdate it. **Counted 2026-09-07: this section
-carries SIXTEEN `###` headings — the twelve, plus R13 and R14, plus the two that
-name no ruling at all ("Still unruled" and "Not a recovery question").** Fourteen
-are rulings. The figure is given rather than described because the first draft of
-this paragraph said fourteen headings, meaning fourteen rulings, and was caught
-by counting them.
+**R13 THROUGH R21 SIT IN THIS SECTION AND ARE NOT AMONG THE TWELVE.** R13 and R14
+came from the A117 DDL review later the same day; R16 through R21 came from the
+loader rulings later still. **None came from the recovery ruling**, and they are
+here because they govern the tables and the loader that R6 through R9 describe.
+**The twelve is enumerated above rather than left as a number**, so a reader who
+counts does not have to guess which postdate it.
+**Counted 2026-09-07 AFTER the loader rulings: this section carries TWENTY-THREE
+`###` headings** — the twelve, plus R13, R14 and R16 through R21, plus three that
+name no ruling at all ("Still unruled", "Not a recovery question", and "Open,
+from the R16–R21 rulings"). **Twenty are rulings.**
+**THIS FIGURE HAS NOW BEEN WRONG TWICE AND IS RECORDED BOTH TIMES.** The first
+draft said fourteen headings meaning fourteen rulings, caught by counting. It
+then read SIXTEEN, which was true when written and which the R16–R21 rulings made
+false hours later. **A heading count in a growing section is a live figure wearing
+a date, which is exactly what §5.1's event-versus-state test warns about**, and it
+is kept here rather than removed because a reader who counts should be able to
+check it. R15 is absent by design: it governs entry closure and is recorded on
+`docs/outstanding.md`, not here.
 
 ### R6. The backup artifact is a RETAINED DATED TABLE, not an exported `.sql`
 
@@ -1460,6 +1501,20 @@ Run PRE-SWAP, against the aside table:
 
 **Any failure means NO SWAP.** The aside table is left named and stamped failed,
 and live is untouched.
+
+**AMENDED 2026-09-07 BY R16, R17 AND R18. The five above are kept verbatim as the
+ruled set; what each one MEANS is now settled and two of them changed subject.**
+
+- **Check 2 and check 3 are no longer data counts.** R16 converts them to
+  PRE-SWAP CONSTRAINT ASSERTIONS, `aside_schema_pk` and `aside_schema_notnull`.
+  As data counts they cannot fail: a duplicate `EIN` and a null in a `NOT NULL`
+  column cannot survive the load, verified by execution.
+- **Check 4's band centre is now provenance-backed rather than a repeated
+  measurement.** R18: §5's exact counts are the ORIGIN of 29.08% and 29.35%, not
+  a recurring test.
+- **Check 5's "trend" is defined.** R17: computed over `row_count` in STAMP rows,
+  ±10%, against the mean of prior COMPLETED loads, skipped on loads one through
+  three and RECORDED as skipped.
 
 ### R8a. NO override flag
 
@@ -1565,6 +1620,152 @@ therefore be known when the aside is created**, not computed at swap time.
 name and the retained generation back into place, so **the undo needs its own
 timestamp in the same format, and the stamp row for the undo records it.**
 Otherwise a rollback produces a table nothing recorded.
+
+### R16. R8-2 and R8-3 become PRE-SWAP CONSTRAINT ASSERTIONS, not data counts
+
+**As data counts they CANNOT FAIL**, verified by execution: a duplicate `EIN` and
+a null in a `NOT NULL` column cannot survive the load. Converted, they check that
+**the schema is the one you think it is**: read `table_info` and `index_list` on
+the ASIDE, BEFORE the swap, and assert the PRIMARY KEY is on `ein`, the named
+columns report `notnull=1`, and the PK's automatic index exists.
+
+**R16 AMENDED ON ITS OWN RULING DAY: `aside_schema_notnull` ASSERTS FIVE COLUMNS
+INCLUDING `ein` — `ein`, `name`, `city`, `state`, `ruling`.** As first written it
+said "the four columns", meaning the nationally-non-null four, **which would have
+left `ein`'s own `NOT NULL` asserted by nothing.** A non-INTEGER `PRIMARY KEY` in
+SQLite does not imply `NOT NULL`; §10's promoted filing and the migration's own
+comment both record that the explicit `NOT NULL` on `ein` is load-bearing and is
+the first thing a tidy-up removes. **So the exact drift R16 exists to catch would
+have passed all three assertions as originally specified.**
+**RECORDED AS THE SAME CLASS AS ANCHOR-ON-HEADER:** the assertion was correct and
+the SPECIFICATION was too narrow. The gap was found by checking the check against
+what it was for, which is the only thing that finds this class.
+
+**R16a, WHY THIS IS MORE THAN TIDYING.** R13 makes the loader authoritative for
+the DDL and the migration derived from it, so **the loader builds the aside from
+its own constant and nothing currently checks that the constant produced what it
+claims.** R13b asserts the three index NAMES after the swap and says nothing
+about the primary key or the NOT NULLs. **An aside built from a drifted DDL could
+carry the right indexes and the wrong constraints, and the swap would ship it
+with every count correct.**
+
+**R16b. THEY RUN PRE-SWAP AND ARE PART OF THE GATE**, not a post-swap
+observation. R8b catches drift after it shipped; catching it before means the
+aside is discarded and live was never touched.
+
+**R16c. THEY ARE NAMED FOR WHAT THEY CHECK** — `aside_schema_pk`,
+`aside_schema_notnull` — so the `load_check` rows read honestly. **Two of R8's
+five are now checks on the LOADER rather than on the DATA, and the naming must
+make that visible.**
+
+### R17. "Trend" is computed over `row_count` in STAMP rows, ±10%
+
+Over stamp rows rather than generation tables, **because stamps accumulate while
+generations are pruned at three**. The band is ±10% against the mean of prior
+COMPLETED loads.
+
+**R17a. THE BAND IS PROVISIONAL AND MARKED AS SUCH**, the same treatment the
+index set gets under R10c. **Nobody has measured month-over-month variance in the
+BMF file; 10% is a reasoned guess and must not read as a measurement.** Revisable
+once three or four real extracts exist.
+
+**R17b. ON LOADS ONE THROUGH THREE THE CHECK IS SKIPPED AND THE STAMP RECORDS
+THAT IT WAS SKIPPED**, not that it passed. A `load_check` row reading "skipped,
+insufficient history" is honest; **an absent row reads as an omission.**
+
+**R17c, RECORDED SO IT IS NOT COUNTED AS COVERAGE IT DOES NOT PROVIDE.** A 10%
+band catches a file that HALVED. **It does NOT catch a small systematic drop —
+4% of 1,957,340 is roughly 78,000 organizations — and that is the failure most
+likely to occur.** A tighter band would produce blocked loads requiring a code
+edit each time, since R8a permits no override. **This gap is open, not solved.**
+
+### R18. §5's exact null counts become PROVENANCE, not a test
+
+**The band governs a recurring load.** §5 asserts 569,235 and 574,447 exactly,
+measured from ONE extract in 2026-08. **A file the IRS regenerates monthly cannot
+reproduce them, so asserting them would fail on the second load by
+construction.** They are restated as the ORIGIN of R8-4's band centre — those
+counts over 1,957,340 being 29.08% and 29.35% — **which is the R8d provenance
+pattern applied where it had not yet been applied.**
+
+### R19. Downloaded extracts live in a gitignored cache and are CACHED
+
+**RULED PATH: `.bmf-cache/` AT THE REPO ROOT.** Three reasons for caching at all:
+a failed load means re-running, and re-downloading roughly 152 MB turns a
+five-minute retry into a twenty-minute one **on the slice most likely to need
+several attempts**; caching FIXES the extract across attempts, so a parse
+difference between run one and run three is a parse difference and not a file
+difference; and a directory is one gitignore line where a filename pattern is a
+guess.
+
+**WHY ROOT RATHER THAN `scripts/`, decided against the repo and not by taste.**
+`.gitignore` contains **ZERO nested ignored directories**, and all four
+`scripts/` entries are FILE patterns; every ignored directory sits at root. It is
+tool state the loader maintains and may delete, which is `.wrangler/`'s role, and
+`.wrangler/` is at root. Root also survives the loader moving out of `scripts/`.
+**Stated honestly: every ignored directory in that file today is TOOL-defined, so
+this is the first project-chosen one and sets a precedent rather than following
+one.**
+
+**THE `.gitignore` LINE IS NOT WRITTEN HERE.** Recording the ruling is docs; the
+line is a code change and is owed by the build slice.
+
+**R19a. THE CACHE RECORDS WHICH EXTRACT IT HOLDS** — source date and download
+date, or a directory named for the extract date. **A cached directory with no
+marker is how August's file gets loaded in October believing it is October's.**
+
+**R19b. THE CACHE IS NOT A BACKUP.** Safe to delete at any time, and the loader
+re-downloads cleanly if it is gone. **If the cache and the stamp's `file_set`
+ever disagree, the STAMP is the record and the cache is the suspect.**
+
+### R20. A pre-flight credential check runs before the multi-minute remote call
+
+A cheap authenticated read that exercises the credential; **on failure it REPORTS
+AND STOPS.**
+
+**R20a. IT NEVER AUTO-RELOGINS.** §10 already records that a precautionary
+re-login was unnecessary and should not become a habit. **The pre-flight reports;
+it does not fix.**
+
+**R20b. WHAT IT DOES NOT BUY, and §4's record must keep saying so.** It cannot
+prevent a token expiring DURING the call, so §4's "credential staleness mid-load
+is UNADDRESSED, recorded not solved" **stands for the mid-call case**. What the
+pre-flight addresses is starting a long operation with an ALREADY-STALE token,
+which is the more common case and wastes the most time — **and it makes that
+failure happen at second zero, where "did it partially apply" has an unambiguous
+answer.**
+
+### R21. The slice-1 boundary stands: parse and emit, no database contact
+
+**It is the only part unblocked**, and it isolates the one component with no
+precedent in this repo and a failure mode aggregates cannot catch. **The test
+that makes it right rather than merely convenient: slice 1 can be PROVEN on its
+own against §5's measured distributional figures, and slice 2 cannot be proven
+without slice 1.** That is the correct direction.
+
+**R21a. SLICE 1's DEFINITION OF DONE IS WRITTEN BEFORE IT IS BUILT, or it
+drifts.** Its output is a roughly 152 MB gitignored artifact that goes nowhere
+until slice 2 exists, **so "done" is a file on disk and a set of numbers
+matching — not a working feature.**
+
+**R21b. THE PROOF INCLUDES A ROW-LEVEL CHECK, not only the distributional
+figures.** Specifically **a quoted EIN carrying a leading zero**, because §5
+already warns a quoting bug hides at six-in-278,014 density and §2's EIN quoting
+HARD REQUIREMENT lives in this slice.
+
+### Open, from the R16–R21 rulings and not settled by them
+
+**TWO, flagged by the team and recorded as open rather than as rulings.**
+
+**THE TWO UNMEASURED BANDS ARE REVISITED TOGETHER.** R17's ±10% trend band and
+R8-4's null-rate band are both reasoned guesses, and **neither should be tuned
+alone** — they are revisited once three or four real extracts exist and
+month-over-month variance can be measured rather than assumed.
+
+**R17c's GAP STANDS.** The trend check misses the failure most likely to occur, a
+small systematic drop. **Recorded here as well as at R17c so it is not lost in a
+sub-clause**, because a check that catches the unlikely case and misses the
+likely one is worse than none if it is read as coverage.
 
 ### Still unruled — FOUR
 
