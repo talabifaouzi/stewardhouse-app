@@ -1535,18 +1535,24 @@ counts does not have to guess which postdate it.
 THIRTY-ONE `###` headings** — the twelve, plus R13, R14 and R16 through R29,
 plus three that name no ruling at all ("Still unruled", "Not a recovery
 question", and "Open, from the R16–R21 rulings"). **Twenty-eight are rulings.**
-**THIS FIGURE HAS NOW MOVED THREE TIMES IN ONE DAY AND EVERY MOVE IS RECORDED.**
-The first draft said fourteen headings meaning fourteen rulings, caught by
-counting. It then read SIXTEEN, true when written and made false hours later by
-R16–R21. It then read TWENTY-THREE, true when written and made false the same
-evening by R22–R29. **A heading count in a growing section is a live figure
-wearing a date, which is exactly what §5.1's event-versus-state test warns
-about.**
-**IT IS KEPT RATHER THAN REMOVED, AND THE THIRD MOVE IS WHY THAT IS NOW A
-QUESTION.** A figure that goes stale on every ruling batch costs an edit each
-time and buys a reader one check. It is kept because FT ruled it kept and because
-a reader who counts should be able to check it; **whether it survives a fourth
-batch is worth deciding rather than defaulting.**
+**THIS FIGURE HAS MOVED SEVERAL TIMES IN A SINGLE DAY AND IS EXPECTED TO MOVE ON
+EVERY RULING BATCH**, so a reader meeting a stale count should read it as
+staleness and recompute, not as an error.
+
+**R30, RULED 2026-09-07: THE COUNT IS KEPT AND ITS CHANGE HISTORY IS DROPPED.**
+This paragraph carried four dated corrections, each naming what the figure had
+previously read and why it moved. **R30a, the reasoning, which is the general
+point: a figure that is CHECKABLE does not need a record of having been wrong; a
+LESSON does, and that lesson is already filed.** Four dated corrections in a
+section header is prose accumulating around a number anyone can recompute in a
+second — the count-versus-list shape in miniature, arriving as its own inverse.
+
+**RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN, deliberately.** A
+heading for R30 would make this section thirty-two and its own ruling count
+twenty-nine, so recording a ruling about the count would change the count it
+governs. **The reason sits next to what it governs, which is §6.16's relocation
+test rather than a special case.**
+
 R15 is absent by design: it governs entry closure and is recorded on
 `docs/outstanding.md`, not here.
 
