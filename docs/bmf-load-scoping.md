@@ -401,9 +401,41 @@ prefix.
 
 **NO SCHEMA CONSTRUCT PREVENTS IT.** Not the type, not the key, not a CHECK. It
 is a property of how the loader emits values, which is why it lives in the script
-contract. `escapeSql` in both precedents (`seed-invites.mjs:51`,
-`provision-institution.mjs:68`) is `str.replace(/'/g, "''")` and returns the
-string unquoted, so quoting is the caller's job at every site.
+contract.
+
+**R29, CORRECTED 2026-09-07: THE TWO PRECEDENTS DIFFER, AND THE DIFFERENCE IS
+DANGEROUS.** This paragraph read: "`escapeSql` in both precedents
+(`seed-invites.mjs:51`, `provision-institution.mjs:68`) is
+`str.replace(/'/g, "''")` and returns the string unquoted, so quoting is the
+caller's job at every site." **The last clause is true and the first is false**,
+verified by reading both:
+
+- **`seed-invites.mjs:52` is `str.replace(/'/g, "''")`** — it **THROWS** on
+  `null`. Loud, and therefore safe.
+- **`provision-institution.mjs:69` is `String(str).replace(/'/g, "''")`** — it
+  **COERCES** `null` to the literal text `"null"`.
+
+**FOLLOWING THE SENTENCE AS WRITTEN WOULD EMIT `'null'` AS A TEXT VALUE INTO THE
+TWO NULLABLE COLUMNS — roughly 1.1 MILLION CELLS — SILENTLY.** `revenue_amt` is
+null on 569,235 rows and `ntee_cd` on 574,447. Every R8 check would pass: the row
+count, the distinct `EIN`, the `NOT NULL` constraints and the PK are all
+untouched by it. **`ntee_cd` would read as the four-character string `null` and
+`revenue_amt`, an INTEGER column, would take `'null'` under type affinity.**
+
+**WHICH ONE IS SAFE FOR THIS USE: NEITHER, UNMODIFIED.** `seed-invites`'s form is
+the safe BASE, because failing loudly on an unexpected null is the right default
+— but slice 1 has 1.1M EXPECTED nulls, so it must not reach `escapeSql` at all.
+**The nullable columns are branched BEFORE escaping and emit the bare SQL keyword
+`NULL`**, never `''` and never `'null'`. `String()`-wrapping is refused outright
+here: it converts the one failure mode that announces itself into the one that
+does not.
+
+**Corrected NOW rather than by the build (R29), because a contract left wrong is
+a contract the build inherits**, and this is the sentence an implementer would
+reach for first.
+
+**Quoting remains the caller's job at every site**, which is what makes the EIN
+requirement above a script obligation rather than a schema one.
 
 **This is mode 7 of §4**, and the §4 row is the failure mode; this is the
 obligation.
@@ -412,6 +444,23 @@ obligation.
 difficulty.** They generate ONE SMALL temp file. This generates roughly **152 MB
 across about 5,600 statements**. Neither precedent has a resumable write, a
 progress signal, or a partial-failure state, because neither ever needed one.
+
+**R28, 2026-09-07: THE `--local` / `--remote` SKELETON ABOVE DOES NOT BIND SLICE
+1, AND THIS SECTION SAYS SO RATHER THAN LEAVING IT TO BE RECONCILED.** That
+contract was written before the slice split existed and assumes a script that
+EXECUTES. **Slice 1 makes no database contact by ruling (R21)**, so both flags
+are meaningless and a `DB_NAME` constant has nothing to name.
+
+**SLICE 1 IS EXEMPT FROM EXACTLY THREE THINGS:** the `--local` / `--remote`
+usage-docblock pair, the `DB_NAME` constant, and the `spawnSync` on
+`wrangler d1 execute`. **EVERYTHING ELSE IN THIS SECTION STILL BINDS:** `scripts/`
+placement, `fail(msg)` exiting 1, the gitignored temp file, `escapeSql` as
+corrected above, chunking to the byte budget, and the EIN quoting HARD
+REQUIREMENT.
+
+**Recorded because a contract a slice cannot satisfy is worse than one it is
+exempt from:** the first reads as a defect and invites someone to invent a
+`--local` flag for a script with nothing to connect to.
 
 **The §6.15 split:**
 
@@ -438,6 +487,25 @@ progress signal, or a partial-failure state, because neither ever needed one.
 **The file-set check comes FIRST.** Taking all six double-loads 4,906
 organizations, and the symptom is a duplicate-key failure far downstream from
 the cause.
+
+**THE IRS POSTS ON THE SECOND TUESDAY OF THE MONTH**, documented in IRS
+Publication 5926 and consistent with the 2026-08-11 posting. **The cadence is
+close but not exact:** the 2026-09 file carries `Last-Modified` 2026-09-07, a day
+BEFORE that month's second Tuesday. **A scheduling fact for load planning, not a
+rule** — do not build a check that assumes the exact day.
+
+**R26, 2026-09-07: ALL BYTE COUNTS ARE FROZEN ON FIRST DOWNLOAD, the same
+treatment the 28-column header string requires.** Only `eo1` at **48,629,769 B**
+is recorded above; the other four or five are UNRECORDED, so the Download row's
+"recorded sizes" is today a check against one file. **Capture them on the first
+run with R8d provenance naming the extract date.**
+
+**AND TREAT THEM AS A DATED RECORD RATHER THAN A PERMANENT CONSTANT**, on R23's
+reasoning: a regenerated file changes sizes, so a frozen byte count verifies the
+extract it was measured from and nothing else. **The same is true of the header
+string, with one difference worth knowing: the header is expected to be STABLE
+across extracts and the sizes are expected to MOVE**, so a header mismatch is a
+refusal and a size mismatch against a NEW extract is an update.
 
 **Identifying the bound local store comes BEFORE any of it.** Two `.sqlite` files
 sit under `.wrangler/state/v3/d1/miniflare-D1DatabaseObject/`, and applying work
@@ -632,6 +700,38 @@ constant it produced, labelled as its origin rather than as its test.
 extract these exact figures ARE the check, and that is the one run where a
 column-shift bug is caught by an exact equality. **Every load after it checks
 rates.**
+
+**AMENDED BY R22, 2026-09-07: THE SENTENCE ABOVE NO LONGER DESCRIBES THE FIRST
+LOAD, BECAUSE THE 2026-08 EXTRACT IS NOT OBTAINABLE.** Checked against the
+Wayback availability API: `eo1` is archived at 2026-08-12, one day after the
+2026-08-11 posting; **`eo2` has NO archived snapshot at all**; `eo3`'s closest is
+2026-02-25; and `eo4`'s is 2026-08-03, which PREDATES the August posting and is
+therefore the JULY extract. **Three different months and one missing file.**
+Loading that combination would produce a file set that never existed together,
+with organizations doubled, absent or stale — **worse than a fresh download, not
+better.**
+
+**SO SLICE 1 PROVES AGAINST A FRESH DOWNLOAD, and R22a rules what the proof
+is:** the EXTRACT-INDEPENDENT checks — row count equals distinct `EIN`, per-file
+contributions summing to the total, zero malformed rows, zero null `RULING`, and
+the four row-level checks including R21b's leading-zero EIN and a comma-bearing
+name round-tripping byte for byte. **These hold on ANY extract and are what every
+future load actually runs.** The four absolute figures above are not the proof,
+which R18 had already ruled.
+
+**R22b, THE COST OF A FRESH EXTRACT IS MEASURED AND IS NEAR ZERO.** The IRS
+record count went **1,938,732** on an IRS page dated 2026-03-10 to **1,957,340**
+measured in 2026-08 — roughly **0.2% per month**. A September extract is not
+meaningfully different data. **Stated with its limit: those two figures come from
+DIFFERENT SOURCES**, an IRS page and the spike's own measurement, and are not one
+series.
+
+**R23: WHEN SLICE 1 MEASURES A FRESH EXTRACT, ITS FIGURES SIT BESIDE THESE AS A
+SECOND DATED PROVENANCE RECORD. They do not replace them.** The counts above
+remain the ORIGIN of R8-4's band centre and are still load-bearing for that
+constant; **replacing them would erase the derivation of a figure still in
+use.** Two dated records, each labelled with its extract, per the
+event-versus-state distinction filed 2026-09-07.
 
 **Any parsing error that shifts a column produces a different null count**, so
 these catch positional drift that a row count cannot.
@@ -1431,17 +1531,23 @@ loader rulings later still. **None came from the recovery ruling**, and they are
 here because they govern the tables and the loader that R6 through R9 describe.
 **The twelve is enumerated above rather than left as a number**, so a reader who
 counts does not have to guess which postdate it.
-**Counted 2026-09-07 AFTER the loader rulings: this section carries TWENTY-THREE
-`###` headings** — the twelve, plus R13, R14 and R16 through R21, plus three that
-name no ruling at all ("Still unruled", "Not a recovery question", and "Open,
-from the R16–R21 rulings"). **Twenty are rulings.**
-**THIS FIGURE HAS NOW BEEN WRONG TWICE AND IS RECORDED BOTH TIMES.** The first
-draft said fourteen headings meaning fourteen rulings, caught by counting. It
-then read SIXTEEN, which was true when written and which the R16–R21 rulings made
-false hours later. **A heading count in a growing section is a live figure wearing
-a date, which is exactly what §5.1's event-versus-state test warns about**, and it
-is kept here rather than removed because a reader who counts should be able to
-check it. R15 is absent by design: it governs entry closure and is recorded on
+**Counted 2026-09-07 AFTER the scope-pass rulings: this section carries
+THIRTY-ONE `###` headings** — the twelve, plus R13, R14 and R16 through R29,
+plus three that name no ruling at all ("Still unruled", "Not a recovery
+question", and "Open, from the R16–R21 rulings"). **Twenty-eight are rulings.**
+**THIS FIGURE HAS NOW MOVED THREE TIMES IN ONE DAY AND EVERY MOVE IS RECORDED.**
+The first draft said fourteen headings meaning fourteen rulings, caught by
+counting. It then read SIXTEEN, true when written and made false hours later by
+R16–R21. It then read TWENTY-THREE, true when written and made false the same
+evening by R22–R29. **A heading count in a growing section is a live figure
+wearing a date, which is exactly what §5.1's event-versus-state test warns
+about.**
+**IT IS KEPT RATHER THAN REMOVED, AND THE THIRD MOVE IS WHY THAT IS NOW A
+QUESTION.** A figure that goes stale on every ruling batch costs an edit each
+time and buys a reader one check. It is kept because FT ruled it kept and because
+a reader who counts should be able to check it; **whether it survives a fourth
+batch is worth deciding rather than defaulting.**
+R15 is absent by design: it governs entry closure and is recorded on
 `docs/outstanding.md`, not here.
 
 ### R6. The backup artifact is a RETAINED DATED TABLE, not an exported `.sql`
@@ -1669,6 +1775,21 @@ index set gets under R10c. **Nobody has measured month-over-month variance in th
 BMF file; 10% is a reasoned guess and must not read as a measurement.** Revisable
 once three or four real extracts exist.
 
+**FIRST ACTUAL DATA ON THAT GUESS, 2026-09-07, AND IT IS NOT A RULING: THE BAND
+IS ROUGHLY TWO ORDERS OF MAGNITUDE TOO LOOSE.** Real month-over-month movement is
+about **0.2%, roughly 3,800 rows**, derived from 1,938,732 on an IRS page dated
+2026-03-10 against 1,957,340 measured in 2026-08. **±10% tolerates about
+196,000.** Stated with its limit, as at R22b: those two figures come from
+different sources and are not one series, and one derived comparison is not a
+variance measurement.
+
+**THE BAND IS NOT RE-TUNED HERE**, because R17a rules it revisited TOGETHER with
+R8-4's null-rate band once three or four real extracts exist, and **one derived
+comparison is not that.** What this does is sharpen the objection already
+recorded at R17c: a band that tolerates 196,000 when the real signal is 3,800
+catches a halved file and misses the small systematic drop, **which is now
+quantified rather than argued.**
+
 **R17b. ON LOADS ONE THROUGH THREE THE CHECK IS SKIPPED AND THE STAMP RECORDS
 THAT IT WAS SKIPPED**, not that it passed. A `load_check` row reading "skipped,
 insufficient history" is honest; **an absent row reads as an omission.**
@@ -1752,6 +1873,66 @@ matching — not a working feature.**
 figures.** Specifically **a quoted EIN carrying a leading zero**, because §5
 already warns a quoting bug hides at six-in-278,014 density and §2's EIN quoting
 HARD REQUIREMENT lives in this slice.
+
+### R22. Slice 1 proves against a FRESH download, not the 2026-08 extract
+
+**Forced by evidence rather than chosen.** The 2026-08 extract is not obtainable:
+`eo1` archived 2026-08-12, **`eo2` not archived at all**, `eo3` closest at
+2026-02-25, `eo4` at 2026-08-03 which is the JULY file. **Three months and a
+gap** — a set that never existed together. Full detail and the R22a/R22b
+reasoning sit in §5, beside the figures they govern.
+
+### R23. New figures sit BESIDE §5's as a second dated provenance record
+
+**They do not replace them.** §5's counts remain the origin of R8-4's band centre
+and are still load-bearing for that constant. **Replacing them would erase the
+derivation of a figure still in use.**
+
+### R24. The emitted INSERTs target `bmf_aside`
+
+R14 establishes `bmf_gen_` as the generation namespace and `bmf_aside` is already
+the aside's name throughout §1 and the generator. **Naming `bmf` would emit
+statements that could load straight onto the LIVE table if the file were ever
+executed by hand — a foot-gun for zero benefit.**
+
+### R25. Both a JSON sidecar and a stdout summary
+
+The **sidecar** sits beside the emitted `.sql` and is what slice 3's verifier
+reads; the **stdout summary** is what a human reads when the run finishes.
+`scripts/d1-window-generate.mjs` already writes a JSON summary, so the shape has
+precedent.
+
+### R26. All byte counts are frozen on first download
+
+Recorded at §3 with the header string it parallels. **Dated record, not permanent
+constant** (R23's reasoning), since a regenerated file changes sizes.
+
+### R27. An in-memory `node:sqlite` parse-check does NOT violate R21
+
+**R21 excludes D1, and the reason it excludes D1 is that D1 is REMOTE, GATED,
+SHARED and FT-RUN.** An in-memory database that exists for microseconds inside a
+verifier is a **PARSING TOOL, not a database**: no persistence, no target, no
+operator step. It is also the cheapest available proof that the emitted file is
+loadable at all.
+
+**THE DISTINCTION IS RECORDED AS THE REASONING, NOT JUST THE PERMISSION, so a
+later reader does not extend it to a LOCAL D1 STORE — which IS persistent, IS
+bound to the tools, and is exactly what §10's double-store filing is about.**
+In-memory and ephemeral is the test; "not remote" is not.
+
+### R28. §2's `--local` / `--remote` skeleton does not bind slice 1
+
+Recorded at §2. **Exempt from three things** — the flag pair, `DB_NAME`, and the
+`spawnSync` — **and bound by everything else**, including the EIN quoting hard
+requirement.
+
+### R29. §2's `escapeSql` sentence is corrected NOW, not by the build
+
+Recorded at §2, with the false clause quoted rather than deleted. **The two
+precedents differ: one THROWS on null, one coerces it to the text `"null"`**, and
+following the sentence as written would put `'null'` into roughly 1.1 million
+nullable cells silently. **A contract left wrong is a contract the build
+inherits.**
 
 ### Open, from the R16–R21 rulings and not settled by them
 

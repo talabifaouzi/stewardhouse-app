@@ -1275,6 +1275,25 @@ matching, and the proof includes a row-level check on a quoted EIN carrying a
 leading zero (R21b), not only the distributional figures.
 **ONE CODE CHANGE IS OWED BY THE BUILD AND IS NOT MADE HERE:** the `.gitignore`
 line for `.bmf-cache/`, the root cache path ruled under R19.
+**THE SCOPE PASS RAN 2026-09-07 AND ITS EIGHT QUESTIONS ARE ALL RULED AS R22
+THROUGH R29.** Full text at `docs/bmf-load-scoping.md` §15, with R22, R23, R26,
+R28 and R29 also recorded in §5, §3 and §2 beside the text each governs. **The
+entry is still NOT BUILT and no slice is open**; what has changed is that the
+scope step is now done as well as the rule step.
+**THE ONE THAT CHANGED THE DEFINITION OF DONE: R22.** The 2026-08 extract is NOT
+OBTAINABLE — `eo2` has no archived snapshot at all, and the other three archive
+to three different months — so slice 1 proves against a FRESH download and the
+proof is the EXTRACT-INDEPENDENT checks, not §5's four absolute figures. **The
+pass had flagged this as a possible tension between R18 and R21; the evidence
+settled it.**
+**A THIRD OPEN ITEM JOINS THE TWO ALREADY RECORDED ABOVE, and it is not a
+ruling:** the ±10% trend band is **roughly two orders of magnitude too loose** —
+real month-over-month movement is about 0.2%, roughly 3,800 rows, against a band
+tolerating about 196,000. **This is the FIRST ACTUAL DATA on a figure R17a called
+a reasoned guess**, and it sharpens R17c's objection rather than resolving it.
+**The band is NOT re-tuned**, because R17a rules it revisited together with
+R8-4's band once three or four real extracts exist, and one derived comparison is
+not that.
 
 **A116 | Whether a sandbox result transfers to production.**
 Blocker: unruled. FT has not ruled it, and it is recorded as open rather than
