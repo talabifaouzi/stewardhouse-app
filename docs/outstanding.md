@@ -1160,8 +1160,18 @@ result inherits.
 because no pilot user reaches this question; whether it should rise is open,
 since it does not gate the run but does bear on what the run's result is worth.
 
-**A117 | The BMF table migration is not written. A8's chain named the step and
-gave it no ID.**
+**A117 | The BMF table migration is WRITTEN and APPLIED NOWHERE. A8's chain named
+the step and gave it no ID.**
+**TITLE CORRECTED ON AUTHORING, 2026-09-07.** It read "The BMF table migration is
+not written", which this entry's own commit made false. **The entry does NOT
+close**, and the three things it still carries are named here rather than left to
+be inferred: (1) the file is applied to NO store — not the local dev store, not
+the sandbox, not remote — and every apply is FT-run per §6.10 and §6.15; (2)
+under §6.10 branch (c) the sandbox receives it alongside whichever branch the
+live apply takes, and the deferral note for both is in CLAUDE.md §5.1; (3) under
+R13a the file is PROVISIONAL and is regenerated from A113's loader constant once
+that constant exists, byte-identical proving the derivation retroactively.
+**Authoring discharged the writing, and nothing else.**
 Blocker: **BOTH HALVES OF THIS LINE ARE NOW DISCHARGED.** The scope pass ran
 2026-09-07, read-only; Q4 is ruled the same day (R11). What remains is NOT from
 this line and arose from the pass: **whether the stamp DDL rides this entry.**
@@ -1393,6 +1403,14 @@ rollback produces a table nothing recorded.**
 **PROPOSED DDL, THREE TABLES. THIS IS A PROPOSAL IN THIS ENTRY, NOT A MIGRATION
 ON DISK**, and stays one until FT approves it separately — and now until D6's
 apply has run.
+**SUPERSEDED 2026-09-07: BOTH CONDITIONS ARE MET AND THE FILE EXISTS.** D6 passed
+against a `VACUUM INTO` copy of the local 21-migration store, and the migration is
+written at `migrations/0022_bmf_table.sql`, whose body is BYTE-IDENTICAL to the
+block below as committed at `a5be8d9`, verified by `sha256` and `cmp`. **The block
+below is no longer the only copy**, so R13a's regeneration test has a subject: it
+is the proposal, the file is the artifact, and A113's constant will be the source.
+The paragraph is kept rather than rewritten because it records what had to be true
+before the file could exist.
 
 ```sql
 -- R13, AUTHORITY: THE LOADER IS AUTHORITATIVE FOR THIS DDL AND THIS FILE DERIVES

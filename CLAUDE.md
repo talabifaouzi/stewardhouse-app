@@ -559,6 +559,28 @@ clause this paragraph used to carry, that the stamp code is live on production
 and "writes nothing", is RETIRED. It writes. `2726d40` remains an ancestor of
 `origin/main`. See §11.
 
+**MIGRATION 0022 (`0022_bmf_table.sql`, the BMF table + load stamp + load check)
+IS WRITTEN AND APPLIED NOWHERE. §6.10 BRANCH (b): APPLY DEFERRED TO FT, BOTH
+LOCALLY AND REMOTELY.** This is the branch-(b) note that rule requires, and it is
+sharper than the 0021 case it sits beneath: 0021 was local-applied with only the
+`--remote` half deferred, whereas **0022 is applied to NO store at all** — not
+the local dev store, not `bmf-sandbox`, not remote. `migrations/` therefore runs
+`0001` through **`0022`** while every applied count stays at 21.
+**THE GATE IS FT's DELIBERATE STEP, not a slice**, and the ordering that gate
+should follow is the one A114's chain already rules: sandbox first, then live.
+**§6.10 BRANCH (c) RIDES ALONGSIDE**: `bmf-sandbox` exists as of 2026-09-07 and
+receives every migration that lands on live, so 0022 goes there too, and a
+sandbox left at 21 while live moves to 22 is the schema drift that branch exists
+to prevent.
+**WHAT AUTHORING DID AND DID NOT ESTABLISH.** The DDL was applied 2026-09-07 to a
+`VACUUM INTO` copy of the local 21-migration store — the D6 precondition — and
+came in clean: +11 objects, 0 removed, 0 altered, `integrity_check` ok,
+`foreign_key_check` empty. **That is a rehearsal on a copy and is not an apply.**
+No store on disk was written, and the copy was deleted.
+**THE FILE IS ALSO PROVISIONAL UNDER R13a**, regenerated from A113's loader
+constant once that constant exists. So a reader meeting `0022` before A113 lands
+is looking at the reviewed DDL, not yet at derived output.
+
 **The retired framing was overtaken the same day it was written, and nothing
 surfaced that for a day**, which is the part worth keeping.
 `docs/session-log.md` already carried the apply in its third 2026-09-01 entry,
