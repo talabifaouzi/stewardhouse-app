@@ -25,26 +25,26 @@ for what the cadence misses.
 **As committed: 108 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
-BMF-and-Discover 12, cheap-and-mechanical 30, large 34, and
+BMF-and-Discover 11, cheap-and-mechanical 30, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-04: ONE ENTRY FILED ON THE SANDBOX
-RULINGS.** A117, authoring the BMF table migration, filed because A8's chain
-named that step and gave it no ID. Nothing closed, and nothing already open
-changed group or Pilot.
-**OPEN moves 107 to 108.** BMF-and-Discover moves 11 to 12 on A117. The
-breakdown is therefore 7 + 15 + 7 + 12 + 30 + 34 + 3 = 108, and the restatement
-further down moves with it, to "sum to 108".
-**BLOCKING moves 22 to 23** on A117, which gates A8 by the same reasoning that
-made A113 and A114 BLOCKING. DEBT is unchanged at 59 and POST at 26, and
-23 + 59 + 26 = 108. The counsel-gated line moves to FOUR OF THE TWENTY-THREE,
-the four themselves being unchanged.
-**THE BUILD CHAIN MOVES 18 TO 19**, being BLOCKING minus the counsel-gated four.
-**The figure KEEPS ITS NAME AND ITS DEFINITION** per the 2026-09-04 ruling; what
-moved it is one new BLOCKING entry arriving through the unchanged definition,
-not a redefinition. A115 still holds the question of what the figure is worth.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: ONE ENTRY CLOSED, ONE FILED, AND
+THE TOTAL DID NOT MOVE.** A114 CLOSED, the sandbox database now existing. A118
+filed, the staging-environment findings. **A closure and a filing cancelling to
+zero is exactly the case a total hides**, which is why both halves are named.
+**OPEN stays at 108.** BMF-and-Discover moves 12 to 11 as A114 leaves; large
+moves 34 to 35 on A118. The breakdown is therefore
+7 + 15 + 7 + 11 + 30 + 35 + 3 = 108, and the restatement further down is
+unchanged at "sum to 108".
+**BLOCKING moves 23 to 22** as A114 closes. **POST moves 26 to 27** on A118,
+which is filed POST with its blocker unruled. DEBT is unchanged at 59, and
+22 + 59 + 27 = 108. The counsel-gated line moves to FOUR OF THE TWENTY-TWO, the
+four themselves being unchanged.
+**THE BUILD CHAIN MOVES 19 TO 18**, being BLOCKING minus the counsel-gated four.
+**It shortened because work was DONE**, which is the first time in this record
+that it moved for that reason rather than through a reclassification or a filing.
 This block records the LAST change only and is REPLACED rather than appended, so
-it never accumulates into a changelog. The entry it replaced recorded four
-entries filed on the A1 rulings.
+it never accumulates into a changelog. The entry it replaced recorded one entry
+filed on the sandbox rulings.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
 dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 105 rather than 107, because
@@ -72,7 +72,7 @@ here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
-**FOUR OF THE TWENTY-THREE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
+**FOUR OF THE TWENTY-TWO BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
 BY BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not
 one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
@@ -876,6 +876,15 @@ the surface, an intended capability that is not built, which is a different kind
 of thing from the questions around it. The item that actually gates the load is
 A1, in Tier 4.
 
+**A114 was CLOSED 2026-09-07 and has left this section; the remaining IDs are
+not renumbered, since renumbering would break every reference to them.** The
+sandbox EXISTS: `bmf-sandbox`, `b52292d6-d2a9-4d53-b115-5b57322f4b58`, region
+ENAM, all 21 migrations applied remotely in one invocation and closure confirmed
+per CLAUDE.md §6.10 by `migrations list --remote` returning "No migrations to
+apply!" with no 7403. **The standing half of what that entry carried was
+relocated to CLAUDE.md §6.10 branch (c) BEFORE closure**, because closing an
+entry deletes it and those warnings outlive the act of creating the database.
+
 **A2 | Whether `REVENUE_AMT` serves any v1 query.**
 Blocker: none named.
 Pilot: POST
@@ -1076,139 +1085,6 @@ which was one of the eight open questions on 2026-09-04 and was absent from the
 neither withdrawn nor resolved, so **the unruled set is FOUR, not three.**
 **NONE OF THIS AUTHORIZES A BUILD SLICE. This entry has still had no scope pass**,
 and the rulings above are inputs to that pass rather than a substitute for it.
-
-**A114 | The BMF sandbox database is authorized and does not exist.**
-Blocker: none. It is FT-run remote work that nothing prevents.
-Pilot: BLOCKING
-Detail: CLAUDE.md §6.10 and §6.15 category (3); `docs/bmf-load-scoping.md` §1
-for the table shape it must carry.
-**FT RULED 2026-09-04 (R2): A STANDING SECOND D1 DATABASE, NOT A THROWAWAY.** It
-is retained until all testing tasks are complete and is framed as ongoing
-infrastructure for future feature work. The prior probe `bmf-window-probe`,
-created and deleted on 2026-08-19, is not the precedent for this one.
-**IT IS CREATED BEFORE THE LOADER IS BUILT, and that sequence is the ruling.**
-Create the sandbox, apply the migration creating the ruled BMF table to it, then
-build the loader against a table that exists. The reasoning: the only existing
-artifact, `scripts/d1-window-generate.mjs:85`, declares no `PRIMARY KEY` at all,
-so a loader written against that shape would carry a duplicate-EIN path that
-nothing exercised until the production run.
-**WHY THIS IS FILED WHEN THE `demo_gate` DESIGNATION IS NOT.** That exclusion
-covers FT-run steps gating nothing else in this queue. This one gates a build
-and holds a ruled sequence position, so it is work with a place in an order
-rather than a standing business decision.
-**R5 IS A STANDING OBLIGATION AND IS DELIBERATELY NOT AN ENTRY HERE.** The
-sandbox receives every migration that lands on live, from creation onward, and
-that has no completion state, so a counted queue is the wrong home for it. It
-lives in CLAUDE.md §6.10 as a third branch.
-**Q1 RULED 2026-09-04: THE SANDBOX STAYS OUT OF `wrangler.toml`.** FT's
-reasoning: production config stays untouched, which is the point of a sandbox. A
-second `[[d1_databases]]` block is REFUSED.
-**WHAT THAT BLOCK WOULD HAVE COST IS RECORDED PRECISELY, because the overstated
-version is the easy one to reach for.** It would NOT have exposed live data and
-would NOT have given the live database a second handle. It would have put an
-unused D1 binding into deployed Pages Functions, and created a second permanent
-local store under `miniflare-D1DatabaseObject/`, which is the CLAUDE.md §10
-double-store shape made routine rather than accidental.
-**Q2 RESOLVED THE SAME DAY, AND THE FORK DISSOLVED RATHER THAN BEING TRADED
-OFF.** A separate `bmf-sandbox.toml` passed with `--config` satisfies Q1 in
-full, `wrangler.toml` untouched, AND keeps the migrations runner, so R5 lockstep
-retains its tooling. The earlier reading had these as a genuine trade: an
-untouched config with no runner, or a runner at the cost of a production-visible
-binding. Neither cost is paid. `--config` is a global flag available to every
-command, confirmed in `d1 migrations apply --help`, and the two Pages refusals
-of it sit inside the `pages deploy` and `pages dev` handlers only.
-**THE ISOLATION IS TOOL-ENFORCED, WHICH IS STRICTLY BETTER THAN WHAT THE REFUSED
-OPTION OFFERED.** Because `pages dev` and `pages deploy` both throw on
-`--config`, no Pages command can be pointed at the sandbox config at all. Under
-the refused second-block option the sandbox binding would have ridden every
-deploy by default, held out of production by nothing but operator discipline.
-**ONE MIGRATION SET, TWO CONFIGS.** `migrations_dir` resolves relative to the
-LOADED config file's own directory, not the working directory, so a root-level
-`bmf-sandbox.toml` points at the same `migrations/` set live uses. Verified by
-execution from a working directory outside the repo, where the repo's own
-`wrangler.toml` is not discoverable: the sandbox name resolved and all 21
-migrations listed, `0001_initial.sql` through `0021_auth_send_log.sql`. That run
-also confirms a fresh database reads every migration as unapplied.
-**THE THREE RESIDUALS ARE CLOSED, OR AT PARITY AND SAYING SO.** A config
-carrying `d1_databases` and no `main`, no `name` and no `pages_build_output_dir`
-passes validation on a d1 command. Nothing in validation or resolution demands
-`account_id`. Both were executed locally against a temporary config that was
-deleted rather than committed. The remote apply itself was NOT executed and
-cannot be by an agent under §6.10, so it sits at exactly the status
-`wrangler.toml` holds, which also carries no `account_id` and has served
-successful remote applies. **That is parity, and parity is the argument rather
-than a proof.**
-**THE VERIFICATION SPANNED TWO WRANGLER VERSIONS, AND THE BOUNDARY IS RECORDED
-HERE RATHER THAN LEFT IN A SESSION NOTE.** The 21-migration listing ran on
-**4.129.0, not the repo's pinned 4.111.0**: running from a working directory
-outside the repo meant `npx` found no local `node_modules` and pulled the
-current release from the registry. The 4.111.0 binary WAS exercised, in the
-negative control, and loaded the alternate config identically. **So the
-alternate-config mechanism is verified on the pinned version; the 21-migration
-listing is not.** A later reader should not have to discover that a
-load-bearing verification ran on an unpinned version.
-**Q5 RULED: the sandbox is named `bmf-sandbox`.** Resolution is exact-equality
-on `database_name` or `binding`, so a mistyped name fails loudly rather than
-resolving somewhere else. The residual risk is human recall, and recall works on
-prefixes: `bmf-sandbox` shares no leading character with `stewardhouse-pilot`,
-where `stewardhouse-sandbox` would share twelve.
-**Q6 AND Q7 ARE UNRULED AND EACH SAYS SO.** Q6: whether the sandbox receives the
-five seed migrations' data, `0002`, `0005`, `0008`, `0010` and `0011`. The
-runner has no subset apply, so through that path it is all 21 or none, and what
-lands is schema PLUS seed while §6.10 branch (c) justifies R5 on schema drift
-alone. Q7: what "from creation onward" means as a CADENCE, whether applied
-alongside each live apply, before the next one, or on some other trigger. §6.10
-states the obligation and not the trigger.
-**Q8 IS A116** and is already filed.
-**Q6 RULED 2026-09-07: THE SANDBOX RECEIVES ALL 21 MIGRATIONS, INCLUDING THE FIVE
-SEEDS.** There is no subset apply through the runner, so this matches the
-mechanism rather than fighting it. The sandbox is brought to schema-current in one
-invocation.
-**WHAT THAT PUTS IN IT: 44 rows across 9 tables, 20 tables empty, measured
-2026-09-07** by applying all 21 to an in-memory SQLite. **The per-table breakdown
-is deliberately NOT recorded here**, because a future migration that seeds
-anything makes it silently wrong, and a stale count in a docs file is this
-repository's recurring failure. The total and the date it was measured are the
-durable part.
-**THE IDENTITY SURFACE IS SIX `person` ROWS, and it is what to know before running
-the apply.** Morgan Walker (advisor), Marcus Thompson (individual), Reese Donovan
-(ops), Diane Okonkwo (staff), Jordan Avery (staff) and Faouzi Talabi (staff).
-**All six carry `auth_user_id` NULL.** Four carry an `@example.invalid` invite
-address, undeliverable by construction under RFC 2606. Marcus carries none at all,
-which is seed-faithful and is why he is structurally unclaimable.
-**ZERO CREDENTIALS. NOTHING IN THE SANDBOX CAN AUTHENTICATE ANYONE, ANYWHERE.** No
-migration inserts into `auth_user`, `session`, `verification` or `account`,
-verified across all 21 with a control proving the pattern fires on a synthetic
-`INSERT INTO auth_user`.
-**ONE REAL, DELIVERABLE ADDRESS WILL EXIST THERE**,
-`talabifaouzi+staff@gmail.com`, on the Faouzi Talabi staff row. Migration 0011's
-own docblock says it "IS deliverable" and says the claim hook binds the row on
-first magic-link verify. **RULED KNOW-IT, NOT ACT-ON-IT:** it is FT's own address
-and it is INERT in the sandbox.
-**THE CONTAINMENT IS STRUCTURAL RATHER THAN CONVENTIONAL, AND IT IS WHAT MAKES IT
-INERT.** Both send surfaces are bound to production by construction. The Worker
-binds `env.DB` from `wrangler.toml`, which Q1 keeps the sandbox OUT of, so no
-running application reads the sandbox at all. `scripts/seed-invites.mjs`, the only
-send-capable script, hardcodes `DB_NAME = 'stewardhouse-pilot'` and passes no
-`--config`, so it cannot be aimed at the sandbox.
-**WHAT WOULD MAKE IT LIVE, named so the boundary is explicit rather than
-assumed:** adding the sandbox to `wrangler.toml`, or editing that script's
-`DB_NAME` or teaching it `--config`. Both are deliberate acts. Neither is a slip.
-**THE TRAP A LATER READER WILL ACTUALLY HIT: SAME ID, DIFFERENT TRUTH.** Faouzi
-Talabi is `person` id `04000000-0000-4000-8000-000000000002` in BOTH databases. In
-a fresh sandbox that row is UNCLAIMED, `auth_user_id` NULL. In production the same
-address is a confirmed working staff account, so the row is CLAIMED. **Identical
-id, identical name, identical email, opposite claim state, and nothing in the row
-announces which database it came from.** Anyone querying one and reasoning about
-the other is wrong in a way the data does not disclose.
-**44 IS THE COMMON FLOOR, NOT A SANDBOX-ONLY EXTRA, AND THE OBVIOUS GUESS RUNS
-BACKWARDS.** The same 21 migrations built production, so those rows are in both.
-**Subtracting seeded rows from the sandbox side to compare against production
-would be wrong.** Production is 44 plus accumulated real rows minus anything since
-deleted; a fresh sandbox is exactly 44.
-**BMF ROW COUNTS COMPARE CLEANLY AND ARE UNAFFECTED BY ANY OF THIS.** The BMF
-table is in none of the 21 migrations; A117 creates it. Both databases start at
-zero on that table, so a count comparison there needs no adjustment.
 
 **A116 | Whether a sandbox result transfers to production.**
 Blocker: unruled. FT has not ruled it, and it is recorded as open rather than
@@ -1745,6 +1621,56 @@ from 18 to 16 today; and what it should be called if the definition changes.
 figure as "slices remaining" is over-reading it by at least two.
 
 ### Large
+
+**A118 | A staging environment is unbuilt, and the two cases it would serve
+SEPARATE rather than sharing one solution.**
+Blocker: unruled. **FT ruled 2026-09-07 that NOTHING IS BUILT TODAY**, and this
+is recorded so the decision is made deliberately when a feature needs it rather
+than discovered under pressure.
+Pilot: POST
+Detail: this entry; CLAUDE.md §9 for the origin-stranding failure it would hit,
+§6.10 branch (c) for the sandbox.
+**THE PURPOSE, in FT's terms:** catching what breaks when real code meets real
+infrastructure. Named cases: a migration that works locally and fails deployed; a
+UI change wrong on the deployed build; and later, auth changes such as SSO or
+MFA, speech-to-text, and new workflows on existing features.
+**THE CASES SEPARATE, AND THAT IS THE CENTRAL FINDING.** Preview deployments
+build the SAME artifact production gets, and the four demo surfaces are public
+routes needing no auth and no database, **so a preview bound to nothing already
+covers deployed-build rendering.** A migration that fails to APPLY is caught by
+the sandbox alone with no site, which works today. **Only a migration that
+applies cleanly and then breaks the running code against it needs a deployed app
+bound to the sandbox.**
+**THE COLLISION WITH Q1.** Pointing a preview at the sandbox requires
+`[env.preview]`, and `d1_databases` is `notInheritable`, so `[env.production]`
+is required too, restructuring production's binding. **Q1 ruled production config
+untouched; it cannot hold for that design.**
+**THE UNCHECKED PRECONDITION, WHICH BLOCKS ANY CONFIG CHANGE.** With no env
+sections today, an absent environment falls back to top-level config, which is
+why production works. **Adding ANY `[env.*]` section turns that fallback from a
+warning into an error**, the severity branching on whether `rawConfig.env` is
+non-empty. Whether production's own build then fails depends on whether
+Cloudflare CI sets `PAGES_ENVIRONMENT=production`. **That is CI behaviour, not
+visible from the repo, and settleable from a build log.** Settle it before
+touching config.
+**SIGN-IN DOES NOT WORK ON A NON-PRODUCTION DEPLOYMENT.** `BETTER_AUTH_URL`
+feeds better-auth's `baseURL` and preview URLs are per-deployment hashes.
+**CLAUDE.md §9 already records this exact failure**: the cookie is set on the
+serving origin, the redirect goes elsewhere, and the result is
+indistinguishable from an expired session. **A staging site nobody can log into
+tests nothing behind `/app`, which is exactly where auth changes would need
+testing.**
+**TWO HARDCODED PRODUCTION HOSTNAMES, neither environment-aware:**
+`functions/_lib/inviteEmail.js` and
+`src/surfaces/operations/CreateInviteModal.jsx`. **An invite sent from a preview
+would point the recipient at production.**
+**THE DATA GAP.** The sandbox holds 44 seeded rows: sufficient for "does this
+migration apply", thin for "does this workflow behave correctly at scale". **FT
+ruled out pointing any deployment at production data for testing** — one bad
+write, no undo, one operator, no alerting.
+**NOTHING AUTOMATES applying a migration to the sandbox relative to a deploy.**
+No CI, no workflows, no git hooks, no `[build]` section and no lifecycle
+scripts, verified by execution. It is manual and FT-run.
 
 **A95 | An athlete cannot see their own milestones.**
 Blocker: none.

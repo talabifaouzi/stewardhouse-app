@@ -1,0 +1,23 @@
+﻿# Sandbox D1 config. DELIBERATELY SEPARATE from wrangler.toml.
+#
+# Q1 ruled 2026-09-07: the sandbox stays OUT of wrangler.toml, so production
+# config is untouched. No second binding reaches deployed Pages Functions and
+# no second local store appears under .wrangler/state/.
+#
+# Isolation is TOOL-ENFORCED, not discipline-dependent: `pages dev` and
+# `pages deploy` both hard-throw on --config, so no Pages command can ever be
+# pointed at this file.
+#
+# Usage: every sandbox command passes --config bmf-sandbox.toml explicitly.
+#
+# migrations_dir resolves relative to THIS file's directory, so a root-level
+# config points at the same migrations/ set live uses. One migration set, two
+# configs, which is what R5 lockstep requires.
+#
+# database_id returned by `wrangler d1 create bmf-sandbox` (FT-run, 2026-09-07).
+
+[[d1_databases]]
+binding = "BMF_SANDBOX"
+database_name = "bmf-sandbox"
+database_id = "b52292d6-d2a9-4d53-b115-5b57322f4b58"
+migrations_dir = "migrations"

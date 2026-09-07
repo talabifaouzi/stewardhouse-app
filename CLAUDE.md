@@ -1151,6 +1151,34 @@ Every substantive change runs as a **slice**. The rhythm:
     there transfers to production at all.** If the sandbox ever acquires
     obligations that are not migration-shaped, they need a home that is not this
     branch.
+    **THE SANDBOX EXISTS AS OF 2026-09-07:** `bmf-sandbox`,
+    `b52292d6-d2a9-4d53-b115-5b57322f4b58`, region ENAM, all 21 migrations
+    applied. Its config is `bmf-sandbox.toml` at the repo root, tracked, and
+    every sandbox command passes `--config bmf-sandbox.toml` explicitly.
+    **WHAT IT CONTAINS, AND THE TRAP IT SETS. Relocated here from A114 before
+    that entry closed, because closing an entry DELETES it and these outlive the
+    act of creating the database.** Applying all 21 seeds **44 rows, measured
+    2026-09-07**; the per-table breakdown is deliberately not repeated, because a
+    later migration that seeds anything makes a copied count silently wrong.
+    **44 IS THE COMMON FLOOR, NOT A SANDBOX-ONLY EXTRA, AND THE OBVIOUS GUESS
+    RUNS BACKWARDS.** The same 21 migrations built production, so those rows are
+    in BOTH. Subtracting seeded rows from the sandbox side to compare against
+    production would be wrong.
+    **THE TRAP: SAME ID, DIFFERENT TRUTH.** `person`
+    `04000000-0000-4000-8000-000000000002` is Faouzi Talabi in both databases,
+    UNCLAIMED in the sandbox and CLAIMED in production. Identical id, name and
+    email, opposite claim state, and **nothing in the row says which database it
+    came from.**
+    **ONE REAL DELIVERABLE ADDRESS SITS THERE**, `talabifaouzi+staff@gmail.com`,
+    on that same row. It is INERT, and the containment is structural rather than
+    conventional: the Worker binds `env.DB` from `wrangler.toml`, which the
+    sandbox stays out of per Q1, and `scripts/seed-invites.mjs` hardcodes
+    `DB_NAME = 'stewardhouse-pilot'` with no `--config`. **What would make it
+    live:** adding the sandbox to `wrangler.toml`, or editing that script. Both
+    are deliberate acts. **Zero credentials exist in any migration**, so nothing
+    in the sandbox can authenticate anyone anywhere.
+    **BMF row counts are unaffected by all of this**, since the BMF table is in
+    none of the 21 and both databases start at zero on it.
     Discovered 2026-06-30 when migration 0003
     (`21d746a`, shipped 2026-06-25 local-only) was found unapplied on remote
     5 days later — latent risk only, never triggered (no remote sign-in had
