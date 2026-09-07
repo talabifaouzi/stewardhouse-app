@@ -2101,6 +2101,36 @@ commit; this records only what is promotable and what was ruled.
    contiguity as EVIDENCE and nothing validates it, which is a false confidence
    with a citation habit behind it.** `getUnappliedMigrationNames` is a pure set
    difference on names; no code anywhere checks for a gap.
+10. **`A && B && C || D` FIRES `D` WHEN `A` FAILS, which is indistinguishable
+    from `C` running and finding nothing. NEW FILING, not an amendment** — see
+    the judgement below.
+    **What happened, later the same day and after this list was written.** A
+    chain ending in a pointer search reported **"no live pointers remain"** from
+    a `grep` that **never executed**: `python` was absent on this machine, the
+    chain short-circuited at the first command, and the `||` fallback printed a
+    message shaped exactly like a clean result. **Both pointers were intact**,
+    and were found by re-checking with a control.
+    **WHY IT IS A SIBLING OF THE OTHER NINE AND NOT A DUPLICATE OF ANY.** The
+    nine are matchers that reported WRONGLY — a pattern that lost a backslash, a
+    control set blind to a format variant, an escape that collapsed to a bare
+    anchor. **This is a matcher that NEVER RAN, with the SHELL supplying an
+    output that reads like a result.** The failure arrives through **control
+    flow** rather than through pattern construction, and no existing §10 filing
+    covers that mechanism.
+    **THEREFORE A NEW FILING RATHER THAN AN AMENDMENT, and the test is the
+    mechanism rather than the symptom.** Amendments belong where a later
+    occurrence sharpens the SAME mechanism, which is why items 1 and 2 amend the
+    scanner and UTF-16 filings. Folding this into the scanner filing would bury a
+    distinct cause under a heading about how patterns are built.
+    **WHAT REPLACES IT: separate the commands, or assert that the precondition
+    actually ran, or choose a fallback message that cannot be mistaken for a
+    clean result.** "No matches" and "the search never happened" must not print
+    the same way.
+    **AND THE EXISTING DISCIPLINE HELD EVEN THOUGH THE MECHANISM WAS NEW: A
+    CONTROL IS WHAT CAUGHT IT.** Re-running the search with a string known
+    present exposed the gap immediately. **Record that, because it is the
+    strongest available evidence that the controls rule generalises past the
+    failures it was written for.**
 
 ### The five LEFT, with their reasons, so the first pass does not re-judge them
 
@@ -2127,7 +2157,39 @@ established by grep with a POSITIVE CONTROL** — a string known present returne
 2 — so the zeros for the unpromoted findings are a measurement rather than a
 matcher that always returns zero.
 
+### What the session did AFTER this list was written
+
+**The list above was recorded mid-session and the work continued**, which is why
+the bullets below needed correcting within hours of being written. **Three
+further commits, counted against the table rather than asserted** — the first
+draft of this line said six.
+
+| Commit | What it did |
+|---|---|
+| `33dd689` | Recorded FT's **sandbox apply of 0022** — 9 commands, `d1_migrations` 21 → 22, eleven objects matching D6's local measurement, three empty tables. **Closed §10's remote foreign-key question**: an orphan child INSERT was rejected remotely with `FOREIGN KEY constraint failed … [code: 7500]`. **Narrowed §10's 7403** from the session to the migrations endpoint, since `execute --remote` succeeded twice on the same token seconds later. |
+| `e6a5bc4` | Recorded FT's **live apply of 0022** — 9 commands in 2.91 ms, `d1_migrations` 21 → 22, `person` at 12 so production is intact and serving. **§6.10 branch (b) DISCHARGED**, both databases at 22. **Filed the blocker-names-an-entry problem** between A113 and A117. |
+| `1825e05` | **Closed A117 under R15**, moved R13a to A113 stated in full with R15c, and **relocated its standing content BEFORE deleting it**. |
+
+**THE THING WORTH KEEPING FROM THE CLOSURE, and it is not the closure.** Nothing
+load-bearing died with A117, and **that was not luck**: every D-series
+disposition that mattered had been written into the DDL's own comments rather
+than left in surrounding prose, so it shipped inside
+`migrations/0022_bmf_table.sql` and survived. **The placement rule was applied at
+the time, and closing the entry is what tested it.**
+
+**FLAGGED AND LEFT FOR FT: the 2026-09-02 classification snapshot.** The header
+reads "20 BLOCKING, 59 DEBT, 24 POST", which sums to 103 and does not match the
+live 21 / 61 / 27. **Pre-existing, not caused by the closure, and deliberately
+not re-derived** — re-running a classification is FT's.
+
 ### Open items carried out of the session
+
+**THE FOUR BULLETS BELOW ARE KEPT AS WRITTEN AND ALL FOUR HAVE MOVED.** They
+recorded the state at the moment the promotion list was written; the corrected
+state is above and restated here so a reader does not act on them. **The list is
+TEN, not nine. 0022 is applied to BOTH databases, not nowhere. A117 is CLOSED,
+not open. OPEN stands at 109, not 110**, A117 having left from BLOCKING, which
+went 22 → 21.
 
 - **The first promotion pass has NOT run.** It is a separate commit and carries
   the nine above.
