@@ -1205,6 +1205,18 @@ ASIDE into place, **the loader must create the indexes on the aside on every
 run.** So this migration is not the only place the set is written. Either the
 two carry identical DDL or one derives it from the other, and nothing currently
 decides which.
+**"NOTHING CURRENTLY DECIDES WHICH" IS SUPERSEDED BY R13 BELOW**, which rules the
+loader authoritative and this migration derived from it. The sentence is kept
+because its finding — that the set is written in more than one place — is what
+made the question askable.
+**D5, RULED 2026-09-07: THE RULED SHAPE LIVES IN THREE PLACES, NOT TWO, AND THE
+THIRD IS NAMED HERE SO IT IS NOT REDISCOVERED.**
+`scripts/d1-window-verify-import.mjs:26` carries its own `CREATE TABLE bmf`, the
+window experiment's shape, with NO primary key and NO indexes. **It is left ALONE
+by ruling** — it is banked experiment code, and §5.2 already records those runs as
+LOWER BOUNDS for exactly that reason — but a later reader grepping
+`CREATE TABLE bmf` gets three hits and must know the third is residue rather than
+a fourth authority.
 **§1'S OWN NEXT-NUMBER LINE IS STALE, AND THE FILE NUMBER IS NOT `0019`.** It
 reads "Next number is `0019`. The tree runs `0001` through `0018`, contiguous",
 which was true when written. `0019`, `0020` and `0021` are now taken by
@@ -1301,16 +1313,112 @@ RULED.** `row_count` in the stamp makes the trend computable over STAMP ROWS
 rather than generation tables — **thirteen points after a year rather than a
 permanent three**, since only three generations are retained. R8-5's "trend"
 remains undefined and unruled.
-**STILL UNRULED ON THIS ENTRY, TWO, down from four:** how this migration's SQL
-and A113's JavaScript aside DDL stay in agreement, since neither can import the
-other; and whether generation 1 being an EMPTY table is acceptable, given R7
-retains three for recovery and a recovery to it would restore nothing. **Neither
-blocks authoring the DDL**; both are consequences rather than inputs.
+**STILL UNRULED ON THIS ENTRY, ONE, down from two.** This read TWO and carried
+"how this migration's SQL and A113's JavaScript aside DDL stay in agreement,
+since neither can import the other" as its first item. **R13 answers it**, and
+the closure is recorded here rather than the item being deleted silently.
+**THE REMAINDER, AND FT HAS NOT RULED IT:** whether generation 1 being an EMPTY
+table is acceptable, given R7 retains three for recovery and a recovery to it
+would restore nothing. **It does not block authoring the DDL**; it is a
+consequence rather than an input.
+**THIS IS NOT AN OPEN-COUNT MOVEMENT, and is said so a reader does not hunt for
+one.** A117 stays open and no entry opened or closed. The OPEN total is 108
+before and after; what moved is a count INSIDE one entry.
+**THE DDL REVIEW, RULED 2026-09-07: SIX DISPOSITIONS AND TWO RULINGS.** The
+proposal below was read against the rulings and then read as SQL, and both passes
+produced findings. Four dispositions are recorded IN the DDL, where the reader
+who would undo them meets them; the other two and both rulings are here.
+
+**A NUMBERING CAUTION, FIRST, BECAUSE TWO SERIES NEARLY MERGED.** R13 and R14
+answer questions **5 and 7 of the 2026-09-07 DDL review**, which is NOT this
+entry's own Q-series. This entry already carries **Q3** and **Q4**. Written bare,
+"Q5" and "Q7" would make it read as Q3, Q4, Q5, Q7 with a missing Q6, so the
+review is named in full at every use.
+
+**D1, THE STAMP HAS EIGHT COLUMNS AGAINST A RULED SEVEN, AND R12a IS NOT
+AMENDED.** `id` is a surrogate key sitting outside R12a's seven fields, and the
+DDL says so at the column. **Amending R12a to say eight would make the ruling
+about column mechanics rather than about what the stamp RECORDS**, which is what
+it is for. **Recorded because of what it is:** the count-versus-list shape of
+CLAUDE.md §5.1, arriving inside the entry that fixed the last instance of it. A
+reader counting columns against "seven" finds eight, and now finds the reason
+beside them.
+
+**D4, NO SHAPE CONSTRAINT ON `ruling`.** The loader's R8 checks own value
+validation; a `CHECK` here would be a second place to maintain one rule. **Its
+absence is a decision and the DDL says so**, so a later reader does not add one
+as an oversight repair.
+
+**D6, THE MIGRATION IS APPLIED AGAINST A COPY OF THE REAL 21-MIGRATION SCHEMA
+BEFORE IT IS WRITTEN. This is a PRECONDITION on authoring, and it has not
+happened.** The review's clean run was a `grep` for name collisions plus an
+execution from an EMPTY database, and **neither is an apply**: they establish
+that nothing in `migrations/` mentions these three tables and that the SQL
+parses, not that it lands cleanly on the schema those 21 migrations actually
+build. The copy is taken with `VACUUM INTO` per §10, never `cp`.
+
+**R13, Q5 OF THE 2026-09-07 DDL REVIEW, RULED: THE LOADER IS AUTHORITATIVE FOR
+THE DDL AND THIS MIGRATION DERIVES FROM IT.** Authority sits with the artifact
+that runs on EVERY load, not the one that ran once. The loader carries the full
+table definition as a single named constant, **extending R10c from the index list
+to the whole shape**.
+
+**R13a, SEQUENCING, AND IT TURNS THIS ENTRY'S ORDERING PROBLEM INTO A TEST.** The
+migration is written BY HAND now, exactly as reviewed, and is the **PROVISIONAL**
+source until A113 lands. When the loader's constant is authored the migration is
+**REGENERATED** from it: byte-identical proves the derivation retroactively, and
+any difference is drift found on day one rather than on load twelve. **A117
+coming before A113 stops being an inversion to work around and becomes the
+control the regeneration is checked against.**
+
+**R13b, AND IT APPLIES REGARDLESS OF R13: R8b's POST-SWAP ASSERTION GAINS AN
+INDEX CHECK.** After the swap, read `index_list` on the LIVE table and assert the
+three index names are present. **Generation prevents drift at authoring time;
+this catches it at RUN time, and it is the cheaper half.** A pre-swap schema
+comparison was REFUSED as the primary mechanism: **on load one there is nothing
+meaningful to compare against**, so it validates nothing until load two, by which
+point the drift has already shipped once. Recorded at
+`docs/bmf-load-scoping.md` §15, R8b.
+
+**R14, Q7 OF THE 2026-09-07 DDL REVIEW, RULED: A GENERATION TABLE IS
+`bmf_gen_YYYYMMDDTHHMMSSZ`**, concretely `bmf_gen_20260907T164748Z`. Four
+properties, each load-bearing, with the full statement and the prefix hazard at
+`docs/bmf-load-scoping.md` §15, R14.
+
+**R14a, THE UNDO CREATES A GENERATION TABLE TOO.** R6a renames live to a dated
+name and the retained generation back into place, so the undo needs its own
+timestamp in the same format and its own stamp row recording it. **Otherwise a
+rollback produces a table nothing recorded.**
+
 **PROPOSED DDL, THREE TABLES. THIS IS A PROPOSAL IN THIS ENTRY, NOT A MIGRATION
-ON DISK**, and stays one until FT approves it separately.
+ON DISK**, and stays one until FT approves it separately — and now until D6's
+apply has run.
 
 ```sql
+-- R13, AUTHORITY: THE LOADER IS AUTHORITATIVE FOR THIS DDL AND THIS FILE DERIVES
+-- FROM IT. Authority sits with the artifact that runs on EVERY load, not the one
+-- that ran once. The loader (A113) carries the full table definition as a single
+-- named constant, which extends R10c from the index list to the whole shape.
+-- R13a: this text is HAND-WRITTEN and PROVISIONAL until A113 lands, then
+-- REGENERATED from that constant. Byte-identical proves the derivation
+-- retroactively; any difference is drift found on day one, not on load twelve.
+
 -- (1) THE BMF TABLE. Shape: docs/bmf-load-scoping.md §1.
+--
+-- THE `ein` COLUMN CARRIES TWO THINGS A TIDY-UP WOULD UNDO. Both are here rather
+-- than inline because both are invisible in the syntax.
+--   (a) NOT NULL IS LOAD-BEARING, NOT NOISE. In SQLite a non-INTEGER PRIMARY KEY
+--       does NOT imply NOT NULL. Delete it and a NULL EIN is accepted.
+--   (b) TEXT IS CORRECT FOR LEADING ZEROS AND DOES NOT PROTECT THEM. TEXT
+--       affinity converts an unquoted numeric literal, so VALUES (042103594, ...)
+--       stores '42103594' with NO error, and row count, distinct count, NOT NULL
+--       and the PRIMARY KEY all still pass, because truncated values stay unique.
+--       THE LOADER MUST QUOTE EVERY EIN. Hard requirement:
+--       docs/bmf-load-scoping.md §2. Failure mode: §4, mode 7.
+--
+-- D4: NO CHECK ON `ruling`, and its absence is a DECISION rather than an
+-- omission. Value validation belongs to the loader's R8 checks; a CHECK here
+-- would be a second place to maintain one rule.
 --
 -- PROVENANCE (R8d): the nullability below derives from ONE extract measured
 -- 2026-08 across the ruled four-or-five file set, 1,957,340 rows. REVENUE_AMT
@@ -1339,6 +1447,9 @@ CREATE TABLE bmf (
 -- R10d, PATH B: idx_bmf_name is a SEARCH index. Indexing for RETRIEVAL is inside
 -- the §7 boundary; ordering by anything EVALUATIVE is not. Nothing here guards it.
 -- THIS SET MUST MATCH the aside DDL the loader (A113) builds on EVERY run.
+-- R13b: the post-swap assertion (R8b) reads index_list on the LIVE table and
+-- asserts these three names are present. Generation prevents drift at authoring
+-- time; that check catches it at RUN time and is the cheaper half.
 CREATE INDEX idx_bmf_state_city ON bmf (state, city);
 CREATE INDEX idx_bmf_ruling     ON bmf (ruling);
 CREATE INDEX idx_bmf_name       ON bmf (name);
@@ -1359,15 +1470,36 @@ CREATE INDEX idx_bmf_name       ON bmf (name);
 -- table is pruned.
 -- R12g: with source_date and completed_at both present this row is the EVIDENCE
 -- for any public currency claim. Do not trim fields here for looking internal.
+--
+-- D1: `id` IS A SURROGATE KEY AND SITS OUTSIDE R12a's SEVEN FIELDS, so this table
+-- has EIGHT columns against a ruled seven. R12a is deliberately NOT amended:
+-- saying eight would make that ruling about column mechanics rather than about
+-- what the stamp RECORDS. The id exists because R12b needs something for
+-- load_check to reference.
+--
+-- R12c RESTATED HERE, WHERE THE COLUMN IT GOVERNS IS READ: completed_at is
+-- written LAST and AFTER every load_check row for this load, so completion means
+-- the record is WHOLE. The full statement sits above table (3); a reader who
+-- never reaches it must still meet the ordering, because the design's safety
+-- rests on it.
+--
+-- R14, THE NAME STORED IN generation_table: bmf_gen_YYYYMMDDTHHMMSSZ, e.g.
+-- bmf_gen_20260907T164748Z. The bmf_gen_ prefix is a NAMESPACE and must NEVER be
+-- bmf_, because a pruner matching bmf_% would catch the in-flight bmf_aside and
+-- could delete it mid-load. UTC with the Z always; ISO 8601 BASIC, so no name
+-- ever needs quoting; lexical order equals chronological, so the pruner is
+-- ORDER BY name and parses no dates. The timestamp is the load's START and equals
+-- load_started_at, so a stamp row and its table are joinable by inspection.
+-- Full ruling: docs/bmf-load-scoping.md §15, R14.
 CREATE TABLE load_stamp (
-  id                TEXT    NOT NULL PRIMARY KEY,     -- opaque UUID, crypto.randomUUID()
+  id                TEXT    NOT NULL PRIMARY KEY,     -- opaque UUID. SURROGATE, outside R12a's seven
   source_date       TEXT    NOT NULL,                 -- the EXTRACT's own date; Discover renders this
   file_set          TEXT    NOT NULL,                 -- which files were taken, e.g. 'eo1,eo2,eo3,eo4'
-  load_started_at   TEXT    NOT NULL,                 -- ISO 8601
+  load_started_at   TEXT    NOT NULL,                 -- ISO 8601. R14: the generation name carries it
   load_finished_at  TEXT,                             -- when it STOPPED, success or failure
-  completed_at      TEXT,                             -- written LAST, success ONLY. NULL = not complete
+  completed_at      TEXT,                             -- LAST, and AFTER the load_check rows. NULL = not complete
   row_count         INTEGER,                          -- the load's size (R12f)
-  generation_table  TEXT                              -- the dated table this load produced (R7)
+  generation_table  TEXT                              -- the dated table this load produced (R7); name per R14
 );
 CREATE INDEX idx_load_stamp_source_date ON load_stamp(source_date);
 
@@ -1383,6 +1515,16 @@ CREATE INDEX idx_load_stamp_source_date ON load_stamp(source_date);
 -- these rows are written BEFORE load_stamp.completed_at. Completion therefore
 -- still means the record is WHOLE. One stamp row per load, inserted at start,
 -- updated once at the end, never in between.
+--
+-- D2, THE FOREIGN KEY STAYS AND SO DOES THE CASCADE, but read what it is worth.
+-- NOTHING IN THIS DESIGN EVER DELETES A load_stamp ROW: R12e makes the stamp the
+-- thing that outlives generations, and R8c prunes generation TABLES, not stamps.
+-- So the CASCADE is declared for a deletion that does not happen, which costs
+-- nothing and documents intent for whoever writes a stamp-deleting path.
+-- D1 REMOTE FK ENFORCEMENT IS UNVERIFIED (CLAUDE.md §10); local is verified.
+-- AND A LOCAL TEST CAN PASS FOR A REASON THAT DOES NOT TRANSFER: node:sqlite
+-- defaults foreign_keys ON, plain SQLite defaults it OFF. Measured 2026-09-07:
+-- with the pragma OFF an orphan child row INSERTs clean and no error is raised.
 CREATE TABLE load_check (
   id          TEXT    NOT NULL PRIMARY KEY,           -- opaque UUID
   stamp_id    TEXT    NOT NULL REFERENCES load_stamp(id) ON DELETE CASCADE,

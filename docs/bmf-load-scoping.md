@@ -344,6 +344,43 @@ generated to a gitignored temp file; then `spawnSync` on
 **`.gitignore:18` already covers `scripts/*.tmp.sql`**, so chunk files inherit
 the existing hygiene.
 
+### HARD REQUIREMENT: every `EIN` is emitted QUOTED
+
+**This is a requirement on the script, not a note.** Ruled 2026-09-07 out of the
+A117 DDL review, and placed HERE rather than on A113 for one reason: **A113 closes
+the moment the loader exists**, which is exactly when this starts mattering on
+every subsequent load. A requirement recorded only in the artifact that
+disappears at first compliance is a requirement with a fuse on it. Same reasoning
+CLAUDE.md §6.10 applies to the sandbox.
+
+**`ein` is `TEXT`, which is correct for leading zeros and DOES NOT PROTECT
+THEM.** SQLite TEXT affinity converts an unquoted numeric literal, so
+
+```
+INSERT INTO bmf VALUES (042103594, ...)   -- stores '42103594'
+INSERT INTO bmf VALUES ('042103594', ...) -- stores '042103594'
+```
+
+**Verified by execution 2026-09-07 against the proposed DDL**: same EIN, one
+character shorter, `typeof` still `text`, and **no error of any kind**.
+
+**WHY IT IS A HARD REQUIREMENT AND NOT A CAUTION: EVERY R8 CHECK PASSES.** The
+row count is right. The distinct `EIN` count is right. `NOT NULL` holds. **The
+PRIMARY KEY holds, because truncated values stay unique.** So the gate that
+exists to stop a bad table reaching production cannot see this, and the damage is
+silent, national in scope, and confined to organizations whose EIN begins with a
+zero — which is a geographic skew, since the leading digit is the IRS district
+prefix.
+
+**NO SCHEMA CONSTRUCT PREVENTS IT.** Not the type, not the key, not a CHECK. It
+is a property of how the loader emits values, which is why it lives in the script
+contract. `escapeSql` in both precedents (`seed-invites.mjs:51`,
+`provision-institution.mjs:68`) is `str.replace(/'/g, "''")` and returns the
+string unquoted, so quoting is the caller's job at every site.
+
+**This is mode 7 of §4**, and the §4 row is the failure mode; this is the
+obligation.
+
 **One structural difference from both precedents, and it is the whole
 difficulty.** They generate ONE SMALL temp file. This generates roughly **152 MB
 across about 5,600 statements**. Neither precedent has a resumable write, a
@@ -491,6 +528,12 @@ the surrounding strings are stable and are the thing to grep for.
 | 24 | The stamp is incomplete, or written out of order | Completion LAST and on success only; R12c puts the `load_check` rows before it. Without that ordering every other field lies convincingly | UNNAMED | yes, by the absence of `completed_at` (R12d) |
 | 25 | A load COMPLETES, is WRONG, and nothing alerts | R8f plus A113's Q7: no scheduled execution anywhere in this project, no monitoring surface until Discover exists | UNNAMED | only modes 16 and 17 stand between this and production |
 | 26 | The import window logs every MOUNTING user out and blocks sign-in | 14,359 to 17,647 ms, MODE FAIL, one error string. §12, §13 | UNNAMED | measured; RULED accepted, after the shell fix |
+
+**MODE 7 CARRIES A HARD REQUIREMENT, NOT A NOTE, AND IT IS IN §2.** The table
+above is an inventory of ways a load fails; the OBLIGATION that follows from mode
+7 — that the loader emit every `EIN` quoted — is a requirement on the script and
+lives in the script contract, because it is the one mode on this list that every
+R8 check passes through untouched.
 
 **CONSIDERED AND EXCLUDED, with the reason, so a later reader does not re-add
 them as omissions.** Open item 4, whether retained Time Travel history counts
@@ -1317,10 +1360,21 @@ that anything waits on it.
 
 ## 15. Recovery, ruled 2026-09-07
 
-Twelve rulings. **They landed on the LOADER rather than on a separate recovery
-path**, which is why no recovery entry was filed: the work's sequence position is
-inside A113. §1's swap model, stamp table and peak-storage figure carry amendment
-markers pointing here.
+Twelve rulings — R6, R6a, R6b, R7, R8, R8a through R8f, and R9. **They landed on
+the LOADER rather than on a separate recovery path**, which is why no recovery
+entry was filed: the work's sequence position is inside A113. §1's swap model,
+stamp table and peak-storage figure carry amendment markers pointing here.
+
+**R13 AND R14 SIT IN THIS SECTION AND ARE NOT AMONG THE TWELVE.** They came from
+the A117 DDL review later the same day, not from the recovery ruling, and they
+are here because they govern the generation tables R6 and R7 create. **The twelve
+is enumerated above rather than left as a number**, so a reader who counts does
+not have to guess which two postdate it. **Counted 2026-09-07: this section
+carries SIXTEEN `###` headings — the twelve, plus R13 and R14, plus the two that
+name no ruling at all ("Still unruled" and "Not a recovery question").** Fourteen
+are rulings. The figure is given rather than described because the first draft of
+this paragraph said fourteen headings, meaning fourteen rulings, and was caught
+by counting them.
 
 ### R6. The backup artifact is a RETAINED DATED TABLE, not an exported `.sql`
 
@@ -1394,6 +1448,19 @@ Row count on the LIVE table matches what was just verified, and the dated retain
 table exists under the expected name. **Nothing currently validates the swap
 operation itself**, only the data going into it.
 
+**AMENDED 2026-09-07 BY R13b: THE ASSERTION ALSO READS `index_list` ON THE LIVE
+TABLE AND CHECKS THE THREE INDEX NAMES ARE PRESENT.** Indexes travel with a table
+through a rename, so a swap moves whatever the aside was built with, and an aside
+built from a drifted DDL puts a differently-indexed table into production with
+the row count still correct. **R13 prevents that drift at AUTHORING time by
+generation; this catches it at RUN time, and it is the cheaper half.**
+
+**A PRE-SWAP SCHEMA COMPARISON WAS REFUSED AS THE PRIMARY MECHANISM**, and the
+reason is worth keeping: comparing the aside against the live table validates
+nothing on load ONE, because live is the empty table the migration created and
+there is no meaningful prior shape to compare against. **It would first do useful
+work on load two, by which point the drift has already shipped once.**
+
 ### R8c. Pruning folds into the loader
 
 After a verified-good swap the loader drops the oldest generation beyond three.
@@ -1425,6 +1492,50 @@ amended table shape as part of the slice.**
 
 **This AMENDS a ruled design and is recorded as an amendment, not as an
 implementation detail.**
+
+### R13. The LOADER is authoritative for the DDL; the migration derives from it
+
+**Q5 of the 2026-09-07 DDL review.** Authority sits with the artifact that runs on
+EVERY load, not the one that ran once. **The loader carries the full table
+definition as a single named constant, extending R10c from the index list to the
+whole shape.**
+
+**R13a, SEQUENCING, AND IT CONVERTS AN ORDERING PROBLEM INTO A TEST.** A117 comes
+before A113, so the migration is written BY HAND first and is the PROVISIONAL
+source until the loader lands. **When the loader's constant is authored the
+migration is REGENERATED from it: byte-identical proves the derivation
+retroactively, and any difference is drift found on day one rather than on load
+twelve.** The ordering is not worked around and not inverted; it becomes the
+control the regeneration is checked against.
+
+**R13b is recorded at R8b above**, because it amends that ruling and applies
+whether or not R13 does.
+
+### R14. A generation table is `bmf_gen_YYYYMMDDTHHMMSSZ`
+
+**Q7 of the 2026-09-07 DDL review.** Concretely `bmf_gen_20260907T164748Z`. Four
+properties, each load-bearing:
+
+- **The `bmf_gen_` prefix is a NAMESPACE and must NOT be `bmf_`.** The aside is
+  `bmf_aside`, so **a pruner matching `bmf_%` would catch an in-flight aside and
+  could delete it mid-load.** This is the only naming decision here that can lose
+  data.
+- **UTC always, with the `Z`.** A timestamp without a zone is a fact that cannot
+  be interpreted later, and retention order depends on interpreting it.
+- **ISO 8601 BASIC, no separators but the `T`, so no name ever requires
+  quoting.** R6a's undo checks target names first, and a name requiring quoting
+  is one someone eventually fails to quote.
+- **Lexical order equals chronological order**, so the pruner is `ORDER BY name`
+  and parses no dates.
+
+**The timestamp is the load's START and matches `load_stamp.load_started_at`**,
+so a stamp row and its generation table are joinable by inspection. **It must
+therefore be known when the aside is created**, not computed at swap time.
+
+**R14a. THE UNDO CREATES A GENERATION TABLE TOO.** R6a renames live to a dated
+name and the retained generation back into place, so **the undo needs its own
+timestamp in the same format, and the stamp row for the undo records it.**
+Otherwise a rollback produces a table nothing recorded.
 
 ### Still unruled — FOUR
 
