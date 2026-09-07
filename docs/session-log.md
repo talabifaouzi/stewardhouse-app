@@ -1799,3 +1799,232 @@ did**, because no check was looking at prose. Printing the full diff before
 committing is the only thing that stood between that and a mangled permanent
 record, which is the argument for the bank rule stated as a measured cost rather
 than as protocol.
+
+---
+
+## Session — 2026-09-07 (second)
+
+**CONTINUES THE ENTRY ABOVE AND DELIBERATELY DOES NOT EXTEND IT.** That entry was
+written at `8a553aa`, and its opening sentence is "ONE COMMIT, AND THE REST IS
+RULINGS THAT PRODUCED NO CODE. `6e76fd8` is the only bank." **That was true when
+written and seven more commits followed the same day**, so appending to it would
+falsify its own first line. This entry starts where that one stops.
+
+**EIGHT COMMITS ARE DATED 2026-09-07**, verified by count against a control date
+that returns a different figure. The first of them, `8a553aa`, is the one that
+carries the entry above, which is why that entry could not name it.
+
+---
+
+### Banked
+
+| Commit | What it did |
+|---|---|
+| `8a553aa` | Q7's detection input onto A113; the morning session-log entry |
+| `d71a4a9` | R6-R9, the recovery rulings, onto A113 and A117; §1 amended in place |
+| `297f95f` | Q6 and the sandbox's contents onto A114; the sandbox's standing purpose into CLAUDE.md §6.10 branch (c) |
+| `726ea83` | **A114 CLOSED**, its standing warnings relocated to §6.10 first; A118 filed on staging; `bmf-sandbox.toml` tracked |
+| `ee7e59d` | The Operations false access claim corrected; A119 and A120 filed |
+| `9be3597` | R10, the ruled index set; the A113 scope-pass findings |
+| `f127abd` | R11, Q4 ruled; the count-is-not-a-list pattern into CLAUDE.md §5.1 |
+| `58934fd` | R12, the load stamp design; the four-part count corrected at every site |
+
+**ONE ENTRY CLOSED ALL DAY, A114, and one code change shipped**, the Operations
+access sentence. Everything else is rulings and record.
+
+---
+
+### The ruling whose REASONING lives only here
+
+**THE ADVERSARIAL PASS THAT REVERSED THE STAMP'S SHAPE.** `58934fd` records
+`load_check` as the design. **It does not record that JSON was proposed first,
+defended, and then argued down by the seat that proposed it.** Three objections
+carried it: nothing validates a JSON column, it is not queryable across rows, and
+**a provisional check set means JSON silently changes shape where columns would
+not** — which matters because R10c already made the index set provisional and the
+check set inherits that. The clinching property is that **adding a check adds
+ROWS, not columns**, so the set can move without a migration.
+
+**THE SAME PASS ALSO CUT TWO FIELDS AND KEPT TWO, ON ONE TEST.** `checks_passed`
+went as a second source of truth derived from the check rows; `source_id` went as
+redundant with `source_date` and `file_set` together. The test: **the stamp is
+the only thing that outlives a generation, so a field belongs in it if and only
+if you would want it after the table is pruned.**
+
+**AND THE `source_id` CUT HELD FOR A REASON ESTABLISHED LATER THAN THE CUT.** It
+was cut by pointing at `file_set`, which nobody had defended at the time. It
+survives on its own grounds — four files and five files are both valid and
+produce different data, and nothing else distinguishes them — but the order was
+backwards, and that is recorded rather than tidied.
+
+**THE STAMP BECAME TWO TABLES IN THAT PASS**, which changed what A117 carries and
+had appeared in no earlier round.
+
+---
+
+### The count-is-not-a-list rule was filed and then violated three times in one day
+
+**ALL THREE PROPAGATED THROUGH PROMPTS, NOT THROUGH THE TREE**, and that is the
+part worth keeping. Each time a number was carried forward from a prior report
+without opening the source.
+
+1. **Twelve failure modes with no list.** Asserted three times in
+   `docs/outstanding.md`; no document enumerates twelve. Still unenumerated.
+2. **Four stamp parts with no parts.** "The four-part load stamp" in three
+   documents; no document named the four. R12 resolved it by **defining seven
+   fresh rather than recovering four**, on the reasoning that a count nobody can
+   source is not a constraint.
+3. **"Cited in three documents" when it was five lines across four files.**
+
+**THE THIRD IS THE ONE THAT MATTERS, AND IT IS NOT AN EMBARRASSMENT TO SOFTEN.**
+The rule was filed into CLAUDE.md §5.1 at `f127abd`, 14:41. **It was violated at
+15:05, twenty-four minutes later, by the person who filed it, in a prompt whose
+SUBJECT was that rule.** The prompt ruling R12 said the phrase was cited in three
+documents; it is five lines across four files, one of which is the §5.1 note
+itself.
+
+**AND A117'S OWN ENTRY CARRIED THE SAME ERROR.** The entry recording that the
+list was missing said "cited in three documents" — **an entry about an
+undercounted referent undercounting its own citations.**
+
+**WHAT ACTUALLY CAUGHT BOTH: counting the sites, not rereading the claim.** The
+claim reads correctly either way. Nothing about "cited in three documents"
+signals that it is wrong, which is precisely why a count survives restatement
+and a list does not.
+
+**FT NAMED HIMSELF THE PROPAGATING LINK THREE TIMES TODAY**, and asked for that
+to be recorded rather than absorbed. It is recorded because the rule's value
+depends on it: a rule that only its author's errors escape would be worth less
+than one that catches them.
+
+---
+
+### The seventh instrument failure, and it is the sharpest because the assertion PASSED
+
+**ANCHOR-ON-HEADER.** Replacing the arithmetic block in `docs/outstanding.md`,
+the replacement was anchored on the block's **two-line header** rather than on
+its full extent. The exactly-once assertion **matched that header exactly once
+and reported success.** The old R11 body — nineteen lines — was left orphaned
+below the new text, so **the file briefly carried two arithmetic blocks with
+contradicting counts**, one saying the change was the second consecutive zero and
+one saying the third.
+
+**WHY IT IS DISTINCT FROM THE OTHERS, and it is not a variant of either.** The
+enumerator's blind spot was a matcher that could not see a format variant. The
+empty-pattern line-ending check was a matcher so loose it matched everything.
+**Here the matcher was CORRECT.** It matched exactly what it was told to match.
+**What was too narrow was the SPECIFICATION**, and no control on the matcher
+could have caught that, because the matcher had no fault.
+
+**THE GENERALIZATION IS NARROWER THAN "ASSERT YOUR REPLACEMENTS": when replacing
+a BLOCK, anchor on its FULL EXTENT.** A header anchor matches exactly once,
+satisfies the assertion, and leaves the body behind. The cheap post-condition
+that would have caught it is asserting the old block's CLOSING line is gone,
+which is a check on the OUTCOME rather than on the matcher.
+
+**IT WAS CAUGHT BY THE PRINTED DIFF AND BY NOTHING ELSE.** Counts were unchanged,
+controls held, line endings were preserved, the assertion reported one clean
+match, and the file was wrong.
+
+---
+
+### Whether the seven share a generalization above "controls must span the format variants"
+
+**They do, and it is already half-written in CLAUDE.md §6.14 for a different
+medium.** §6.14 requires a RENDER rather than structural proof when a claim is
+load-bearing, because a structural check confirms a string is in the bundle and
+not that a visitor sees it. **Today established that the same split applies to
+text edits, not only to rendered pages.**
+
+**THE RULE: every check answers a question about the INSTRUMENT. Only reading the
+OUTPUT answers the question about the WORK.**
+
+**The evidence is two failures in one day where the instrument was clean and the
+work was wrong.** The shell carriage-return-escape corruption mangled a paragraph
+mid-sentence with every check passing; the anchor-on-header orphaned nineteen
+lines with the assertion reporting success. **Both were caught by the printed
+diff. Neither was caught by anything else.** The same day's render requirement
+caught a missing space that a bundle grep had confirmed as present and correct —
+three instances of one shape.
+
+**WHAT THIS DOES NOT REPLACE.** The controls discipline still stands and is still
+what catches matcher faults: the enumerator, the trailer substring, the empty
+pattern. **It is not the same rule and does not subsume it.** Controls verify the
+instrument; the diff verifies the work; and today the two failed independently.
+
+**STATED WITH ITS LIMIT: this is one day plus the §6.14 precedent**, not a
+measured pattern across the project's history. It is recorded because the
+mechanism was visible each time, not because the sample is large.
+
+**AN EIGHTH FAILURE OCCURRED WHILE WRITING THIS SECTION, AND IT IS A REPEAT OF
+THE SIXTH.** Writing the sentence above that DESCRIBES the carriage-return-escape
+corruption reproduced it: the literal token did not survive the shell and broke
+the sentence mid-line, exactly as it had hours earlier in the paragraph that
+first recorded it. **Recording a hazard does not prevent it.** The earlier fix
+had worked by naming the escape in prose instead of writing it, and that lesson
+was available and not applied.
+
+**TWO FURTHER INSTRUMENTS FAILED DURING THE REPAIR ITSELF.** A `node -e` repair
+script whose own escaping was wrong, caught by its own assertion rather than by
+inspection. And a verification `grep -E` with a trailing backslash, which errored
+IDENTICALLY on the check and on its control — **which is the control doing its
+job**, since two matching failures showed the instrument was broken rather than
+the file clean. **The repair succeeded only from a script FILE, where the shell
+does no expansion**, which is exactly where the sixth failure had already
+pointed.
+
+---
+
+### The OPEN-versus-READY gap, OBSERVED and NOT filed
+
+**Three consecutive commits moved zero counts while resolving the blockers on the
+longest chain in the queue.** `9be3597` ruled the index set, `f127abd` ruled Q4,
+`58934fd` ruled the stamp design. **A117 went from blocked to writable in full
+across those three, and OPEN stayed at 110 throughout**, with BLOCKING, DEBT and
+POST unmoved as well.
+
+**THE COUNT TRACKS WHAT IS OPEN AND NOT WHAT IS READY, and nothing in
+`docs/outstanding.md` distinguishes those states.** An entry can be unblocked and
+unmoved at the same time. A reader watching totals across those three commits
+sees a queue that did not move.
+
+**RECORDED AS AN OBSERVATION, NOT FILED AS A DEFECT.** FT has not ruled it one,
+and it is not obvious that it is: a queue that counted readiness would need a
+per-entry ready state that nothing currently maintains, and the arithmetic block
+already names the gap each time it occurs. **This is the note, not the filing.**
+
+---
+
+### Technical findings that live nowhere else
+
+**Recorded because each was established by execution or source reading today and
+none reached a commit**, being adjacent to the work rather than part of it.
+
+**`d1 create` HAS NO `--json` AND CANNOT WRITE A TOML CONFIG.** Its args are
+`name`, `location`, `jurisdiction` plus `use-remote`, `update-config`, `binding`;
+`--json` is neither there nor a global flag. The `database_id` arrives **inside a
+printed TOML block**, not on its own line. And the config write is gated on
+`JSON_CONFIG_FORMATS = ["json","jsonc"]`, so **against a `.toml` config the write
+branch is unreachable and `--update-config` and `--binding` are inert.** This
+matters for any A114-style runbook: the id must be copied by hand.
+
+**WRANGLER STRIPS A UTF-8 BOM AND THROWS ON UTF-16 AND UTF-32.**
+`removeBOMAndValidate` refuses the wide BOMs with "Configuration file contains
+{encoding} byte order marker", then does `if (content.charCodeAt(0) === 65279)
+return content.slice(1)`. **`bmf-sandbox.toml` carries a UTF-8 BOM and one stray
+CRLF, both left alone by ruling**, and both are harmless for this reason. The
+§10 Notepad hazard did NOT occur: no `FF FE`, no NUL bytes.
+
+**`d1 export --remote` IS ITSELF AN AVAILABILITY EVENT**, warning in its own
+confirmation that the database will be unavailable to serve queries — which is
+what decided R6 against an exported `.sql` as the backup artifact. It also
+**defaults to LOCAL when neither `--local` nor `--remote` is given**, since
+neither flag carries a default and the handler branches on `remote` being truthy.
+Its download link is a **presigned URL valid one hour**.
+
+**MIGRATION FILENAMES NEED NOT BE CONTIGUOUS.** `getUnappliedMigrationNames` is a
+pure set difference on NAMES against `d1_migrations.name`, and ordering comes
+from `leadingMigrationNumber` sorting numerically with a lexicographic fallback.
+**Nothing anywhere validates contiguity.** One caution: a naive case-insensitive
+grep for `gap` returns three hits in `cli.js` that are all the letters inside
+`xdgAppPaths`.
