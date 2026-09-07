@@ -1160,6 +1160,55 @@ alone. Q7: what "from creation onward" means as a CADENCE, whether applied
 alongside each live apply, before the next one, or on some other trigger. §6.10
 states the obligation and not the trigger.
 **Q8 IS A116** and is already filed.
+**Q6 RULED 2026-09-07: THE SANDBOX RECEIVES ALL 21 MIGRATIONS, INCLUDING THE FIVE
+SEEDS.** There is no subset apply through the runner, so this matches the
+mechanism rather than fighting it. The sandbox is brought to schema-current in one
+invocation.
+**WHAT THAT PUTS IN IT: 44 rows across 9 tables, 20 tables empty, measured
+2026-09-07** by applying all 21 to an in-memory SQLite. **The per-table breakdown
+is deliberately NOT recorded here**, because a future migration that seeds
+anything makes it silently wrong, and a stale count in a docs file is this
+repository's recurring failure. The total and the date it was measured are the
+durable part.
+**THE IDENTITY SURFACE IS SIX `person` ROWS, and it is what to know before running
+the apply.** Morgan Walker (advisor), Marcus Thompson (individual), Reese Donovan
+(ops), Diane Okonkwo (staff), Jordan Avery (staff) and Faouzi Talabi (staff).
+**All six carry `auth_user_id` NULL.** Four carry an `@example.invalid` invite
+address, undeliverable by construction under RFC 2606. Marcus carries none at all,
+which is seed-faithful and is why he is structurally unclaimable.
+**ZERO CREDENTIALS. NOTHING IN THE SANDBOX CAN AUTHENTICATE ANYONE, ANYWHERE.** No
+migration inserts into `auth_user`, `session`, `verification` or `account`,
+verified across all 21 with a control proving the pattern fires on a synthetic
+`INSERT INTO auth_user`.
+**ONE REAL, DELIVERABLE ADDRESS WILL EXIST THERE**,
+`talabifaouzi+staff@gmail.com`, on the Faouzi Talabi staff row. Migration 0011's
+own docblock says it "IS deliverable" and says the claim hook binds the row on
+first magic-link verify. **RULED KNOW-IT, NOT ACT-ON-IT:** it is FT's own address
+and it is INERT in the sandbox.
+**THE CONTAINMENT IS STRUCTURAL RATHER THAN CONVENTIONAL, AND IT IS WHAT MAKES IT
+INERT.** Both send surfaces are bound to production by construction. The Worker
+binds `env.DB` from `wrangler.toml`, which Q1 keeps the sandbox OUT of, so no
+running application reads the sandbox at all. `scripts/seed-invites.mjs`, the only
+send-capable script, hardcodes `DB_NAME = 'stewardhouse-pilot'` and passes no
+`--config`, so it cannot be aimed at the sandbox.
+**WHAT WOULD MAKE IT LIVE, named so the boundary is explicit rather than
+assumed:** adding the sandbox to `wrangler.toml`, or editing that script's
+`DB_NAME` or teaching it `--config`. Both are deliberate acts. Neither is a slip.
+**THE TRAP A LATER READER WILL ACTUALLY HIT: SAME ID, DIFFERENT TRUTH.** Faouzi
+Talabi is `person` id `04000000-0000-4000-8000-000000000002` in BOTH databases. In
+a fresh sandbox that row is UNCLAIMED, `auth_user_id` NULL. In production the same
+address is a confirmed working staff account, so the row is CLAIMED. **Identical
+id, identical name, identical email, opposite claim state, and nothing in the row
+announces which database it came from.** Anyone querying one and reasoning about
+the other is wrong in a way the data does not disclose.
+**44 IS THE COMMON FLOOR, NOT A SANDBOX-ONLY EXTRA, AND THE OBVIOUS GUESS RUNS
+BACKWARDS.** The same 21 migrations built production, so those rows are in both.
+**Subtracting seeded rows from the sandbox side to compare against production
+would be wrong.** Production is 44 plus accumulated real rows minus anything since
+deleted; a fresh sandbox is exactly 44.
+**BMF ROW COUNTS COMPARE CLEANLY AND ARE UNAFFECTED BY ANY OF THIS.** The BMF
+table is in none of the 21 migrations; A117 creates it. Both databases start at
+zero on that table, so a count comparison there needs no adjustment.
 
 **A116 | Whether a sandbox result transfers to production.**
 Blocker: unruled. FT has not ruled it, and it is recorded as open rather than

@@ -1131,7 +1131,27 @@ Every substantive change runs as a **slice**. The rhythm:
     deliberately NOT filed in `docs/outstanding.md`**, because a standing
     obligation has no completion state and would sit in a counted queue
     permanently; the sandbox itself is filed there as A114, and this rule is
-    what that entry points at. Discovered 2026-06-30 when migration 0003
+    what that entry points at.
+    **WHAT THE SANDBOX IS FOR, RECORDED HERE BECAUSE A114 CLOSES AND THIS RULE
+    DOES NOT (FT, 2026-09-07).** R2 authorized it as STANDING INFRASTRUCTURE for
+    future feature work: **a pre-production environment where changes are tested
+    before they reach live.** A114's text describes it narrowly, as a database
+    created so the BMF loader can be written against a real table, which is what
+    it is FIRST USED FOR and not what it is FOR. **A114 closes the moment the
+    database exists**, so a purpose recorded only there would close with it.
+    **Why here rather than in a new rule or in the scoping doc:** the sandbox's
+    one other standing obligation is already this branch, for the identical
+    reason that it has no completion state; `docs/bmf-load-scoping.md` is design
+    for one arc while this purpose is explicitly broader than BMF; and §6.16's
+    relocation test puts a reason next to the rule it governs.
+    **THE ONE SEAM A LATER READER SHOULD NOTICE: the purpose is wider than
+    migrations even though this rule is not.** R4 forbids inducing failure
+    against live, so the sandbox is also the venue for every deliberate-failure
+    test, and **A116 asks the still-unruled question of whether a result obtained
+    there transfers to production at all.** If the sandbox ever acquires
+    obligations that are not migration-shaped, they need a home that is not this
+    branch.
+    Discovered 2026-06-30 when migration 0003
     (`21d746a`, shipped 2026-06-25 local-only) was found unapplied on remote
     5 days later — latent risk only, never triggered (no remote sign-in had
     occurred in the gap window), but the same gap could have hard-failed
