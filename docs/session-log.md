@@ -2028,3 +2028,114 @@ from `leadingMigrationNumber` sorting numerically with a lexicographic fallback.
 **Nothing anywhere validates contiguity.** One caution: a naive case-insensitive
 grep for `gap` returns three hits in `cli.js` that are all the letters inside
 `xdgAppPaths`.
+
+---
+
+## Session — 2026-09-07 (third)
+
+**SCOPE NOTE: this entry is the session's commits plus the RETROACTIVE PROMOTION
+LIST, and it is deliberately not the full ceremonial entry.** No branch was cut
+(docs commits need none per §6.3) and no branch was pruned. The substantive
+content is the promotion list, which is what the entry exists to preserve.
+
+### The five commits
+
+| Commit | What it did |
+|---|---|
+| `d842d4d` | Enumerated the **twenty-six** BMF failure modes into `bmf-load-scoping.md` §4 and corrected the "twelve" and "§4 names four" counts at every citation. Both counts were asserted and neither was true; §4 names six. |
+| `a5be8d9` | Ruled **R13** (the loader is authoritative for the DDL, the migration derives from it) and **R14** (`bmf_gen_YYYYMMDDTHHMMSSZ`), and filed the **EIN quoting hazard** as a HARD REQUIREMENT in §2's script contract rather than on A113, because A113 closes at the moment the requirement starts mattering. |
+| `a4710e7` | Wrote `migrations/0022_bmf_table.sql`, body byte-identical to the DDL at `a5be8d9`. **Applied nowhere.** Carried the §6.10 branch-(b) deferral note into CLAUDE.md §5.1 and corrected A117's title, which the commit itself would otherwise have made false. |
+| `cccb8ae` | Filed the line-ending check that could not fail as §10's eighth entry, its **second** occurrence, and corrected the repo's actual convention. |
+| `0c1cae1` | Added **PROMOTION** as rule 18's third purpose, routing recurring hazards out of this log into CLAUDE.md. |
+
+### Why this entry exists, and it is the point
+
+**The list below was derived, ruled on, and existed only in conversation.** At
+session end it would have been lost, and the first promotion pass would have had
+to re-derive nine findings from 2,030 lines **and re-make a ruling FT had already
+made**.
+
+**That is a finding recorded where it happened rather than where the next session
+looks** — the exact pattern rule 18's promotion step was added to prevent,
+arriving inside the commit that added it. The rule demonstrated its own necessity
+twice in one session: once on the OPEN enumerator, and once on its own output.
+
+### The retroactive promotion list — NINE findings, NOT promoted here
+
+**Derived by applying rule 18's promotion criterion to all 15 entries of this log
+and the 17 distinct findings in them.** The promotion pass itself is a SEPARATE
+commit; this records only what is promotable and what was ruled.
+
+**TWO ARE AMENDMENTS to existing CLAUDE.md §10 filings, never second entries:**
+
+1. **The OPEN-entry enumerator blind to letter-suffixed IDs**, together with its
+   generalization that *controls must span the FORMAT VARIANTS the check may
+   encounter*. **Amends** §10's "a scanner reported 3 sites where there were 20"
+   filing, which it takes one turn further.
+2. **Wrangler's BOM handling** — strips UTF-8, throws on UTF-16 and UTF-32.
+   **Amends** §10's "`.dev.vars` corrupted to UTF-16 fails SILENTLY" filing,
+   whose subject it completes.
+
+**SEVEN ARE NEW:**
+
+3. **The trailer check matching a bare case-insensitive "claude"**, which fired
+   on the word `CLAUDE.md` in a commit body.
+4. **The shell carriage-return escape corrupting prose**, which recurred
+   immediately while the paragraph describing it was being written.
+5. **Anchor-on-header**: the exactly-once assertion PASSED and left nineteen
+   orphaned lines, because the matcher was correct and the specification was too
+   narrow.
+6. **The instrument-versus-work rule**: *every check answers a question about the
+   INSTRUMENT; only reading the OUTPUT answers the question about the WORK.* This
+   is limb (b) of the criterion in action — a rule, not a hazard, and it would
+   have stayed here permanently under limb (a) alone.
+7. **`d1 create` has no `--json` and cannot write a TOML config**; the
+   `database_id` arrives inside a printed TOML block, and `--update-config` and
+   `--binding` are inert against a `.toml`, so the id must be copied by hand.
+8. **`d1 export --remote` DEFAULTS TO LOCAL** when neither `--local` nor
+   `--remote` is given.
+9. **Migration filenames need not be contiguous.**
+   **FT RULED 2026-09-07: PROMOTE, and it is no longer borderline.** The agent
+   had classified it borderline on the grounds that it is a fact rather than a
+   hazard. **The reasoning that overrode that: this record repeatedly cites
+   contiguity as EVIDENCE and nothing validates it, which is a false confidence
+   with a citation habit behind it.** `getUnappliedMigrationNames` is a pure set
+   difference on names; no code anywhere checks for a gap.
+
+### The five LEFT, with their reasons, so the first pass does not re-judge them
+
+- **The `awk` nearest-preceding-bold orphan heuristic.** A one-off ad-hoc script
+  with no recurrence surface.
+- **The edit script that failed SAFELY.** A counter-example rather than a hazard;
+  it is the assertion the enumerator lacked, and it belongs to the generalization
+  at item 1 rather than standing alone.
+- **The Button-census CRLF delimiter bug.** Subsumed by the line-ending filing
+  already promoted at `cccb8ae`.
+- **The A95 `notes`-column correction.** A ruling's reasoning, and it reached the
+  filing where the ruling lives; excluded by the criterion.
+- **The OPEN-versus-READY gap.** An observation FT has not ruled a defect, and
+  this log already marks it "the note, not the filing".
+  **ONE CAVEAT, recorded because it is the only leave that can rot:** it is an
+  observation about the queue's own arithmetic, so if it is never ruled it stays
+  invisible, and nothing will surface it again.
+
+### Three findings were ALREADY promoted, verified rather than assumed
+
+The 7403 authorization failure, the `.dev.vars` UTF-16 corruption, and the
+line-ending check promoted this session. **Absence-or-presence in CLAUDE.md was
+established by grep with a POSITIVE CONTROL** — a string known present returned
+2 — so the zeros for the unpromoted findings are a measurement rather than a
+matcher that always returns zero.
+
+### Open items carried out of the session
+
+- **The first promotion pass has NOT run.** It is a separate commit and carries
+  the nine above.
+- **Migration 0022 is applied NOWHERE** — not the local dev store, not
+  `bmf-sandbox`, not remote. Every apply is FT-run per §6.10 and §6.15, and the
+  branch-(b) note is in CLAUDE.md §5.1.
+- **A117 stays open** with three named remainders: the apply, the §6.10 branch-(c)
+  sandbox obligation, and R13a regeneration once A113's loader constant exists.
+- **OPEN stands at 110**, corrected this session from the 108 that four commits
+  reported. The deltas were right; the level was wrong by two, and the cause was
+  finding 1 above sitting unpromoted in this file.
