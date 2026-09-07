@@ -1669,7 +1669,72 @@ Every substantive change runs as a **slice**. The rhythm:
     re-verified at HEAD, which is what produced the eleven corrections in
     `d08b20e`. DISCOVERY: items that exist in no queue at all, of which A59 is
     the example, and the parked lists inside scoping documents that
-    `docs/outstanding.md` names as its own known weak spot.
+    `docs/outstanding.md` names as its own known weak spot. **PROMOTION: findings
+    in `docs/session-log.md` that belong in THIS file, added 2026-09-07 and
+    specified below.**
+
+    **PROMOTION, THE THIRD PURPOSE, AND WHY IT EXISTS.** The line-ending check
+    that could not fail was recorded in the session log as its "fifth
+    instrument", was never filed here, and **recurred in a later session because
+    nothing warned it**. That filing is now §10's eighth. **A SESSION LOG RECORDS
+    WHAT HAPPENED; IT DOES NOT WARN THE NEXT SESSION.** This file is the one
+    loaded every session, so a hazard that stays in the log is a hazard nobody
+    meets again until they repeat it.
+
+    **THE CRITERION. PROMOTE a finding if it is (a) a HAZARD THAT COULD RECUR —
+    an instrument that cannot fail, a shell or tool behaviour that surprises, a
+    check that reports something false — or (b) A RULE DERIVED FROM ONE.**
+
+    **Limb (b) is not decoration and the criterion is wrong without it.** The
+    log's most valuable line is a rule and not a hazard: *every check answers a
+    question about the INSTRUMENT; only reading the OUTPUT answers the question
+    about the WORK*. Under limb (a) alone it stays in the log forever, because
+    nothing recurred — it is what several recurrences had in common.
+
+    **LEAVE: rulings and their reasoning, one-off faults with no recurrence
+    surface, observations FT has not ruled a defect, and anything already filed.**
+
+    **ONE EXCEPTION, AND IT IS CHECKED RATHER THAN ASSUMED.** Rulings are left
+    because they are recorded where the ruling lives — **which is a claim about
+    another document, not a fact.** The log carries a section titled "The ruling
+    whose REASONING lives only here", so the failure mode is real and the log
+    already flags its own instances. **The sweep OPENS the ruling document for
+    those and confirms.** Worked instance: that section's own content had by then
+    reached A117, so the check passed and nothing was promoted.
+
+    **SCOPE: entries dated after the previous `Last swept:` date, not the whole
+    log.** Entry headings carry their dates, so no new marker is needed. **The
+    FIRST promotion pass is the exception and covers the whole log**, because
+    nothing has ever been swept for this. Re-reading 2,000-plus lines every 30
+    days is exactly the cost that gets a gate waved past, which is the reasoning
+    this rule already applies to its own interval.
+
+    **DISPOSITIONS ARE RECORDED, or the same judgement is re-made every 30 days.**
+    The sweep is itself a session and writes a session-log entry; that entry names
+    what was promoted and what was LEFT, one line of reason each. Combined with
+    the scope above, a left finding is never re-judged, and the record of why sits
+    in the log at the date the judgement was made.
+
+    **PROMOTE OR AMEND IS PART OF THE JUDGEMENT, not an afterthought.** A finding
+    that sharpens an existing filing is an AMENDMENT to it, never a second entry;
+    §10 already holds two filings whose later occurrences arrived that way. A
+    sweep that only asks "promote or not" produces duplicates.
+
+    **THE STEP PRODUCES A PROPOSAL FT APPROVES. It does not file directly.**
+    Promotion edits the operating context every session loads, and §6.13 and
+    §6.15 already require FT approval for any commit. **This grants no new
+    authority and is not an exception to either.**
+
+    **THE RULE WAS DEMONSTRATED BY THE SESSION THAT WROTE IT, ON A SECOND
+    UNPROMOTED FINDING.** The log records the OPEN-entry enumerator as blind to
+    letter-suffixed IDs; that finding was never promoted either. **So the same
+    session reported OPEN as 108 across three commits, using the naive pattern,
+    while `docs/outstanding.md` states 110** — the gap being A50a and A50b.
+    **Every control asserted was a plain-numeric ID and therefore could not see
+    it**, which is the log's own diagnosis, available and unread. The DELTAS
+    reported were correct, since no entry opened or closed; the LEVEL was wrong by
+    two. **Two findings, one promoted after it recurred and one recurring while
+    the rule about promoting it was being written.**
 19. **NEVER PIVOT SILENTLY, AND NEVER PIVOT OVER UNCOMMITTED EDITS (FT-ruled
     2026-09-02).**
 
