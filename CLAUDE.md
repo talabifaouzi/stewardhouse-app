@@ -2593,6 +2593,96 @@ reading secrets SAFELY and says nothing about the file being UNREADABLE. §6.12 
 a numbered prose rule and a `### Filed —` block would break that structure, so
 this lives here and §6.12 is named as the place a reader might look first.
 
+### Filed — a line-ending check that COULD NOT FAIL, for the SECOND time (2026-09-07)
+
+**`grep -c $'\r$'` CANNOT FAIL IN THIS SHELL.** MSYS grep strips carriage returns
+before matching, so the CR in the pattern is consumed and what reaches the matcher
+is a bare `$`, which matches every line. **It returns the same count for a CRLF
+file and an LF file**, and that count is always the total line count, so its
+output is indistinguishable from a clean pass.
+
+**Verified by control this session**, which is the only reason it surfaced:
+
+```
+grep -c $'\r$' on a known-CRLF two-line file (should be 2): 2
+grep -c $'\r$' on a known-LF   two-line file (should be 0): 2
+```
+
+**BLAST RADIUS: every line-ending confirmation across `d842d4d`, `a5be8d9` and
+`a4710e7` came from it.** Three specific claims were FALSE. That committed blobs
+were CRLF — **they are LF, all 255 tracked files, no exceptions**. That
+`CLAUDE.md` is CRLF in the working tree — **it is LF, zero CRs**. And that git's
+`autocrlf` warning was a meaningless no-op announcement — **it was correctly
+reporting a CRLF-on-checkout file sitting LF on disk**, and it was dismissed
+twice.
+
+**THE NEAR-MISS IS THE SHARPEST PART.** On `a4710e7` the committed blob body
+differed from the reviewed DDL by **138 bytes**, one per line, while the broken
+check had already reported the file fine. **The mismatch surfaced only because
+`cmp` compared actual bytes and disagreed with grep.** So a check that cannot
+fail does not merely fail to catch things: **it actively contradicts the checks
+that work**, and the instinct on a disagreement is to doubt the one that reports
+a problem. The content was correct throughout; only the evidence was hollow.
+
+**WHAT REPLACES IT: count carriage returns against total, never grep for one.**
+`tr -cd '\r' < file | wc -c` returns 0 for an LF file and one per line for a
+CRLF file. **Assert a known-LF control returns ZERO before trusting any result**,
+because the failure being guarded against is precisely a matcher that reports
+CRLF for everything.
+
+**SECOND OCCURRENCE. The first was recorded in `docs/session-log.md` and NEVER
+FILED HERE**, which is why nothing warned this session. That entry describes the
+identical mechanism as its "FIFTH INSTRUMENT", reporting "2173 of 2173" and
+"1629 of 1629", right about one file and wrong about the other. **It is not the
+same failure as the §10 UTF-16 entry, where nothing had been written down at
+all.** Here it WAS written down — in the narrative, not in the runbook. **A
+session log records what happened; it does not warn the next session**, and this
+file is the one loaded every session. That is the §5.1 drift mechanism arriving
+in §10: a correction that lives only in the document nobody re-reads.
+
+**THE GENERALIZATION IS NARROWER AND WORSE THAN THE ONE ALREADY HERE.** The
+scanner filing above already rules: assert a known-positive control before
+trusting any scan count. **That rule was applied twice in this same session** —
+to the anchored trailer check, which got a positive AND a negative control, and
+to the OPEN entry enumerator, which got both — **and never to the line-ending
+check. Nobody decided to exempt it.** It was not weighed and set aside; it was
+simply not thought about, because line endings read as plumbing rather than as a
+measurement.
+
+**So the failure is NOT that the rule was missing. It is that A RULE APPLIED
+SELECTIVELY IS A RULE YOU DO NOT HAVE.** A discipline that attaches to the checks
+someone remembers to doubt protects exactly the checks that were already being
+doubted, which are the ones least likely to be wrong. **It has to attach to every
+check by default**, including — especially — the boring ones whose output nobody
+reads closely. This is the FOURTH member of the family: the delta-counting hazard
+at the end of §6, the minified-bundle grep in §9, the scanner above, and this.
+
+**THE REPO'S ACTUAL CONVENTION, MEASURED, AND IT IS NOT WHAT ANYONE ASSUMED.**
+
+- **In git, every blob is LF.** Scanned all 255 tracked files: zero contain a
+  carriage return. `core.autocrlf=true` with no `.gitattributes` normalizes on
+  staging.
+- **In the working tree there is NO convention, and this is the part that
+  matters.** `migrations/` is **11 LF and 11 CRLF**, an exact split:
+  `0001`–`0010` and `0018` are LF, the rest CRLF. `CLAUDE.md` and
+  `docs/session-log.md` are LF; `docs/outstanding.md`, `docs/filed-defects.md`
+  and `docs/bmf-load-scoping.md` are CRLF.
+- **A file's working-tree line ending therefore carries NO information.** It is
+  an artifact of which tool last wrote it, and it is invisible in git either way.
+
+**CONSEQUENCE FOR THE "MATCH AN EXISTING FILE" INSTINCT, which is how
+`0022_bmf_table.sql` was written.** That file was given CRLF by checking
+`0019`, `0020` and `0021` — three of the CRLF eleven. **Had `0001` been checked
+instead, the file would have been written LF, and it would have been equally
+correct**, because both normalize to the same blob. The check was not wrong. It
+was answering a question that has no answer.
+
+**NOTHING IN `docs/` ASSERTED THE CONVENTION WRONGLY, so nothing is corrected
+here.** Grepped for `CRLF`, `autocrlf`, `line ending` and `line-ending` across
+all markdown: the only per-file claims are in `docs/session-log.md`, stating
+`docs/outstanding.md` is CRLF and `docs/session-log.md` is LF-only, and **both
+are correct.** The false claims lived in session reports, not in the tree.
+
 ---
 
 ## 11. Production incident log
