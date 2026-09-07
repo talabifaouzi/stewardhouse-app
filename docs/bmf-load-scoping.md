@@ -126,6 +126,12 @@ none**, so the §10 rebuild hazard does not apply here.
 
 ### Indexes
 
+**RULED 2026-09-07 (R10): THE SET IS THE FOUR MEASURED INDEXES** — `UNIQUE(ein)`,
+`(state, city)`, `(ruling)`, `(name)`. Unanimous across four advisory seats, FT
+deferring. **The deciding argument: in a replace-all design an index is not a
+schema decision.** Every load rebuilds the whole set, so changing it later costs
+one DDL edit and one load cycle rather than a migration.
+
 Following the `idx_{table}_{column}` convention used throughout the tree:
 
 - **Geography** filters state, then city. State alone partitions 1.96M into
@@ -136,9 +142,51 @@ Following the `idx_{table}_{column}` convention used throughout the tree:
 - **Total expenses band** is a range predicate, but its source is the XML rather
   than the BMF, so that index belongs to whichever table carries expenses.
 
-**The right composite shape is not knowable yet.** It depends on which facet
-combinations are common, and nobody has that data because the surface does not
-exist. Over-indexing 1.96M rows costs storage and load time on every replace-all.
+**R10a, A CORRECTION TO THE FRAMING: `UNIQUE(ein)` IS NOT AN INDEX CHOICE.** This
+section rules `EIN` the PRIMARY KEY, and in SQLite a PRIMARY KEY on a
+non-INTEGER column IS a unique index, created whether requested or not. **So the
+decision is THREE indexes plus what the PK already creates.** Verified by
+execution 2026-09-07: a `TEXT PRIMARY KEY` produced `sqlite_autoindex_bmf_1`
+with `origin: pk`, no index having been requested.
+
+**R10b: THE PRIMARY KEY IS DECLARED AT `CREATE`, not added after load.** The
+consequence is that a duplicate `EIN` fails at INSERT rather than at index
+creation. Verified in the same run: a repeated `EIN` was rejected with
+`UNIQUE constraint failed: bmf.ein`.
+
+**THIS MAKES BOTH R8-2 AND R8-3 TAUTOLOGIES, and the second half is a finding of
+the scope pass rather than of the ruling.** R10a names R8-2, distinct `EIN`
+equals row count. **The same run's CONTROL established the other:** a NULL in a
+`NOT NULL` column is rejected identically, `NOT NULL constraint failed:
+bmf.name`, so R8-3, non-null on the four nationally-non-null fields, cannot fail
+either. **Both checks run against an aside that could not have been built if
+they would fail.** Whether they become `sqlite_master` assertions that the
+constraints EXIST is UNRULED, and that reframing is the only thing that would
+make either able to fail.
+
+**R10c: THE SET IS PROVISIONAL AND MUST SAY SO.** It lives in the loader as a
+SINGLE NAMED CONSTANT, not scattered through the DDL, carrying a comment that it
+is revisable at zero migration cost once Discover reveals real query patterns.
+
+**R10d, A PATH B CONDITION ON THE `name` INDEX.** It is a SEARCH index, and
+search is how Discover will surface organizations. **Indexing for retrieval is
+inside the §7 boundary; ordering by anything evaluative is not.** Exposure in,
+evaluative recommendation out, applies at the QUERY layer, and **nothing in the
+schema guards it**: the index is neutral, and the query written against it is
+where the boundary can be crossed.
+
+**R10e, A MEASUREMENT FLAG.** The storage and timing figures in this section were
+measured against a table with **NO PRIMARY KEY DECLARED**, which is not the shape
+that ships. The peak-storage subsection carries the same flag beside the figure.
+
+**SUPERSEDED BY R10, kept because the reasoning is sound and only its conclusion
+moved.** This section previously ended: "**The right composite shape is not
+knowable yet.** It depends on which facet combinations are common, and nobody has
+that data because the surface does not exist. Over-indexing 1.96M rows costs
+storage and load time on every replace-all." **That remains true, and it was
+functioning as a CIRCULAR BLOCKER**: query patterns cannot be known until
+Discover exists, and Discover cannot exist until the table does. R10 breaks the
+circle by pricing the cost of being wrong at one load cycle.
 
 ### Index build timing, measured
 
@@ -217,6 +265,15 @@ the earlier paragraph said would be required to close it.
 **The ceiling is 10 GB per database on Workers Paid**, so peak sits roughly
 seventeen times inside it. **Storage does not constrain either swap option**,
 which is the gate the swap design fork was waiting on.
+
+**R10e, FLAGGED 2026-09-07: EVERY FIGURE ABOVE WAS MEASURED AGAINST A TABLE WITH
+NO PRIMARY KEY DECLARED**, which is not the shape R10b ships. **R7's "roughly
+303 MB per generation" rests on the 302.57 MiB here**, so that figure is
+INHERITED rather than measured against the real shape and **must not be restated
+as if it were.** One re-measurement against a table carrying the declared PK
+settles it. The direction of the error is not assumed either: the PK's automatic
+index may or may not differ in size from the `UNIQUE (ein)` index that was
+measured, and nothing here establishes which.
 
 **AMENDED 2026-09-07 BY R7: PEAK IS NO LONGER ASIDE-PLUS-LIVE.** Three
 generations are retained, so peak is live plus the aside plus the retained set.

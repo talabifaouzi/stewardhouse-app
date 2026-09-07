@@ -27,23 +27,20 @@ for what the cadence misses.
 ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
 BMF-and-Discover 11, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: TWO ENTRIES FILED FROM THE LANDING-
-PAGE PASS, AND ONE DEFECT FIXED RATHER THAN FILED.** A119, the six-name split on
-the Operations surface. A120, the Enterprise card advertising a Setup flow P-5
-removed. **The third finding, a false access claim on the Operations surface,
-was FIXED IN THE SAME COMMIT and therefore never became an entry** — filing it
-would have shipped it another day.
-**OPEN moves 108 to 110.** Cheap-and-mechanical moves 30 to 32 on A119 and A120.
-The breakdown is therefore 7 + 15 + 7 + 11 + 32 + 35 + 3 = 110, and the
-restatement further down moves with it, to "sum to 110".
-**DEBT moves 59 to 61**, both entries being DEBT on the reasoning recorded on
-each. BLOCKING is unchanged at 22 and POST at 27, and 22 + 61 + 27 = 110. **The
-counsel-gated line does NOT move**, since BLOCKING did not.
-**THE BUILD CHAIN IS UNCHANGED AT 18**, being BLOCKING minus the counsel-gated
-four, and neither new entry is BLOCKING.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: NOTHING MOVED. R10 RULES AN INPUT,
+AND AN INPUT IS NOT AN ENTRY.** The index set is ruled and recorded on A117, on
+A113 and in `docs/bmf-load-scoping.md` §1. **No entry opened, closed, or changed
+group or Pilot**, so OPEN stays at 110, BLOCKING at 22, DEBT at 61 and POST at
+27, the breakdown stays 7 + 15 + 7 + 11 + 32 + 35 + 3 = 110, the restatement
+further down stays at "sum to 110", the counsel-gated line stays at FOUR OF THE
+TWENTY-TWO, and the build chain stays at 18.
+**A ZERO-MOVEMENT CHANGE IS RECORDED RATHER THAN SKIPPED**, because the reason
+it is zero is the substance: **A117's blocker line named TWO conditions and R10
+closed ONE.** The scope pass, and Q4, still block it, so the entry does not move
+even though the thing that was loudest about it is now settled.
 This block records the LAST change only and is REPLACED rather than appended, so
-it never accumulates into a changelog. The entry it replaced recorded one entry
-closed and one filed, cancelling to zero.
+it never accumulates into a changelog. The entry it replaced recorded two
+entries filed from the landing-page pass and one defect fixed rather than filed.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
 dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 105 rather than 107, because
@@ -1082,8 +1079,46 @@ enforces it; and **whether the sandbox's existence reopens §13's option (b)**,
 which was one of the eight open questions on 2026-09-04 and was absent from the
 2026-09-07 list as first delivered. **FT ruled the same day that it STAYS OPEN**,
 neither withdrawn nor resolved, so **the unruled set is FOUR, not three.**
-**NONE OF THIS AUTHORIZES A BUILD SLICE. This entry has still had no scope pass**,
-and the rulings above are inputs to that pass rather than a substitute for it.
+**A SCOPE PASS RAN 2026-09-07, READ-ONLY. It did not authorize a build and R10
+does not either**: R10 unblocks a RULING, not a build, and slice 1's boundary is
+itself unruled. What the pass established is below; the rulings above remain
+inputs to a build rather than a substitute for one.
+**THE INDEX DDL APPEARS IN BOTH THIS ENTRY AND A117, AND THEY MUST AGREE.**
+Recorded nowhere before the pass. SQLite indexes travel with a table through a
+rename, and the swap renames an ASIDE into place, so **the loader creates the
+indexes on the aside on EVERY RUN.** A117 is therefore not the only place the
+ruled set is written. Either both carry identical DDL or one derives it from the
+other, and nothing decides which.
+**R8-2 AND R8-3 ARE BOTH TAUTOLOGIES AS SPECIFIED, established by execution
+rather than argued.** With the PK declared at `CREATE` (R10b), a duplicate `EIN`
+is rejected at INSERT with `UNIQUE constraint failed`; the same run's CONTROL
+showed a NULL in a `NOT NULL` column rejected identically with
+`NOT NULL constraint failed`. **R10a names only R8-2; the control extends it to
+R8-3.** Both checks therefore run against an aside that could not exist if they
+would fail. **They can only be made able to fail by reframing them as
+`sqlite_master` assertions that the constraints EXIST**, which matters because
+the sole existing artifact, `scripts/d1-window-generate.mjs:85`, declares
+neither.
+**WHAT THE PASS FOUND THAT IS NOT A RULING, in one line each.** The twelve
+failure modes are asserted three times in this file and **enumerated nowhere on
+disk**, so a build inherits a count without a list. The only quote-aware CSV
+work in the tree is absent: `readRosterFile.js` is browser-only, capped at 10 MB
+against a 48.6 MB first file, and has **zero** quote handling against a control
+of five `export` hits — while §5 anticipates exactly that bug, six
+comma-carrying names in 278,014. `escapeSql` exists in both precedents but
+would throw on the two nullable columns. `d1-window-generate.mjs` already
+carries byte-accurate chunking, a backpressure-aware streaming write and an
+`aside-swap` DDL mode, but its rows are synthetic, it declares no key or index,
+and its DDL uses the `DROP` that **R6 now forbids**.
+**STILL UNRULED, SEVEN, and none of them blocks the ruling above:** whether R8-2
+and R8-3 stay data counts or become `sqlite_master` assertions; what "trend"
+means numerically in R8-5 and what runs on loads one through three; whether §5's
+EXACT null counts or R8-4's BAND governs a recurring load, since only one can
+survive a file the IRS regenerates; whether the twelve failure modes get
+enumerated on disk; where downloaded extracts live and whether they are cached,
+which `.gitignore` does not currently cover; whether credential staleness
+mid-import stays unhandled as §4 records it; and whether the pass's proposed
+slice-1 boundary is right.
 
 **A116 | Whether a sandbox result transfers to production.**
 Blocker: unruled. FT has not ruled it, and it is recorded as open rather than
@@ -1107,8 +1142,10 @@ since it does not gate the run but does bear on what the run's result is worth.
 
 **A117 | The BMF table migration is not written. A8's chain named the step and
 gave it no ID.**
-Blocker: none for the writing itself. It needs a scope pass, and one of its
-inputs is open in the plan it implements.
+Blocker: a scope pass, and Q4. **The open INPUT closed 2026-09-07 (R10)**; the
+other half of this line did not. This read "none for the writing itself. It
+needs a scope pass, and one of its inputs is open in the plan it implements"
+until then.
 Pilot: BLOCKING
 Detail: `docs/bmf-load-scoping.md` §1 for the ruled table shape; A114 for the
 sandbox it is applied to.
@@ -1122,10 +1159,28 @@ authoring met an open input.
 Writing is local and agent-ok. Applying is FT-run remote, and under R5 it is not
 a one-time act at all but the first instance of a standing obligation, which is
 why the apply has no entry of its own and this does.
-**IT CANNOT BE WRITTEN TODAY WITHOUT A SCOPE PASS.** §1 leaves the composite
-index shape open in its own words, "The right composite shape is not knowable
-yet", because it depends on which facet combinations are common and nobody has
-that data while the surface does not exist.
+**THE INDEX SHAPE IS RULED AND NO LONGER BLOCKS THIS ENTRY (R10, 2026-09-07).**
+The set is `UNIQUE(ein)`, `(state, city)`, `(ruling)`, `(name)`, and under R10a
+the first of those is not a choice at all: a SQLite PRIMARY KEY on a
+non-INTEGER column already creates a unique index, so **the decision is three
+indexes plus what the PK creates**. Under R10b the PK is declared at `CREATE`,
+not added after load. Full text and reasoning: `docs/bmf-load-scoping.md` §1.
+**THE PARAGRAPH THIS REPLACES IS QUOTED BECAUSE ITS REASONING STOOD AND ONLY ITS
+CONCLUSION MOVED:** "IT CANNOT BE WRITTEN TODAY WITHOUT A SCOPE PASS. §1 leaves
+the composite index shape open in its own words… because it depends on which
+facet combinations are common and nobody has that data while the surface does
+not exist." **That was a circular blocker** — the surface needs the table — and
+R10 broke the circle rather than answering the question it posed.
+**WHAT STILL BLOCKS THIS ENTRY, so the correction is not read as more than it
+is: the scope pass, which has not run, and Q4 below.** Q4 decides WHERE the file
+goes, which is not answerable by writing it.
+**THE INDEX DDL APPEARS IN BOTH THIS ENTRY AND A113, AND THEY MUST AGREE.**
+Found by the A113 scope pass 2026-09-07 and recorded nowhere before it: because
+SQLite indexes travel with a table through a rename, and the swap renames an
+ASIDE into place, **the loader must create the indexes on the aside on every
+run.** So this migration is not the only place the set is written. Either the
+two carry identical DDL or one derives it from the other, and nothing currently
+decides which.
 **§1'S OWN NEXT-NUMBER LINE IS STALE, AND THE FILE NUMBER IS NOT `0019`.** It
 reads "Next number is `0019`. The tree runs `0001` through `0018`, contiguous",
 which was true when written. `0019`, `0020` and `0021` are now taken by
