@@ -36,11 +36,11 @@ stays 61 and POST stays 27; the breakdown becomes
 7 + 15 + 7 + 10 + 32 + 35 + 3 = 109, the BMF-and-Discover tier being the one that
 loses it; the restatement further down becomes "sum to 109"; and the
 counsel-gated line becomes FOUR OF THE TWENTY-ONE.
-**THE BUILD-CHAIN FIGURE OF 18 IS NOT UPDATED HERE AND IS FLAGGED AS
-UNVERIFIED.** Whether A117's closure removes a step from that chain was not
-established by this pass, and changing a figure on a guess is the defect this
-whole block exists to prevent. **It is named so the next reader knows it was
-considered and not checked**, rather than assumed current.
+**and the build chain becomes 17.** It was flagged unverified in the superseded
+block and is now checked: the definition, stated once at "the chain is BLOCKING
+minus the four counsel-gated items", gives 21 − 4 = 17. All four of A47, A84,
+A68 and A110 were confirmed present, inside OPEN, and still carrying
+`Pilot: BLOCKING, and counsel-gated`.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
 than-append rule. The entry it replaced recorded the third consecutive zero and
 the observation that an entry can be unblocked and unmoved at the same time,
@@ -1854,6 +1854,29 @@ build-closable work should exclude items no build can close, which would take it
 from 18 to 16 today; and what it should be called if the definition changes.
 **RECORDED SO THE NUMBER IS NOT READ AS A PLAN.** Anyone reading the chain
 figure as "slices remaining" is over-reading it by at least two.
+**FINDINGS FROM THE 2026-09-07 BUILD-CHAIN CHECK. THIS ENTRY IS NOT RESOLVED AND
+STAYS FILED; what follows is evidence for the ruling FT still owes it.**
+**THE ARITHMETIC ABOVE IS STALE IN BOTH DIRECTIONS.** The chain is **17**, not
+18. **A114 has CLOSED**, so one of the two items this entry names as
+un-closable-by-building is gone — and it closed by FT running a remote command,
+which is the premise holding rather than failing.
+**AND TWO ITEMS OF THE SAME SHAPE WERE NEVER NAMED HERE: A44 and A69.** Both are
+BLOCKING, neither is counsel-gated, so both count toward the 17. **A build can do
+the scoping pass their blocker names; a build cannot perform the closing act**,
+which is FT setting `$.advisor.demo_gate` and `$.enterprise.demo_gate` — a remote
+write, and per CLAUDE.md §5.1 never a slice. **So the count of chain items no
+build can close is at least THREE (A1, A44, A69), not the two this entry
+records**, and excluding them would take 17 → 14 rather than 18 → 16.
+**A117's CLOSURE IS NEITHER EVIDENCE FOR NOR AGAINST THE PREMISE**, and is
+recorded so it is not mistaken for either. Its work WAS a build — a file was
+written — and it closed by being built. **But this entry's claim is EXISTENTIAL,
+that the chain contains at least one item no build can close, and an item that IS
+build-closable cannot refute that.** What A117 does show is that the figure is
+not uniformly misnamed: for that item, the chain decremented for exactly the
+reason its name implies.
+**STATED LIMIT ON THIS CHECK:** the fourteen remaining were judged
+build-closable from their titles and blocker lines, not by reading each entry in
+full. **Three is a floor, not a total.**
 
 ### Large
 
