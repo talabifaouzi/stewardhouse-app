@@ -1296,6 +1296,28 @@ Every substantive change runs as a **slice**. The rhythm:
     tolerate. This is the separation Q1 preserved by keeping the sandbox out of
     `wrangler.toml`, and it is recorded here rather than left as a property
     someone would have to reconstruct from two config files.
+    **`migrations_pattern` EXISTS AND SCOPES MIGRATIONS TO ONE DATABASE.
+    Relocated here from A117 before that entry closed (R11c–R11e), because it is
+    a standing fact about the tooling and A117 was the only place it was
+    written.** A117 had asserted "nothing in the tooling scopes a migration to
+    one database"; that was FALSE, verified from source.
+    `getDatabaseInfoFromConfig` reads `migrations_pattern` off the individual
+    binding and `getMigrationNames` builds a `Minimatch` from it, returning only
+    matching files. **The false sentence is recorded rather than deleted because
+    what made it dangerous is that it read as settled.**
+    **IT WAS CONSIDERED AND REFUSED AS A WAY TO SCOPE THE SANDBOX, so a reader
+    who discovers it independently finds it weighed rather than missed.** Three
+    objections. **The risky one fails SILENTLY:** if a `**/*.sql` glob does not
+    match top-level files, the sandbox stops receiving the main migrations with
+    nothing failing loudly — which inverts branch (c) rather than weakening it.
+    It would make the two databases STRUCTURALLY different in what they consider
+    a migration, where today they differ only in what they have APPLIED. And what
+    it buys is deferring an empty table production needs anyway.
+    **THE GLOB SEMANTICS ARE UNVERIFIED AND WERE NEVER TESTED.** Two seats
+    reasoned the result could not change the answer, since it removes one
+    objection of three. `minimatch` is bundled inside `wrangler-dist/cli.js` and
+    is not separately resolvable, so the pass could not execute them. **This
+    sentence exists so they are never read as tested and passed.**
     **WHAT IT CONTAINS, AND THE TRAP IT SETS. Relocated here from A114 before
     that entry closed, because closing an entry DELETES it and these outlive the
     act of creating the database.** Applying all 21 seeds **44 rows, measured

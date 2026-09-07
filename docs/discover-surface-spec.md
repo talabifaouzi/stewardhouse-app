@@ -293,7 +293,9 @@ does not have.
 was asserted and never ruled, and its referent was never written down. The stamp
 has SEVEN fields plus a `load_check` child table; **`source_date` is the one this
 surface renders**, and R12g records the stamp as the evidence for any public
-currency claim. See A117.
+currency claim. **Pointer updated 2026-09-07 when A117 closed:** it read "See
+A117", and the fields are now enumerated in `docs/bmf-load-scoping.md` §1 and
+shipped in `migrations/0022_bmf_table.sql`.
 
 **What the manual path COSTS, stated without softening: the deductibility
 signal is exactly as stale as the last run.** Ruling 1 makes the status gate

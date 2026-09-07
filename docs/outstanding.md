@@ -66,8 +66,18 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 110. The sentence
-here previously read "nothing else does", which FJ-7 made false. BLOCKING means
+totals above, which remain a count of OPEN entries and sum to 110.
+**UPDATED 2026-09-07: THE OPEN TOTAL IS 109.** A117 closed by R15, and it was
+BLOCKING, so the live figures are **21 BLOCKING, 61 DEBT, 27 POST = 109**,
+counted suffix-tolerantly because five POST and four BLOCKING lines carry
+trailing qualifiers.
+**A PRE-EXISTING DISCREPANCY IS FLAGGED HERE AND NOT FIXED, because it is not
+this commit's and papering over it would hide it.** The "20 BLOCKING, 59 DEBT,
+24 POST" above is dated **2026-09-02** and sums to 103, not to the OPEN total it
+sits beside; the live classification has moved since and the snapshot was never
+re-derived. **Whether to re-run that classification is FT's**, and the sentence
+is left standing so the gap is visible where the stale figures are.
+The sentence here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
 honest, POST means no pilot user reaches it.
@@ -1012,8 +1022,61 @@ waiting on A113. **It is not.** The blocker was ever the TABLE EXISTING, and it
 does.
 **FILED, NOT FIXED: a blocker line that names an ENTRY when what it needs is a
 STATE will misread the moment that entry stays open for an unrelated reason.**
-Whether to rewrite this line, and whether R13a belongs here rather than on A117,
-is FT's to rule — see the question recorded at the end of A117.
+**R15b, 2026-09-07: THE FINDING STANDS AND R15 DOES NOT RESOLVE IT.** R15 removed
+this instance by closing A117; it did not remove the pattern, and the line above
+still names an entry rather than the state its own clause describes. **Whether to
+rewrite it is NOT ruled.** The entry it names no longer exists, which is itself
+the demonstration: a blocker citing an ID survives the ID.
+
+**R13a, INHERITED FROM A117 ON ITS CLOSURE (R15, FT-ruled 2026-09-07). STATED IN
+FULL, NOT AS A POINTER, because the entry it came from has been deleted.**
+
+**THE OBLIGATION.** When this slice authors the loader's single named constant
+carrying the full table definition (R13), **it REGENERATES
+`migrations/0022_bmf_table.sql` from that constant.** Byte-identical output
+proves the derivation retroactively; any difference is drift found on day one
+rather than on load twelve.
+
+**R15c: THE BYTE-IDENTITY REFERENCE IS THE TRACKED FILE
+`migrations/0022_bmf_table.sql`, NOT A117's DDL BLOCK.** This is deliberate and
+it is what made A117 safe to close: **the comparison target survives the entry's
+deletion because it is a tracked file.** Had the reference been the proposal
+block inside A117, closing that entry would have deleted it and R13a would have
+become unverifiable. **A regenerating reader compares against the file, and the
+absence of A117 does not matter.**
+
+**WHY IT SITS HERE AND NOT WHERE IT WAS WRITTEN (R15a).** A117 could not perform
+R13a under any circumstances — the constant does not exist and building it is
+this slice. **Keeping an entry open for an obligation it cannot discharge is what
+created the apparent circle**, making two entries read as waiting on each other
+when neither was.
+
+**CAUTION ON REGENERATING: THE FILE HAS BEEN APPLIED to both `bmf-sandbox` and
+`stewardhouse-pilot`.** Wrangler tracks applied migrations by NAME, not by hash,
+so a regenerated file will NOT re-run, and if its bytes differ the file stops
+matching what both databases received. **A difference is therefore a finding to
+report, not a diff to accept**, and the applied artifact is the thing the
+constant must be made to reproduce.
+
+**KNOWN STALE CONTENT IN THAT FILE, so a regeneration is not surprised by it.**
+`migrations/0022_bmf_table.sql:147` reads "D1 REMOTE FK ENFORCEMENT IS UNVERIFIED
+(CLAUDE.md §10); local is verified". **Remote enforcement was verified on
+`bmf-sandbox` 2026-09-07** and §10 records the closure. The comment was left
+deliberately, because an applied migration is a record of what ran. `:11` also
+names the A117 entry it was extracted from, which no longer exists; that is a
+provenance statement in the past tense and remains true of the extraction.
+
+**D5, INHERITED: THE RULED SHAPE LIVES IN THREE PLACES AND THEY MUST AGREE.**
+(1) `migrations/0022_bmf_table.sql`, the applied artifact and the R15c reference;
+(2) the aside DDL this slice builds on EVERY run, because SQLite indexes travel
+with a table through a rename and the swap renames an aside into place, so the
+loader creates the index set every time; (3)
+`scripts/d1-window-verify-import.mjs:26`, which carries its own `CREATE TABLE
+bmf` with NO primary key and NO indexes. **The third is banked experiment residue
+and is left alone by ruling** — §5.2 already records those runs as lower bounds
+for exactly that reason — **but a reader grepping `CREATE TABLE bmf` gets three
+hits and must know which is authoritative.** Under R13 the loader's constant is,
+and (1) derives from it.
 Pilot: BLOCKING
 Detail: `docs/bmf-load-scoping.md`, §2 for the script shape, §1 for the table,
 §4 for the failure modes.
@@ -1198,463 +1261,24 @@ still do not answer whether a result TRANSFERS**, because every one of them is a
 case where the two AGREED, and the question is what to do when they do not. **The
 entry stays open.**
 
-**A117 | The BMF table migration is WRITTEN and APPLIED TO BOTH DATABASES. It
-stays OPEN on ONE remainder. A8's chain named the step and gave it no ID.**
-**TITLE CORRECTED A THIRD TIME IN ONE DAY, 2026-09-07, and that is recorded
-plainly rather than smoothed.** It has read "is not written", then "APPLIED
-NOWHERE", then "APPLIED TO THE SANDBOX, NOT TO LIVE", each true when written and
-each made false within hours by the next act. **An entry title is a claim with a
-timestamp it does not carry**, and this one moved three times while the work
-moved three times, which is the system behaving correctly rather than a record
-that keeps being wrong.
-**TWO OF THREE REMAINDERS ARE NOW DISCHARGED.** (1) `bmf-sandbox`: **DONE**,
-FT-run 2026-09-07. (2) LIVE `stewardhouse-pilot`: **DONE**, FT-run the same day —
-9 commands in 2.91 ms, `d1_migrations` 21 → 22, verified read-only as three
-present and empty tables with `person` at 12, so production is intact and
-serving. **§6.10 branch (b) is DISCHARGED for 0022** and both databases stand at
-22, R5's steady state. (3) **R13a regeneration from A113's loader constant:
-NOT DONE**, and it waits on A113.
-**SO THE ENTRY DOES NOT CLOSE, judged against its own text.** It states "the
-entry does NOT close" and names three things it carries; one stands. **The OPEN
-count does not move.**
-**BUT THE STANDING REMAINDER IS NOT THIS ENTRY'S WORK, AND THAT CREATES AN
-APPARENT CIRCLE FT SHOULD RULE ON.** R13a is discharged by the A113 slice, which
-regenerates this file from the loader's constant and proves byte-identity —
-work A117 cannot do. Meanwhile **A113's blocker line names A117**. Read
-literally, each waits on the other. **Nothing is actually stuck** (see the note
-on A113, whose blocker is discharged in substance), but the queue reads as
-circular, and it will read that way to whoever meets it next.
-**THE QUESTION, NOT DECIDED HERE: does R13a live on A117, keeping it open until
-A113 completes, or does it move to A113 as an obligation of that slice, letting
-A117 close?** The second is tidier and the first is what the entry currently
-says. **FT has not ruled it and the agent has not moved it.**
-**TITLE CORRECTED A SECOND TIME, 2026-09-07, HOURS AFTER THE FIRST.** It read
-"APPLIED NOWHERE", true when written and made false the same day by FT's sandbox
-apply. **ONE OF THE THREE REMAINDERS IS NOW DISCHARGED**, and they are restated
-here rather than left to be recomputed: (1) the apply to `bmf-sandbox` is **DONE**
-— FT-run 2026-09-07, one migration, 9 commands, `d1_migrations` 21 → 22, verified
-read-only as eleven objects and three empty tables; (2) the apply to LIVE
-`stewardhouse-pilot` is **NOT DONE** and stays FT-run under §6.10 branch (b),
-whose note is in CLAUDE.md §5.1; (3) R13a regeneration from A113's loader
-constant is **NOT DONE** and waits on A113. **The sandbox standing at 22 against
-live's 21 is §6.10 branch (c) running in its ruled order, not drift.**
-**THIS LIST SUPERSEDES THE ONE IN THE PARAGRAPH DIRECTLY BELOW**, whose item (1)
-reads "the file is applied to NO store — not the local dev store, not the
-sandbox, not remote". That was true when written this morning and the sandbox
-half of it is now false. Both are kept, in reverse chronological order, so the
-entry shows a title corrected twice in one day rather than a title that was
-always right.
-**TITLE CORRECTED ON AUTHORING, 2026-09-07.** It read "The BMF table migration is
-not written", which this entry's own commit made false. **The entry does NOT
-close**, and the three things it still carries are named here rather than left to
-be inferred: (1) the file is applied to NO store — not the local dev store, not
-the sandbox, not remote — and every apply is FT-run per §6.10 and §6.15; (2)
-under §6.10 branch (c) the sandbox receives it alongside whichever branch the
-live apply takes, and the deferral note for both is in CLAUDE.md §5.1; (3) under
-R13a the file is PROVISIONAL and is regenerated from A113's loader constant once
-that constant exists, byte-identical proving the derivation retroactively.
-**Authoring discharged the writing, and nothing else.**
-Blocker: **BOTH HALVES OF THIS LINE ARE NOW DISCHARGED.** The scope pass ran
-2026-09-07, read-only; Q4 is ruled the same day (R11). What remains is NOT from
-this line and arose from the pass: **whether the stamp DDL rides this entry.**
-If it does, this entry needs the four stamp parts, which are enumerated nowhere.
-**So the BMF table is writable and the migration is not writable IN FULL** until
-that is ruled. This line read "a scope pass, and Q4" until then, and before that
-"none for the writing itself. It needs a scope pass, and one of its inputs is
-open in the plan it implements".
-Pilot: BLOCKING
-Detail: `docs/bmf-load-scoping.md` §1 for the ruled table shape; A114 for the
-sandbox it is applied to.
-**Q3 RULED 2026-09-04: IT IS ITS OWN ENTRY, NOT PART OF A113 OR A114.** A113
-CONSUMES the table as a precondition, its blocker requiring that the loader be
-written against a table that already carries the ruled `PRIMARY KEY`, so it
-cannot also produce it. A114 is FT-run remote work carrying "Blocker: none", and
-unscoped local code work placed inside it would falsify that line the moment
-authoring met an open input.
-**WRITING AND APPLYING ARE DIFFERENT ACTS, AND THIS ENTRY IS ONLY THE FIRST.**
-Writing is local and agent-ok. Applying is FT-run remote, and under R5 it is not
-a one-time act at all but the first instance of a standing obligation, which is
-why the apply has no entry of its own and this does.
-**THE INDEX SHAPE IS RULED AND NO LONGER BLOCKS THIS ENTRY (R10, 2026-09-07).**
-The set is `UNIQUE(ein)`, `(state, city)`, `(ruling)`, `(name)`, and under R10a
-the first of those is not a choice at all: a SQLite PRIMARY KEY on a
-non-INTEGER column already creates a unique index, so **the decision is three
-indexes plus what the PK creates**. Under R10b the PK is declared at `CREATE`,
-not added after load. Full text and reasoning: `docs/bmf-load-scoping.md` §1.
-**THE PARAGRAPH THIS REPLACES IS QUOTED BECAUSE ITS REASONING STOOD AND ONLY ITS
-CONCLUSION MOVED:** "IT CANNOT BE WRITTEN TODAY WITHOUT A SCOPE PASS. §1 leaves
-the composite index shape open in its own words… because it depends on which
-facet combinations are common and nobody has that data while the surface does
-not exist." **That was a circular blocker** — the surface needs the table — and
-R10 broke the circle rather than answering the question it posed.
-**WHAT STILL BLOCKS THIS ENTRY, so the correction is not read as more than it
-is: the scope pass, which has not run, and Q4 below.** Q4 decides WHERE the file
-goes, which is not answerable by writing it.
-**THE INDEX DDL APPEARS IN BOTH THIS ENTRY AND A113, AND THEY MUST AGREE.**
-Found by the A113 scope pass 2026-09-07 and recorded nowhere before it: because
-SQLite indexes travel with a table through a rename, and the swap renames an
-ASIDE into place, **the loader must create the indexes on the aside on every
-run.** So this migration is not the only place the set is written. Either the
-two carry identical DDL or one derives it from the other, and nothing currently
-decides which.
-**"NOTHING CURRENTLY DECIDES WHICH" IS SUPERSEDED BY R13 BELOW**, which rules the
-loader authoritative and this migration derived from it. The sentence is kept
-because its finding — that the set is written in more than one place — is what
-made the question askable.
-**D5, RULED 2026-09-07: THE RULED SHAPE LIVES IN THREE PLACES, NOT TWO, AND THE
-THIRD IS NAMED HERE SO IT IS NOT REDISCOVERED.**
-`scripts/d1-window-verify-import.mjs:26` carries its own `CREATE TABLE bmf`, the
-window experiment's shape, with NO primary key and NO indexes. **It is left ALONE
-by ruling** — it is banked experiment code, and §5.2 already records those runs as
-LOWER BOUNDS for exactly that reason — but a later reader grepping
-`CREATE TABLE bmf` gets three hits and must know the third is residue rather than
-a fourth authority.
-**§1'S OWN NEXT-NUMBER LINE IS STALE, AND THE FILE NUMBER IS NOT `0019`.** It
-reads "Next number is `0019`. The tree runs `0001` through `0018`, contiguous",
-which was true when written. `0019`, `0020` and `0021` are now taken by
-`person_invited_at`, `athlete_pending_status` and `auth_send_log`. The next free
-number is `0022`.
-**Q4 RULED 2026-09-07 (R11), OPTION (a): THE FILE LANDS IN `migrations/` WITH
-THE REST**, and production takes it on the next apply. Unanimous across four
-advisory seats.
-**R11a, THE DECIDING ARGUMENT IS ASYMMETRY, NOT COST.** Option (a)'s downside is
-a harmless empty table arriving early on production, undoable by one migration
-on two databases. Option (c)'s downside is a **silent divergence in what each
-database considers a migration, discovered at an unknown later date.** Those are
-not comparable.
-**R11b, OPTION (b) IS AN ERROR RATHER THAN A TRADEOFF**, and is recorded as one:
-a separate `migrations_dir` for the sandbox does not weaken R5, **it inverts
-it**, because the sandbox would stop receiving the main 21 migrations entirely.
-**R11c, OPTION (c) IS RECORDED AS CONSIDERED AND REFUSED**, so a reader who
-discovers `migrations_pattern` independently finds it weighed rather than
-missed. It would put the file in a subdirectory and scope it by glob. **Three
-objections.** Its glob semantics were never executed and **the risky one fails
-silently**: if `**/*.sql` does not match top-level files, the sandbox stops
-receiving the main migrations with nothing failing loudly. It makes the two
-databases **structurally** different in what they consider a migration, where
-today they differ only in what they have **applied**. And what it buys is
-deferring an empty table production needs anyway.
-**R11d, THE GLOB TEST IS NOT RUN.** Two seats independently reasoned its result
-cannot change the answer, since it removes one objection of three. **The
-semantics remain UNVERIFIED**, and this line exists so they are never read as
-tested and passed. minimatch is bundled inside `wrangler-dist/cli.js` and is not
-separately resolvable, so the pass could not execute them.
-**R11e, A FALSE SENTENCE CORRECTED. This entry asserted: "Nothing in the tooling
-scopes a migration to one database."** That is FALSE, verified from source.
-`migrations_pattern` is a per-block minimatch glob doing exactly that:
-`getDatabaseInfoFromConfig` reads it off the individual binding, and
-`getMigrationNames` builds a `Minimatch` from it and returns only matching
-files. The sentence is quoted rather than deleted because **what made it dangerous
-is that it read as settled.** The rest of that paragraph was accurate: the file
-does enter live's unapplied queue on bank, and the runner applies every pending
-migration in one loop after a single confirmation.
-**THE PATTERN THIS SENTENCE BELONGS TO IS RECORDED IN CLAUDE.md §5.1**, the
-manifest-drift note, as its third instance, because it is about how this record
-fails rather than about the BMF table and would be buried when this entry closes.
-**R11f, THE MIGRATION IS THE SWAP'S FIRST GENERATION**, which is why the empty
-table is CORRECT rather than merely harmless: R6 renames live to a dated name
-and the aside into place, and **on load one there is nothing to rename away
-unless this migration created it.** R8e defines first-run behaviour for the
-trend check and nothing defines it for the swap. See `docs/bmf-load-scoping.md`
-§15, R6.
-**R12 RULED 2026-09-07: THE STAMP RIDES THIS ENTRY, AND ITS FIELDS ARE DEFINED
-FRESH RATHER THAN RECOVERED.** Two of the four questions above are answered by
-it, and the fresh definition is what breaks the circularity: R9 put the SHAPE in
-A113 and A113 is blocked on this entry, so recovering a shape from A113 was not
-possible. **A count nobody can source is not a constraint**, so the stamp has
-SEVEN fields because seven were ruled, not four because four were asserted.
-**THE PHRASE WAS ASSERTED, NEVER RULED, AND ITS REFERENT WAS NEVER WRITTEN
-DOWN.** Every citation is corrected in the same commit, because leaving a false
-count standing while the real list lives elsewhere is precisely the drift
-mechanism CLAUDE.md §5.1 records. **This entry's own line said "cited in three
-documents"; it is FIVE LINES ACROSS FOUR FILES** — `bmf-load-scoping.md` twice,
-`discover-surface-spec.md`, CLAUDE.md §5.1, and this entry. **An entry recording
-an undercounted referent undercounted its own citations.**
-**R12a, SEVEN STAMP FIELDS.** `source_date`, the extract's own date and what
-Discover renders; `file_set`, which four or five files were taken;
-`load_started_at`; `load_finished_at`, when it stopped, success or failure;
-`completed_at`, written LAST and on success only, null meaning not complete;
-`row_count`; and `generation_table`, the dated table this load produced, **so
-R7's retention is operable rather than inferred from table names.**
-**R12b, THE CHECK RESULTS ARE A CHILD TABLE, NOT A JSON COLUMN.** `load_check`
-carries a stamp reference, check name, value and passed, one row per check per
-load. **JSON was proposed and then argued down by the seat that proposed it:**
-nothing validates it, it is not queryable across rows, and a provisional check
-set means JSON silently changes shape where columns would not. **Adding a check
-adds ROWS**, so the check set can move without a migration.
-**R12c, THE SINGLE-RECORD PRINCIPLE SURVIVES BY ORDERING.** Check rows are
-written BEFORE `completed_at`, so completion still means the record is whole.
-One stamp row per load, inserted at start, updated once at the end, **never in
-between.**
-**R12d, NO STATUS ENUM.** The timestamps are the status. A status column would
-drift against them, the defect FORK 2 already ruled against for
-`enrollment_status`.
-**R12e, TWO FIELDS WERE CUT AND ONE RULE DID IT.** `checks_passed`, a second
-source of truth derived from the check rows; and `source_id`, redundant with
-`source_date` and `file_set` together. **The rule: THE STAMP IS THE ONLY THING
-THAT OUTLIVES A GENERATION, so a field belongs in it if and only if you would
-want it after the table is pruned.** It cut two and kept two from one test.
-**RECORDED HONESTLY: `source_id` WAS CUT BY POINTING AT `file_set`, WHICH NOBODY
-HAD DEFENDED AT THE TIME.** The cut still holds on file_set's own grounds — four
-files and five files are both valid and produce different data, and nothing else
-distinguishes them — but **it held for a reason established later than the cut.**
-**THE STAMP IS TWO TABLES, NOT ONE. That changes what this entry carries and
-appeared in no earlier round.**
-**A CANDIDATE FOR R8-5's UNDEFINED "TREND", RECORDED AS A CANDIDATE AND NOT
-RULED.** `row_count` in the stamp makes the trend computable over STAMP ROWS
-rather than generation tables — **thirteen points after a year rather than a
-permanent three**, since only three generations are retained. R8-5's "trend"
-remains undefined and unruled.
-**STILL UNRULED ON THIS ENTRY, ONE, down from two.** This read TWO and carried
-"how this migration's SQL and A113's JavaScript aside DDL stay in agreement,
-since neither can import the other" as its first item. **R13 answers it**, and
-the closure is recorded here rather than the item being deleted silently.
-**THE REMAINDER, AND FT HAS NOT RULED IT:** whether generation 1 being an EMPTY
-table is acceptable, given R7 retains three for recovery and a recovery to it
-would restore nothing. **It does not block authoring the DDL**; it is a
-consequence rather than an input.
-**THIS IS NOT AN OPEN-COUNT MOVEMENT, and is said so a reader does not hunt for
-one.** A117 stays open and no entry opened or closed. The OPEN total is 108
-before and after; what moved is a count INSIDE one entry.
-**THE DDL REVIEW, RULED 2026-09-07: SIX DISPOSITIONS AND TWO RULINGS.** The
-proposal below was read against the rulings and then read as SQL, and both passes
-produced findings. Four dispositions are recorded IN the DDL, where the reader
-who would undo them meets them; the other two and both rulings are here.
-
-**A NUMBERING CAUTION, FIRST, BECAUSE TWO SERIES NEARLY MERGED.** R13 and R14
-answer questions **5 and 7 of the 2026-09-07 DDL review**, which is NOT this
-entry's own Q-series. This entry already carries **Q3** and **Q4**. Written bare,
-"Q5" and "Q7" would make it read as Q3, Q4, Q5, Q7 with a missing Q6, so the
-review is named in full at every use.
-
-**D1, THE STAMP HAS EIGHT COLUMNS AGAINST A RULED SEVEN, AND R12a IS NOT
-AMENDED.** `id` is a surrogate key sitting outside R12a's seven fields, and the
-DDL says so at the column. **Amending R12a to say eight would make the ruling
-about column mechanics rather than about what the stamp RECORDS**, which is what
-it is for. **Recorded because of what it is:** the count-versus-list shape of
-CLAUDE.md §5.1, arriving inside the entry that fixed the last instance of it. A
-reader counting columns against "seven" finds eight, and now finds the reason
-beside them.
-
-**D4, NO SHAPE CONSTRAINT ON `ruling`.** The loader's R8 checks own value
-validation; a `CHECK` here would be a second place to maintain one rule. **Its
-absence is a decision and the DDL says so**, so a later reader does not add one
-as an oversight repair.
-
-**D6, THE MIGRATION IS APPLIED AGAINST A COPY OF THE REAL 21-MIGRATION SCHEMA
-BEFORE IT IS WRITTEN. This is a PRECONDITION on authoring, and it has not
-happened.** The review's clean run was a `grep` for name collisions plus an
-execution from an EMPTY database, and **neither is an apply**: they establish
-that nothing in `migrations/` mentions these three tables and that the SQL
-parses, not that it lands cleanly on the schema those 21 migrations actually
-build. The copy is taken with `VACUUM INTO` per §10, never `cp`.
-
-**R13, Q5 OF THE 2026-09-07 DDL REVIEW, RULED: THE LOADER IS AUTHORITATIVE FOR
-THE DDL AND THIS MIGRATION DERIVES FROM IT.** Authority sits with the artifact
-that runs on EVERY load, not the one that ran once. The loader carries the full
-table definition as a single named constant, **extending R10c from the index list
-to the whole shape**.
-
-**R13a, SEQUENCING, AND IT TURNS THIS ENTRY'S ORDERING PROBLEM INTO A TEST.** The
-migration is written BY HAND now, exactly as reviewed, and is the **PROVISIONAL**
-source until A113 lands. When the loader's constant is authored the migration is
-**REGENERATED** from it: byte-identical proves the derivation retroactively, and
-any difference is drift found on day one rather than on load twelve. **A117
-coming before A113 stops being an inversion to work around and becomes the
-control the regeneration is checked against.**
-
-**R13b, AND IT APPLIES REGARDLESS OF R13: R8b's POST-SWAP ASSERTION GAINS AN
-INDEX CHECK.** After the swap, read `index_list` on the LIVE table and assert the
-three index names are present. **Generation prevents drift at authoring time;
-this catches it at RUN time, and it is the cheaper half.** A pre-swap schema
-comparison was REFUSED as the primary mechanism: **on load one there is nothing
-meaningful to compare against**, so it validates nothing until load two, by which
-point the drift has already shipped once. Recorded at
-`docs/bmf-load-scoping.md` §15, R8b.
-
-**R14, Q7 OF THE 2026-09-07 DDL REVIEW, RULED: A GENERATION TABLE IS
-`bmf_gen_YYYYMMDDTHHMMSSZ`**, concretely `bmf_gen_20260907T164748Z`. Four
-properties, each load-bearing, with the full statement and the prefix hazard at
-`docs/bmf-load-scoping.md` §15, R14.
-
-**R14a, THE UNDO CREATES A GENERATION TABLE TOO.** R6a renames live to a dated
-name and the retained generation back into place, so the undo needs its own
-timestamp in the same format and its own stamp row recording it. **Otherwise a
-rollback produces a table nothing recorded.**
-
-**PROPOSED DDL, THREE TABLES. THIS IS A PROPOSAL IN THIS ENTRY, NOT A MIGRATION
-ON DISK**, and stays one until FT approves it separately — and now until D6's
-apply has run.
-**SUPERSEDED 2026-09-07: BOTH CONDITIONS ARE MET AND THE FILE EXISTS.** D6 passed
-against a `VACUUM INTO` copy of the local 21-migration store, and the migration is
-written at `migrations/0022_bmf_table.sql`, whose body is BYTE-IDENTICAL to the
-block below as committed at `a5be8d9`, verified by `sha256` and `cmp`. **The block
-below is no longer the only copy**, so R13a's regeneration test has a subject: it
-is the proposal, the file is the artifact, and A113's constant will be the source.
-The paragraph is kept rather than rewritten because it records what had to be true
-before the file could exist.
-**A COMMENT IN THE BLOCK BELOW IS NOW FALSE, AND IT IS DELIBERATELY NOT
-CORRECTED.** The `load_check` comment reads "D1 REMOTE FK ENFORCEMENT IS
-UNVERIFIED (CLAUDE.md §10); local is verified" (`:1542`, and the identical line
-at `migrations/0022_bmf_table.sql:147`). **Remote enforcement was verified on
-`bmf-sandbox` on 2026-09-07** and CLAUDE.md §10 now records the closure.
-**TWO REASONS NOT TO EDIT EITHER, and the second is the stronger.** First, R13a's
-proof that the file derives from this block is BYTE-IDENTITY, so correcting one
-without the other breaks it and correcting both is a change to a reviewed
-artifact for a comment. Second, and decisive: **`migrations/0022_bmf_table.sql`
-HAS BEEN APPLIED.** Wrangler tracks applied migrations by NAME, not by hash, so
-an edit would not re-run and the file on disk would stop matching what the
-sandbox actually received. **An applied migration is a historical record of what
-ran**, and a stale comment inside one is better than a file that misrepresents
-it. The correction lives here and in §10.
-
-```sql
--- R13, AUTHORITY: THE LOADER IS AUTHORITATIVE FOR THIS DDL AND THIS FILE DERIVES
--- FROM IT. Authority sits with the artifact that runs on EVERY load, not the one
--- that ran once. The loader (A113) carries the full table definition as a single
--- named constant, which extends R10c from the index list to the whole shape.
--- R13a: this text is HAND-WRITTEN and PROVISIONAL until A113 lands, then
--- REGENERATED from that constant. Byte-identical proves the derivation
--- retroactively; any difference is drift found on day one, not on load twelve.
-
--- (1) THE BMF TABLE. Shape: docs/bmf-load-scoping.md §1.
---
--- THE `ein` COLUMN CARRIES TWO THINGS A TIDY-UP WOULD UNDO. Both are here rather
--- than inline because both are invisible in the syntax.
---   (a) NOT NULL IS LOAD-BEARING, NOT NOISE. In SQLite a non-INTEGER PRIMARY KEY
---       does NOT imply NOT NULL. Delete it and a NULL EIN is accepted.
---   (b) TEXT IS CORRECT FOR LEADING ZEROS AND DOES NOT PROTECT THEM. TEXT
---       affinity converts an unquoted numeric literal, so VALUES (042103594, ...)
---       stores '42103594' with NO error, and row count, distinct count, NOT NULL
---       and the PRIMARY KEY all still pass, because truncated values stay unique.
---       THE LOADER MUST QUOTE EVERY EIN. Hard requirement:
---       docs/bmf-load-scoping.md §2. Failure mode: §4, mode 7.
---
--- D4: NO CHECK ON `ruling`, and its absence is a DECISION rather than an
--- omission. Value validation belongs to the loader's R8 checks; a CHECK here
--- would be a second place to maintain one rule.
---
--- PROVENANCE (R8d): the nullability below derives from ONE extract measured
--- 2026-08 across the ruled four-or-five file set, 1,957,340 rows. REVENUE_AMT
--- null on 569,235 (29.08%), NTEE_CD null on 574,447 (29.35%), the other four
--- null on 0. A later extract may differ.
---
--- R10b: the PRIMARY KEY is declared HERE, at CREATE. A duplicate EIN therefore
--- fails at INSERT, not at index creation.
--- R11f: this table is the SWAP'S FIRST GENERATION. On load one there is nothing
--- to rename away unless it exists, which is why creating it empty is correct.
-CREATE TABLE bmf (
-  ein          TEXT    NOT NULL PRIMARY KEY,
-  name         TEXT    NOT NULL,
-  city         TEXT    NOT NULL,
-  state        TEXT    NOT NULL,
-  revenue_amt  INTEGER,                                -- absent stays distinct from zero
-  ruling       INTEGER NOT NULL,
-  ntee_cd      TEXT
-);
-
--- THE INDEX SET IS PROVISIONAL (R10c), revisable at ZERO migration cost: this is
--- a replace-all design, so every load rebuilds the whole set and a change costs
--- one DDL edit plus one load cycle, not a migration.
--- R10a: UNIQUE(ein) is absent because it is not a choice — the PRIMARY KEY above
--- already creates it (verified: sqlite_autoindex_bmf_1, origin pk). Three, not four.
--- R10d, PATH B: idx_bmf_name is a SEARCH index. Indexing for RETRIEVAL is inside
--- the §7 boundary; ordering by anything EVALUATIVE is not. Nothing here guards it.
--- THIS SET MUST MATCH the aside DDL the loader (A113) builds on EVERY run.
--- R13b: the post-swap assertion (R8b) reads index_list on the LIVE table and
--- asserts these three names are present. Generation prevents drift at authoring
--- time; that check catches it at RUN time and is the cheaper half.
-CREATE INDEX idx_bmf_state_city ON bmf (state, city);
-CREATE INDEX idx_bmf_ruling     ON bmf (ruling);
-CREATE INDEX idx_bmf_name       ON bmf (name);
-
--- (2) THE LOAD STAMP. One row per load, per source (R12a).
---
--- NO source COLUMN, and that is deliberate: R12e cut source_id as redundant with
--- source_date and file_set together, and file_set is what distinguishes a BMF
--- load from any other source's.
--- NO status COLUMN (R12d): the timestamps ARE the status, and one would drift
--- against them — the defect FORK 2 ruled against for enrollment_status.
--- R12f, THE STAMP RECORDS THE LOAD, NOT THE DATA. Nothing evaluative or
--- categorical about the organizations may be added here: no counts by NTEE code,
--- no distributions by state, nothing that reads as StewardHouse's account of the
--- sector. row_count is the LOAD'S OWN SIZE, not a characterization.
--- R12e, THE TEST FOR ADDING A FIELD: the stamp is the only thing that outlives a
--- generation, so a field belongs here if and only if you would want it after the
--- table is pruned.
--- R12g: with source_date and completed_at both present this row is the EVIDENCE
--- for any public currency claim. Do not trim fields here for looking internal.
---
--- D1: `id` IS A SURROGATE KEY AND SITS OUTSIDE R12a's SEVEN FIELDS, so this table
--- has EIGHT columns against a ruled seven. R12a is deliberately NOT amended:
--- saying eight would make that ruling about column mechanics rather than about
--- what the stamp RECORDS. The id exists because R12b needs something for
--- load_check to reference.
---
--- R12c RESTATED HERE, WHERE THE COLUMN IT GOVERNS IS READ: completed_at is
--- written LAST and AFTER every load_check row for this load, so completion means
--- the record is WHOLE. The full statement sits above table (3); a reader who
--- never reaches it must still meet the ordering, because the design's safety
--- rests on it.
---
--- R14, THE NAME STORED IN generation_table: bmf_gen_YYYYMMDDTHHMMSSZ, e.g.
--- bmf_gen_20260907T164748Z. The bmf_gen_ prefix is a NAMESPACE and must NEVER be
--- bmf_, because a pruner matching bmf_% would catch the in-flight bmf_aside and
--- could delete it mid-load. UTC with the Z always; ISO 8601 BASIC, so no name
--- ever needs quoting; lexical order equals chronological, so the pruner is
--- ORDER BY name and parses no dates. The timestamp is the load's START and equals
--- load_started_at, so a stamp row and its table are joinable by inspection.
--- Full ruling: docs/bmf-load-scoping.md §15, R14.
-CREATE TABLE load_stamp (
-  id                TEXT    NOT NULL PRIMARY KEY,     -- opaque UUID. SURROGATE, outside R12a's seven
-  source_date       TEXT    NOT NULL,                 -- the EXTRACT's own date; Discover renders this
-  file_set          TEXT    NOT NULL,                 -- which files were taken, e.g. 'eo1,eo2,eo3,eo4'
-  load_started_at   TEXT    NOT NULL,                 -- ISO 8601. R14: the generation name carries it
-  load_finished_at  TEXT,                             -- when it STOPPED, success or failure
-  completed_at      TEXT,                             -- LAST, and AFTER the load_check rows. NULL = not complete
-  row_count         INTEGER,                          -- the load's size (R12f)
-  generation_table  TEXT                              -- the dated table this load produced (R7); name per R14
-);
-CREATE INDEX idx_load_stamp_source_date ON load_stamp(source_date);
-
--- (3) THE CHECK RESULTS (R12b). One row per check per load.
---
--- A CHILD TABLE RATHER THAN A JSON COLUMN. JSON was proposed and then argued
--- down by the seat that proposed it: nothing validates it, it is not queryable
--- across rows, and a provisional check set means JSON silently changes shape
--- where columns would not. ADDING A CHECK ADDS ROWS, so the check set can move
--- without a migration.
---
--- R12c, THE ORDERING CONSTRAINT, AND IT IS THE WHOLE REASON THIS TABLE IS SAFE:
--- these rows are written BEFORE load_stamp.completed_at. Completion therefore
--- still means the record is WHOLE. One stamp row per load, inserted at start,
--- updated once at the end, never in between.
---
--- D2, THE FOREIGN KEY STAYS AND SO DOES THE CASCADE, but read what it is worth.
--- NOTHING IN THIS DESIGN EVER DELETES A load_stamp ROW: R12e makes the stamp the
--- thing that outlives generations, and R8c prunes generation TABLES, not stamps.
--- So the CASCADE is declared for a deletion that does not happen, which costs
--- nothing and documents intent for whoever writes a stamp-deleting path.
--- D1 REMOTE FK ENFORCEMENT IS UNVERIFIED (CLAUDE.md §10); local is verified.
--- AND A LOCAL TEST CAN PASS FOR A REASON THAT DOES NOT TRANSFER: node:sqlite
--- defaults foreign_keys ON, plain SQLite defaults it OFF. Measured 2026-09-07:
--- with the pragma OFF an orphan child row INSERTs clean and no error is raised.
-CREATE TABLE load_check (
-  id          TEXT    NOT NULL PRIMARY KEY,           -- opaque UUID
-  stamp_id    TEXT    NOT NULL REFERENCES load_stamp(id) ON DELETE CASCADE,
-  check_name  TEXT    NOT NULL,                       -- e.g. 'row_count_in_band'
-  value       TEXT,                                   -- the observed figure as recorded
-  passed      INTEGER NOT NULL CHECK (passed IN (0, 1))
-);
-CREATE INDEX idx_load_check_stamp_id ON load_check(stamp_id);
-```
-**R6b, A STANDING CONDITION ON THIS TABLE'S COLUMNS, ruled 2026-09-07.** The
-compliance answer for retaining generations of this table holds BECAUSE the table
-carries only the seven IRS fields. **If it ever carries anything derived, computed
-or enriched, the retained copies stop being copies of a federal file and become
-historical snapshots of StewardHouse's own characterizations**, which is a
-different object and touches §7. Recorded as a CONDITION on any future column
-change, not as a discovery waiting to be made.
+**A117 was CLOSED 2026-09-07 by R15 and has left this section; the remaining IDs
+are not renumbered, since renumbering would break every reference to them.** The
+BMF table migration is WRITTEN and APPLIED to `bmf-sandbox` and to
+`stewardhouse-pilot`, both at 22. **Its one standing remainder, R13a
+regeneration, MOVED TO A113**, which is the slice that can discharge it: A117
+could not perform R13a under any circumstances, and holding an obligation an
+entry cannot discharge is what made A113 and A117 read as waiting on each other.
+**The standing content was relocated BEFORE closure**, because closing an entry
+deletes it: the seven stamp fields and the R12e cut test to
+`docs/bmf-load-scoping.md` §1; R6b's pointer and two others repointed at
+`migrations/0022_bmf_table.sql`, a tracked file rather than a queue entry;
+`migrations_pattern` and the R11c–R11e reasoning to CLAUDE.md §6.10; and R13a,
+R15c and D5 to A113 in full. **The DDL block went with the entry by design** —
+`migrations/0022_bmf_table.sql` is byte-identical to it and is the R15c
+comparison target. **Its title was corrected three times in one day**, reading
+"is not written", then "APPLIED NOWHERE", then "APPLIED TO THE SANDBOX, NOT TO
+LIVE"; each was true when written, which is the system working rather than a
+record that kept being wrong.
 
 ### Cheap and mechanical
 

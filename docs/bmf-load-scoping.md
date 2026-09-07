@@ -16,7 +16,10 @@ set, and EIN as the primary key.
 
 **CORRECTED 2026-09-07 BY R12: this line read "the four-part load stamp".** That
 count was asserted and never ruled, and its referent was never written down. The
-stamp has SEVEN fields plus a `load_check` child table, listed on A117.
+stamp has SEVEN fields plus a `load_check` child table, enumerated in §1 and
+shipped in `migrations/0022_bmf_table.sql`. **Pointer updated 2026-09-07 when
+A117 closed**; it read "listed on A117", and an entry is not a durable citation
+target because closing one deletes it.
 
 ## 1. The migration
 
@@ -298,7 +301,31 @@ COUNT IS NOT PRESERVED.** This section previously opened "The four ruled parts",
 and `docs/discover-surface-spec.md` and this plan's own preamble both said "the
 four-part load stamp". **That phrase was ASSERTED, never ruled, and its referent
 was never written down anywhere**, so it is not a constraint. **There are SEVEN
-fields**, listed on A117 with the proposed DDL for both tables.
+fields.**
+
+**ENUMERATED HERE 2026-09-07, RELOCATED FROM A117 BEFORE THAT ENTRY CLOSED.**
+This read "listed on A117 with the proposed DDL for both tables", which would
+have become a pointer to a deleted entry — and a count whose list lives only in
+a closing entry is the count-is-not-a-list failure with a delete scheduled.
+**The seven, in order:** `source_date`, the extract's own date and what Discover
+renders; `file_set`, which four or five files were taken; `load_started_at`;
+`load_finished_at`, when it stopped, success or failure; `completed_at`, written
+LAST and on success only, null meaning not complete; `row_count`; and
+`generation_table`, the dated table this load produced, so R7's retention is
+operable rather than inferred from table names. **The shipped DDL for both tables
+is `migrations/0022_bmf_table.sql`**, a tracked file rather than a queue entry.
+
+**R12e, THE TEST THAT CUT TWO FIELDS AND KEPT TWO, relocated with them because it
+governs any future addition.** `checks_passed` went as a second source of truth
+derived from the check rows; `source_id` went as redundant with `source_date` and
+`file_set` together. **The rule: the stamp is the only thing that outlives a
+generation, so a field belongs in it if and only if you would want it after the
+table is pruned.**
+**RECORDED HONESTLY: `source_id` WAS CUT BY POINTING AT `file_set`, WHICH NOBODY
+HAD DEFENDED AT THE TIME.** The cut holds on `file_set`'s own grounds — four
+files and five files are both valid and produce different data, and nothing else
+distinguishes them — but it held for a reason established later than the cut,
+and that order is recorded rather than tidied.
 
 **ONE ROW PER SOURCE STILL HOLDS**, because BMF, the revocation list and Pub 78
 refresh on independent cadences and a single stamp would assert one freshness
@@ -1409,7 +1436,9 @@ fields.** If it ever carries anything derived, computed or enriched, the retaine
 copies stop being copies of a federal file and become **historical snapshots of
 StewardHouse's own characterizations**, which is a different object and touches
 §7. **Recorded as a condition on any future column change, not as a discovery
-waiting to be made.** Also recorded on A117, which defines the table.
+waiting to be made.** Also recorded in `migrations/0022_bmf_table.sql`, which
+defines the table. **Pointer updated 2026-09-07 when A117 closed**; it named that
+entry, and a closing entry cannot hold a citation.
 
 ### R7. Retain THREE generations
 
