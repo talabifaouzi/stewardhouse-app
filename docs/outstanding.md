@@ -22,28 +22,37 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 110 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 109 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
-BMF-and-Discover 11, cheap-and-mechanical 32, large 35, and
+BMF-and-Discover 10, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: NOTHING MOVED, FOR THE THIRD
-CONSECUTIVE CHANGE. R12 RULES A DESIGN, AND A DESIGN IS NOT AN ENTRY.** The load
-stamp's seven fields and its `load_check` child table are ruled and recorded on
-A117 with proposed DDL, and the false "four-part" count is corrected at all five
-citation sites across four files. **No entry opened, closed, or changed group or
-Pilot**, so OPEN stays at 110, BLOCKING at 22, DEBT at 61 and POST at 27, the
-breakdown stays 7 + 15 + 7 + 11 + 32 + 35 + 3 = 110, the restatement further down
-stays at "sum to 110", the counsel-gated line stays at FOUR OF THE TWENTY-TWO,
-and the build chain stays at 18.
-**THREE ZEROS IN A ROW, AND THE THIRD IS THE ONE WORTH READING.** A117 is now
-WRITABLE IN FULL — its blocker line was discharged by R11, and R12 answers the
-question the pass added afterwards. **An entry can be unblocked and unmoved at
-the same time**, because the count tracks what is OPEN and not what is READY, and
-nothing in this file distinguishes those two states.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: ONE ENTRY CLOSED, THE FIRST MOVEMENT
+AFTER THREE CONSECUTIVE ZEROS.** A117, the BMF table migration, closed under R15
+once the file was written and applied to both databases and its one standing
+remainder, R13a regeneration, moved to A113 — the slice that can discharge it.
+**So OPEN goes 110 → 109, BLOCKING 22 → 21**, A117 having been BLOCKING; DEBT
+stays 61 and POST stays 27; the breakdown becomes
+7 + 15 + 7 + 10 + 32 + 35 + 3 = 109, the BMF-and-Discover tier being the one that
+loses it; the restatement further down becomes "sum to 109"; and the
+counsel-gated line becomes FOUR OF THE TWENTY-ONE.
+**THE BUILD-CHAIN FIGURE OF 18 IS NOT UPDATED HERE AND IS FLAGGED AS
+UNVERIFIED.** Whether A117's closure removes a step from that chain was not
+established by this pass, and changing a figure on a guess is the defect this
+whole block exists to prevent. **It is named so the next reader knows it was
+considered and not checked**, rather than assumed current.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. The entry it replaced recorded R11, Q4 ruled, and also moved
-nothing.
+than-append rule. The entry it replaced recorded the third consecutive zero and
+the observation that an entry can be unblocked and unmoved at the same time,
+because the count tracks what is OPEN and not what is READY — which is still
+true, is filed as an observation in `docs/session-log.md`, and remains unruled.
+**THIS CHANGE ALSO REPAIRS FIVE SITES THE A117 CLOSURE COMMIT (`1825e05`) LEFT
+STALE**, and that is recorded rather than quietly fixed. That commit updated the
+"sum to" restatement and nothing else in this header, so "As committed" still
+read 110, the breakdown still read 11 for BMF-and-Discover, this arithmetic block
+still said nothing moved, and the counsel-gated line still said TWENTY-TWO.
+**The per-change cadence ruled at FJ-6 was followed in the body and missed in the
+header.**
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
 dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 105 rather than 107, because
@@ -59,29 +68,54 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE (classified 2026-09-02): 20 BLOCKING, 59 DEBT, 24 POST**,
+**AGAINST THE PILOT GATE: 21 BLOCKING, 61 DEBT, 27 POST**, classification ruled
+2026-09-02 and the totals re-derived 2026-09-07,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 110.
-**UPDATED 2026-09-07: THE OPEN TOTAL IS 109.** A117 closed by R15, and it was
-BLOCKING, so the live figures are **21 BLOCKING, 61 DEBT, 27 POST = 109**,
-counted suffix-tolerantly because five POST and four BLOCKING lines carry
-trailing qualifiers.
-**A PRE-EXISTING DISCREPANCY IS FLAGGED HERE AND NOT FIXED, because it is not
-this commit's and papering over it would hide it.** The "20 BLOCKING, 59 DEBT,
-24 POST" above is dated **2026-09-02** and sums to 103, not to the OPEN total it
-sits beside; the live classification has moved since and the snapshot was never
-re-derived. **Whether to re-run that classification is FT's**, and the sentence
-is left standing so the gap is visible where the stale figures are.
-The sentence here previously read "nothing else does", which FJ-7 made false. BLOCKING means
-pilot
-cannot open with it unresolved, DEBT means pilot can open with it recorded and
-honest, POST means no pilot user reaches it.
-**FOUR OF THE TWENTY-TWO BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
+totals above, which remain a count of OPEN entries and sum to 109. The sentence
+here previously read "nothing else does", which FJ-7 made false.
+**BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
+with it recorded and honest, POST means no pilot user reaches it.**
+
+**RESOLVED 2026-09-07: THE FIGURES ABOVE WERE A STALE COUNT, NOT A DATED RECORD,
+AND ARE NOW RE-DERIVED.** They read "(classified 2026-09-02): 20 BLOCKING, 59
+DEBT, 24 POST", which summed to 103 against a live 109.
+
+**THE READING WAS SETTLED BY EVIDENCE RATHER THAN BY PREFERENCE, because the
+opposite reading was available and would have meant changing nothing.** At
+`593b9bf`, the commit that introduced the line, the live figures WERE exactly
+20 / 59 / 24, and this header's own "As committed" said 103 OPEN. **They were
+accurate when written and went stale afterwards**, which is what a stale count
+is. A dated record would also have been consistent with its own paragraph, and
+this one was not: the same paragraph's "sum to" clause was maintained forward
+while the three components beside it were not.
+
+**THE CAUSE, which is the part worth keeping.** The arithmetic block above
+carries a maintenance checklist naming every figure a change must update. **It
+named the "sum to" restatement in this paragraph and omitted the three component
+totals one sentence above it.** So the paragraph was half-maintained by
+construction, and drifted exactly as far as the checklist failed to reach.
+**A checklist of sites to update is itself a count without a list**, and the
+sites it misses are invisible precisely because the ones it names keep working.
+
+**WHAT MOVED, so the correction carries its cause and not only its result.**
+103 → 109, and the delta is six entries ADDED since 2026-09-04: A113, A115, A116,
+A118, A119 and A120. **Nothing was removed.** A114 and A117 were both filed and
+closed inside the same window, so they contribute zero. The class shifts follow
+from those six plus A117's closure from BLOCKING.
+
+**THE DISTINCTION THIS FILE NOW HAS, stated because it will be needed again.** A
+dated figure here describes an EVENT — "A117 was CLOSED 2026-09-07", "ARITHMETIC
+OF THE LAST CHANGE" — and is correctly frozen. **A dated figure that describes a
+STATE is a live count wearing a date**, and must be maintained or it lies. The
+parenthetical here dated the CLASSIFICATION ACT, which is genuinely fixed at
+2026-09-02; the TOTALS were never fixed, and pairing the two made a live count
+look archival. **The date has been moved off the totals and onto the act.**
+**FOUR OF THE TWENTY-ONE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
 BY BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not
 one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
