@@ -615,8 +615,20 @@ same week, each when someone tried to USE the referent rather than restate it.
 **RESOLVED FOR THE STAMP 2026-09-07, AND THE RESOLUTION IS THE POINT: the fields
 were DEFINED FRESH rather than recovered.** R12 ruled that a count nobody can
 source is not a constraint, so the stamp has SEVEN fields because seven were
-ruled, not four because four were asserted. **The twelve failure modes remain
-unenumerated.**
+ruled, not four because four were asserted.
+**RESOLVED FOR THE FAILURE MODES 2026-09-07 TOO, THE SAME WAY AND WITH THE SAME
+RESULT.** This line read "**The twelve failure modes remain unenumerated.**" They
+are enumerated now, at `docs/bmf-load-scoping.md` §4, **re-derived from the tree
+by execution and grep rather than recovered from the pass that asserted twelve**,
+and there are **TWENTY-SIX**. As with the stamp, the count moved because a list
+replaced a number: twelve had no referent, so it was never wrong, only
+uncheckable, and nothing establishes it was wrong about a set nobody wrote down.
+**AND THE RE-DERIVATION CAUGHT A SECOND ERROR ONE LEVEL DOWN, which is the part
+worth keeping.** All three citations also said "§4 names four" of them. **§4
+names SIX**, under its own bold leads, plus a seventh as a clause. So a FALSE
+count sat beside the MISSING list, through the same three restatements, and it
+differs from its neighbour in exactly the way that matters: it was checkable in
+seconds by opening the section, and for eleven weeks nobody did.
 **AND THE RULE CAUGHT ITSELF TWICE WITHIN AN HOUR OF BEING FILED, which is the
 strongest evidence for it.** The prompt that ruled R12 said the phrase was cited
 in THREE documents; it is **five lines across four files**, this note among them.

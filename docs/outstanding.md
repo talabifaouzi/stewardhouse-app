@@ -137,8 +137,13 @@ table also carries indexes, whose build cost §1 measured separately (`:137`).
 **This is the reasoning R2's sequence rests on**: a loader written against the
 existing shape would carry a duplicate-EIN path that nothing had exercised until
 the production run, which is why the sandbox and its table come first.
-**Twelve failure modes were enumerated; §4 names four and omits eight**,
-including the escaping mode that §2's own script contract already names.
+**CORRECTED 2026-09-07: THE LIST IS ON DISK AND IT IS TWENTY-SIX.** This line
+read "**Twelve failure modes were enumerated; §4 names four and omits eight**,
+including the escaping mode that §2's own script contract already names." The
+escaping clause was right and is mode 7. Both counts were wrong: §4 names SIX
+under its own bold leads, and a re-derivation from the tree produced twenty-six.
+The enumeration is at `docs/bmf-load-scoping.md` §4, "The enumeration, derived
+2026-09-07". **Cite the list, never the number.**
 **AND A SINGLE RUN WOULD SETTLE NOTHING EITHER WAY**, because an import that
 never began and one that rolled back perfectly leave the same observable state,
 which is the void-versus-clean hazard open item 5 already records for a
@@ -1014,8 +1019,12 @@ entry:** a loader that cannot report whether it finished ships the quiet-lie
 failure this project rules against, and separating the two invites shipping the
 loader without it.
 **NOT SCOPED. A ruling ends the rule step only**, and this build has had no
-scope pass. Twelve failure modes are enumerated in the 2026-09-04 pass and §4
-names four of them, so the scope pass inherits eight the doc does not carry.
+scope pass. **CORRECTED 2026-09-07:** this read "Twelve failure modes are
+enumerated in the 2026-09-04 pass and §4 names four of them, so the scope pass
+inherits eight the doc does not carry." Nothing was enumerated anywhere; §4 names
+six, not four; and the re-derivation found twenty-six. The scope pass inherits
+the LIST at `docs/bmf-load-scoping.md` §4, and the three of them no loader can
+detect (11, 19, and the empty-generation half of 20) are what it must weigh.
 **AN INPUT THE SCOPE PASS MUST WEIGH, RULED 2026-09-07 (Q7): NOTHING IN THIS
 PROJECT ALERTS ON A BAD LOAD.** There is no scheduled execution of any kind, so
 a load that completes and is WRONG is discoverable only by someone looking. That
@@ -1104,7 +1113,11 @@ the sole existing artifact, `scripts/d1-window-generate.mjs:85`, declares
 neither.
 **WHAT THE PASS FOUND THAT IS NOT A RULING, in one line each.** The twelve
 failure modes are asserted three times in this file and **enumerated nowhere on
-disk**, so a build inherits a count without a list. The only quote-aware CSV
+disk**, so a build inherits a count without a list. **CLOSED 2026-09-07: the
+enumeration is at `docs/bmf-load-scoping.md` §4 and it is TWENTY-SIX, re-derived
+from the tree rather than recovered.** The finding above is kept as the record of
+why the list exists; twelve had no referent, so it was never wrong, only
+uncheckable. The only quote-aware CSV
 work in the tree is absent: `readRosterFile.js` is browser-only, capped at 10 MB
 against a 48.6 MB first file, and has **zero** quote handling against a control
 of five `export` hits — while §5 anticipates exactly that bug, six
@@ -1113,12 +1126,16 @@ would throw on the two nullable columns. `d1-window-generate.mjs` already
 carries byte-accurate chunking, a backpressure-aware streaming write and an
 `aside-swap` DDL mode, but its rows are synthetic, it declares no key or index,
 and its DDL uses the `DROP` that **R6 now forbids**.
-**STILL UNRULED, SEVEN, and none of them blocks the ruling above:** whether R8-2
-and R8-3 stay data counts or become `sqlite_master` assertions; what "trend"
+**STILL UNRULED, SIX, and none of them blocks the ruling above.** This read SEVEN
+and carried "whether the twelve failure modes get enumerated on disk" as its
+fourth item; that item is CLOSED, the enumeration having landed in
+`docs/bmf-load-scoping.md` §4 on 2026-09-07, so the count is SIX and the closure
+is recorded here rather than the item being deleted silently. The six: whether
+R8-2 and R8-3 stay data counts or become `sqlite_master` assertions; what "trend"
 means numerically in R8-5 and what runs on loads one through three; whether §5's
 EXACT null counts or R8-4's BAND governs a recurring load, since only one can
-survive a file the IRS regenerates; whether the twelve failure modes get
-enumerated on disk; where downloaded extracts live and whether they are cached,
+survive a file the IRS regenerates; where downloaded extracts live and whether
+they are cached,
 which `.gitignore` does not currently cover; whether credential staleness
 mid-import stays unhandled as §4 records it; and whether the pass's proposed
 slice-1 boundary is right.

@@ -392,6 +392,11 @@ run above.
 
 ## 4. Failure modes and what each leaves standing
 
+**THE ENUMERATION IS AT THE END OF THIS SECTION, ADDED 2026-09-07.** The six
+paragraphs below are kept EXACTLY as written, because three of them carry
+retractions that are load-bearing and are not the enumeration's to fold away.
+They are modes 3, 2, 10, 18, 4 and 14 of that table, in the order they appear.
+
 **Bad header.** Refuse before writing anything. Nothing to recover; rerun after
 inspecting the change. The cheapest failure, and the one header-name parsing
 exists to produce rather than avoid.
@@ -434,6 +439,79 @@ MORE on 2026-08-19, failing a `--remote` write both times. Each was recovered by
 start of a short command. **The same staleness arriving partway through a
 multi-minute import would not be**, and nothing in this section covers it. The
 remote path in section 7 runs long enough for it to matter. Recorded, not solved.
+
+### The enumeration, derived 2026-09-07
+
+**TWENTY-SIX MODES. THE COUNT MOVED BECAUSE A LIST REPLACED A NUMBER, NOT
+BECAUSE ANYTHING CHANGED IN THE TREE.** "Twelve failure modes" was asserted in
+three places and enumerated in none, which is the count-is-not-a-list pattern
+filed in CLAUDE.md §5.1. This is the list. It was re-derived from the tree at
+HEAD by execution and grep, deliberately NOT reconstructed from the pass that
+asserted twelve, so it is checkable rather than restated: every row cites a line
+or a section, and a later reader can delete a row and say why.
+
+**"§4 NAMES FOUR" WAS FALSE IN ALL THREE CITATIONS.** This section names SIX
+under its own bold leads, plus a seventh as a clause. That error is checkable in
+seconds and survived three restatements, which is the same pattern one level
+down from the missing list.
+
+**THE COUNT IS NOT ITSELF A CONSTRAINT, and must not become one.** Nothing here
+establishes that twelve was wrong about a set nobody wrote down. What twenty-six
+is, is sourced. **Cite the list, never the number.**
+
+`wrangler` citations are against the shipped **4.111.0** in `node_modules`, the
+same version §7 and §12 are sourced to. Bundle line numbers are version-specific;
+the surrounding strings are stable and are the thing to grep for.
+
+| # | Mode | Mechanism, sourced | §4 before | Loader detects |
+|---|---|---|---|---|
+| 1 | Wrong file set, all six | Double-loads 4,906 orgs; the symptom is a duplicate key far downstream of the cause. §3, file-set row | UNNAMED | yes, and now at INSERT under R10b |
+| 2 | Partial download | Byte count against `Content-Length`. Nothing written | NAMED | yes |
+| 3 | Bad header | Every header must equal the 28-column string exactly. §3 | NAMED | yes |
+| 4 | Archive exits non-zero having extracted completely | `2026_TEOS_XML_05A.zip` exits 3 with all 84,172 members correct | NAMED | only by not trusting the exit code |
+| 5 | Leftover aside from a prior failed run | A failed swap leaves the aside present; the prescribed rerun-from-the-start then fails at `CREATE TABLE` | UNNAMED | yes |
+| 6 | CSV quoting, column shift | 6 comma-carrying names in 278,014 (§5). The tree has NO quote-aware CSV parser: `readRosterFile.js` returns zero double-quote matches and is capped at 10 MB against a 48.6 MB first file | UNNAMED | yes, by §5's null counts and row sampling |
+| 7 | NULL escaping | `escapeSql(str)` is `str.replace(...)` at `seed-invites.mjs:51-53` and `provision-institution.mjs:68`, so it THROWS on `null`, and the two nullable columns are null on 569,235 and 574,447 rows. The silent branch is worse: `''` where SQL NULL was meant folds absent into zero, which §1 forbids | UNNAMED | throw is loud; the silent branch only by §5's null counts |
+| 8 | Statement over the 100,000-byte ceiling | `SQLITE_TOOBIG`, bisected. §3, §8 | UNNAMED | yes, at generation |
+| 9 | R2 upload rejected, or bytes do not match the md5 etag | Three guards, one state: `cli.js:231286` non-200, `:231294` missing etag header, `:231297` etag mismatch | UNNAMED | yes, by wrangler |
+| 10 | Server-side import error | `cli.js:231314-231318` on `status === "error"`; `:231303` on `!success`. Modes 1, 7, 8 and 15 surface here on the remote path | NAMED, by dependence | yes |
+| 11 | Residue after a FAILED import | The rollback guarantee is printed by the client BEFORE the import runs (`cli.js:231184-231188`). §7 calls it the most load-bearing unverified fact in this plan; open item 1 has the success path proven and the failure path untested | the correction rests on it | **NO** |
+| 12 | "D1 reset before execute completed!" | `cli.js:231213-231218`, a distinct terminus from mode 10 | UNNAMED | loud, but leaves indeterminate state |
+| 13 | Poll loop never terminates | `pollUntilComplete` recurses with no attempt cap, no backoff and no deadline, `cli.js:231302-231336` | UNNAMED | only by wall-clock outside the loader |
+| 14 | Credential staleness mid-import | `requireAuth` runs once at `cli.js:231161`; every poll re-uses that token through `d1ApiPost` at `:231337` | NAMED, UNADDRESSED | yes when it fires, not preventable |
+| 15 | `EIN` uniqueness stops holding in a regenerated file | §1 re-asserts per load; under R10b it fails at INSERT with `UNIQUE constraint failed: bmf.ein`. Distinct from mode 1 in cause and in remedy | UNNAMED | yes |
+| 16 | The R8 gate CANNOT fail on two of its five checks | R10a and R10b make R8-2 and R8-3 tautologies. `d1-window-generate.mjs:85` declares neither a key nor an index | UNNAMED | n/a, a failure of the detector |
+| 17 | The R8 gate blocks a GOOD load | Bands hardcoded from one extract at one time (R8d), and §5's EXACT null counts conflict with R8-4's BAND: only one survives a file the IRS regenerates | UNNAMED | n/a, and still unruled |
+| 18 | The swap batch fails wholesale | Live standing, aside present | NAMED | yes |
+| 19 | The file is split into more than one invocation | §1's BINDING CONSTRAINT; invisible in the SQL itself | NAMED, as a clause | **NO**, which is why post-swap verification beats the return code |
+| 20 | First load has nothing to rename away | R11f: the migration supplies it silently, and generation 1 is then EMPTY, so an R7 recovery to it restores nothing | UNNAMED | the first-run branch yes; the empty-generation consequence is flagged and unresolved |
+| 21 | Post-swap state differs from what was verified | R8b: nothing validates the swap operation itself, only the data going into it | half-named | yes, and required |
+| 22 | The undo file applies partially, a third state | R6a: it carries the same unverified atomicity as the load, so it must check target names FIRST | UNNAMED | yes, if written to check names first |
+| 23 | Pruning drops the generation recovery needs | R8c against R7's three, compounded by mode 20's empty generation 1. R10e flags the per-generation figure as INHERITED, not measured | UNNAMED | partly; a count of retained tables is checkable |
+| 24 | The stamp is incomplete, or written out of order | Completion LAST and on success only; R12c puts the `load_check` rows before it. Without that ordering every other field lies convincingly | UNNAMED | yes, by the absence of `completed_at` (R12d) |
+| 25 | A load COMPLETES, is WRONG, and nothing alerts | R8f plus A113's Q7: no scheduled execution anywhere in this project, no monitoring surface until Discover exists | UNNAMED | only modes 16 and 17 stand between this and production |
+| 26 | The import window logs every MOUNTING user out and blocks sign-in | 14,359 to 17,647 ms, MODE FAIL, one error string. §12, §13 | UNNAMED | measured; RULED accepted, after the shell fix |
+
+**CONSIDERED AND EXCLUDED, with the reason, so a later reader does not re-add
+them as omissions.** Open item 4, whether retained Time Travel history counts
+toward the 10 GB ceiling, is a CAPACITY question rather than a mechanism by which
+a load fails. And `checkForSQLiteBinary` (`cli.js:231366-231387`) refuses a binary
+SQLite file handed to `d1 execute`, which cannot fire on a file this plan
+generates.
+
+**THREE MODES THE LOADER CANNOT DETECT AT ALL**, and they are the ones worth
+carrying forward: 11, 19, and the empty-generation half of 20. Mode 11 is already
+a §13 precondition on the production load. Mode 19 is a property of how the file
+is ISSUED and nothing in the SQL enforces it. Mode 20 is flagged in R11f and
+resolved nowhere.
+
+**WHERE THE OLD COUNT AND THIS LIST COULD BE RECONCILED, offered as a
+reconstruction and NOT as a claim about what the 2026-09-04 pass meant.** Drop
+the modes no loader can act on (11, 19, and half of 20), the two that are
+failures of the GATE rather than of the load (16, 17), and collapse the four that
+surface through a single remote error path (9, 10, 12, 13), and the list lands
+near thirteen. That arithmetic is recorded so nobody performs it silently and
+concludes the two agree.
 
 ## 5. Read-only verification after the load
 
