@@ -284,10 +284,16 @@ version of this section named the missing schedule as the blocker and called it
 so the project having no scheduled process, which is true and always has been,
 does not block anything here.
 
-**What makes a manual load honest is the four-part load stamp**, one row per
-source, with the surface rendering the source date. A funder is then told when
-the data was pulled, so the page describes a known moment rather than implying
-a currency it does not have.
+**What makes a manual load honest is the load stamp**, one row per source, with
+the surface rendering the source date. A funder is then told when the data was
+pulled, so the page describes a known moment rather than implying a currency it
+does not have.
+
+**CORRECTED 2026-09-07 BY R12: this read "the four-part load stamp".** That count
+was asserted and never ruled, and its referent was never written down. The stamp
+has SEVEN fields plus a `load_check` child table; **`source_date` is the one this
+surface renders**, and R12g records the stamp as the evidence for any public
+currency claim. See A117.
 
 **What the manual path COSTS, stated without softening: the deductibility
 signal is exactly as stale as the last run.** Ruling 1 makes the status gate

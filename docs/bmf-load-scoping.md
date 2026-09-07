@@ -10,9 +10,13 @@ open items that will change as they resolve, which is why it is its own doc.
 
 The rulings this plan implements are recorded elsewhere and are not re-argued
 here: manual FT-run script for v1 with no scheduled process, replace-all built
-aside and swapped, header-name parsing, the four-part load stamp, full national
+aside and swapped, header-name parsing, the load stamp, full national
 load, seven columns, roughly 30KB chunks sized by bytes, the four-or-five file
 set, and EIN as the primary key.
+
+**CORRECTED 2026-09-07 BY R12: this line read "the four-part load stamp".** That
+count was asserted and never ruled, and its referent was never written down. The
+stamp has SEVEN fields plus a `load_check` child table, listed on A117.
 
 ## 1. The migration
 
@@ -286,18 +290,45 @@ See §15.
 ### The stamp table
 
 **AMENDED 2026-09-07 BY R9: THE STAMP CARRIES CHECK RESULTS, NOT A BOOLEAN.**
-What follows is kept as ruled, and the completion rule below still holds. What
-changes is that completion alone separates finished from interrupted and NOT
-correct from incorrect, so the row also carries the R8 check results. The amended
-shape is proposed by A113's scope pass. See §15.
+Completion alone separates finished from interrupted and NOT correct from
+incorrect, so the load's check results are recorded too. R12 settles how.
 
-The four ruled parts, **one row per source**, because BMF, the revocation list
-and Pub 78 refresh on independent cadences and a single stamp would assert one
-freshness for three things.
+**R12, RULED 2026-09-07: THE FIELDS ARE DEFINED FRESH, NOT RECOVERED, AND THE
+COUNT IS NOT PRESERVED.** This section previously opened "The four ruled parts",
+and `docs/discover-surface-spec.md` and this plan's own preamble both said "the
+four-part load stamp". **That phrase was ASSERTED, never ruled, and its referent
+was never written down anywhere**, so it is not a constraint. **There are SEVEN
+fields**, listed on A117 with the proposed DDL for both tables.
+
+**ONE ROW PER SOURCE STILL HOLDS**, because BMF, the revocation list and Pub 78
+refresh on independent cadences and a single stamp would assert one freshness
+for three things. **That reasoning never depended on the count.**
 
 **Completion is written LAST, on success only.** That field is the only thing
 separating "loaded 1,957,340 rows" from "loaded a prefix and stopped", and
-without it every other field in the row lies convincingly.
+without it every other field in the row lies convincingly. **R12c extends it:
+the check rows are written BEFORE completion**, so completion still means the
+record is whole.
+
+**R12b: THE CHECK RESULTS LIVE IN A CHILD TABLE, `load_check`, NOT A JSON
+COLUMN.** JSON was proposed and then argued down by the seat that proposed it:
+nothing validates it, it is not queryable across rows, and a provisional check
+set means JSON silently changes shape where columns would not. **Adding a check
+adds ROWS, not columns**, so the check set can move without a migration.
+
+**R12d: NO STATUS ENUM.** The timestamps ARE the status, and no `completed_at`
+means not complete. A status column would drift against the timestamps, which is
+the defect FORK 2 already ruled against for `enrollment_status`.
+
+**R12f, PARKER'S CONDITION: THE STAMP RECORDS THE LOAD, NOT THE DATA.** Nothing
+evaluative or categorical about the organizations — no counts by NTEE code, no
+distributions by state, nothing that reads as StewardHouse's account of the
+sector. **A single `row_count` is the load's own size, not a characterization.**
+
+**R12g: THE STAMP IS THE EVIDENCE FOR ANY PUBLIC CURRENCY CLAIM.** With
+`source_date` and `completed_at` both present, StewardHouse can say "data from
+the [month] IRS extract, loaded [date]" and point at a record. **Recorded so a
+future reader does not trim fields that look internal.**
 
 ## 2. The script
 

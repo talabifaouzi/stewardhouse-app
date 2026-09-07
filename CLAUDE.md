@@ -609,9 +609,21 @@ written and went stale. This one was never checkable at all: **a COUNT cited
 repeatedly whose referent was never written down.** `docs/outstanding.md`
 asserts "twelve failure modes" three times and no document enumerates twelve.
 `docs/bmf-load-scoping.md` §1, `docs/discover-surface-spec.md` and that plan's
-own preamble all name "the four-part load stamp" and **no document names the
-four parts**; only one is even inferable, a source date. Both surfaced in the
+own preamble all named "the four-part load stamp" and **no document named the
+four parts**; only one was even inferable, a source date. Both surfaced in the
 same week, each when someone tried to USE the referent rather than restate it.
+**RESOLVED FOR THE STAMP 2026-09-07, AND THE RESOLUTION IS THE POINT: the fields
+were DEFINED FRESH rather than recovered.** R12 ruled that a count nobody can
+source is not a constraint, so the stamp has SEVEN fields because seven were
+ruled, not four because four were asserted. **The twelve failure modes remain
+unenumerated.**
+**AND THE RULE CAUGHT ITSELF TWICE WITHIN AN HOUR OF BEING FILED, which is the
+strongest evidence for it.** The prompt that ruled R12 said the phrase was cited
+in THREE documents; it is **five lines across four files**, this note among them.
+And A117's own entry, the one recording that the list was missing, said "cited in
+three documents" — **an entry about an undercounted referent undercounting its
+own citations.** Neither was caught by rereading the claim. Both were caught by
+counting the sites.
 **FILED SEPARATELY FROM A111, WHICH IS THE NEAREST NEIGHBOUR AND IS NOT THE SAME
 THING.** A111 records a false claim that propagated through four links until it
 reached a ruling. Its claim was FALSE AND CHECKABLE: open the tiles and the

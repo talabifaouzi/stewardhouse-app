@@ -27,27 +27,23 @@ for what the cadence misses.
 ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
 BMF-and-Discover 11, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: NOTHING MOVED, FOR THE SECOND
-CONSECUTIVE CHANGE. R11 RULES A PLACEMENT, AND A PLACEMENT IS NOT AN ENTRY.**
-Q4 is ruled option (a) and recorded on A117, with R11f in
-`docs/bmf-load-scoping.md` §15 and the count-is-not-a-list pattern in CLAUDE.md
-§5.1. **No entry opened, closed, or changed group or Pilot**, so OPEN stays at
-110, BLOCKING at 22, DEBT at 61 and POST at 27, the breakdown stays
-7 + 15 + 7 + 11 + 32 + 35 + 3 = 110, the restatement further down stays at "sum
-to 110", the counsel-gated line stays at FOUR OF THE TWENTY-TWO, and the build
-chain stays at 18.
-**WHY ZERO AGAIN, AND IT IS NOT THE SAME REASON AS LAST TIME.** R10 left A117
-blocked because its line named two conditions and closed one. **R11 and the
-scope pass DISCHARGE BOTH**, so A117 is unblocked by its own line — and it still
-does not move, because **the migration is not written and an unblocked entry is
-still an open one.** What the pass added is a NEW question the line never named:
-whether the stamp DDL rides A117.
-**TWO CONSECUTIVE ZERO-MOVEMENT CHANGES ARE WORTH NAMING TOGETHER**, because a
-reader watching only the totals would see a queue that has not moved in two
-commits while the thing blocking its longest chain was resolved.
-This block records the LAST change only and is REPLACED rather than appended, so
-it never accumulates into a changelog. The entry it replaced recorded R10, the
-ruled index set, and also moved nothing.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: NOTHING MOVED, FOR THE THIRD
+CONSECUTIVE CHANGE. R12 RULES A DESIGN, AND A DESIGN IS NOT AN ENTRY.** The load
+stamp's seven fields and its `load_check` child table are ruled and recorded on
+A117 with proposed DDL, and the false "four-part" count is corrected at all five
+citation sites across four files. **No entry opened, closed, or changed group or
+Pilot**, so OPEN stays at 110, BLOCKING at 22, DEBT at 61 and POST at 27, the
+breakdown stays 7 + 15 + 7 + 11 + 32 + 35 + 3 = 110, the restatement further down
+stays at "sum to 110", the counsel-gated line stays at FOUR OF THE TWENTY-TWO,
+and the build chain stays at 18.
+**THREE ZEROS IN A ROW, AND THE THIRD IS THE ONE WORTH READING.** A117 is now
+WRITABLE IN FULL — its blocker line was discharged by R11, and R12 answers the
+question the pass added afterwards. **An entry can be unblocked and unmoved at
+the same time**, because the count tracks what is OPEN and not what is READY, and
+nothing in this file distinguishes those two states.
+**THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
+than-append rule. The entry it replaced recorded R11, Q4 ruled, and also moved
+nothing.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
 dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 105 rather than 107, because
@@ -1240,14 +1236,145 @@ and the aside into place, and **on load one there is nothing to rename away
 unless this migration created it.** R8e defines first-run behaviour for the
 trend check and nothing defines it for the swap. See `docs/bmf-load-scoping.md`
 §15, R6.
-**STILL UNRULED ON THIS ENTRY, FOUR, all raised by the pass rather than
-inherited:** whether the stamp DDL rides this entry or a later migration, given
-R9 puts the SHAPE in A113 and A113 is blocked on this entry, which is a fresh
-circularity; **what the four parts of the load stamp are**, cited in three
-documents and enumerated in none; how this migration's SQL and A113's JavaScript
-aside DDL stay in agreement, since neither can import the other; and whether
-generation 1 being an EMPTY table is acceptable, given R7 retains three for
-recovery and a recovery to it would restore nothing.
+**R12 RULED 2026-09-07: THE STAMP RIDES THIS ENTRY, AND ITS FIELDS ARE DEFINED
+FRESH RATHER THAN RECOVERED.** Two of the four questions above are answered by
+it, and the fresh definition is what breaks the circularity: R9 put the SHAPE in
+A113 and A113 is blocked on this entry, so recovering a shape from A113 was not
+possible. **A count nobody can source is not a constraint**, so the stamp has
+SEVEN fields because seven were ruled, not four because four were asserted.
+**THE PHRASE WAS ASSERTED, NEVER RULED, AND ITS REFERENT WAS NEVER WRITTEN
+DOWN.** Every citation is corrected in the same commit, because leaving a false
+count standing while the real list lives elsewhere is precisely the drift
+mechanism CLAUDE.md §5.1 records. **This entry's own line said "cited in three
+documents"; it is FIVE LINES ACROSS FOUR FILES** — `bmf-load-scoping.md` twice,
+`discover-surface-spec.md`, CLAUDE.md §5.1, and this entry. **An entry recording
+an undercounted referent undercounted its own citations.**
+**R12a, SEVEN STAMP FIELDS.** `source_date`, the extract's own date and what
+Discover renders; `file_set`, which four or five files were taken;
+`load_started_at`; `load_finished_at`, when it stopped, success or failure;
+`completed_at`, written LAST and on success only, null meaning not complete;
+`row_count`; and `generation_table`, the dated table this load produced, **so
+R7's retention is operable rather than inferred from table names.**
+**R12b, THE CHECK RESULTS ARE A CHILD TABLE, NOT A JSON COLUMN.** `load_check`
+carries a stamp reference, check name, value and passed, one row per check per
+load. **JSON was proposed and then argued down by the seat that proposed it:**
+nothing validates it, it is not queryable across rows, and a provisional check
+set means JSON silently changes shape where columns would not. **Adding a check
+adds ROWS**, so the check set can move without a migration.
+**R12c, THE SINGLE-RECORD PRINCIPLE SURVIVES BY ORDERING.** Check rows are
+written BEFORE `completed_at`, so completion still means the record is whole.
+One stamp row per load, inserted at start, updated once at the end, **never in
+between.**
+**R12d, NO STATUS ENUM.** The timestamps are the status. A status column would
+drift against them, the defect FORK 2 already ruled against for
+`enrollment_status`.
+**R12e, TWO FIELDS WERE CUT AND ONE RULE DID IT.** `checks_passed`, a second
+source of truth derived from the check rows; and `source_id`, redundant with
+`source_date` and `file_set` together. **The rule: THE STAMP IS THE ONLY THING
+THAT OUTLIVES A GENERATION, so a field belongs in it if and only if you would
+want it after the table is pruned.** It cut two and kept two from one test.
+**RECORDED HONESTLY: `source_id` WAS CUT BY POINTING AT `file_set`, WHICH NOBODY
+HAD DEFENDED AT THE TIME.** The cut still holds on file_set's own grounds — four
+files and five files are both valid and produce different data, and nothing else
+distinguishes them — but **it held for a reason established later than the cut.**
+**THE STAMP IS TWO TABLES, NOT ONE. That changes what this entry carries and
+appeared in no earlier round.**
+**A CANDIDATE FOR R8-5's UNDEFINED "TREND", RECORDED AS A CANDIDATE AND NOT
+RULED.** `row_count` in the stamp makes the trend computable over STAMP ROWS
+rather than generation tables — **thirteen points after a year rather than a
+permanent three**, since only three generations are retained. R8-5's "trend"
+remains undefined and unruled.
+**STILL UNRULED ON THIS ENTRY, TWO, down from four:** how this migration's SQL
+and A113's JavaScript aside DDL stay in agreement, since neither can import the
+other; and whether generation 1 being an EMPTY table is acceptable, given R7
+retains three for recovery and a recovery to it would restore nothing. **Neither
+blocks authoring the DDL**; both are consequences rather than inputs.
+**PROPOSED DDL, THREE TABLES. THIS IS A PROPOSAL IN THIS ENTRY, NOT A MIGRATION
+ON DISK**, and stays one until FT approves it separately.
+
+```sql
+-- (1) THE BMF TABLE. Shape: docs/bmf-load-scoping.md §1.
+--
+-- PROVENANCE (R8d): the nullability below derives from ONE extract measured
+-- 2026-08 across the ruled four-or-five file set, 1,957,340 rows. REVENUE_AMT
+-- null on 569,235 (29.08%), NTEE_CD null on 574,447 (29.35%), the other four
+-- null on 0. A later extract may differ.
+--
+-- R10b: the PRIMARY KEY is declared HERE, at CREATE. A duplicate EIN therefore
+-- fails at INSERT, not at index creation.
+-- R11f: this table is the SWAP'S FIRST GENERATION. On load one there is nothing
+-- to rename away unless it exists, which is why creating it empty is correct.
+CREATE TABLE bmf (
+  ein          TEXT    NOT NULL PRIMARY KEY,
+  name         TEXT    NOT NULL,
+  city         TEXT    NOT NULL,
+  state        TEXT    NOT NULL,
+  revenue_amt  INTEGER,                                -- absent stays distinct from zero
+  ruling       INTEGER NOT NULL,
+  ntee_cd      TEXT
+);
+
+-- THE INDEX SET IS PROVISIONAL (R10c), revisable at ZERO migration cost: this is
+-- a replace-all design, so every load rebuilds the whole set and a change costs
+-- one DDL edit plus one load cycle, not a migration.
+-- R10a: UNIQUE(ein) is absent because it is not a choice — the PRIMARY KEY above
+-- already creates it (verified: sqlite_autoindex_bmf_1, origin pk). Three, not four.
+-- R10d, PATH B: idx_bmf_name is a SEARCH index. Indexing for RETRIEVAL is inside
+-- the §7 boundary; ordering by anything EVALUATIVE is not. Nothing here guards it.
+-- THIS SET MUST MATCH the aside DDL the loader (A113) builds on EVERY run.
+CREATE INDEX idx_bmf_state_city ON bmf (state, city);
+CREATE INDEX idx_bmf_ruling     ON bmf (ruling);
+CREATE INDEX idx_bmf_name       ON bmf (name);
+
+-- (2) THE LOAD STAMP. One row per load, per source (R12a).
+--
+-- NO source COLUMN, and that is deliberate: R12e cut source_id as redundant with
+-- source_date and file_set together, and file_set is what distinguishes a BMF
+-- load from any other source's.
+-- NO status COLUMN (R12d): the timestamps ARE the status, and one would drift
+-- against them — the defect FORK 2 ruled against for enrollment_status.
+-- R12f, THE STAMP RECORDS THE LOAD, NOT THE DATA. Nothing evaluative or
+-- categorical about the organizations may be added here: no counts by NTEE code,
+-- no distributions by state, nothing that reads as StewardHouse's account of the
+-- sector. row_count is the LOAD'S OWN SIZE, not a characterization.
+-- R12e, THE TEST FOR ADDING A FIELD: the stamp is the only thing that outlives a
+-- generation, so a field belongs here if and only if you would want it after the
+-- table is pruned.
+-- R12g: with source_date and completed_at both present this row is the EVIDENCE
+-- for any public currency claim. Do not trim fields here for looking internal.
+CREATE TABLE load_stamp (
+  id                TEXT    NOT NULL PRIMARY KEY,     -- opaque UUID, crypto.randomUUID()
+  source_date       TEXT    NOT NULL,                 -- the EXTRACT's own date; Discover renders this
+  file_set          TEXT    NOT NULL,                 -- which files were taken, e.g. 'eo1,eo2,eo3,eo4'
+  load_started_at   TEXT    NOT NULL,                 -- ISO 8601
+  load_finished_at  TEXT,                             -- when it STOPPED, success or failure
+  completed_at      TEXT,                             -- written LAST, success ONLY. NULL = not complete
+  row_count         INTEGER,                          -- the load's size (R12f)
+  generation_table  TEXT                              -- the dated table this load produced (R7)
+);
+CREATE INDEX idx_load_stamp_source_date ON load_stamp(source_date);
+
+-- (3) THE CHECK RESULTS (R12b). One row per check per load.
+--
+-- A CHILD TABLE RATHER THAN A JSON COLUMN. JSON was proposed and then argued
+-- down by the seat that proposed it: nothing validates it, it is not queryable
+-- across rows, and a provisional check set means JSON silently changes shape
+-- where columns would not. ADDING A CHECK ADDS ROWS, so the check set can move
+-- without a migration.
+--
+-- R12c, THE ORDERING CONSTRAINT, AND IT IS THE WHOLE REASON THIS TABLE IS SAFE:
+-- these rows are written BEFORE load_stamp.completed_at. Completion therefore
+-- still means the record is WHOLE. One stamp row per load, inserted at start,
+-- updated once at the end, never in between.
+CREATE TABLE load_check (
+  id          TEXT    NOT NULL PRIMARY KEY,           -- opaque UUID
+  stamp_id    TEXT    NOT NULL REFERENCES load_stamp(id) ON DELETE CASCADE,
+  check_name  TEXT    NOT NULL,                       -- e.g. 'row_count_in_band'
+  value       TEXT,                                   -- the observed figure as recorded
+  passed      INTEGER NOT NULL CHECK (passed IN (0, 1))
+);
+CREATE INDEX idx_load_check_stamp_id ON load_check(stamp_id);
+```
 **R6b, A STANDING CONDITION ON THIS TABLE'S COLUMNS, ruled 2026-09-07.** The
 compliance answer for retaining generations of this table holds BECAUSE the table
 carries only the seven IRS fields. **If it ever carries anything derived, computed
