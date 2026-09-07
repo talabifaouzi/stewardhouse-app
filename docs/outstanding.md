@@ -22,29 +22,28 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 108 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 110 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
-BMF-and-Discover 11, cheap-and-mechanical 30, large 35, and
+BMF-and-Discover 11, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: ONE ENTRY CLOSED, ONE FILED, AND
-THE TOTAL DID NOT MOVE.** A114 CLOSED, the sandbox database now existing. A118
-filed, the staging-environment findings. **A closure and a filing cancelling to
-zero is exactly the case a total hides**, which is why both halves are named.
-**OPEN stays at 108.** BMF-and-Discover moves 12 to 11 as A114 leaves; large
-moves 34 to 35 on A118. The breakdown is therefore
-7 + 15 + 7 + 11 + 30 + 35 + 3 = 108, and the restatement further down is
-unchanged at "sum to 108".
-**BLOCKING moves 23 to 22** as A114 closes. **POST moves 26 to 27** on A118,
-which is filed POST with its blocker unruled. DEBT is unchanged at 59, and
-22 + 59 + 27 = 108. The counsel-gated line moves to FOUR OF THE TWENTY-TWO, the
-four themselves being unchanged.
-**THE BUILD CHAIN MOVES 19 TO 18**, being BLOCKING minus the counsel-gated four.
-**It shortened because work was DONE**, which is the first time in this record
-that it moved for that reason rather than through a reclassification or a filing.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: TWO ENTRIES FILED FROM THE LANDING-
+PAGE PASS, AND ONE DEFECT FIXED RATHER THAN FILED.** A119, the six-name split on
+the Operations surface. A120, the Enterprise card advertising a Setup flow P-5
+removed. **The third finding, a false access claim on the Operations surface,
+was FIXED IN THE SAME COMMIT and therefore never became an entry** — filing it
+would have shipped it another day.
+**OPEN moves 108 to 110.** Cheap-and-mechanical moves 30 to 32 on A119 and A120.
+The breakdown is therefore 7 + 15 + 7 + 11 + 32 + 35 + 3 = 110, and the
+restatement further down moves with it, to "sum to 110".
+**DEBT moves 59 to 61**, both entries being DEBT on the reasoning recorded on
+each. BLOCKING is unchanged at 22 and POST at 27, and 22 + 61 + 27 = 110. **The
+counsel-gated line does NOT move**, since BLOCKING did not.
+**THE BUILD CHAIN IS UNCHANGED AT 18**, being BLOCKING minus the counsel-gated
+four, and neither new entry is BLOCKING.
 This block records the LAST change only and is REPLACED rather than appended, so
 it never accumulates into a changelog. The entry it replaced recorded one entry
-filed on the sandbox rulings.
+closed and one filed, cancelling to zero.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
 dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 105 rather than 107, because
@@ -67,7 +66,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 108. The sentence
+totals above, which remain a count of OPEN entries and sum to 110. The sentence
 here previously read "nothing else does", which FJ-7 made false. BLOCKING means
 pilot
 cannot open with it unresolved, DEBT means pilot can open with it recorded and
@@ -1148,6 +1147,74 @@ different object and touches §7. Recorded as a CONDITION on any future column
 change, not as a discovery waiting to be made.
 
 ### Cheap and mechanical
+
+**A119 | One surface carries SIX names, and two of them render in the same
+viewport.**
+Blocker: unruled — which name wins is FT's call, and the fix is one string once
+it is made.
+Pilot: DEBT
+Detail: this entry; CLAUDE.md §5, the Operations row, "Naming ruled 2026-07-13".
+**THE COLLISION A VISITOR ACTUALLY SEES.** The Chrome header reads **Admin** and
+the page heading reads **Operations**, on the same screen, for the same surface.
+**THREE NAMES ARE USER-VISIBLE.** `Admin` (landing card `Landing.jsx:33`, Chrome
+header `Chrome.jsx:27`, roster Type cell via `TYPE_LABELS`, activity chip via
+`SURFACE_DISPLAY_LABELS`); `Internal admin` (landing `sub`, Chrome `role`); and
+`Operations` (the Overview `<h1>`, under the eyebrow "Internal · StewardHouse
+staff").
+**THREE MORE ARE INTERNAL IDENTIFIERS**, and these are LEGACY BY DESIGN rather
+than drift: `operations` (route, directory, Chrome config key, nav keys,
+`--sh-operations-accent`), `ops` (DB `type` enum, `RequireType`, `CURRENT_OPS_USER`,
+`$.ops.demo_gate`, `requireOps`), and `'Operations'` as a DATA VALUE in the
+unified layer, which the surface-colour lookup keys on.
+**`Admin` IS THE RAREST NAME IN THE REPO AND THE ONLY ONE A VISITOR IS GREETED
+WITH:** 9 hits in `src/` against 33 for `Operations`, 54 for `operations` and 22
+for `ops`.
+**THE h1 WAS AN OMISSION FROM THE 2026-07-13 PASS, NOT A DELIBERATE EXCLUSION.
+FT SETTLED THIS 2026-09-07 ON THE RULING'S OWN CONVENTION, NOT ON INFERENCE.**
+The ruling states that sites kept legacy are "docblocked at each site". **Five
+such docblocks exist in `src/` and the Overview `h1` carries none**, so by the
+ruling's own test it was never a considered exclusion. The supporting reading
+follows, and it is corroboration rather than the basis. The ruling's category is
+"surface name **Operations→Admin** at display sites", and it enumerates three:
+Landing card, Chrome header, activity chip. **The Overview `h1` displays the
+surface name and is not among them.** Three things make omission the better
+reading. The ruling used the word "h1" explicitly when it meant the Roster
+view's, so h1s were within its vocabulary. What it kept legacy it listed
+precisely, and that list is **identifiers only** — route paths, nav keys, the DB
+`type` enum — with no display string in it. And it says those legacy sites are
+"docblocked at each site": **five such docblocks exist in `src/`, and none is at
+the Overview `h1`, which carries no naming comment at all.**
+**PILOT DEBT, and the reasoning against the file's own definitions.** A pilot
+user reaches the landing page, so this is not POST. But an inconsistency is not
+a falsehood: every one of the six names is a true name for the thing, and no
+user decision turns on which renders. **Pilot can open with it recorded**, which
+is DEBT.
+**ALSO IN SCOPE HERE: the Operations intro's "provide support" clause.** FT
+ruled 2026-09-07 that it STAYS for now and rides this entry's copy work. It is
+OVERSTATED for a visitor, since every write affordance is behind
+`writesEnabled`, but it is **not false**, which is a different class from the
+access claim corrected the same day. That correction was scoped to the false
+claim deliberately; this is the sentence next to it.
+
+**A120 | The landing page's Enterprise card advertises a Setup flow that P-5
+removed.**
+Blocker: none.
+Pilot: DEBT
+Detail: `Landing.jsx:19`; CLAUDE.md §5.1, P-5.
+**THE STRING:** "For athletic departments and institutions. Includes nested
+compliance, setup, and onboarding flows." **P-5 REMOVED the Setup wizard**
+(`setup/SetupWizard.jsx`, the `EnterpriseSetup.jsx` re-export, and four
+references in `EnterpriseSurface.jsx`), so a stale `/setup` URL now falls to the
+catch-all. Compliance and onboarding remain; **setup does not.**
+**IT IS ON THE FRONT DOOR**, which is the only reason a one-word staleness is
+worth an entry at all.
+**PILOT DEBT, and the reasoning, because a case for BLOCKING exists.** It is a
+false present-tense claim visible to every visitor, which is the shape §5.1
+exists to remove. Against that: the card describes a DEMO on a page that says
+"Choose yours to enter the demo", and it misdescribes what the demo CONTAINS
+rather than asserting anything false about a user's own data or capabilities.
+**No pilot decision turns on it, so pilot can open with it recorded.** The
+classification barely matters for scheduling, since the fix is one word.
 
 **A75 | `docs/bmf-load-scoping.md` cites its own two-preconditions passage one
 line short of where it starts.**

@@ -303,6 +303,19 @@ function OperationsHome() {
         }}>
           Operations
         </h1>
+        {/* The second sentence previously read "This view is internal-only and
+            is never exposed to platform users." FALSE as rendered: /operations
+            is a PUBLIC demo route, ungated exactly like /individual,
+            /enterprise and /advisor (App.jsx). FT ruled 2026-09-07 that the
+            public route is INTENDED, so the sentence changed rather than the
+            routing. The §2.4 demonstrative caveat below does NOT cover this:
+            that caveat is about the DATA being synthetic, and this was a claim
+            about ACCESS. Two assertions, one covered.
+            THE COMMENT LIVES OUTSIDE THE <p> ON PURPOSE. Placed between the two
+            sentences it rendered as "provide support.This is", because JSX
+            splits the text into two children around an expression container and
+            strips the whitespace adjacent to it. Caught by render, not by the
+            bundle grep, which found the string present and correct. */}
         <p style={{
           fontSize: 'var(--sh-text-md)',
           color: 'var(--sh-text-secondary)',
@@ -310,7 +323,7 @@ function OperationsHome() {
           lineHeight: 1.6,
         }}>
           Monitor and support across the customer surfaces. View user activity, surface issues, and provide support.
-          This view is internal-only and is never exposed to platform users.
+          This is a demonstration of the internal view, not the working one.
         </p>
       </div>
 
