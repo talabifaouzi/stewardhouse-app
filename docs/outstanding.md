@@ -1022,6 +1022,60 @@ nothing reads it, so a send failure is discoverable only by a deliberate query
 someone thinks to run. **Same shape, different table, and neither entry pointed
 at the other until now** — a durable record that no process observes. A loader
 that writes a stamp nothing reads would be the third instance of it.
+**RECOVERY IS NOT A SEPARATE ENTRY. IT IS THIS SLICE, ruled 2026-09-07 (R6-R9).**
+Twelve rulings landed on the LOADER rather than on a separate recovery path, so
+the work holds a sequence position for the first time and that position is INSIDE
+this entry. **The reasoning is the one already recorded above for the stamp
+table**: a loader whose swap can leave production wrong, with no retained copy and
+no check that would have refused, ships the quiet-lie failure this project rules
+against, and separating the two invites shipping the loader without them. **A
+separate recovery entry would gate nothing this entry does not already gate.**
+**WHAT THE SLICE NOW OWES, one line each. Full text and reasoning:
+`docs/bmf-load-scoping.md` §15.**
+- **R6** the swap RETAINS rather than drops: live is renamed to a dated name and
+  the aside renamed into place. Undo is two metadata renames, no data movement and
+  no outage. An exported `.sql` was REFUSED as the artifact.
+- **R6a** the undo file is itself a remote `d1 execute --file` and inherits A1's
+  unverified atomicity, so it must be SAFE TO RERUN: target names checked first,
+  so a partial application is re-drivable rather than a third ambiguous state.
+- **R7** THREE generations retained. Each load replaces the previous retained
+  copy, so cost is flat at roughly 303 MB per generation against a 10 GB ceiling.
+- **R8** the loader's PRE-SWAP checks against the aside table GATE the swap: row
+  count in band, distinct EIN equal to row count, non-null on the four
+  nationally-non-null fields, null rate in band on the two nullable ones, and a
+  TREND comparison against retained generations rather than a single prior. Any
+  failure means NO SWAP, the aside left named and stamped failed, live untouched.
+- **R8a** NO OVERRIDE FLAG. Bands change only by editing the loader, committing
+  and rerunning. A wrong block costs investigate-and-rerun with live never
+  touched; a wrongly-permitted swap puts a bad table in production that nothing
+  else would catch. The two costs are not symmetric.
+- **R8b** a POST-SWAP assertion is required as well: live row count matches what
+  was just verified, and the dated table exists under the expected name. Nothing
+  currently validates the swap operation itself.
+- **R8c** PRUNING folds into the loader, dropping the oldest beyond three and only
+  AFTER a verified-good swap. Retention becomes mechanism rather than discipline.
+- **R8d** PROVENANCE beside every hardcoded measurement: the null-rate figures
+  came from one extract at one time, so source and date sit next to the constant.
+  Same shape as A111.
+- **R8e** FIRST-RUN behaviour stated explicitly: the trend check has no baseline
+  until roughly the fourth load, so what runs on loads one through three is
+  defined rather than discovered.
+- **R8f** NO MONITORING SURFACE until Discover exists. Nothing reads the table, so
+  the loader's checks plus the stamp are the COMPLETE detection story for now.
+- **R9** the STAMP CARRIES CHECK RESULTS, not a boolean, and this slice proposes
+  the amended table shape. **It AMENDS a ruled design** rather than filling in an
+  implementation detail: §1 rules completion written last on success only, which
+  separates finished from interrupted and not correct from incorrect.
+**STILL UNRULED, and none of it blocks this entry:** whether a pre-load export is
+acceptable given it is itself an availability event; whether §9's Time Travel
+disqualification covers only BMF swaps or the database's disaster-recovery story
+generally; whether sandbox-before-production ordering becomes a rule and what
+enforces it; and **whether the sandbox's existence reopens §13's option (b)**,
+which was one of the eight open questions on 2026-09-04 and was absent from the
+2026-09-07 list as first delivered. **FT ruled the same day that it STAYS OPEN**,
+neither withdrawn nor resolved, so **the unruled set is FOUR, not three.**
+**NONE OF THIS AUTHORIZES A BUILD SLICE. This entry has still had no scope pass**,
+and the rulings above are inputs to that pass rather than a substitute for it.
 
 **A114 | The BMF sandbox database is authorized and does not exist.**
 Blocker: none. It is FT-run remote work that nothing prevents.
@@ -1160,6 +1214,13 @@ single confirmation, so the next `migrations apply --remote stewardhouse-pilot`
 would carry the BMF table onto production. **Nothing in the tooling scopes a
 migration to one database**, and the shared `migrations/` directory that makes
 R5 lockstep cheap is the same property that makes this unavoidable.
+**R6b, A STANDING CONDITION ON THIS TABLE'S COLUMNS, ruled 2026-09-07.** The
+compliance answer for retaining generations of this table holds BECAUSE the table
+carries only the seven IRS fields. **If it ever carries anything derived, computed
+or enriched, the retained copies stop being copies of a federal file and become
+historical snapshots of StewardHouse's own characterizations**, which is a
+different object and touches §7. Recorded as a CONDITION on any future column
+change, not as a discovery waiting to be made.
 
 ### Cheap and mechanical
 

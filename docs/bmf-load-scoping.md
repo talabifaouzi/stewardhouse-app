@@ -67,6 +67,12 @@ first month it stops being true.
 
 ### The swap, and the finding that it IS atomic in one invocation
 
+**AMENDED 2026-09-07 BY R6: THE DROP IS REPLACED BY A RENAME TO A DATED NAME.**
+What follows describes the swap as DROP-then-RENAME and is kept because its
+atomicity finding is unchanged and still load-bearing. **The live table is no
+longer dropped**; it is renamed to a dated name and retained, three generations
+deep per R7. See §15.
+
 **`0016_athlete_enrollment_status_check.sql` is the in-repo precedent** and does
 exactly this shape at `:39`, `:77`, `:90`, `:92`:
 
@@ -212,7 +218,21 @@ the earlier paragraph said would be required to close it.
 seventeen times inside it. **Storage does not constrain either swap option**,
 which is the gate the swap design fork was waiting on.
 
+**AMENDED 2026-09-07 BY R7: PEAK IS NO LONGER ASIDE-PLUS-LIVE.** Three
+generations are retained, so peak is live plus the aside plus the retained set.
+At the measured 302.57 MiB per copy that is roughly 1.5 GB rather than ~605 MiB,
+still comfortably inside the ceiling, and the conclusion above is unchanged: **at
+no point in the plausible range does storage constrain the design.** Each load
+replaces the oldest retained copy per R8c, so the figure does not grow with time.
+See §15.
+
 ### The stamp table
+
+**AMENDED 2026-09-07 BY R9: THE STAMP CARRIES CHECK RESULTS, NOT A BOOLEAN.**
+What follows is kept as ruled, and the completion rule below still holds. What
+changes is that completion alone separates finished from interrupted and NOT
+correct from incorrect, so the row also carries the R8 check results. The amended
+shape is proposed by A113's scope pass. See §15.
 
 The four ruled parts, **one row per source**, because BMF, the revocation list
 and Pub 78 refresh on independent cadences and a single stamp would assert one
@@ -1128,6 +1148,138 @@ item without moving it.
 **The planned API is not a plan.** No date, no shape, no commitment beyond an
 intention to publicize. It is recorded so a future reader knows to check, not so
 that anything waits on it.
+
+## 15. Recovery, ruled 2026-09-07
+
+Twelve rulings. **They landed on the LOADER rather than on a separate recovery
+path**, which is why no recovery entry was filed: the work's sequence position is
+inside A113. §1's swap model, stamp table and peak-storage figure carry amendment
+markers pointing here.
+
+### R6. The backup artifact is a RETAINED DATED TABLE, not an exported `.sql`
+
+Unanimous team recommendation, FT deferred to it. **The deciding argument is that
+`d1 export --remote` is itself an availability event**, warning in wrangler's own
+words that the database will be unavailable to serve queries. So back-up-then-load
+is TWO outage windows rather than one, and recovery from an export is a full
+re-import, which reruns the very operation being recovered from.
+
+**Undo is two renames on metadata**: no data movement, no outage, no re-parse.
+
+### R6a. CONDITION on R6: the undo file must be safe to rerun
+
+The undo file is itself a remote `d1 execute --file`, so **it carries the same
+unverified atomicity as the load** (§7, and open item 1). It must therefore check
+target names FIRST, so that a partial application can be re-driven rather than
+leaving a third ambiguous state that is neither the old table nor the new one.
+
+### R6b. CONDITION on R6: the compliance answer depends on the seven fields
+
+**The compliance answer holds BECAUSE the table carries only the seven IRS
+fields.** If it ever carries anything derived, computed or enriched, the retained
+copies stop being copies of a federal file and become **historical snapshots of
+StewardHouse's own characterizations**, which is a different object and touches
+§7. **Recorded as a condition on any future column change, not as a discovery
+waiting to be made.** Also recorded on A117, which defines the table.
+
+### R7. Retain THREE generations
+
+**Cost is flat across the plausible range.** Each load replaces the previous
+retained copy, so the retained set does not grow with time: roughly 303 MB per
+generation against a 10 GB ceiling. **Three buys a wider window to notice a
+problem at no marginal cost.**
+
+### R8. The loader's own checks GATE the swap
+
+Run PRE-SWAP, against the aside table:
+
+- row count within a band;
+- distinct `EIN` count EQUAL to row count;
+- non-null on the four fields measured non-null nationally;
+- null rate on the two nullable fields within a band of the measured 29.08% and
+  29.35%;
+- a TREND comparison against retained generations rather than a single prior.
+
+**Any failure means NO SWAP.** The aside table is left named and stamped failed,
+and live is untouched.
+
+### R8a. NO override flag
+
+**A failed check cannot be bypassed at runtime.** Bands are changeable only by
+editing the loader, committing and rerunning.
+
+**The reasoning is an asymmetry.** The cost of a wrong block is
+investigate-and-rerun, which is cheap precisely because live was never touched.
+The cost of a wrongly-permitted swap is a bad table in production that nothing
+else would catch.
+
+### R8b. POST-SWAP assertion required, not only pre-swap checks
+
+Row count on the LIVE table matches what was just verified, and the dated retained
+table exists under the expected name. **Nothing currently validates the swap
+operation itself**, only the data going into it.
+
+### R8c. Pruning folds into the loader
+
+After a verified-good swap the loader drops the oldest generation beyond three.
+**Retention becomes mechanism rather than discipline**, and the drop only ever
+runs after a verified swap.
+
+### R8d. Provenance next to any hardcoded measurement
+
+The null-rate figures were measured from ONE extract at ONE time. **Source and
+date go next to the constant.** Same shape as A111.
+
+### R8e. First-run behaviour defined explicitly
+
+The trend check has no baseline until roughly the fourth load. **What runs on
+loads one through three is stated rather than left to be discovered.**
+
+### R8f. No monitoring surface until Discover exists
+
+Nothing reads the table. **The loader's checks plus the stamp are the COMPLETE
+detection story for now**, and that is a deliberate stopping point rather than an
+omission.
+
+### R9. The stamp carries CHECK RESULTS, not a boolean, and the upgrade rides A113
+
+§1 rules one row per source with completion written LAST and on success only,
+which distinguishes finished from interrupted **but not correct from incorrect**.
+The row therefore also carries the R8 results. **A113's scope pass proposes the
+amended table shape as part of the slice.**
+
+**This AMENDS a ruled design and is recorded as an amendment, not as an
+implementation detail.**
+
+### Still unruled — FOUR
+
+None of these blocks the loader build.
+
+1. Whether a **pre-load export** is acceptable given it is itself an availability
+   event.
+2. Whether **§9's Time Travel disqualification** covers only BMF swaps or the
+   database's disaster-recovery story generally.
+3. Whether **sandbox-before-production ordering** becomes a rule, and what
+   enforces it given nothing in this repository is machine-enforced.
+4. Whether the **sandbox's existence reopens §13's option (b)**. This was one of
+   the eight open questions of 2026-09-04 and was absent from the 2026-09-07 list
+   as first delivered. **FT ruled the same day that it STAYS OPEN** — neither
+   withdrawn nor resolved — which is why this set is FOUR rather than three.
+   **The reasoning:** §13 rejected a second database as a way to dodge the import
+   window, and R2 authorized one as a test venue, which are not in conflict.
+   **But the overhead §13 priced is now being paid anyway**, and whether that
+   changes the availability calculus is unanswered.
+
+### Not a recovery question, surfaced and NOT filed
+
+**There is no user-facing plan for the outage window post-pilot.** No record of
+what a user is told, of expected duration, or of whether anyone is notified.
+Verified 2026-09-07 as unfiled everywhere: zero hits for outage, downtime,
+maintenance or notification across the OPEN queue, and nothing in `docs/` or
+CLAUDE.md. **§13 rules what the SOFTWARE RENDERS** during the window, a retry
+state rather than a redirect, which is a rendering behaviour and not a plan for
+telling anyone. **Pre-pilot it is a non-issue.** Held unfiled pending an FT
+ruling.
 
 ## Open items
 
