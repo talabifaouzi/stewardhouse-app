@@ -2054,6 +2054,34 @@ figures.** Specifically **a quoted EIN carrying a leading zero**, because §5
 already warns a quoting bug hides at six-in-278,014 density and §2's EIN quoting
 HARD REQUIREMENT lives in this slice.
 
+**R21b ANSWERED 2026-09-08, AND THE ANSWER IS RECORDED HERE RATHER THAN ONLY IN
+THE ENTRY THAT ASKED IT.** The question — which assertion form R21b takes — was
+filed as A123 in `docs/outstanding.md` and closed when slice 1 shipped. **The
+answer is relocated here BEFORE that closure**, because closing an entry deletes
+it and this ruling outlives the act of answering.
+
+**THE ASSERTION IS ON VALUE AND LENGTH. NEVER ON `typeof`.** The scratch table
+declares `ein TEXT`, which is the affinity floor: measured 2026-09-08, all three
+TEXT-affinity forms — `TEXT NOT NULL PRIMARY KEY`, `TEXT NOT NULL`, and bare
+`TEXT` — store 8 characters for an unquoted literal and 9 for a quoted one, so
+the constraints are irrelevant and only the affinity matters. **`INTEGER` and
+`NUMERIC` destroy the leading zero EVEN WHEN THE SQL IS CORRECTLY QUOTED**, so a
+column drifted there fails on correct output.
+
+**WHY `typeof` IS EXCLUDED IS STRONGER THAN "IT VARIES".** A123 filed it as
+varying across otherwise-permitted variants, which is true — an untyped column
+reports `integer` where the shipped shape reports `text` for the same input.
+Measured on the shape that ships, it is worse: **on `ein TEXT`, `typeof` returns
+`text` for BOTH the correct quoted emission and the defective unquoted one.** It
+does not merely vary; on this table it carries no signal at all, so an assertion
+on it would be a check that CANNOT FAIL. That is the R16 tautology shape, and it
+is why the exclusion is structural rather than cautionary.
+
+**PROVEN IN THE VERIFIER'S OWN SELF-TEST**, which runs first and refuses the
+whole run if any instrument cannot discriminate: it asserts the item PASSES on a
+quoted EIN and FAILS on an unquoted one, and demonstrates the `typeof` result on
+both arms rather than asserting it. `scripts/bmf-verify-slice1.mjs`.
+
 ### R22. Slice 1 proves against a FRESH download, not the 2026-08 extract
 
 **Forced by evidence rather than chosen.** The 2026-08 extract is not obtainable:
