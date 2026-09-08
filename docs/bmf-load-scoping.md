@@ -25,6 +25,20 @@ target because closing one deletes it.
 
 **Next number is `0019`.** The tree runs `0001` through `0018`, contiguous.
 
+**CORRECTED 2026-09-08: THE SENTENCE ABOVE IS FALSE, AND IT IS A FALSE MECHANISM
+RATHER THAN A STALE FIGURE, WHICH IS WHY NO NUMBER REPLACES IT.** It is quoted
+rather than edited, the same treatment R29 gave §2's `escapeSql` sentence, so the
+correction is visible where the false claim sits. The tree runs `0001` through
+`0022`, observed 2026-09-08. **The migration this sentence anticipates SHIPPED AS
+`0022_bmf_table.sql` and is applied to BOTH databases**, `bmf-sandbox` and
+`stewardhouse-pilot`, so §1 is no longer waiting on a next number and correcting
+`0019` to `0023` would be wrong in kind: it would answer a question this section
+has stopped asking. **Line 20 of this same section already cites
+`migrations/0022_bmf_table.sql`**, six lines above, so the section contradicted
+itself for a day and the contradiction was visible in one screen. Contiguity is
+OBSERVED, never tool-checked — CLAUDE.md §10 records that nothing in wrangler
+validates it.
+
 ### A new table, not the existing `org` table
 
 `org` already exists at `migrations/0001_initial.sql:94-105`: `id TEXT PK`,
@@ -65,6 +79,38 @@ The seven ruled columns: `NAME`, `EIN`, `CITY`, `STATE`, `REVENUE_AMT`,
 **Absent must stay distinguishable from zero.** The selectable no-figure group
 in the surface spec depends on it, and folding absent into zero would assert a
 filing that does not exist.
+
+**AND THE EMPTY-STRING BRANCH MUST PRECEDE NUMERIC CONVERSION, RULED 2026-09-08.
+THIS IS A REQUIREMENT ON THE LOADER, NOT A NOTE, and it lives here rather than on
+A113 for §2's fuse reasoning:** A113 closes the moment the loader exists, which is
+exactly when this starts mattering on every subsequent load, so a requirement
+recorded only in the artifact that disappears at first compliance is a requirement
+with a fuse on it.
+
+**THE MECHANISM.** `REVENUE_AMT` is null on 569,235 rows of the measured extract,
+and an absent CSV field arrives as the EMPTY STRING. **`Number('')` is `0`, not
+`NaN`.** So if numeric conversion runs BEFORE an emptiness branch, an absent
+revenue becomes the number `0` — which is exactly what the paragraph above
+forbids.
+
+**A VALUE EMITTER CANNOT CATCH IT AFTERWARD.** The one value-literal helper in the
+tree, `scripts/provision-institution.mjs:74-78`, tests emptiness as `v === ''`,
+which a converted `0` no longer satisfies; `0` is a number and takes the number
+branch, emitting a bare `0`. Measured 2026-09-08 against that function as written:
+`sqlVal('')` returns `NULL` and `sqlVal(0)` returns `0`. **Both are correct for
+their inputs**, and the defect is entirely in which one the value has become by
+the time it arrives.
+
+**IT IS SILENT AT EVERY LAYER.** A `0` in an INTEGER column is a legal value, so no
+constraint fires. §5's null-count check would report a null count LOWER than
+measured — and R18 has already ruled those exact counts are provenance rather than
+a recurring test, so on a fresh extract nothing compares it against anything.
+
+**STRUCTURALLY IDENTICAL TO R29, ONE STEP EARLIER.** R29 rules the nullable columns
+branch BEFORE escaping and emit the bare keyword `NULL`. This is the same shape
+moved back one stage: **the empty-string branch must precede CONVERSION, not merely
+precede escaping.** A loader that gets R29 right and this wrong emits a
+syntactically perfect file asserting 569,235 filings that do not exist.
 
 **`EIN` is the primary key and its uniqueness is RE-ASSERTED PER LOAD, never
 assumed.** It was measured unique across the correct file set (1,957,340 rows,
@@ -402,6 +448,51 @@ prefix.
 **NO SCHEMA CONSTRUCT PREVENTS IT.** Not the type, not the key, not a CHECK. It
 is a property of how the loader emits values, which is why it lives in the script
 contract.
+
+**HOW `ein` IS PREVENTED FROM REACHING A NUMERIC EMISSION PATH AT ALL, RULED
+2026-09-08. THIS IS PART OF THE REQUIREMENT ABOVE, not a separate note**, and it
+is here for the same fuse reasoning that put the requirement here: recorded only
+on A113 it would disappear at first compliance, which is when it starts mattering.
+
+**THE REQUIREMENT ABOVE SAYS EVERY `EIN` IS EMITTED QUOTED. IT DOES NOT SAY WHAT
+STOPS A GENERIC EMITTER FROM UNQUOTING IT**, and a generic emitter is the obvious
+shape to reach for.
+
+**THE OBSERVED BEHAVIOUR.** `scripts/provision-institution.mjs:74-78` is the only
+value-literal helper in the tree. Its second branch is
+`if (typeof v === 'number') return String(v);`, so a numeric value is emitted
+UNQUOTED. Measured 2026-09-08 against the function as written: `sqlVal(42103594)`
+returns `42103594`, bare.
+
+**FOR TWO COLUMNS THAT IS CORRECT.** `revenue_amt` is `INTEGER` and `ruling` is
+`INTEGER NOT NULL` (`migrations/0022_bmf_table.sql:60-61`), and both want a bare
+numeric. **The number branch is not a defect; it is right for two of the seven and
+catastrophic for one.**
+
+**FOR `ein` IT IS THIS SECTION'S VIOLATION, PRODUCED BY THE EMITTER ITSELF.**
+Verified 2026-09-08 against the shipped `bmf` shape: the unquoted form stores
+`42103594` at **length 8**, the quoted form stores `042103594` at **length 9**,
+`typeof` is `text` in BOTH cases, and **no error of any kind** is raised on either
+— which is the finding stated at the head of this requirement, now traced to a
+specific mechanism rather than left as a property of hand-written SQL.
+
+**SO `ein` MUST NEVER REACH A `typeof v === 'number'` TEST.** Whatever emits it
+must treat it as text unconditionally, and any numeric conversion applied to the
+seven columns must exclude it by name rather than by inspecting its runtime type.
+
+**R29 DOES NOT COVER THIS.** R29 rules the NULL path — nullable columns branch
+before escaping and emit the bare keyword `NULL`. **Nothing ruled the NUMBER
+path**, and the reason this requirement is HARD applies to it unchanged: every R8
+check passes, because truncated EINs stay unique and stay non-null.
+
+**CONCENTRATION AND TYPE-DISCRIMINATION PULL IN OPPOSITE DIRECTIONS HERE, and that
+tension is recorded rather than resolved.** The argument for putting all seven
+columns through ONE small emitter is that this requirement is invisible to every
+R8 check, so the only defence is having exactly one place to get it wrong. **That
+argument is intact.** What the measurement adds is that a single GENERIC emitter,
+dispatching on runtime type, is itself the mechanism by which `ein` reaches the
+number branch. One place to get it wrong is only a defence if that place
+discriminates by COLUMN and not by TYPE.
 
 **R29, CORRECTED 2026-09-07: THE TWO PRECEDENTS DIFFER, AND THE DIFFERENCE IS
 DANGEROUS.** This paragraph read: "`escapeSql` in both precedents

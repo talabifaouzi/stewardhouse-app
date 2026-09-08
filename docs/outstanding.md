@@ -22,44 +22,77 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 109 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 112 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
-BMF-and-Discover 10, cheap-and-mechanical 32, large 35, and
+BMF-and-Discover 13, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-07: ONE ENTRY CLOSED, THE FIRST MOVEMENT
-AFTER THREE CONSECUTIVE ZEROS.** A117, the BMF table migration, closed under R15
-once the file was written and applied to both databases and its one standing
-remainder, R13a regeneration, moved to A113 — the slice that can discharge it.
-**So OPEN goes 110 → 109, BLOCKING 22 → 21**, A117 having been BLOCKING; DEBT
-stays 61 and POST stays 27; the breakdown becomes
-7 + 15 + 7 + 10 + 32 + 35 + 3 = 109, the BMF-and-Discover tier being the one that
-loses it; the restatement further down becomes "sum to 109"; and the
-counsel-gated line becomes FOUR OF THE TWENTY-ONE.
-**and the build chain becomes 17.** It was flagged unverified in the superseded
-block and is now checked: the definition, stated once at "the chain is BLOCKING
-minus the four counsel-gated items", gives 21 − 4 = 17. All four of A47, A84,
-A68 and A110 were confirmed present, inside OPEN, and still carrying
-`Pilot: BLOCKING, and counsel-gated`.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-08: THREE ENTRIES FILED, TWO EMISSION
+CONSTRAINTS RELOCATED INTO THE SCOPING DOC, AND THREE HEADER FIGURES REPAIRED.**
+The 2026-09-08 slice-1 scope pass surfaced five findings. **Three became entries**
+— A123 R21b's assertion form, A124 the missing definition of done, A125
+`bmf_aside` having no DDL — because each is a genuine fork that BLOCKS the build
+rather than a constraint the build satisfies. **Two did not**, and where they went
+is item 3 below.
+**So OPEN goes 109 → 112, BLOCKING 21 → 23 and DEBT 61 → 62**; POST stays 27; the
+breakdown becomes 7 + 15 + 7 + 13 + 32 + 35 + 3 = 112, the BMF-and-Discover tier
+taking all three; the restatement further down becomes "sum to 112"; and the
+counsel-gated line becomes FOUR OF THE TWENTY-THREE.
+**and the build chain becomes 19.** The definition is unchanged — BLOCKING minus
+the four counsel-gated items — and gives 23 − 4 = 19. **A47, A84, A68 and A110
+were re-confirmed by execution**, not recall: all four present, all four inside
+OPEN, all four still carrying `Pilot: BLOCKING, and counsel-gated`.
+**THE TWO BLOCKING CLASSIFICATIONS ARE INHERITED FROM A113, NOT INDEPENDENTLY
+RULED**, and this says so because the field is required and filing an entry is not
+ruling on it. A123 and A125 are preconditions inside A113, which is BLOCKING; A124
+is a record-keeping finding and is DEBT. **FT may reclassify any of the three
+without that being a correction.**
+**ITEM 3, AND ITS GROUND IS RECORDED SO A LATER READER DOES NOT MOVE IT BACK.**
+The other two findings — how `ein` is kept off any numeric emission path, and the
+empty-string branch preceding numeric CONVERSION — are CONSTRAINTS ON EMISSION
+that close the moment slice 1 is built correctly, so neither is independent work
+and neither is an entry. **They are not housed on A113 either**, on §2's own fuse
+reasoning: A113 closes when the loader exists, which is exactly when both start
+mattering on every subsequent load, and **a requirement recorded only in the
+artifact that disappears at first compliance is a requirement with a fuse on it.**
+They now live in `docs/bmf-load-scoping.md` §2 and §1 respectively, beside the
+rules they qualify, and A113 REFERENCES both by section pointer without holding
+the evidence. **A121 and A122 were drafted as entries and never filed**, which is
+why the A-ids skip from A120 to A123; the gap is deliberate and is recorded here
+rather than left to be rediscovered.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. The entry it replaced recorded the third consecutive zero and
-the observation that an entry can be unblocked and unmoved at the same time,
-because the count tracks what is OPEN and not what is READY — which is still
-true, is filed as an observation in `docs/session-log.md`, and remains unruled.
-**THIS CHANGE ALSO REPAIRS FIVE SITES THE A117 CLOSURE COMMIT (`1825e05`) LEFT
-STALE**, and that is recorded rather than quietly fixed. That commit updated the
-"sum to" restatement and nothing else in this header, so "As committed" still
-read 110, the breakdown still read 11 for BMF-and-Discover, this arithmetic block
-still said nothing moved, and the counsel-gated line still said TWENTY-TWO.
-**The per-change cadence ruled at FJ-6 was followed in the body and missed in the
-header.**
+than-append rule. It recorded the A117 closure, the first movement after three
+consecutive zeros, and the five sites that closure left stale.
+**TWO STALE FIGURES IN THIS HEADER ARE ALSO REPAIRED, and both were diagnostic
+rather than headline.** The enumerator paragraph read "returns 105 rather than
+107" and the FJ-7 diagnostic read "returns 60 rather than 59"; at HEAD before this
+change they were 107 against 109 and 62 against 61. **Both MECHANISMS were
+re-verified and both hold** — the gap is still exactly A50a and A50b, and the
+file-wide extra is still FJ-7's own `Pilot: DEBT` line inside FOUNDER JUDGMENT.
+Only the levels had drifted, by two in each case, which is the event-versus-state
+pattern this header already names.
+**A THIRD FIGURE WAS CORRECTED BY DATED NOTE RATHER THAN BY REPLACEMENT, because
+it is a FALSE MECHANISM and not a stale number.**
+`docs/bmf-load-scoping.md:26` reads "Next number is `0019`. The tree runs `0001`
+through `0018`, contiguous", against a tree running `0001` through `0022`. **No
+replacement number is correct**: the migration that sentence anticipates shipped
+as `0022_bmf_table.sql` and is applied to both databases, so §1 has stopped asking
+the question. The original is preserved and marked corrected, the treatment R29
+gave §2's `escapeSql` sentence.
+**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: A8, A113, A115 and A116 as
+plain-numeric entry headers; A50a and A50b as letter-suffixed headers, PRINTED and
+then asserted to match the suffix-aware pattern and NOT the naive one; a mid-line
+`**A50a | ` string asserted to match neither; three known-positive `Pilot:` lines
+against a backticked-inline negative; the BMF-and-Discover subsection counting 10
+before this change; and A123, A124 and A125 confirmed to have zero mentions
+anywhere in the file before being used.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 105 rather than 107, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 110 rather than 112, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 60
-rather than 59, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 63
+rather than 62, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count. The controls used here were A8, A113, A114, A115 and A116 as entry
 headers, and the BMF-and-Discover subsection counting 11 before this change.
@@ -68,15 +101,15 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 21 BLOCKING, 61 DEBT, 27 POST**, classification ruled
-2026-09-02 and the totals re-derived 2026-09-07,
+**AGAINST THE PILOT GATE: 23 BLOCKING, 62 DEBT, 27 POST**, classification ruled
+2026-09-02 and the totals re-derived 2026-09-08,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 109. The sentence
+totals above, which remain a count of OPEN entries and sum to 112. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -115,7 +148,7 @@ STATE is a live count wearing a date**, and must be maintained or it lies. The
 parenthetical here dated the CLASSIFICATION ACT, which is genuinely fixed at
 2026-09-02; the TOTALS were never fixed, and pairing the two made a live count
 look archival. **The date has been moved off the totals and onto the act.**
-**FOUR OF THE TWENTY-ONE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
+**FOUR OF THE TWENTY-THREE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
 BY BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not
 one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
@@ -1194,6 +1227,23 @@ separate recovery entry would gate nothing this entry does not already gate.**
   the amended table shape. **It AMENDS a ruled design** rather than filling in an
   implementation detail: §1 rules completion written last on success only, which
   separates finished from interrupted and not correct from incorrect.
+**TWO EMISSION CONSTRAINTS ALSO BIND THIS SLICE, AND THIS ENTRY POINTS AT THEM
+RATHER THAN HOUSING THEM (FT-ruled 2026-09-08).** Both were surfaced by the
+2026-09-08 scope pass, both close the moment the loader is built correctly, and
+neither is independent work — so neither is a standalone entry. **They are NOT
+housed here either**, on §2's own fuse reasoning: this entry CLOSES when the
+loader exists, which is exactly when both start mattering on every subsequent
+load, and a requirement recorded only in the artifact that disappears at first
+compliance is a requirement with a fuse on it. The evidence lives in the durable
+sections beside the rules it qualifies.
+- **How `ein` is kept off any numeric emission path**, which R29 does not cover
+  because R29 rules the null path only: `docs/bmf-load-scoping.md` §2, inside the
+  EIN quoting HARD REQUIREMENT.
+- **The empty-string branch precedes numeric CONVERSION**, `Number('')` being `0`
+  rather than `NaN`: `docs/bmf-load-scoping.md` §1, beside "Absent must stay
+  distinguishable from zero".
+**A READER MOVING EITHER ONE BACK ONTO THIS ENTRY WOULD BE RE-ARMING THE FUSE**,
+which is why the ground is stated here and not only there.
 **STILL UNRULED, and none of it blocks this entry:** whether a pre-load export is
 acceptable given it is itself an availability event; whether §9's Time Travel
 disqualification covers only BMF swaps or the database's disaster-recovery story
@@ -1357,6 +1407,99 @@ comparison target. **Its title was corrected three times in one day**, reading
 "is not written", then "APPLIED NOWHERE", then "APPLIED TO THE SANDBOX, NOT TO
 LIVE"; each was true when written, which is the system working rather than a
 record that kept being wrong.
+
+**A123 | R21b's assertion form determines how much scratch-shape drift the check
+tolerates.**
+Blocker: unruled, and downstream of A125.
+Pilot: BLOCKING
+Detail: `docs/bmf-load-scoping.md` §15 R21b and R27.
+**MEASURED 2026-09-08**, in-memory `node:sqlite`, the control being §2's own
+documented result on the shipped shape.
+**LEADING-ZERO PRESERVATION IS A PROPERTY OF TEXT AFFINITY**, not of the PRIMARY
+KEY and not of `NOT NULL`. `ein TEXT NOT NULL PRIMARY KEY`, `ein TEXT NOT NULL`
+and `ein TEXT` behave IDENTICALLY on both the quoted and the unquoted path:
+unquoted stores 8 characters, quoted stores 9, `typeof` `text` throughout.
+**THE ASSERTION FORM IS WHAT VARIES.** On an UNTYPED column, which SQLite gives
+BLOB affinity, the unquoted literal stores `typeof` `integer` where the shipped
+shape stores `text` — same value, same length, different type. **So an assertion
+written on `typeof(ein)` passes on the shipped shape and FAILS on an untyped
+scratch column for the same input**, while an assertion on `length` or on the
+VALUE is stable across every TEXT-affinity variant.
+**AND ONE DRIFT DIRECTION IS WORSE.** `ein INTEGER` and `ein NUMERIC` destroy the
+leading zero EVEN WHEN THE SQL IS CORRECTLY QUOTED, storing 8 characters. A
+scratch column drifted there would fail correct output.
+**WHAT A SCRATCH SHAPE CANNOT DO WITHOUT THE CONSTRAINTS.** Measured in the same
+run: without the PK a duplicate `ein` is ACCEPTED and `index_list` is empty, so
+such a table can observe neither R10b's INSERT-time rejection nor R16's
+`aside_schema_pk`.
+**FILED AS THE QUESTION, NOT THE ANSWER:** which assertion form R21b takes, and
+therefore how far the verifier's scratch shape may differ from the aside's.
+
+**A124 | Slice 1's definition of done does not exist, and a session-open summary
+asserted it did.**
+Blocker: R21a requires it written BEFORE the slice is built. Nobody has written
+it.
+Pilot: DEBT
+Detail: `docs/bmf-load-scoping.md` §15 R21a and R22; A113 above.
+**R21a: "SLICE 1's DEFINITION OF DONE IS WRITTEN BEFORE IT IS BUILT, or it
+drifts."**
+**IT IS NOT WRITTEN.** Verified at HEAD 2026-09-08: `git grep -in 'definition of
+done'` returns three hits and none is a list — R21a's own heading, A113 restating
+it, and A113's note that R22 changed it. A113 carries ZERO numbered items; its
+only enumerated block is eleven bullets headed "WHAT THE SLICE NOW OWES", which
+are R6 through R9 and govern the loader as a whole.
+**A 2026-09-08 SESSION-OPEN MESSAGE ASSERTED OTHERWISE, TWICE.** It asserted A113
+carried a definition of done of SEVENTEEN items in FOUR groups, and asserted A113
+was SCOPED. Neither holds. A113's own closing state reads "**SO THE ENTRY'S STATE
+IS: UNBLOCKED, FULLY RULED, NOT SCOPED.**"
+**CAUGHT AT THE FIRST LINK, AND THAT IS THE FILING.** The standing instruction to
+verify at HEAD by execution rather than from a summary is what caught it: the
+assertion was checked against the tree before any work rested on it, and it
+failed on the first check. **A111 is the neighbour** — a false claim propagating
+through four links until it reached a ruling, recorded at CLAUDE.md §5.1 — and
+this is the same claim shape stopped at link one.
+**WHY IT IS FILED AT ALL, GIVEN NOTHING WAS ACTED ON.** The count and the
+grouping were specific enough to be usable, and a session not told to verify at
+HEAD would have had no reason to doubt them. **What made the difference was an
+instruction, not a document**, and instructions do not persist across sessions
+the way filings do.
+
+**A125 | `bmf_aside` has no DDL anywhere in the tree, and three rulings depend on
+it existing.**
+Blocker: unruled. The fork is FT's.
+Pilot: BLOCKING
+Detail: `docs/bmf-load-scoping.md` §15 R13, R16a, R24 and R27; A113's D5 item (2)
+above.
+**VERIFIED AT HEAD 2026-09-08.** `git grep -n 'bmf_aside'` returns six hits: four
+in `docs/bmf-load-scoping.md`, one COMMENT at `migrations/0022_bmf_table.sql:111`,
+and one code line — `scripts/d1-window-generate.mjs:36`,
+`const LIVE = 'bmf', ASIDE = 'bmf_aside';`. **No `CREATE TABLE bmf_aside`
+exists.**
+**THREE RULINGS MEET AT IT.** R24 rules the emitted INSERTs target `bmf_aside`.
+R27 permits an in-memory `node:sqlite` check and calls it "the cheapest available
+proof that the emitted file is loadable at all". **A load requires the target to
+exist**, and nothing says what creates it or with what shape.
+**AUTHORITY IS ASSIGNED TO SOMETHING THAT DOES NOT EXIST.** R13 rules the LOADER
+authoritative for the DDL, carrying "the full table definition as a single named
+constant". R16a states "the loader builds the aside from its own constant and
+nothing currently checks that the constant produced what it claims". A113's D5
+item (2) describes it in the FUTURE TENSE — "the aside DDL this slice builds on
+EVERY run" — so of D5's three places the ruled shape must live, only (1) and (3)
+exist at HEAD.
+**NO RULING PLACES IT IN A SLICE.** R21 defines slice 1 as "parse and emit, no
+database contact". R6a, R14, R24 and R27 name no slice and assign no DDL
+authority; R16a names "the loader", which R21 has since split.
+**THE ONE EXISTING IMPLEMENTATION IS RESIDUE.**
+`scripts/d1-window-generate.mjs:85` emits
+`CREATE TABLE bmf_aside (ein TEXT NOT NULL, ...)` with no primary key and no
+indexes — the shape R10e flags as producing lower-bound measurements — and its
+tail still uses the DROP that R6 replaced with a rename.
+**AND A DIRECT COMPARISON IS ALREADY REFUSED AS THE MECHANISM.** R8b: "A PRE-SWAP
+SCHEMA COMPARISON WAS REFUSED AS THE PRIMARY MECHANISM… comparing the aside
+against the live table validates nothing on load ONE, because live is the empty
+table the migration created."
+**FILED AS AN OPEN SCOPING QUESTION. No options are enumerated here and none is
+recommended.**
 
 ### Cheap and mechanical
 
