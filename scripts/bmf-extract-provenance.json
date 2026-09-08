@@ -1,0 +1,24 @@
+{
+  "extracts": {
+    "2026-09-07": {
+      "capturedAt": "2026-09-08T14:32:03.304Z",
+      "fileSet": "five",
+      "header": "EIN,NAME,ICO,STREET,CITY,STATE,ZIP,GROUP,SUBSECTION,AFFILIATION,CLASSIFICATION,RULING,DEDUCTIBILITY,FOUNDATION,ACTIVITY,ORGANIZATION,STATUS,TAX_PERIOD,ASSET_CD,INCOME_CD,FILING_REQ_CD,PF_FILING_REQ_CD,ACCT_PD,ASSET_AMT,INCOME_AMT,REVENUE_AMT,NTEE_CD,SORT_NAME",
+      "headerColumns": 28,
+      "bytes": {
+        "eo1": 48801736,
+        "eo2": 126120380,
+        "eo3": 165307146,
+        "eo_xx": 418534,
+        "eo_pr": 449348
+      },
+      "lastModified": {
+        "eo1": "Mon, 07 Sep 2026 04:11:46 GMT",
+        "eo2": "Mon, 07 Sep 2026 04:11:49 GMT",
+        "eo3": "Mon, 07 Sep 2026 04:11:55 GMT",
+        "eo_xx": "Mon, 07 Sep 2026 04:13:27 GMT",
+        "eo_pr": "Mon, 07 Sep 2026 04:13:14 GMT"
+      }
+    }
+  }
+}
