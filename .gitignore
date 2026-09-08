@@ -23,3 +23,4 @@ bmf-synthetic*.sql
 *.jsonl
 QUEUE.md
 .bmf-cache/
+scripts/*.tmp.json
