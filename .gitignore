@@ -22,3 +22,4 @@ bmf-synthetic*.sql
 *.sqlite
 *.jsonl
 QUEUE.md
+.bmf-cache/
