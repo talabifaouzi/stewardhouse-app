@@ -2049,6 +2049,76 @@ drifts.** Its output is a roughly 152 MB gitignored artifact that goes nowhere
 until slice 2 exists, **so "done" is a file on disk and a set of numbers
 matching — not a working feature.**
 
+**R21a's LIST, RELOCATED HERE 2026-09-08. FIFTEEN ITEMS.** R21a above is the
+ruling that requires the definition to exist, so it is where a reader who finds
+the ruling must find the list without hunting further. **A113 was rejected as
+the home** for the fuse reason that moved A121 and A122 out of it: A113 closes
+when the loader exists, and this is a permanent record of what was proven rather
+than a checklist that expires. **A standalone file was rejected** as a third
+place to look.
+
+**THE TIMING REQUIREMENT WAS MET BY THE COMMIT BODIES; THE DURABILITY
+REQUIREMENT IS MET BY THIS RECORD.** The fifteen were ruled BEFORE any of the
+three scripts was written, which is what R21a demands, and they were relocated
+here afterward. Until this entry they lived only in four commit bodies on `main`
+and in no tracked document, which is what A126 filed.
+
+**THE PROVENANCE OF EACH ITEM IS STATED, IN THREE CLASSES, AND THE LIST IS NOT
+SMOOTHED.** The classes are not equally trustworthy and a later reader must be
+able to tell them apart. **The unevenness is the evidence**, not an untidiness
+to be cleaned up on a later pass.
+- **(a) RECOVERED FROM COMMIT BODIES.** Extracted by execution from
+  `d4b24de`, which labels them parenthetically. The label is quoted VERBATIM.
+- **(b) DESCRIBABLE FROM COMMIT PROSE.** The bodies discuss these without ever
+  stating them as requirements. Items 9 and 10 are the weakest: they appear
+  TOGETHER in a single sentence that implies both subjects and states neither
+  requirement.
+- **(c) SUPPLIED BY FT FROM THE RATIFICATION.** Recoverable from NO tracked
+  artifact. These came from the conversation in which they were ratified, which
+  is exactly the failure A126 names, met while trying to discharge it.
+
+| # | Item | Grounding | Script | Provenance |
+|---|---|---|---|---|
+| 1 | `.bmf-cache/` exists, gitignored, holds the extract | R19 | fetch | **(a)** "the .bmf-cache download" |
+| 2 | The cache carries a marker naming which extract it holds | R19a | fetch | **(a)** "R19a's marker" |
+| 3 | One emitted `.sql` file exists, gitignored | §2 under R28 | parse | **(c)** |
+| 4 | A JSON sidecar sits beside it | R25 | parse | **(c)** |
+| 5 | A stdout summary is printed | R25 | parse | **(c)** |
+| 6 | File set is four or five, never six, checked FIRST | §3 | fetch | **(a)** "file set, checked first" |
+| 7 | Byte counts frozen as a DATED record | R26 | fetch | **(a)** "byte counts frozen as a dated record" |
+| 8 | Every header equals the 28-column string, and that string is CAPTURED | §3, R26 | fetch | **(a)** "the 28-column header asserted and captured" |
+| 9 | Zero malformed rows | R22a | parse | **(b)** see the limit below |
+| 10 | Row count equals distinct `EIN` count | R22a, §1 | parse, verify | **(b)** |
+| 11 | Per-file contributions sum to the total | R22a | parse, verify | **(c)** |
+| 12 | Zero null `RULING` | R22a | parse, verify | **(c)** |
+| 13 | The `REVENUE_AMT` sum over non-null rows, PRODUCED at parse | §5 | parse, verify | **(b)** "item 13's revenue sum" |
+| 14 | The captured leading-zero EIN round-trips: VALUE and LENGTH, never `typeof` | R21b, A123 | verify | **(b)** |
+| 15 | The captured comma-bearing name round-trips against an INDEPENDENT re-read | R21b, §5 | verify | **(b)** |
+
+**ITEM 9 IS SATISFIED WITH A STATED LIMIT, and it is the only one.** Its subject
+is the PARSE, and a malformed record produced no row, so the verifier cannot
+re-derive it from the loaded table. What the verifier establishes instead is
+that NOTHING WAS LOST BETWEEN EMISSION AND STORAGE — 5,805 of 5,805 statements
+executed, 1,964,958 rows loaded against 1,964,958 emitted — and it reports the
+malformed count FROM THE SIDECAR, labelled as such in both the code and the
+output. **That figure rests on the parser's own accounting**, not on an
+independent observation.
+
+**ALL FIFTEEN WERE SATISFIED AGAINST THE 2026-09-07 EXTRACT**, with the emitted
+artifact at **173,873,096 bytes in 5,805 statements**, largest 29,998 B against
+the 100,000-byte ceiling. `scripts/bmf-fetch.mjs`, `scripts/bmf-parse.mjs` and
+`scripts/bmf-verify-slice1.mjs`. **R21a's own "roughly 152 MB" above is an
+estimate of that artifact and came in 14% under**; it is left as written, since
+it says "roughly" and names the right object.
+
+**EXCLUDED BY RULING, named so the exclusion is visible rather than inferred.**
+§5's four absolute figures — NULL `REVENUE_AMT` 569,235, NULL `NTEE_CD` 574,447,
+row count 1,957,340, and the per-file contributions — are NOT in this list. R22
+rules the 2026-08 extract not obtainable and R22a rules the proof is the
+extract-independent set. Item 11 checks that per-file contributions SUM to the
+total, which is the extract-independent form, and does not check them against
+those five numbers.
+
 **R21b. THE PROOF INCLUDES A ROW-LEVEL CHECK, not only the distributional
 figures.** Specifically **a quoted EIN carrying a leading zero**, because §5
 already warns a quoting bug hides at six-in-278,014 density and §2's EIN quoting
