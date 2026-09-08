@@ -27,65 +27,36 @@ for what the cadence misses.
 ruled tiers holding 7, then gates-other-work 15, gates-a-stated-commitment 7,
 BMF-and-Discover 13, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-08: THREE ENTRIES FILED, TWO EMISSION
-CONSTRAINTS RELOCATED INTO THE SCOPING DOC, AND THREE HEADER FIGURES REPAIRED.**
-The 2026-09-08 slice-1 scope pass surfaced five findings. **Three became entries**
-— A123 R21b's assertion form, A124 the missing definition of done, A125
-`bmf_aside` having no DDL — because each is a genuine fork that BLOCKS the build
-rather than a constraint the build satisfies. **Two did not**, and where they went
-is item 3 below.
-**So OPEN goes 109 → 112, BLOCKING 21 → 23 and DEBT 61 → 62**; POST stays 27; the
-breakdown becomes 7 + 15 + 7 + 13 + 32 + 35 + 3 = 112, the BMF-and-Discover tier
-taking all three; the restatement further down becomes "sum to 112"; and the
-counsel-gated line becomes FOUR OF THE TWENTY-THREE.
-**and the build chain becomes 19.** The definition is unchanged — BLOCKING minus
-the four counsel-gated items — and gives 23 − 4 = 19. **A47, A84, A68 and A110
-were re-confirmed by execution**, not recall: all four present, all four inside
-OPEN, all four still carrying `Pilot: BLOCKING, and counsel-gated`.
-**THE TWO BLOCKING CLASSIFICATIONS ARE INHERITED FROM A113, NOT INDEPENDENTLY
-RULED**, and this says so because the field is required and filing an entry is not
-ruling on it. A123 and A125 are preconditions inside A113, which is BLOCKING; A124
-is a record-keeping finding and is DEBT. **FT may reclassify any of the three
-without that being a correction.**
-**ITEM 3, AND ITS GROUND IS RECORDED SO A LATER READER DOES NOT MOVE IT BACK.**
-The other two findings — how `ein` is kept off any numeric emission path, and the
-empty-string branch preceding numeric CONVERSION — are CONSTRAINTS ON EMISSION
-that close the moment slice 1 is built correctly, so neither is independent work
-and neither is an entry. **They are not housed on A113 either**, on §2's own fuse
-reasoning: A113 closes when the loader exists, which is exactly when both start
-mattering on every subsequent load, and **a requirement recorded only in the
-artifact that disappears at first compliance is a requirement with a fuse on it.**
-They now live in `docs/bmf-load-scoping.md` §2 and §1 respectively, beside the
-rules they qualify, and A113 REFERENCES both by section pointer without holding
-the evidence. **A121 and A122 were drafted as entries and never filed**, which is
-why the A-ids skip from A120 to A123; the gap is deliberate and is recorded here
-rather than left to be rediscovered.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-08: NOTHING OPENED, NOTHING CLOSED, AND
+FOUR ENTRIES WERE UPDATED IN PLACE.** Slice 1 of the BMF loader landed on `main`
+— three scripts across four commits, rebased onto the docs commit and
+fast-forwarded — and A113, A123, A124 and A125 were updated to record what that
+settled. **No entry changed state, so every count is UNCHANGED and was
+re-derived rather than assumed.**
+**OPEN stays 112; BLOCKING 23, DEBT 62, POST 27**, summing to 112; the breakdown
+stays 7 + 15 + 7 + 13 + 32 + 35 + 3 = 112; the restatement further down stays
+"sum to 112"; and the counsel-gated line stays FOUR OF THE TWENTY-THREE.
+**The build chain stays 19.** The definition is unchanged — BLOCKING minus the
+four counsel-gated items — and gives 23 − 4 = 19. **A47, A84, A68 and A110 were
+re-confirmed by execution**, not recall: all four present, all four inside OPEN,
+all four still carrying `Pilot: BLOCKING, and counsel-gated`.
+**TWO ENTRIES LOOK CLOSEABLE AND ARE DELIBERATELY NOT CLOSED, because closing is
+a ruling and none was given.** A123's question — which assertion form R21b takes
+— is answered and shipped. A124's stated subject — the definition of done does
+not exist — is discharged, though its list still lives only in four commit
+bodies and in no tracked document, which is why closing it would delete the only
+place that says so. Each entry says this on its own line. **A113 and A125 stay
+open on substance**: slices 2 and 3 do not exist, the real aside DDL has no
+author, and R13a's regeneration obligation has not fired.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. It recorded the A117 closure, the first movement after three
-consecutive zeros, and the five sites that closure left stale.
-**TWO STALE FIGURES IN THIS HEADER ARE ALSO REPAIRED, and both were diagnostic
-rather than headline.** The enumerator paragraph read "returns 105 rather than
-107" and the FJ-7 diagnostic read "returns 60 rather than 59"; at HEAD before this
-change they were 107 against 109 and 62 against 61. **Both MECHANISMS were
-re-verified and both hold** — the gap is still exactly A50a and A50b, and the
-file-wide extra is still FJ-7's own `Pilot: DEBT` line inside FOUNDER JUDGMENT.
-Only the levels had drifted, by two in each case, which is the event-versus-state
-pattern this header already names.
-**A THIRD FIGURE WAS CORRECTED BY DATED NOTE RATHER THAN BY REPLACEMENT, because
-it is a FALSE MECHANISM and not a stale number.**
-`docs/bmf-load-scoping.md:26` reads "Next number is `0019`. The tree runs `0001`
-through `0018`, contiguous", against a tree running `0001` through `0022`. **No
-replacement number is correct**: the migration that sentence anticipates shipped
-as `0022_bmf_table.sql` and is applied to both databases, so §1 has stopped asking
-the question. The original is preserved and marked corrected, the treatment R29
-gave §2's `escapeSql` sentence.
+than-append rule. It recorded three entries filed, two emission constraints
+relocated into the scoping doc, and three header figures repaired.
 **CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: A8, A113, A115 and A116 as
-plain-numeric entry headers; A50a and A50b as letter-suffixed headers, PRINTED and
-then asserted to match the suffix-aware pattern and NOT the naive one; a mid-line
-`**A50a | ` string asserted to match neither; three known-positive `Pilot:` lines
-against a backticked-inline negative; the BMF-and-Discover subsection counting 10
-before this change; and A123, A124 and A125 confirmed to have zero mentions
-anywhere in the file before being used.
+plain-numeric entry headers; A50a and A50b as letter-suffixed headers, PRINTED
+and then asserted to match the suffix-aware pattern and NOT the naive one; a
+mid-line `**A50a | ` string asserted to match neither; and the four
+counsel-gated markers located by line number and checked against the OPEN
+section bounds.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
 dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 110 rather than 112, because
@@ -1344,6 +1315,39 @@ a reasoned guess**, and it sharpens R17c's objection rather than resolving it.
 **The band is NOT re-tuned**, because R17a rules it revisited together with
 R8-4's band once three or four real extracts exist, and one derived comparison is
 not that.
+**SLICE 1 IS COMPLETE AND BANKED ON `main` 2026-09-08. THIS ENTRY STAYS OPEN:
+slices 2 and 3 do not exist.** Three scripts, rebased onto main and
+fast-forwarded, so all four slice commits sit on `main` with the docs commit
+beneath them.
+- `scripts/bmf-fetch.mjs` — acquisition and freezing. Owns the network and the
+  cache; does not parse.
+- `scripts/bmf-parse.mjs` — parse and emit. Reads the cache only; creates no
+  table and contacts no database.
+- `scripts/bmf-verify-slice1.mjs` — load and assert. Creates a minimal in-memory
+  scratch table under R27 and touches no D1.
+**ALL FIFTEEN DEFINITION-OF-DONE ITEMS ARE SATISFIED, one with a stated limit.**
+Item 9's subject is the PARSE, and a malformed record produced no row, so the
+verifier cannot re-derive it from the loaded table. What it establishes instead
+is that nothing was lost between emission and storage — 5,805 of 5,805
+statements executed and 1,964,958 rows loaded against 1,964,958 emitted — and it
+reports the malformed count FROM THE SIDECAR, labelled as such in both the code
+and the output. That figure rests on the parser's own accounting.
+**THE EMITTED ARTIFACT: `scripts/bmf-aside.tmp.sql`, 173,873,096 BYTES IN 5,805
+STATEMENTS**, largest 29,998 B against the 100,000-byte ceiling, every statement
+`INSERT INTO bmf_aside` and never `bmf` (R24). Gitignored at `.gitignore:18`;
+the sidecar beside it at `:26`. Measured against the 2026-09-07 extract:
+1,964,958 rows equal to distinct EINs, zero duplicates, zero malformed, zero
+null `RULING`, and a `REVENUE_AMT` sum of 4,317,294,050,545 over 1,391,216 rows
+— a figure §5 records as never measured and forbids asserting from the plan.
+**R21a IS MET IN ITS OWN TERMS**, "done is a file on disk and a set of numbers
+matching — not a working feature": the file is on disk, and the numbers the
+verifier derives independently by SQL agree with what the parser reported.
+**SLICE 2 IS NOT STARTED, AND THIS ENTRY IS NOT SCOPED BEYOND SLICE 1.** What it
+inherits is the artifact and sidecar above, plus FOUR PROPERTIES THE SCRATCH
+TABLE DELIBERATELY DID NOT OBSERVE, each named in the verifier's own output:
+R10b's duplicate-`ein` rejection at INSERT, R16's `aside_schema_pk` and
+`aside_schema_notnull`, and R13b's post-swap index names. See A125 for the two
+things that remain open on the aside itself.
 
 **A116 | Whether a sandbox result transfers to production.**
 Blocker: unruled. FT has not ruled it, and it is recorded as open rather than
@@ -1434,6 +1438,23 @@ such a table can observe neither R10b's INSERT-time rejection nor R16's
 `aside_schema_pk`.
 **FILED AS THE QUESTION, NOT THE ANSWER:** which assertion form R21b takes, and
 therefore how far the verifier's scratch shape may differ from the aside's.
+**RULED AND IMPLEMENTED 2026-09-08. FT ruled the affinity floor; slice 1's
+verifier implements it.** `ein` is declared `TEXT` on the scratch table, and
+R21b's assertion is written on VALUE and LENGTH, never on `typeof`.
+**THE MEASURED REASON `typeof` IS EXCLUDED IS STRONGER THAN THE ONE THIS ENTRY
+ORIGINALLY GAVE.** It was filed as varying across otherwise-permitted variants,
+which is true. Measured on the shipped scratch shape, it is worse: **on
+`ein TEXT`, `typeof` returns `text` for BOTH the correct quoted emission and the
+defective unquoted one.** It does not merely vary — on this table it carries no
+signal at all, so an assertion on it would be a check that CANNOT FAIL. That is
+the R16 tautology shape, and it is why the exclusion is structural rather than
+cautionary.
+**PROVEN IN THE FILE, NOT ONLY EXTERNALLY.** `scripts/bmf-verify-slice1.mjs`
+runs a self-test first that refuses the whole run if any instrument cannot
+discriminate; it asserts item 14 PASSES on a quoted EIN and FAILS on an unquoted
+one, and demonstrates the `typeof` result on both arms rather than asserting it.
+**WHETHER TO CLOSE THIS ENTRY IS FT's CALL.** Its question — which assertion
+form R21b takes — is answered and shipped.
 
 **A124 | Slice 1's definition of done does not exist, and a session-open summary
 asserted it did.**
@@ -1463,6 +1484,21 @@ grouping were specific enough to be usable, and a session not told to verify at
 HEAD would have had no reason to doubt them. **What made the difference was an
 instruction, not a document**, and instructions do not persist across sessions
 the way filings do.
+**RESOLVED IN SUBSTANCE 2026-09-08: THE DEFINITION OF DONE NOW EXISTS, WRITTEN
+BEFORE THE BUILD AS R21a REQUIRES.** It has FIFTEEN items. It was produced by
+the 2026-09-08 scope pass and ratified by FT before any of the three scripts was
+written, so R21a's "or it drifts" condition was met in order rather than
+retroactively.
+**WHERE IT LIVES, and this is the weak point rather than the achievement.** The
+fifteen items were ruled in conversation and are recorded in the four slice
+commit messages on `main`, which map every item to the script that satisfies it.
+**They are not written out as a list in any tracked document.** That is the
+count-is-not-a-list shape one step short of the filing: a reader can reconstruct
+the fifteen from the commit bodies, and nothing in `docs/` enumerates them.
+**WHETHER TO CLOSE THIS ENTRY IS FT's CALL AND IS NOT TAKEN HERE.** Its stated
+subject — the definition of done does not exist — is discharged. What is not
+discharged is a durable home for the list, and closing the entry would delete
+the only place that says so.
 
 **A125 | `bmf_aside` has no DDL anywhere in the tree, and three rulings depend on
 it existing.**
@@ -1500,6 +1536,44 @@ against the live table validates nothing on load ONE, because live is the empty
 table the migration created."
 **FILED AS AN OPEN SCOPING QUESTION. No options are enumerated here and none is
 recommended.**
+**RULED 2026-09-08, OPTION B, AND IMPLEMENTED FOR SLICE 1 ONLY. THIS ENTRY STAYS
+OPEN, and the two things still open are named below rather than left to be
+inferred.** FT ruled that slice 1's verifier creates a MINIMAL IN-MEMORY SCRATCH
+TABLE, not the real aside DDL — a parsing tool under R27, existing for the
+duration of one check, explicitly not the aside.
+**WHAT SHIPPED.** `scripts/bmf-verify-slice1.mjs` creates seven columns in
+shipped order with shipped names, TYPES ONLY: `ein TEXT` per A123's floor, and
+`revenue_amt INTEGER` carrying real INTEGER affinity so the text `'null'` R29
+describes is VISIBLE rather than swallowed by a TEXT column. Named `bmf_aside`
+per R24 so the emitted file loads unmodified. The DDL is written as a LITERAL
+rather than interpolated, with a startup guard against drift, so that a reader
+auditing `CREATE TABLE bmf_aside` finds the file — a template hid it from that
+search, which is the opposite of what its docblock is for.
+**STILL OPEN, FIRST: THE REAL ASIDE DDL HAS NO AUTHOR.** Option B settled what
+slice 1 creates and settled nothing about the aside. R13 assigns authority to a
+loader constant carrying the full table definition; that constant does not
+exist, and no ruling places its authorship in a slice. R16a's observation stands
+unchanged: "the loader builds the aside from its own constant and nothing
+currently checks that the constant produced what it claims."
+**STILL OPEN, SECOND: R13a's REGENERATION OBLIGATION HAS NOT FIRED.** Its
+trigger is the authoring of that constant, and slice 1 authored none — so the
+byte-identity comparison against `migrations/0022_bmf_table.sql` has not been
+performed and is not owed by anything banked. It transfers intact to whichever
+slice authors the constant, together with the caution that the migration is
+applied to both databases and wrangler matches by NAME, so a byte difference is
+a finding to report rather than a diff to accept.
+**FOUR PROPERTIES WENT UNOBSERVED BY DESIGN**, each printed by the verifier at
+the end of every run so it is visible rather than filed: R10b's duplicate-`ein`
+rejection at INSERT (no primary key), R16's `aside_schema_pk` (no PK, no PK
+autoindex), R16's `aside_schema_notnull` (no NOT NULL on any column), and R13b's
+post-swap index names (no indexes). All four defer to the slice that creates the
+real aside.
+**THE SITE COUNT IS NOW FOUR, measured 2026-09-08 rather than asserted:**
+`migrations/0022_bmf_table.sql:55` creates `bmf` and is AUTHORITATIVE;
+`scripts/d1-window-generate.mjs:85` and `scripts/d1-window-verify-import.mjs:26`
+are banked experiment residue; and the verifier's scratch table is the fourth.
+D5 rules the shape must agree across its sites, and the verifier's docblock
+enumerates all four so a reader meets them together.
 
 ### Cheap and mechanical
 
