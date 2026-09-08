@@ -627,6 +627,39 @@ exists to produce rather than avoid.
 **Partial download.** Detectable by byte count against `Content-Length`. Nothing
 written; rerun.
 
+**CORRECTED 2026-09-08: MODE 2'S STATED DETECTION MECHANISM DOES NOT EXIST.**
+The paragraph above is preserved rather than edited, the treatment R29 gave §2's
+`escapeSql` sentence, so the correction is visible where the false claim sits.
+**THE MODE ITSELF IS REAL AND IS NOT WITHDRAWN** — a download can absolutely
+arrive truncated. What was unavailable is the specific thing it named as the way
+to detect one.
+
+**MEASURED 2026-09-08 AGAINST THE LIVE IRS ENDPOINT.** A `HEAD` returns
+`content-encoding: gzip` with `content-length: 20`, which is a compressed length
+for an empty HEAD body and bears no relation to the 48.8 MB file. A `GET`
+returns `content-length: null`, because the response is chunked and `fetch`
+decompresses it transparently. **So the header is ABSENT when it is needed and
+WRONG when it is present**, and there is no third case in which it is usable.
+
+**THE ENUMERATION ROW CARRIES THE SAME CLAIM** and is corrected by this note
+rather than separately: mode 2's row reads "Byte count against `Content-Length`.
+Nothing written".
+
+**WHAT `scripts/bmf-fetch.mjs` SUBSTITUTES.** Two checks, neither of which is
+the one named above. The bytes actually WRITTEN are compared for EQUALITY
+against the dated byte record for that extract (§3, R26), which refuses a
+same-extract mismatch as a partial or corrupted download. And
+`MIN_PLAUSIBLE_BYTES` is a floor beneath which a response cannot be a BMF region
+file at all, which catches a truncated response or an error page before anything
+else runs. **The floor is not a size check and nothing downstream may read it as
+one.**
+
+**THE SUBSTITUTE WAS EXERCISED ON REAL DATA, not only on fixtures.** On the
+2026-09-07 fetch, THREE OF FIVE files matched their recorded values exactly —
+`eo1` 48,801,736, `eo_xx` 418,534 and `eo_pr` 449,348 — so the equality arm ran
+against the live endpoint and passed. `eo2` and `eo3` had no recorded value and
+were captured rather than compared.
+
 **A chunk fails mid-load.** **The earlier text here said the aside table holds a
 prefix, and that is wrong for a single-file load.** The correction matters
 because the prefix case is the only thing a resumable write would exist to
@@ -1915,6 +1948,56 @@ several attempts**; caching FIXES the extract across attempts, so a parse
 difference between run one and run three is a parse difference and not a file
 difference; and a directory is one gitignore line where a filename pattern is a
 guess.
+
+**CORRECTED 2026-09-08: BOTH FIGURES IN THE JUSTIFICATION ABOVE ARE WRONG, AND
+THE RULING IS UNAFFECTED.** The sentence is preserved rather than edited, the
+treatment R29 gave §2's `escapeSql` sentence.
+
+**MEASURED 2026-09-08 by the first live run of `scripts/bmf-fetch.mjs`:** the
+five-file set is **341,097,144 B**, which is **2.24x** the "roughly 152 MB" this
+paragraph states, and it downloaded in **43 seconds**, not the five to twenty
+minutes the sentence reasons from. Per file: `eo1` 48,801,736, `eo2`
+126,120,380, `eo3` 165,307,146, `eo_xx` 418,534, `eo_pr` 449,348.
+
+**R19's CONCLUSION IS UNTOUCHED AND IS ARGUABLY STRENGTHENED, and this is said
+plainly so a later reader does not take the correction as unsettling the
+ruling.** Caching a 341 MB download is MORE justified than caching a 152 MB one,
+not less. The other two reasons R19 gives never depended on either figure:
+caching fixes the extract across attempts, and a directory is one gitignore line.
+**Only the arithmetic in the first reason was wrong.**
+
+**THE PROVENANCE IS TRACEABLE AND IS THE POINT.** §2 states that the EMITTED SQL
+is "roughly **152 MB** across about 5,600 statements", and §12 measured that same
+artifact at **166,531,714 bytes, 158.8 MB**. The figure appears to have been
+carried from the OUTPUT artifact to the INPUT download. **Those are different
+objects**, and nothing about the size of the SQL this load generates bears on the
+size of the CSVs it reads.
+
+**EXACTLY ONE OF SIX SITES MIGRATED, which is what makes this checkable rather
+than a suspicion.** "152 MB" appears six times in this document. Five refer to
+the emitted SQL and are CORRECT: §2's own statement, §6's transfer bullet, §7's
+reframing of it, §8's note that the file "is recorded twice and the two do not
+agree", and R21a's "its output is a roughly 152 MB gitignored artifact". **The
+sixth is this paragraph, the only one that refers to the DOWNLOAD**, and it is
+the only one that is wrong.
+
+**THE ERROR SHAPE, NAMED because it is not one this record already names: A
+FIGURE MIGRATING BETWEEN TWO ADJACENT OBJECTS WITHIN ONE DOCUMENT.** The number
+was never stale and was never miscounted. It was correct, and it was correct
+about something else. **It is distinct from the event-versus-state staleness**
+`docs/outstanding.md` already names in its header, where a figure describes a
+live count and goes out of date. Here nothing went out of date: a true statement
+about the output was restated about the input, in the same file, and both objects
+were plausible referents for the same phrase. **What defeats it is asking what a
+figure is a figure OF, which is a different question from asking whether it is
+current.**
+
+**A HOME FOR THE SHAPE IS PROPOSED AND NOT WRITTEN THIS TURN.** It belongs beside
+its two siblings in CLAUDE.md §5.1 — the count-is-not-a-list rule and the
+event-versus-state rule — because all three are about how a FIGURE fails and both
+of the others were promoted there for firing across multiple documents. This one
+has fired once, in one file, so it may not yet meet that bar; recording it here,
+where it happened, is the conservative placement until it recurs. FT to rule.
 
 **WHY ROOT RATHER THAN `scripts/`, decided against the repo and not by taste.**
 `.gitignore` contains **ZERO nested ignored directories**, and all four
