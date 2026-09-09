@@ -22,76 +22,72 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 113 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 112 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers holding 7, then gates-other-work 17, gates-a-stated-commitment 7,
+ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
 BMF-and-Discover 12, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-08: TWO ENTRIES FILED, NOTHING
-CLOSED.** A127 records that "Derek" is retired and the tree does not know it —
-FT ruled the name an error and no such counsel exists or ever existed — and A128
-records that this file's own header maps Clause 6 to the wrong entry, without
-ruling which way it is wrong.
-**So OPEN goes 111 → 113, BLOCKING goes 22 → 23 and DEBT goes 62 → 63**; POST
-stays 27, summing to 113; the breakdown becomes
-7 + 17 + 7 + 12 + 32 + 35 + 3 = 113, the gates-other-work tier taking both; the
-restatement further down becomes "sum to 113"; and the counsel-gated line
-becomes FOUR OF THE TWENTY-THREE.
-**and the build chain becomes 19.** The definition is unchanged — BLOCKING minus
-the four counsel-gated items — and gives 23 − 4 = 19. **A47, A84, A68 and A110
-were re-confirmed by execution**, not recall: all four present, all four inside
-OPEN, all four still carrying `Pilot: BLOCKING, and counsel-gated`.
-**THE COUNSEL-GATED COUNT IS UNCHANGED AT FOUR, and that is deliberate rather
-than an oversight.** A127 is BLOCKING but NOT counsel-gated: a naming error is
-closable by editing, and marking it counsel-gated would put a fifth item in a
-set that exists to name what building cannot close. A128 is DEBT for the same
-kind of reason.
-**BOTH DIAGNOSTICS MOVE BY TWO.** The enumerator goes from 109 against 111 to
-111 against 113, since A127 and A128 are both plain-numeric headers, leaving the
-gap still exactly A50a and A50b. The file-wide `Pilot: DEBT` count goes from 63
-against 62 to 64 against 63, the single extra still being FJ-7's own line inside
-FOUNDER JUDGMENT.
-**A126 IS NOT REUSED AND THE IDS SKIP TO A127.** A126 closed on 2026-09-08 and
-its id still appears eleven times in this file, in the closure note and in the
-arithmetic that recorded it, so reusing the number would make those references
-ambiguous.
-**THREE FIGURES WERE CORRECTED BY MEASUREMENT DURING THIS CHANGE, and each is
-recorded on the entry that carries it rather than here.** The Derek count was
-reported as "fifteen mentions across eight files", pairing a `docs/`-only line
-count with a whole-tree file count; A127 carries the corrected 8 files, 18 lines,
-23 occurrences. Clause 6 was reported as carrying no A-number; A128 records that
-A46 is exactly that entry. And a deferral was cited as "P-2's D10", a designator
-that does not exist anywhere in the tree; A128 declines the citation and names
-the four sites that do carry it.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-08: ONE ENTRY CLOSED, NOTHING FILED.**
+A128's fork was RULED — the header sentence was wrong, and the two entries whose
+subject is the two counsel-gated clauses are A47 and A46 — so the header was
+repaired and A128 closed, its standing content relocated first.
+**So OPEN goes 113 → 112 and DEBT goes 63 → 62**; BLOCKING stays 23 and POST
+stays 27, summing to 112; the breakdown becomes
+7 + 16 + 7 + 12 + 32 + 35 + 3 = 112, the gates-other-work tier giving up the one;
+and the restatement further down becomes "sum to 112".
+**THE BUILD CHAIN AND THE COUNSEL-GATED COUNT BOTH STAY PUT, at 19 and FOUR.**
+The definition is unchanged — BLOCKING minus the four counsel-gated items — and
+BLOCKING did not move, so 23 − 4 = 19 still. **A47, A84, A68 and A110 were
+re-confirmed by execution**, not recall: all four present, all four inside OPEN,
+all four still carrying `Pilot: BLOCKING, and counsel-gated`.
+**A46 DID NOT JOIN THEM, and the repair makes that visible rather than changing
+it.** The header now names A46 as one of the two entries the ruling document
+sends to counsel while stating that it is `Pilot: POST` and outside the four.
+Naming an entry in the mapping and counting it among the counsel-gated are
+different acts, and collapsing them is the error the old sentence made.
+**BOTH DIAGNOSTICS MOVE BY ONE.** The enumerator goes from 111 against 113 to
+110 against 112, since A128 was a plain-numeric header, leaving the gap still
+exactly A50a and A50b. The file-wide `Pilot: DEBT` count goes from 64 against 63
+to 63 against 62, the single extra still being FJ-7's own line inside FOUNDER
+JUDGMENT.
+**A128 IS NOT REUSED AND THE NEXT ID IS A129.** A128 closed on 2026-09-08 and
+its id still appears in this file, in its own closure note and in the arithmetic
+that recorded it, so reusing the number would make those references ambiguous.
+**ONE FIGURE WAS CORRECTED BY MEASUREMENT DURING THIS CHANGE**, recorded on
+A128's closure note rather than here: A128 stated that `Clause 6` occurs three
+times in this file, which was TRUE at `a9d83ce` and is SIXTEEN at `84fc360`,
+falsified by A128's own text.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. It recorded A126 closing with nothing filed, and A124
-corrected in place.
+than-append rule. It recorded A127 and A128 being filed with nothing closed.
 **CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: A8, A113, A115 and A116 as
-plain-numeric entry headers; A50a and A50b as letter-suffixed headers, PRINTED
-and then asserted to match the suffix-aware pattern and NOT the naive one; a
-mid-line `**A50a | ` string asserted to match neither; the Derek search gated on
-a known-positive file and a known-negative one; the `D10` absence established
-against a control finding D1, D2, D5, D6, D7 and D11 through the same pipeline;
-the known false positive at `docs/propublica-spike-findings.md:694`, where `A68`
-is an NTEE code rather than an entry, excluded by inspection; and the four
-counsel-gated markers located by line number and checked against the OPEN
-section bounds.
+plain-numeric entry headers, and A50a and A50b as letter-suffixed ones, asserted
+to match the suffix-aware pattern and NOT the naive one; the `subpoena` absence
+in A84 established against a control returning 2 for `delete` in the same entry;
+the clause-to-entry scan re-run over BOTH `Clause N` and `Clauses N` after the
+singular-only form proved blind to the plural, which is the format-variant rule
+CLAUDE.md §10 records; the `Clause 6` counts taken at two named revisions with a
+`Clause 42` control returning zero at both; every block replacement gated on a
+post-condition asserting the OLD block's closing line is GONE from the result and
+PRESENT in the backup; and the line-ending check done by counting carriage
+returns against the line count, which caught `sed -n` silently stripping them
+from 793 lines mid-splice. The known false positive at
+`docs/propublica-spike-findings.md:694`, where `A68` is an NTEE code rather than
+an entry, is excluded by inspection and carries no `Clause` on its line.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 111 rather than 113, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 110 rather than 112, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 64
-rather than 63, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 63
+rather than 62, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
-count. The controls used here were A8, A113, A114, A115 and A116 as entry
-headers, and the BMF-and-Discover subsection counting 11 before this change.
+count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
 and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 23 BLOCKING, 63 DEBT, 27 POST**, classification ruled
+**AGAINST THE PILOT GATE: 23 BLOCKING, 62 DEBT, 27 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-08,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -99,7 +95,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 113. The sentence
+totals above, which remain a count of OPEN entries and sum to 112. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -142,16 +138,51 @@ look archival. **The date has been moved off the totals and onto the act.**
 BY BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not
 one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
-chain is not uniform, and the record says so in three places rather than one.
+chain is not uniform, and the record says so in FOUR places rather than three.
+**CORRECTED 2026-09-08. THIS PARAGRAPH SAID THREE PLACES AND MAPPED ONE OF THEM
+WRONG.** It read, verbatim: "the record says so in three places rather than one.
 `docs/ruling-e-deletion-retention.md` names a reviewing attorney for Clauses 3
-and 6, which is A47 and A84. CLAUDE.md §5, the Enterprise row, records the
-operating premise for E3, E6 and E8, dated 2026-07-15, as internal review with
-no external counsel, which is A68. **A110 is NEW on 2026-09-03**, and its gate is
-stated in the schema itself: `migrations/0009_enterprise_schema.sql:298-306`
-marks the `athlete_reflection` pre-claim visibility posture counsel-gated on the
-exact institutional consent language. It was THREE until the A96 ruling made that
-table something the product will write to. **Nothing in this repository records
-counsel as retained**, and no entry names a date by which either chain moves.
+and 6, which is A47 and A84." Quoted rather than edited away, because the
+sentence was doing TWO JOBS AT ONCE — mapping clauses to entries, and accounting
+for all four counsel-gated items — and collapsing them into one sentence is what
+produced the error.
+`docs/ruling-e-deletion-retention.md` §6 sends exactly TWO clauses to a reviewing
+attorney, 3 and 6, and the entries whose subject is those clauses are **A47 and
+A46**, one per clause. **A46 is `Pilot: POST` and is NOT among the counsel-gated
+four**, so this source yields one counsel-gated entry and one POST entry, which
+is precisely why it could never account for two of the four on its own.
+**A84's counsel gate comes from A47, not from this document.** Its blocker line
+reads `Blocker: A47, COUNSEL`, and the FT grouping ruling below says the same:
+A47 is the narrow predicate its policy waits on. What A84's OWN Detail document
+supplies is the PRE-PILOT REQUIREMENT rather than the gate —
+`docs/persistence-scoping-pass.md`, Strand 3, Layer 4, governance: "a
+retention / deletion policy must exist BEFORE pilot — soft vs hard delete, what
+`delete my account` does to gift rows". **That is a fourth source, and this
+paragraph never named it.**
+CLAUDE.md §5, the Enterprise row, records the operating premise for E3, E6 and
+E8, dated 2026-07-15, as internal review with no external counsel, which is A68.
+**A110 is NEW on 2026-09-03**, and its gate is stated in the schema itself:
+`migrations/0009_enterprise_schema.sql:298-306` marks the `athlete_reflection`
+pre-claim visibility posture counsel-gated on the exact institutional consent
+language. It was THREE until the A96 ruling made that table something the
+product will write to.
+**WHAT WAS MEASURED, so the correction is checkable rather than asserted.** A84
+carries ZERO occurrences of `subpoena`, against a control returning 2 for
+`delete` in the same entry. Its Detail cites Layer 4, governance, while subpoena
+posture is Layer 2, item (c) — a different layer of the same document, whose
+five counsel mentions all sit in Layer 2 or in §7, which is about the Layer-2
+questions. **A47 and A46 are a matched pair**: the only two entries titled
+`Ruling E Clause N`, and the only two OPEN entries whose Detail cites the ruling
+document by clause, one per counsel-gated clause. The third such Detail belongs
+to parked **P-F**, Clause 4. **And this header was the ONLY clause-to-entry
+mapping in the tree** — CLAUDE.md, `docs/persistence-schema-draft.md`,
+`docs/filed-defects.md` and `migrations/0001_initial.sql` all map a clause to a
+SUBJECT and never to an ID, and every one of them agrees with A46 and A47.
+**THE BOLD LEAD'S ROSTER OF FOUR IS UNCHANGED: A47, A84, A68 and A110.** A46
+stays `Pilot: POST` and stays outside it, and the counsel-gated count remains
+FOUR.
+**Nothing in this repository records counsel as retained**, and no entry names a
+date by which either chain moves.
 **FT RULED 2026-09-08: THE FOUR COUNSEL-GATED ITEMS RESOLVE TO TWO
 CONVERSATIONS, NOT FOUR.** This is FT's ruling on grouping, recorded here rather
 than derived by a pass, and it changes no classification and no count.
@@ -585,6 +616,20 @@ Detail: `docs/ruling-e-deletion-retention.md`, Clause 3.
 Blocker: COUNSEL. Gates the who-gave-to-whom view and P-C.
 Pilot: POST
 Detail: `docs/ruling-e-deletion-retention.md`, Clause 6.
+**WHAT CLAUSE 6 GATES, relocated here from A128 before that entry closed.** The
+ruling document states that the capability to produce a who-gave-to-whom table
+stays UNBUILT until the posture is set — "the one place a subpoena answer could
+change the schema". `migrations/0001_initial.sql:231-241` states it at the schema
+level: no view, no materialized table, no admin query path joining
+`gift.giver_person_id` through `person.auth_user_id`, and "The subpoena posture
+decision must precede any such construct." CLAUDE.md §5.1's accepted Phase-1
+boundary defers enterprise gift tracking on the same grounds, and parked **P-C**
+carries it.
+**A DESIGNATOR THAT DOES NOT EXIST, recorded so it is not cited again.** This
+deferral was described to a 2026-09-08 pass as "P-2's D10". **`D10` does not
+exist anywhere in the tree** — zero occurrences, established with a control
+showing the same pipeline finds D1, D2, D5, D6, D7 and D11. The deferral is real
+and the four sites above carry it; the designator is not.
 
 **A42 | Advisor stage-label renaming is blocked on the Q7 allowlist.**
 Blocker: Q7, itself COUNSEL-gated.
@@ -945,74 +990,38 @@ closable by editing rather than by counsel — which is why this entry does NOT
 carry the counsel-gated marker and the counsel-gated count stays four. FT may
 reclassify without that being a correction.
 
-**A128 | The Clause 6 mapping in this file's own header is wrong, and which way
-it is wrong is NOT ruled here.**
-Blocker: unruled. Either the header names the wrong entry or A84 is mis-mapped;
-FT rules which.
-Pilot: DEBT
-Detail: this file's HEADER, the two-chains paragraph; and, both in
-`### Gates other work`, **A84 | A retention and deletion policy is stated as
-required BEFORE pilot** and **A46 | Ruling E Clause 6, the subpoena posture, is
-unanswered**.
-**THE CITATIONS ABOVE NAME A SECTION AND A TITLE BECAUSE LINE NUMBERS DID NOT
-SURVIVE THIS ENTRY'S OWN COMMIT.** As first filed in `c97e946` this entry cited
-`:140-141`, `:704` and `:563`. All three were correct when measured, and all
-three were invalidated by that same commit: its arithmetic-block replacement
-added SIX lines above the header target, and its grouping-ruling insertion added
-FIFTEEN more, so both entry targets moved by TWENTY-ONE. **That is the mechanism
-CLAUDE.md §8's convention exists to prevent** — citations into this file name a
-section and a filing title, never a line number, while citations into SOURCE
-files keep theirs — **demonstrated by the entry that broke it.** The three
-retired numbers are quoted above as history, not as pointers.
-**THE THREE CLAIMS, EACH RE-VERIFIED AT HEAD 2026-09-08 rather than carried
-forward.**
-1. **The header's two-chains paragraph maps A84 to Clause 6**, verbatim:
-   "`docs/ruling-e-deletion-retention.md` names a reviewing attorney for
-   Clauses 3 and 6, which is A47 and A84."
-2. **A84's own Detail line points somewhere else**, verbatim, from its entry in
-   `### Gates other work`:
-   "Detail: `docs/persistence-scoping-pass.md`, Strand 3, Layer 4, governance."
-   Its stated subject is soft-versus-hard delete and what account deletion does
-   to gift rows, which is Clause 1 and Clause 2 territory, not Clause 6.
-3. **Clause 6 DOES carry an A-number, and an earlier pass said it did not.**
-   `### Gates other work` carries **A46 | Ruling E Clause 6, the subpoena
-   posture, is unanswered**, `Blocker: COUNSEL. Gates the who-gave-to-whom view
-   and P-C.`, `Pilot: POST`.
-**THAT THIRD CLAIM IS A CORRECTION TO THIS RECORD, NOT A NEW FINDING.** A
-2026-09-08 read-only pass reported that "Clause 6 carries no A-number at all and
-appears in no entry", and it never grepped for `Clause 6` in this file before
-saying so — an absence asserted from a pipeline that was never run, which is the
-failure CLAUDE.md §10's scanner filing exists to catch. `Clause 6` occurs three
-times in this file.
-**WHAT THE CORRECTION DOES TO THE QUESTION.** It removes one of the two readings
-that were on the table: Clause 6 is NOT an unfiled counsel item, because A46 is
-exactly that item. What remains is whether the header's two-chains paragraph
-should name A46 where it names A84, or whether A84 genuinely belongs to Clause 6
-and its own Detail line is the thing that is wrong. **Both are consistent with
-the evidence above and neither is ruled here.**
-**WHY A46 IS NOT AMONG THE FOUR COUNSEL-GATED ITEMS, since a reader will ask.**
-It is `Pilot: POST` and carries no `and counsel-gated` marker, so it does not
-match the pattern that produces the four. A47 and A46 come from the SAME ruling
-document and the SAME counsel backstop paragraph, and are classified
-differently — that asymmetry is recorded here as an observation, not as a
-defect, and is not ruled.
-**WHAT CLAUSE 6 GATES.** `docs/ruling-e-deletion-retention.md:99-105`: the
-capability to produce a who-gave-to-whom table stays UNBUILT until the posture
-is set. `migrations/0001_initial.sql:231-241` states it at the schema level — no
-view, no materialized table, no admin query path joining `gift.giver_person_id`
-through `person.auth_user_id`, and "The subpoena posture decision must precede
-any such construct." CLAUDE.md §5.1's accepted Phase-1 boundary defers enterprise
-gift tracking on the same grounds, and parked **P-C** carries it.
-**A CITATION THIS ENTRY DECLINES TO MAKE.** The deferral was described to this
-pass as "P-2's D10". **`D10` does not exist anywhere in the tree** — zero
-occurrences, established with a control showing the same pipeline finds D1, D2,
-D5, D6, D7 and D11. The deferral is real and the four sites above carry it; the
-designator is not.
-**THE CLASSIFICATION IS NOT CLEANLY INHERITED, and this says so rather than
-picking quietly.** The two entries this spans carry different classes — A84 is
-BLOCKING and A46 is POST — so there is no single class to inherit. DEBT is
-recorded because the finding is a record-accuracy defect that pilot can open
-with, stated honestly. FT may reclassify without that being a correction.
+**A128 was CLOSED 2026-09-08 and has left this section; the remaining IDs are
+not renumbered, since renumbering would break every reference to them.** Its
+fork is RULED: the header sentence was wrong, and the two entries whose subject
+is the two counsel-gated clauses are A47 and A46.
+**THE REPAIR WAS NOT THE SUBSTITUTION THE ENTRY FRAMED AS ONE OF ITS TWO
+READINGS.** Swapping A46 for A84 would have made the clause mapping true while
+leaving A84 unaccounted for, and would have put a fifth entry into a paragraph
+that enumerates four. The paragraph was doing two jobs that do not reconcile as
+one sentence, so it now names FOUR sources rather than three. A84 stays in the
+roster of four; A46 stays `Pilot: POST` outside it.
+**THE STANDING CONTENT WAS RELOCATED BEFORE CLOSURE**, because closing an entry
+deletes it. The corrected mapping, what was measured, and why A46 is not among
+the four now sit in this file's HEADER, in the two-chains paragraph, with the
+original sentence quoted rather than edited away. What Clause 6 gates, and the
+non-existent `D10` designator, moved onto **A46 | Ruling E Clause 6, the subpoena
+posture, is unanswered** in `### Gates other work` — the entry whose subject they
+are, and whose Detail line was one line long.
+**A COUNT THIS ENTRY GOT WRONG ABOUT ITSELF, corrected here rather than deleted
+with it.** A128 stated that "`Clause 6` occurs three times in this file".
+**Verified by execution at both revisions: THREE at `a9d83ce`, SIXTEEN at
+`84fc360`.** It was TRUE when written and was falsified by A128's own text,
+which added thirteen.
+**THAT IS THE THIRD INSTANCE OF ONE SHAPE IN THREE CONSECUTIVE COMMITS, AND THE
+SHAPE IS PROPOSED FOR ITS OWN FILING RATHER THAN FILED HERE.** `c97e946` filed
+A128 with three line-number citations that its own insertions invalidated;
+`84fc360` repaired them; and this count was falsified by the same commit that
+wrote it. **A measurement correct at the moment of writing and falsified by the
+commit carrying it** is distinct from a claim that goes stale later: no
+subsequent change is required, so no sweep interval catches it, and the author is
+the only person positioned to notice. Whether that warrants a filing, and whether
+its home is CLAUDE.md §10 beside the instrument hazards or §5.1 beside the
+event-versus-state rule, is FT's call and is deliberately not decided here.
 
 ### Gates a stated commitment
 
