@@ -950,19 +950,34 @@ it is wrong is NOT ruled here.**
 Blocker: unruled. Either the header names the wrong entry or A84 is mis-mapped;
 FT rules which.
 Pilot: DEBT
-Detail: this file's `:140-141`; A84's Detail line at `:704`; A46 at `:563`.
+Detail: this file's HEADER, the two-chains paragraph; and, both in
+`### Gates other work`, **A84 | A retention and deletion policy is stated as
+required BEFORE pilot** and **A46 | Ruling E Clause 6, the subpoena posture, is
+unanswered**.
+**THE CITATIONS ABOVE NAME A SECTION AND A TITLE BECAUSE LINE NUMBERS DID NOT
+SURVIVE THIS ENTRY'S OWN COMMIT.** As first filed in `c97e946` this entry cited
+`:140-141`, `:704` and `:563`. All three were correct when measured, and all
+three were invalidated by that same commit: its arithmetic-block replacement
+added SIX lines above the header target, and its grouping-ruling insertion added
+FIFTEEN more, so both entry targets moved by TWENTY-ONE. **That is the mechanism
+CLAUDE.md §8's convention exists to prevent** — citations into this file name a
+section and a filing title, never a line number, while citations into SOURCE
+files keep theirs — **demonstrated by the entry that broke it.** The three
+retired numbers are quoted above as history, not as pointers.
 **THE THREE CLAIMS, EACH RE-VERIFIED AT HEAD 2026-09-08 rather than carried
 forward.**
-1. **`:140-141` maps A84 to Clause 6**, verbatim: "`docs/ruling-e-deletion-
-   retention.md` names a reviewing attorney for Clauses 3 and 6, which is A47
-   and A84."
-2. **A84's own Detail line points somewhere else**, verbatim at `:704`:
+1. **The header's two-chains paragraph maps A84 to Clause 6**, verbatim:
+   "`docs/ruling-e-deletion-retention.md` names a reviewing attorney for
+   Clauses 3 and 6, which is A47 and A84."
+2. **A84's own Detail line points somewhere else**, verbatim, from its entry in
+   `### Gates other work`:
    "Detail: `docs/persistence-scoping-pass.md`, Strand 3, Layer 4, governance."
    Its stated subject is soft-versus-hard delete and what account deletion does
    to gift rows, which is Clause 1 and Clause 2 territory, not Clause 6.
 3. **Clause 6 DOES carry an A-number, and an earlier pass said it did not.**
-   `:563` is **A46 | Ruling E Clause 6, the subpoena posture, is unanswered**,
-   `Blocker: COUNSEL. Gates the who-gave-to-whom view and P-C.`, `Pilot: POST`.
+   `### Gates other work` carries **A46 | Ruling E Clause 6, the subpoena
+   posture, is unanswered**, `Blocker: COUNSEL. Gates the who-gave-to-whom view
+   and P-C.`, `Pilot: POST`.
 **THAT THIRD CLAIM IS A CORRECTION TO THIS RECORD, NOT A NEW FINDING.** A
 2026-09-08 read-only pass reported that "Clause 6 carries no A-number at all and
 appears in no entry", and it never grepped for `Clause 6` in this file before
@@ -971,10 +986,10 @@ failure CLAUDE.md §10's scanner filing exists to catch. `Clause 6` occurs three
 times in this file.
 **WHAT THE CORRECTION DOES TO THE QUESTION.** It removes one of the two readings
 that were on the table: Clause 6 is NOT an unfiled counsel item, because A46 is
-exactly that item. What remains is whether `:140-141` should name A46 where it
-names A84, or whether A84 genuinely belongs to Clause 6 and its own Detail line
-is the thing that is wrong. **Both are consistent with the evidence above and
-neither is ruled here.**
+exactly that item. What remains is whether the header's two-chains paragraph
+should name A46 where it names A84, or whether A84 genuinely belongs to Clause 6
+and its own Detail line is the thing that is wrong. **Both are consistent with
+the evidence above and neither is ruled here.**
 **WHY A46 IS NOT AMONG THE FOUR COUNSEL-GATED ITEMS, since a reader will ask.**
 It is `Pilot: POST` and carries no `and counsel-gated` marker, so it does not
 match the pattern that produces the four. A47 and A46 come from the SAME ruling
