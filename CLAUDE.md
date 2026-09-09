@@ -1208,6 +1208,24 @@ dropped mid-flight is the transcript of the session that dropped it, and the
 2026-09-02 case that produced the rule is known only because the same session
 wrote it down afterwards.
 
+**COUNT NOTE 2026-09-08: rule 20 postdates the survey as well, and the section
+now holds TWENTY rows**, measured by counting numbered rules inside §6's own line
+range rather than file-wide. **The control on that count is worth recording,
+because it did NOT come back clean:** the same pattern returns 3 matches in §7,
+so it is not §6-unique and a file-wide count would have been wrong. The figure
+holds because the count was SECTION-SCOPED, not because the pattern is precise.
+**Rule 20 is a TRACE row and belongs to the second tally**: a commit's own file
+list records whether it staged by path, so a violation is checkable afterwards.
+
+**COUNT NOTE 2026-09-08, ON A FIGURE THIS COMMIT ITSELF MOVED.** Rule 18 says
+"§10 already holds two filings whose later occurrences arrived that way",
+recorded 2026-09-01. **Measured at this commit it is FIVE**, and this commit is
+responsible for one of them: the line-ending filing gained its first amendment
+here. Rule 18's sentence is left as written, per this file's practice, and the
+current figure lives here. **It is recorded because the filing added below
+requires exactly this**: after writing, re-measure any figure the write could
+have moved.
+
 Every substantive change runs as a **slice**. The rhythm:
 
 1. **Hard git-state gate.** Confirm current branch and HEAD before starting.
@@ -1530,6 +1548,21 @@ Every substantive change runs as a **slice**. The rhythm:
 13. **Bank rule (agent-prompt-discipline rule).** Agent prints `git diff`
     + exact proposed commit message and waits for FT "Option 1 yes"
     before any commit — diff + message, always.
+
+    **AMENDED 2026-09-08, AND IT IS AN AMENDMENT RATHER THAN A REPLACEMENT.** The
+    rule above stands exactly as written for any session that touches `main`.
+    What changes is WHERE the review sits when work runs on a branch.
+    **AGENTS MAY COMMIT FREELY ON A WORKING BRANCH.** An agent session working on
+    its own branch does not stop for approval per commit; it commits as it goes,
+    so the branch carries a readable history rather than one squashed act.
+    **NOTHING REACHES `main` AND NOTHING IS PUSHED WITHOUT FT'S REVIEW.** That
+    half is ABSOLUTE and UNCHANGED regardless of how work is batched: **never
+    commit to `main` from an agent session, never push, never write to remote
+    D1.**
+    **WHAT MOVED IS THE GRANULARITY OF REVIEW, from per-commit to per-session.**
+    FT still reads every diff before anything reaches `main`. The amendment buys
+    an agent the ability to checkpoint its own work; it buys no authority it did
+    not have, and §6.15's four categories are untouched.
 14. **"Demo tree byte-identical" is a PER-SLICE ISOLATION PROOF (ruled
     2026-08-14), not an absolute prohibition on changing shared components.**
     What the claim demonstrates is that an authenticated-tree change did not
@@ -1902,6 +1935,22 @@ Every substantive change runs as a **slice**. The rhythm:
     was exactly that: a queue-document prompt arrived two-thirds through an A80
     scoping pass, and the pass was lost. It was read-only, so nothing was
     damaged. The rule exists for the time it is not.
+20. **STAGE BY EXPLICIT PATH. NEVER `git add -A` OR `git add .` (recorded
+    2026-09-08).** Every commit stages the files it names, by path.
+
+    **THE REASON IS ON DISK, which is why this is a rule rather than a
+    preference.** The BMF work leaves a multi-hundred-megabyte extract cache and
+    a large emitted SQL artifact in the working tree, both untracked. A blanket
+    stage on the wrong branch commits them.
+
+    **IT IS ALSO THE ONLY GUARD THAT SURVIVES A BRANCH SWITCH.** `.gitignore` is
+    itself versioned, so the protection a blanket stage leans on can be absent on
+    the very branch where the artifact sits — which is the state the BMF slice-1
+    branch was actually in.
+
+    **THE TRACE IT LEAVES IS THE COMMIT'S OWN FILE LIST**, so a bank can check
+    it: the file list should contain exactly the paths the message names, and
+    zero cache or emitted-artifact paths.
 
 Stop background shells (dev server, watch loops) at bank time, and LAUNCH them
 as tracked background tasks so `TaskStop` applies at all. `TaskStop` is the
@@ -2767,6 +2816,38 @@ what shapes the data can take and whether a control exercises each one. **Five
 passing controls established that the enumerator worked on the shape it was
 given, and said nothing about the shape it was not.**
 
+**AMENDED AGAIN 2026-09-08, WITH TWO ADDITIONS THE FORMAT-VARIANT RULE DOES NOT
+COVER.**
+
+**FIRST: A CONTROL IS NOT A CONTROL UNTIL IT IS VERIFIED NEGATIVE. A control
+containing an accidental true positive is worse than no control**, because it
+turns a broken instrument into a passing one. **Assert that the negative control
+actually fails to match, before trusting the zero it produces.**
+
+**Observed TWICE IN ONE SESSION, in the same check.** A negative control for a
+commit-trailer scan was written to carry trailer strings strictly MID-LINE, and
+both times the line WRAPPED a trailer key to column 1, making the control a true
+positive. **The second occurrence was in a control written specifically to avoid
+the first.** The check itself was correct throughout; only the control was
+broken, and a broken negative control reports the check as broken.
+
+**The cheap assertion is a property of the CONTROL, not of the subject:** print
+the first characters of every line, and separately assert that no line matches
+the anchored form the check looks for. That takes one command and it is what
+caught both occurrences.
+
+**SECOND: LITERAL VERSUS INTERPOLATED IS A FORMAT VARIANT, and it is the one
+that hides CODE from a census.** A search for a literal `CREATE TABLE <name>`
+returns ZERO against a file that builds the same statement by string
+interpolation.
+
+**Observed:** a DDL-site census missed `scripts/d1-window-generate.mjs`
+entirely for that reason, and the file that WAS found carries a docblock
+recording that a template had previously hidden it from the same search — so the
+hazard was known, written down beside the code, and still not spanned. **Any
+census of code sites runs BOTH forms**, and a census is RE-MEASURED when cited
+rather than carried forward.
+
 ### Filed — `d1 migrations list --remote` returned 7403 while `d1 execute --remote` worked (2026-09-01)
 
 **TWO COMMANDS AGAINST ONE DATABASE DISAGREED ABOUT AUTHORIZATION, IN THE SAME
@@ -3158,6 +3239,78 @@ here.** Grepped for `CRLF`, `autocrlf`, `line ending` and `line-ending` across
 all markdown: the only per-file claims are in `docs/session-log.md`, stating
 `docs/outstanding.md` is CRLF and `docs/session-log.md` is LF-only, and **both
 are correct.** The false claims lived in session reports, not in the tree.
+
+**AMENDED 2026-09-08: `sed -n` SILENTLY STRIPS CARRIAGE RETURNS FROM THE RANGES
+IT EMITS, AND `head`/`tail` DO NOT.** Measured on this shell against a
+known-CRLF three-line file: the source carries 3 carriage returns, `sed -n
+'1,2p'` emits 0, and `tail -n +1 | head -n 2` emits 2.
+
+**WHAT IT COSTS: a file spliced from `sed` ranges silently acquires MIXED line
+endings.** Observed during a `docs/outstanding.md` edit: the rebuilt file had the
+correct line COUNT and the correct content, and 793 lines had lost their carriage
+returns — every one of them from the two `sed -n` ranges, and the deficit matched
+those two ranges exactly. **No content check could see it.**
+
+**THE RULE: after ANY range extraction, count carriage returns against the line
+count before installing the result.** That is this filing's own instrument
+applied one step earlier, to the splice rather than to the file. **And prefer
+`head`/`tail` for byte-preserving range extraction**, which is what the
+measurement above establishes.
+
+### Filed — a measurement correct when written and falsified by the commit carrying it (2026-09-08)
+
+**A FIGURE MEASURED BEFORE A WRITE CAN BE MADE FALSE BY THAT SAME WRITE, and no
+sweep interval catches it**, because nothing subsequent has to change: the claim
+is already false the moment it is committed.
+
+**THREE INSTANCES IN THREE CONSECUTIVE COMMITS**, which is what makes this a
+shape rather than an accident.
+
+1. A queue entry was filed citing three line numbers into its own file. **The
+   same commit's insertions moved all three targets**, by six lines and by
+   twenty-one, so the citations were stale in the commit that wrote them.
+2. The next commit repaired those citations to section-and-title form, which is
+   the convention §8 already records for that file.
+3. That same entry stated a phrase occurred **three times** in its file. It
+   occurred three times at the previous revision and **sixteen** at the new one:
+   the entry's own text had added thirteen.
+
+**IT IS A DIFFERENT SHAPE FROM A CLAIM THAT GOES STALE, and the difference is who
+could have caught it.** A stale claim was true, and something LATER made it
+false, so a periodic sweep can find it. This one is false ON ARRIVAL, no later
+event is involved, and **the author is the only person positioned to notice**,
+because only they know what the write moved.
+
+**THE RULE: AFTER WRITING, RE-MEASURE ANY FIGURE THE WRITE COULD HAVE MOVED,
+BEFORE COMMITTING.** The test for "could have moved" is mechanical rather than a
+judgement: any COUNT of things inside a file being edited, any LINE NUMBER into
+that file, and any figure DERIVED from either.
+
+**IT IS THE SIBLING OF §5.1's EVENT-VERSUS-STATE RULE AND NOT A DUPLICATE OF
+IT.** That rule distinguishes a figure describing a frozen act from one
+describing a live state. This one is narrower and sharper: a STATE figure
+measured a moment too early, by the person best placed to know it moved.
+
+### Filed — known false positives, a register (2026-09-08)
+
+**MATCHES THAT LOOK LIKE FINDINGS AND ARE NOT**, kept here so a census meets them
+as known rather than rediscovering them. **Each was verified by execution on the
+date recorded.** Add to this list rather than re-deriving it.
+
+- **`A68` matches an NTEE CODE, not the queue entry.**
+  `docs/propublica-spike-findings.md:694` carries `A68` inside a list of NTEE
+  classification codes, so a tree-wide search for the entry id returns it. The
+  discriminating form is the entry-header pattern, which returns exactly one hit.
+- **`.gitignore` carries `bmf-synthetic*.sql` WITH NO DIRECTORY PREFIX**, so it
+  matches at any depth: `git check-ignore -v scripts/bmf-synthetic-1000.sql`
+  resolves to that rule rather than to the cache rule. A reader grepping
+  `.gitignore` for `bmf` gets both and may read one as the other.
+- **`D5` AND `D6` EACH NAME TWO DIFFERENT RULINGS.** `docs/outstanding.md`
+  carries an athlete-consent `D5` and, later in the same file, the BMF `D5`
+  governing where the ruled table shape lives; `D6` is split the same way,
+  between the attendance gate and the migration's authoring precondition in
+  `migrations/0022_bmf_table.sql`. **In both cases the BMF one is the LATER
+  occurrence in the file.**
 
 ---
 
