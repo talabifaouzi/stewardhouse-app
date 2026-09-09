@@ -1831,6 +1831,127 @@ control the regeneration is checked against.
 **R13b is recorded at R8b above**, because it amends that ruling and applies
 whether or not R13 does.
 
+**R31, RULED 2026-09-09: BYTE-IDENTITY UNDER R13a COVERS TABLE SHAPE ONLY, ACROSS
+EVERY OBJECT THE MIGRATION CREATES. THIS AMENDS R13a. IT DOES NOT IMPLEMENT IT.**
+The comparison runs over **all THREE tables — `bmf`, `load_stamp` and
+`load_check` — and all FIVE indexes**, and **every construct is compared AS
+ATTACHED TO ITS NAMED OBJECT**: columns by name, type and order; PRIMARY KEY; NOT
+NULL constraints; CHECK constraints; foreign keys including their referential
+actions; and indexes by name AND by the columns they are built on AND by the
+table they are on. **A construct matching in shape but attached to a DIFFERENT
+OBJECT does NOT satisfy the comparison.** Not covered: comment text, alignment
+whitespace, prose.
+**THIS RULING WAS CORRECTED THREE TIMES BEFORE IT WAS APPLIED, AND THE THREE ARE
+RECORDED AS A PROGRESSION RATHER THAN AS THREE SEPARATE FIXES.** Each amendment
+closed one level of under-specification and left the next one open, which is the
+part worth carrying forward.
+**FIRST, INDEX NAMES ALONE.** As first ruled it named only "index names". An
+index rebuilt on DIFFERENT COLUMNS under the same name would have satisfied it,
+**and R8b's post-swap assertion as amended by R13b reads `index_list` for NAMES
+only**, so neither the authoring-time check nor the run-time one would have
+caught it. That form also omitted the CHECK at `migrations/0022_bmf_table.sql:156`
+and the foreign key with `ON DELETE CASCADE` at `:153`.
+**SECOND, CONSTRUCTS WITHOUT THE OBJECT THEY ATTACH TO.** The corrected list still
+said what each construct IS and not what it ATTACHES TO, so an index of the same
+name on the same columns of a DIFFERENT TABLE would have passed every clause.
+**THIRD, OBJECTS WITHOUT THE FULL SET OF OBJECTS.** The list then named the
+constructs and their objects, but not the objects the comparison RUNS ACROSS,
+wording itself as the shape of table `bmf` specifically.
+**THE GENERALISATION, FOR WHOEVER WRITES THE NEXT RULING OF THIS KIND: AN
+ENUMERATION OF A SHAPE STAYS UNDER-SPECIFIED UNTIL IT SAYS WHAT EACH ELEMENT IS,
+WHAT IT ATTACHES TO, AND ACROSS WHICH OBJECTS THE COMPARISON RUNS.** Three
+corrections inside one ruling, each finding the same class of gap one level up,
+are the evidence for it.
+**THE GROUNDS FOR THE WIDE SCOPE, MEASURED RATHER THAN ASSERTED. The narrow
+wording was an ERROR rather than a choice**, and three things establish it.
+**FIRST, TWO OF THE RULING'S OWN CLAUSES WOULD HAVE HAD NO REFERENT.** `bmf`,
+whose body spans `:55-63`, carries ZERO CHECK constraints and ZERO foreign keys.
+The file's only CHECK is `load_check.passed` at `:156` and its only `REFERENCES`
+is `load_check.stamp_id` at `:153`. A `bmf`-only comparison would enumerate CHECK
+constraints and referential actions and then compare none of either. **A ruling
+that enumerates constructs existing ONLY on the objects it excludes is describing
+a wider scope than its own wording states.**
+**SECOND, THE NARROW READING WOULD LEAVE UNCAUGHT** the file's only CHECK, its
+only `REFERENCES` including its `ON DELETE CASCADE` and the reasoning D2 records
+at `:142-146`, and two of the five indexes.
+**THIRD, THAT IS PRECISELY THE DRIFT R13a's SURVIVING PURPOSE EXISTS TO CATCH.**
+"Drift found on day one rather than on load twelve" is the half that survives
+this amendment, and a scope excluding the file's only constraint constructs would
+have gutted it.
+**ONE IMPLICATION IS SURFACED AND DELIBERATELY NOT RESOLVED, BECAUSE IT IS A
+GENUINE GAP AND IT IS FT'S.** R13 assigns authority to the loader carrying **"the
+full table definition as a single named constant"**, verified verbatim at HEAD and
+identical in blob and working tree. **Read against the wide scope that wording is
+now itself under-specified**: if the migration is REGENERATED from that constant
+and the comparison runs over three tables and five indexes, the constant must
+carry all of them.
+**AND THE DIVERGENCE IS STRUCTURAL RATHER THAN MERELY VERBAL, WHICH IS WHY IT IS
+NOT RESOLVED HERE.** The constant's operational job is stated by R16a: **"the
+loader builds the aside from its own constant."** The aside is `bmf_aside` (R24),
+a `bmf` TWIN — one table and three indexes. **`load_stamp` and `load_check` are
+created ONCE by the migration and are never built by the loader at all**, R12e
+making the stamp the thing that outlives generations and R8c pruning generation
+tables rather than stamps. So the wide scope asks one constant to serve two
+purposes that do not currently coincide: **BUILD the aside on every run, and
+REPRODUCE the whole migration once.** Whether the constant grows to carry all
+three objects, whether the regeneration reference narrows, or whether the two
+roles split into two constants, is not decided here.
+**WHY IT IS NOT RULED NOW, WHICH IS A GROUND RATHER THAN A DEFERRAL: THE CONSTANT
+DOES NOT EXIST, AND WHO AUTHORS IT IS ITSELF AN OPEN QUESTION.** A125 in
+`docs/outstanding.md` carries it, under "STILL OPEN, FIRST: THE REAL ASIDE DDL HAS
+NO AUTHOR": "R13 assigns authority to a loader constant carrying the full table
+definition; that constant does not exist, and no ruling places its authorship in a
+slice." **Ruling now how that constant handles three tables would specify an
+artifact whose authoring slice is unscoped.** **THE SLICE THAT AUTHORS THE
+CONSTANT MEETS THIS GAP AND RULES IT THEN**, with the three candidate shapes above
+already on the record and no preference expressed between them, so it starts from
+a named set rather than from nothing.
+**WIDENING R31 DOES NOT CHANGE R8b, AND THE TWO SCOPES NOW DIFFER DELIBERATELY.**
+R8b as amended by R13b reads `index_list` on the LIVE table AFTER the swap, and
+the swap renames only `bmf`: R6 with R11f renames live to a dated name and the
+aside into place, and the aside is a `bmf` twin. **So R8b's scope is `bmf` and its
+three indexes at RUN time, while R31's is all three tables and five indexes at
+AUTHORING time.** That division is R16b's and predates this amendment — R8b
+"catches drift after it shipped", generation prevents it before. **The one
+consequence worth naming: `load_stamp` and `load_check` now have AUTHORING-time
+coverage and NO run-time coverage**, because nothing swaps them and R8b cannot
+see them. That is a fact about the design rather than a defect in it, recorded so
+a later reader does not meet the gap and read it as an oversight.
+**A FULL CONSTRUCT SWEEP FOUND NOTHING ELSE PRESENT TO COMPARE** — no DEFAULT,
+UNIQUE, COLLATE, AUTOINCREMENT, WITHOUT ROWID, STRICT, trigger, view, `ON
+CONFLICT` or generated column exists in that file, against controls of 13 `NOT
+NULL` and 8 `CREATE`.
+**ONE OF R13a's TWO STATED PURPOSES DOES NOT SURVIVE THIS, AND THE WEAKER CLAIM
+IS ACCEPTED DELIBERATELY.** R13a states both as two clauses of one sentence, so
+the distinction is R13a's own and is not read back into it.
+**"Any difference is drift found on day one rather than on load twelve" SURVIVES
+INTACT**: a structural comparison still catches a changed PRIMARY KEY, a lost NOT
+NULL, a renamed or dropped index, an index moved to different columns or onto a
+DIFFERENT TABLE, a dropped CHECK, a lost referential action, or a changed type
+— the drift R16a names and R13b catches at run time.
+**"Proves the derivation retroactively" DOES NOT SURVIVE.** A structural
+comparison establishes that the constant produces an EQUIVALENT SHAPE. **It does
+not establish that the hand-written file is what the constant would have
+produced, and no reader may take a passing structural comparison as proof of
+derivation.** That proof is not weakened here. It is given up.
+**WHY THE WEAKER CLAIM WAS ACCEPTED.** Full-file byte-identity would require the
+constant to emit statements about the file that are false the moment it emits
+them; the repair option's scope depended on the outcome of this very question;
+and SQL-only cannot be reproduced by any uniform padding rule, since of the
+twelve inline comments in `migrations/0022_bmf_table.sql` eleven begin at column
+55 and one at column 56. **R8b is the precedent for judging a comparison by what
+it establishes rather than by how strict it reads**, having refused a pre-swap
+schema comparison that "validates nothing on load ONE".
+**R13a's TEXT IS UNCHANGED AND IS STATED IN FULL ELSEWHERE, and a regenerating
+reader will probably meet one of those before meeting this amendment:**
+`docs/outstanding.md` under A113's "R13a, INHERITED FROM A117 ON ITS CLOSURE"
+block, which now carries a pointer here, and `migrations/0022_bmf_table.sql` at
+`:7-9` and at `:26-27`. **The migration's two cannot be corrected** — it is
+applied to both databases and wrangler matches by NAME — which is itself the
+subject of a filed queue entry.
+**RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
+reason: a heading would move this section's own heading and ruling counts.
+
 ### R14. A generation table is `bmf_gen_YYYYMMDDTHHMMSSZ`
 
 **Q7 of the 2026-09-07 DDL review.** Concretely `bmf_gen_20260907T164748Z`. Four
@@ -2151,6 +2272,35 @@ is why the exclusion is structural rather than cautionary.
 whole run if any instrument cannot discriminate: it asserts the item PASSES on a
 quoted EIN and FAILS on an unquoted one, and demonstrates the `typeof` result on
 both arms rather than asserting it. `scripts/bmf-verify-slice1.mjs`.
+
+**R21c, RULED 2026-09-09: THREE RULED BULLETS COME OUT OF EVERY SLICE'S
+DEFINITION OF DONE AND BECOME POST-LOAD OPERATIONAL VERIFICATION.** R7, R8c and
+R8e are provable only across a SEQUENCE of loads. **R21 admits a boundary when a
+set can be PROVEN on its own, and a proof that is not an event cannot satisfy
+that test at any boundary.** So no slice can discharge them and none should carry
+them: a container holding them would accept a set whose proof is not a single
+event, and a container excluding them would leave three ruled bullets assigned to
+nothing. **They are assigned here instead**, which is the third option.
+**EACH IS STAMPED WITH THE LOAD AT WHICH IT FIRST BECOMES CHECKABLE, taken from
+its own ruling rather than estimated.**
+- **R7, RETENTION — FIRST CHECKABLE AT LOAD THREE.** Three generations are
+  retained and each load replaces the previous retained copy, so the retained set
+  is not full and the rule's own behaviour is not observable until a third load
+  exists.
+- **R8c, PRUNING — FIRST CHECKABLE AT LOAD FOUR.** The loader drops the oldest
+  generation beyond three, and only after a verified-good swap, so no drop can
+  happen until a fourth load.
+- **R8e, TREND BASELINE — FIRST CHECKABLE AT ROUGHLY LOAD FOUR.** R8e's own
+  words: "The trend check has no baseline until roughly the fourth load."
+  **"Roughly" is R8e's and is kept rather than sharpened.**
+**WHY THIS IS NOT FILED IN `docs/outstanding.md`.** It has no completion state
+until loads three and four happen, and that file's header rules that an item with
+no completion state would sit in a counted queue permanently — the same reasoning
+CLAUDE.md §6.10 gives for keeping its branch (c) obligation out of it. **A130,
+the entry that filed the question, closed with this ruling**, and its standing
+content is stated here in full rather than pointed at.
+**RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
+reason: a heading would move this section's own heading and ruling counts.
 
 ### R22. Slice 1 proves against a FRESH download, not the 2026-08 extract
 

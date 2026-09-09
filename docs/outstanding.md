@@ -53,57 +53,64 @@ delegation-message problem is mitigated BY PROMPT rather than by configuration �
 each file tells the agent to treat a parent's claims as unverified, and nothing
 enforces it. CLAUDE.md §8 carries the same pointer for a reader who starts there.
 
-**As committed: 115 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 113 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
-BMF-and-Discover 15, cheap-and-mechanical 32, large 35, and
+BMF-and-Discover 13, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-08: THREE ENTRIES FILED, NOTHING
-CLOSED.** All three come from the slice-2 boundary scope pass and all three sit
-in `### BMF and Discover — open questions`. A129 records that byte-identity under
-R13a may not be satisfiable as stated. A130 records that three of A113's eleven
-bullets are provable only across multiple loads. A131 corrects A125's census, and
-carries a correction to a correction.
-**So OPEN goes 112 → 115, BLOCKING goes 23 → 25 and DEBT goes 62 → 63**; POST
-stays 27, summing to 115; the breakdown becomes
-7 + 16 + 7 + 15 + 32 + 35 + 3 = 115, the BMF-and-Discover tier taking all three;
-the restatement further down becomes "sum to 115"; and the counsel-gated line
-becomes FOUR OF THE TWENTY-FIVE.
-**THE BUILD CHAIN MOVES AND THE COUNSEL-GATED COUNT DOES NOT, to 21 and FOUR.**
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-09: THREE ENTRIES CLOSED, ONE FILED.**
+All four sit in `### BMF and Discover — open questions`. A129, A130 and A131 were
+CLOSED on FT rulings — byte-identity coverage, the three multi-load bullets, and
+the census correction — and A132 was FILED, recording that
+`migrations/0022_bmf_table.sql` holds text a regeneration would make false. **The
+three closure notes are consolidated into ONE note inside A125**, the next-lower
+surviving ID in that section, for the reason recorded there.
+**So OPEN goes 115 → 113, BLOCKING goes 25 → 23, and DEBT STAYS AT 63**; POST
+stays 27, summing to 113; the breakdown becomes
+7 + 16 + 7 + 13 + 32 + 35 + 3 = 113, the BMF-and-Discover tier going 15 → 13;
+the restatement further down becomes "sum to 113"; and the counsel-gated line
+becomes FOUR OF THE TWENTY-THREE.
+**DEBT HOLDING STILL IS A NET, NOT A NON-EVENT, and it is the figure here most
+likely to be misread.** A131 was DEBT and left; A132 is DEBT and arrived. Two
+changes that cancel. **A reader checking only the total would conclude nothing
+moved in that class**, and two things did.
+**THE BUILD CHAIN MOVES AND THE COUNSEL-GATED COUNT DOES NOT, to 19 and FOUR.**
 The definition is unchanged — BLOCKING minus the four counsel-gated items — and
-BLOCKING moved, so 25 − 4 = 21. **A47, A84, A68 and A110 were re-confirmed by
+BLOCKING moved, so 23 − 4 = 19. **A47, A84, A68 and A110 were re-confirmed by
 execution**, not recall: all four present, all four inside OPEN, all four still
-carrying `Pilot: BLOCKING, and counsel-gated`.
-**NEITHER NEW BLOCKING ENTRY IS COUNSEL-GATED, and that is deliberate rather
-than an oversight.** A129 and A130 are unruled SCOPING questions, closable by an
-FT ruling and by building. The counsel-gated set exists to name what building
-cannot close, and putting a scoping question into it would make the set mean
-something else.
-**THE DIAGNOSTICS MOVE BY THREE AND BY ONE.** The enumerator goes from 110
-against 112 to 113 against 115, since A129, A130 and A131 are all plain-numeric
-headers, leaving the gap still exactly A50a and A50b. The file-wide
-`Pilot: DEBT` count goes from 63 against 62 to 64 against 63, the single extra
-still being FJ-7's own line inside FOUNDER JUDGMENT.
-**A128 IS STILL NOT REUSED AND THE IDS RUN A129, A130, A131.** A128 closed on
-2026-09-08 and its id still appears in this file, in its own closure note and in
-the arithmetic that recorded it, so reusing it would make those references
-ambiguous.
+carrying `Pilot: BLOCKING, and counsel-gated`, and the file-wide count of that
+marker is 4.
+**BOTH ENTRIES THAT LEFT BLOCKING WERE UNRULED SCOPING QUESTIONS, WHICH IS WHY
+THE COUNSEL-GATED SET IS UNTOUCHED.** A129 and A130 were closable by an FT ruling
+and both were closed by one. That set names what building cannot close, and a
+scoping question was never in it.
+**THE DIAGNOSTICS MOVE BY TWO AND BY NOTHING.** The enumerator goes from 113
+against 115 to 111 against 113, since A129, A130, A131 and A132 all carry
+plain-numeric headers, leaving the gap still exactly A50a and A50b. The file-wide
+`Pilot: DEBT` count stays 64 against 63 on both sides, for the netting reason
+above, the single extra still being FJ-7's own line inside FOUNDER JUDGMENT.
+**FOUR IDS ARE NOW RETIRED AND NOT REUSED: A128, A129, A130 AND A131.** Each
+still appears in this file, in the closure notes and in the arithmetic that
+recorded them, so reusing any would make those references ambiguous. **A132 was
+assigned BY EXECUTION** as the next number above the maximum, verified absent
+from this file and from the whole tree at HEAD before it was used.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. It recorded A128 closing with nothing filed.
-**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: A8, A113, A115 and A116 as
-plain-numeric entry headers and A50a and A50b as letter-suffixed ones, asserted
-to match the suffix-aware pattern and NOT the naive one; the `bmf_aside` census
-run over BOTH the literal `CREATE TABLE bmf_aside` form and the interpolated one,
-after the literal-only form proved blind to `scripts/d1-window-generate.mjs:85`;
-the 0022 line counters checked against `^` matching every line and `^ZZ` matching
-none, with the inline-comment counter checked against a known-clean and a
-known-commented string; and A125's claims re-tested at the revision that
-introduced them as well as at HEAD. The known false positive at
+than-append rule. It recorded three entries filed and nothing closed.
+**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: a control file carrying one
+letter-suffixed and one plain-numeric header, asserted to return 2 on the
+suffix-aware pattern and 1 on the naive one, with A50a and A50b confirmed present
+in OPEN; **every deletion checked by its CLOSING line rather than by its header,
+which is what caught two orphaned lines of A131 that survived a replacement whose
+exactly-once assertions had ALL PASSED**; surviving neighbours A113, A119, A124,
+A125 and A127 asserted still present; line endings re-counted as
+carriage-returns-against-line-count with a known-LF control file whose EXISTENCE
+was checked before its result was trusted; and the 0022 construct sweep run
+against controls of 13 `NOT NULL` and 8 `CREATE`. The known false positive at
 `docs/propublica-spike-findings.md:694`, where `A68` is an NTEE code rather than
 an entry, is excluded by inspection.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 113 rather than 115, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 111 rather than 113, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
 ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 64
@@ -115,15 +122,15 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 25 BLOCKING, 63 DEBT, 27 POST**, classification ruled
-2026-09-02 and the totals re-derived 2026-09-08,
+**AGAINST THE PILOT GATE: 23 BLOCKING, 63 DEBT, 27 POST**, classification ruled
+2026-09-02 and the totals re-derived 2026-09-09,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 115. The sentence
+totals above, which remain a count of OPEN entries and sum to 113. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -162,7 +169,7 @@ STATE is a live count wearing a date**, and must be maintained or it lies. The
 parenthetical here dated the CLASSIFICATION ACT, which is genuinely fixed at
 2026-09-02; the TOTALS were never fixed, and pairing the two made a live count
 look archival. **The date has been moved off the totals and onto the act.**
-**FOUR OF THE TWENTY-FIVE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
+**FOUR OF THE TWENTY-THREE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
 BY BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not
 one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
@@ -1265,6 +1272,18 @@ carrying the full table definition (R13), **it REGENERATES
 `migrations/0022_bmf_table.sql` from that constant.** Byte-identical output
 proves the derivation retroactively; any difference is drift found on day one
 rather than on load twelve.
+**AMENDED 2026-09-09: THE BYTE-IDENTITY ABOVE IS STRUCTURAL, NOT FULL-FILE.**
+Coverage is table shape only, across **all THREE tables the migration creates and
+all FIVE indexes**, with **every construct compared AS ATTACHED TO ITS NAMED
+OBJECT** — columns by name, type and order; PRIMARY KEY; NOT NULL; CHECK
+constraints; foreign keys with their referential actions; and indexes by name, by
+columns, and by the table they are on — never comment text, alignment whitespace
+or prose. **A construct matching in shape but attached to a different object does
+not satisfy the comparison.** **"Proves the derivation retroactively" DOES NOT
+SURVIVE that and is not owed by this slice**; "drift found on day one" does,
+intact. Full ruling, its three corrections read as one progression, and a surfaced
+gap between the wide scope and R13's single-constant wording:
+`docs/bmf-load-scoping.md` §15, R31, beside R13a.
 
 **R15c: THE BYTE-IDENTITY REFERENCE IS THE TRACKED FILE
 `migrations/0022_bmf_table.sql`, NOT A117's DDL BLOCK.** This is deliberate and
@@ -1714,6 +1733,64 @@ in `docs/bmf-load-scoping.md`, one COMMENT at `migrations/0022_bmf_table.sql:111
 and one code line — `scripts/d1-window-generate.mjs:36`,
 `const LIVE = 'bmf', ASIDE = 'bmf_aside';`. **No `CREATE TABLE bmf_aside`
 exists.**
+**SUPERSEDED 2026-09-09 BY FT RULING. MARKED, NOT EDITED, NOT DELETED.** The
+paragraph immediately above is left exactly as written. **FT's reasoning for
+marking rather than removing: a prior wrong correction could only be caught
+BECAUSE it stayed on the record.** A half that is deleted is a half that cannot
+be audited.
+**WHAT IS SUPERSEDED, AND BY WHAT MEASUREMENT. Stated here IN FULL rather than as
+a pointer, because the entry that measured it — A131 — closed in the same commit,
+and closing deletes it.**
+- **The six-hit count.** The stated command never produced the stated number: at
+  `23ed8d0`, the commit that introduced the sentence, it returned TWELVE lines,
+  and returned exactly the six enumerated only once `docs/outstanding.md` itself
+  was excluded. **Both figures verify at that revision. The enumeration was right
+  and the command was not.**
+  **THE FIGURE A131 GAVE FOR "HEAD" WAS ITSELF WRONG, AND IS CORRECTED HERE
+  RATHER THAN CARRIED FORWARD.** It read "21 lines across 6 files", with
+  `docs/outstanding.md` at 8. **That is the census at `abb2f92`, the PARENT of
+  the commit that wrote it**, where it verifies exactly. At `c8f2988`, the commit
+  itself, it was 29 lines across 6 files with `docs/outstanding.md` at 16:
+  **A131's own text carried the token six times and that commit's arithmetic
+  block twice more, doubling the file's share.** At `f3226eb` it was 30 across
+  SEVEN, `docs/session-log.md` having joined. **A131 never measured a seventh
+  file because none existed when it looked.**
+  **ITS CONTROL FAILED THE SAME WAY, WHICH IS THE SHARPER HALF.** A131 asserted
+  that a deliberately-misspelt variant of the token returned zero files. **True
+  at `abb2f92`, and FALSE from `c8f2988` onward, because A131 WROTE THAT VARIANT
+  INTO THIS FILE and so turned its own negative control into a true positive.**
+  The variant is named here in words and deliberately not reproduced, for exactly
+  that reason. CLAUDE.md §10 files both halves — a measurement falsified by the
+  commit carrying it, and a control that is not a control until verified negative.
+  **NO CURRENT-REVISION FIGURE IS GIVEN HERE**, because any text discussing this
+  token changes the count, and this block is such text.
+- **"No `CREATE TABLE bmf_aside` exists."** True at `23ed8d0` for executable
+  code, zero files under `scripts/` or `migrations/`; FALSE at HEAD, where
+  `scripts/bmf-verify-slice1.mjs` carries one.
+- **"one code line" at `scripts/d1-window-generate.mjs:36`.** EIGHT code lines
+  under `scripts/` now carry `bmf_aside`: `bmf-parse.mjs:76`,
+  `bmf-verify-slice1.mjs` at `:41`, `:45`, `:71`, `:95`, `:101` and `:106`, and
+  `d1-window-generate.mjs:36`.
+**THE DEFECT THIS CLOSES IS INTERNAL TO THIS ENTRY.** Its later half names
+`scripts/bmf-verify-slice1.mjs` as "the fourth" site, so until this marker the
+entry asserted both that no aside CREATE TABLE exists and that one does. **The
+marker is what stops the two halves contradicting each other.** Both still-open
+items below are unaffected and stand.
+**A CORRECTION OF A CORRECTION, CARRIED FORWARD BECAUSE THE SUPERSESSION RULING
+RESTS ON IT.** A 2026-09-08 pass reported this entry's FOUR-SITE claim as stale,
+on the ground that `scripts/d1-window-verify-import.mjs:26` creates `bmf` rather
+than `bmf_aside`. **That reading was wrong and this entry was right**: the
+four-site claim is a D5 SHAPE-SITE census, not a `bmf_aside` census, and this
+entry says in its own words that `migrations/0022_bmf_table.sql:55` "creates
+`bmf`". All four verify at HEAD, each read by line — `0022:55` is "CREATE TABLE
+bmf ("; `d1-window-generate.mjs:85` is the interpolated aside DDL;
+`d1-window-verify-import.mjs:26` is "CREATE TABLE bmf ("; and
+`bmf-verify-slice1.mjs:106` is the literal aside DDL. **That four is a DIFFERENT
+four from the six-hit census above and must not be reconciled with it.**
+**THE CENSUS HAZARD IS ALREADY FILED AND IS NOT REPEATED HERE**: a literal
+`CREATE TABLE bmf_aside` search is blind to `scripts/d1-window-generate.mjs`,
+whose DDL is interpolated. CLAUDE.md §10 carries it as the literal-versus-
+interpolated format variant.
 **THREE RULINGS MEET AT IT.** R24 rules the emitted INSERTs target `bmf_aside`.
 R27 permits an in-memory `node:sqlite` check and calls it "the cheapest available
 proof that the emitted file is loadable at all". **A load requires the target to
@@ -1796,180 +1873,161 @@ five of the fifteen were unrecoverable, that A124's own claim to the contrary
 was false, and that the understatement surfaced only when someone tried to use
 the record. That is where a later reader meets it, and repeating it here would
 be a second copy of a claim that already has a home.
+**THREE ENTRIES WERE CLOSED 2026-09-09 AND HAVE LEFT THIS SECTION — A129, A130
+AND A131. The remaining IDs are not renumbered and none of the three is reused**,
+since each id still appears in this file and reuse would make those references
+ambiguous. **They are recorded in ONE note rather than in three.** The
+closure-note precedent, measured rather than recalled, is the next-lower
+surviving ID in the same section — A117 to A116, A126 to A125, A128 to A127 —
+and all three of these resolve to this entry. **Three separate notes here would
+be an accumulation rather than an index**, which is what this file is; one note
+saying what closed and where each one's content went is the same information
+without the pile. **The header's arithmetic block was rejected as the sole
+home**, because that block is REPLACED on every change by its own rule, so a
+closure recorded only there is erased by the next change.
 
-**A129 | Byte-identity under R13a may not be satisfiable as stated, and nothing
-says what it covers.**
-Blocker: unruled. FT rules what byte-identity covers; no coverage option is
-chosen here.
-Pilot: BLOCKING
-Detail: `docs/bmf-load-scoping.md` §15 R13 and R13a; `migrations/0022_bmf_table.sql`,
-its comment text throughout and its inline column comments; A113 above, which
-carries R13a and R15c in full.
-**R13a's TWO STATED PURPOSES, VERBATIM**, because the coverage question is
-decided against them rather than against convenience: byte-identity "proves the
-derivation retroactively", and "any difference is drift found on day one rather
-than on load twelve".
-**MEASURED AT HEAD 2026-09-08, not carried forward.** The migration is
-**158 lines: 122 full-line comments, 5 blank, 31 SQL, of which 12 carry an
-inline comment, leaving 19 comment-free SQL lines.** Controls: a caret pattern
-matched all 158 lines, a caret-ZZ pattern matched none, and the inline-comment
-counter returned 0 on a known-clean string and 1 on a known-commented one.
-**NO CLEAN PROSE/SQL SPLIT EXISTS.** Only 19 of 158 lines are comment-free SQL,
-so every candidate boundary cuts through annotated lines rather than between
-blocks.
-**ALIGNMENT WHITESPACE IS ITSELF BYTES THE CONSTANT MUST REPRODUCE, AND NO
-SINGLE UNIFORM PADDING RULE REPRODUCES THE FILE.** Eleven inline comments begin
-at column 55 and one begins at column 56, the `revenue_amt` line carrying
-"absent stays distinct from zero". A generator padding every comment to one
-column produces a file differing from the applied artifact by one line.
-**UNDER FULL-FILE BYTE-IDENTITY THE CONSTANT WOULD EMIT TEXT FALSE ON EMISSION.**
-Three sites, quoted at HEAD:
-1. The header at `:3` and `:6-7`: "HAND-WRITTEN AND PROVISIONAL (R13a). THE
-   LOADER IS AUTHORITATIVE FOR THIS DDL" and "carry the full table definition as
-   a single named constant, and THIS FILE IS REGENERATED FROM THAT CONSTANT once
-   it exists." A regenerated file is neither hand-written nor awaiting
-   regeneration.
-2. `:11`: "The body below is the reviewed DDL, extracted VERBATIM from the A117
-   entry in docs/outstanding.md as committed at a5be8d9." **A117 does not
-   exist**: verified at HEAD, zero entry headers against a control of one for
-   A113, with its closure note present.
-3. `:147`: "D1 REMOTE FK ENFORCEMENT IS UNVERIFIED (CLAUDE.md §10); local is
-   verified." A113 already records this as known stale, left deliberately
-   because an applied migration is a record of what ran.
-**WHICH PURPOSE SURVIVES A WEAKER COMPARISON AND WHICH DOES NOT.** "Drift found
-on day one" SURVIVES: a normalised or structural comparison still catches a
-changed primary key, a lost NOT NULL, a renamed or dropped index, a changed type
-— the drift R16a names and R13b catches at run time. "Proves the derivation
-retroactively" DOES NOT SURVIVE: a weaker comparison establishes that the
-constant produces an EQUIVALENT file, which is a different claim from
-establishing that the hand-written file is what the constant would have produced.
-**FILED AS AN OPEN QUESTION. Coverage options are not enumerated here, none is
-recommended, and which applies is FT's ruling.**
-**ONE PROPERTY BINDS WHATEVER IS RULED**, and A113 already records it: wrangler
-tracks applied migrations by NAME with no hash, so a regenerated file will not
-re-run, and a byte difference is a finding to report rather than a diff to
-accept.
+**A129, BYTE-IDENTITY COVERAGE — CLOSED BY RULING. Byte-identity under R13a
+covers TABLE SHAPE ONLY, across ALL THREE tables the migration creates and ALL
+FIVE indexes, every construct compared AS ATTACHED TO ITS NAMED OBJECT**: columns
+by name, type and order; PRIMARY KEY; NOT NULL; CHECK constraints; foreign keys
+including their referential actions; and indexes by name AND by columns AND by
+the table they are on. **A construct matching in shape but attached to a DIFFERENT
+OBJECT does not satisfy the comparison. NOT comment text, NOT alignment
+whitespace, NOT prose.** The durable record is `docs/bmf-load-scoping.md` §15, in
+`### R13.`, beside R13a.
+**THE RULING WAS CORRECTED THREE TIMES BEFORE IT WAS APPLIED, AND THE THREE READ
+AS A PROGRESSION RATHER THAN AS THREE SEPARATE FIXES: index names alone; then
+constructs specified without the object they attach to; then objects specified
+without the full set of objects.** Each amendment closed one level of
+under-specification and left the next open. **The generalisation, which is the
+part that travels: an enumeration of a shape stays under-specified until it says
+WHAT EACH ELEMENT IS, WHAT IT ATTACHES TO, and ACROSS WHICH OBJECTS THE
+COMPARISON RUNS.** **The fork was never in doubt any of the three times; the
+enumeration was.**
+**FOUR OPTIONS WERE BEFORE FT**, recorded so none is re-proposed: full-file
+byte-identity; STRUCTURAL, which was ruled; repair-then-compare; and SQL-only,
+comparing the 31 SQL lines and ignoring the 122 comment lines and 5 blanks.
+**THE GROUNDS, RE-VERIFIED AT HEAD RATHER THAN RESTATED. R8b is the precedent**,
+and it refused a comparison for validating less than it appeared to: a pre-swap
+schema comparison "validates nothing on load ONE", and "would first do useful
+work on load two, by which point the drift has already shipped once".
+**FULL-FILE would require the constant to emit THREE statements false at
+emission**, filed in the entry below rather than restated here. **REPAIR IS
+CIRCULAR IN SCOPE**: two of its candidates could not be classified until this
+question was ruled. **SQL-ONLY CANNOT BE REPRODUCED BY ANY UNIFORM PADDING
+RULE** — of the twelve inline comments in `migrations/0022_bmf_table.sql` eleven
+begin at column 55 and one at column 56, `:60` carrying "absent stays distinct
+from zero", so a generator padding every comment to one column produces a file
+differing from the applied artifact by one line.
+**THE WIDE SCOPE WAS RULED ON MEASURED GROUNDS, AND THE NARROW WORDING WAS AN
+ERROR RATHER THAN A CHOICE.** `bmf`, whose body spans
+`migrations/0022_bmf_table.sql:55-63`, carries ZERO CHECK constraints and ZERO
+foreign keys; the file's only CHECK is `load_check.passed` at `:156` and its only
+`REFERENCES` is `load_check.stamp_id` at `:153`. **A `bmf`-only comparison would
+enumerate CHECK constraints and referential actions and then compare none of
+either**, so the ruling described a wider scope than its own wording stated. The
+narrow reading would also have left uncaught that CHECK, that `REFERENCES` with
+its `ON DELETE CASCADE` and the reasoning D2 records at `:142-146`, and two of the
+five indexes — **precisely the drift R13a's surviving purpose exists to catch.**
+**ONE IMPLICATION IS SURFACED AND NOT RESOLVED, AND IT IS FT'S.** R13 assigns
+authority to a loader constant carrying "the full table definition as a single
+named constant", while R16a states that constant's job as building the aside, and
+the aside is a `bmf` twin. `load_stamp` and `load_check` are never built by the
+loader at all. **So the wide scope asks one constant to both BUILD the aside every
+run and REPRODUCE the whole migration once**, and those do not currently coincide.
+The detail sits in §15 beside R31 rather than here.
+**A FULL CONSTRUCT SWEEP FOUND NOTHING ELSE PRESENT TO COMPARE** — no DEFAULT,
+UNIQUE, COLLATE, AUTOINCREMENT, WITHOUT ROWID, STRICT, trigger, view, `ON
+CONFLICT` or generated column exists in the file, against controls of 13 `NOT
+NULL` and 8 `CREATE`.
+**ITS STANDING CONTENT WAS RELOCATED BEFORE CLOSURE.** The two-purposes analysis
+and the padding measurement went to `docs/bmf-load-scoping.md` §15; the
+false-text sites and the two undecidable candidates went to the entry below.
+**The wrangler-by-NAME caution moved nowhere**, because A113 above already
+carries it in full.
 
-**AMENDED 2026-09-09: THREE CORRECTIONS TO THE THREE-SITE LIST ABOVE. The list
-is left exactly as written and this block corrects it.**
+**A130, THE THREE MULTI-LOAD BULLETS — CLOSED BY RULING.** R7, R8c and R8e come
+OUT of every slice's definition of done and become POST-LOAD OPERATIONAL
+VERIFICATION, each stamped with the load at which it first becomes checkable:
+retention at load three, pruning at load four, trend baseline at roughly load
+four. **The durable record is `docs/bmf-load-scoping.md` §15, in `### R21.`,
+beside R21a's list**, stated in full there rather than pointed at. **It is
+deliberately not re-filed here**: it has no completion state until those loads
+happen, and this file's header rules that such an item would sit in a counted
+queue permanently.
 
-**FIRST, SITE 2's CITATION IS SHORT BY ONE LINE.** It reads `:11`; the quoted
-sentence spans **`:11-12`**, line 11 ending at the word "in" and
-`docs/outstanding.md as committed at a5be8d9.` sitting on line 12. Verified
-against the blob. **This is an internal inconsistency rather than a
-convention**, because site 1 in the same list writes `:6-7` for a two-line span.
+**A131, THE CENSUS CORRECTION — CLOSED, ITS BLOCKER DISCHARGED BY THE
+SUPERSESSION RULING ABOVE.** Its measurements and its correction-of-a-correction
+are relocated into that marker earlier in this entry, in full. **One sentence it
+carried is worth naming as it goes**: it recorded that this entry's earlier half
+was "not marked superseded", which the same commit that closed it made false.
+**That sentence needed no reconciling, because closing deleted it** — the entry
+and its claim left together, which is the cheapest possible resolution of a
+self-invalidating claim and is available only when the carrier itself closes.
 
-**SECOND, THE GROUND OFFERED AT SITE 2 DOES NOT BY ITSELF ESTABLISH THE FALSITY
-IT IS OFFERED FOR. THE CONCLUSION IS NOT DISTURBED HERE.** The ground is that
-A117 does not exist, verified at HEAD, and that is TRUE OF HEAD: re-verified
-2026-09-09 as zero A117 entry headers, against a control of one for A113. **But
-the migration's sentence is TIME-QUALIFIED.** It says the body was extracted
-from the A117 entry "in docs/outstanding.md as committed at a5be8d9", and that
-commit exists (2026-09-07) with its `docs/outstanding.md` carrying exactly
-**one** A117 entry header, against the same control of one for A113. A claim
-about a named past revision is not falsified by the present state of the file.
-**WHAT WOULD FALSIFY IT IS NOT RULED HERE**, and site 2's conclusion may well
-survive on a different ground; naming that ground is FT's call rather than this
-entry's.
-
-**THIRD, THE SET IS NOT EXHAUSTIVE. A FOURTH SITE EXISTS AT `:25-27`**, a second
-independent hand-written-and-provisional assertion, opening "R13a: this text is
-HAND-WRITTEN and PROVISIONAL until A113 lands, then REGENERATED from that
-constant." It is **NOT covered by site 1's ":3 and :6-7" citation**: it sits in a
-separate `-- R13, AUTHORITY:` block bounded by blank lines at `:20` and `:28`,
-where site 1's two citations both fall inside the header block at `:1-19`.
-Boundaries verified at HEAD.
-
-**THE `Detail:` LINE ABOVE WAS WIDENED IN THE SAME COMMIT AS THIS BLOCK**, from
-"its header" to "its comment text throughout", precisely so that it reaches this
-fourth site and site 3 at `:147`. Recorded so the two are read together: the gap
-in the pointer and the gap in the list were one gap, and neither is a separate
-open item.
-
-**TWO FURTHER CANDIDATES ARE RECORDED AS UNDECIDABLE RATHER THAN AS SITES**,
-because both turn on the coverage question this entry files and cannot be
-resolved ahead of it. (a) `:13`, "or once A113 exists, edit the loader constant
-and regenerate", which presupposes A113 does not exist; the sentence containing
-it opens at `:12`. (b) A TENSE SPLIT: `:5` reads "The loader (A113) will",
-carrying to "carry" at `:6`, while `:23` reads "The loader (A113) carries" — the
-same fact in two tenses in one file. Whether either is text false on emission
-depends on what byte-identity is ruled to cover.
-
-**A130 | Three of A113's eleven bullets are provable only across multiple loads,
-and R21's test admits no boundary that makes them provable on their own.**
-Blocker: unruled. It is a scoping question and FT rules it.
-Pilot: BLOCKING
-Detail: `docs/bmf-load-scoping.md` §15 R7, R8c, R8e and R21; A113 above, the
-eleven-bullet block headed "WHAT THE SLICE NOW OWES".
-**R21's TEST, VERBATIM**: "slice 1 can be PROVEN on its own against §5's measured
-distributional figures, and slice 2 cannot be proven without slice 1."
-**THE THREE, EACH QUOTED FROM ITS OWN RULING.** R7: "Each load replaces the
-previous retained copy", with three generations retained, so the rule's own
-behaviour is unobservable until a third load exists. R8c: "After a verified-good
-swap the loader drops the oldest generation beyond three", which needs a fourth
-load before a drop can happen. R8e: "The trend check has no baseline until
-roughly the fourth load."
-**EVERY OTHER BULLET IS PROVABLE IN A SINGLE ACT**, whether locally, by an FT-run
-remote command, or after one load. These three are not provable by any single act
-at all.
-**THE CONSEQUENCE AGAINST R21's TEST, which is the finding rather than the
-observation.** R21 admits a boundary when a set can be PROVEN on its own. No
-boundary makes these three provable on their own, because their proof is not an
-event but a sequence of loads. **So any container holding them accepts a set
-whose proof is not a single event**, and any container excluding them leaves
-three ruled bullets assigned to nothing.
-**FILED AS AN OPEN SCOPING QUESTION. No slice structure is proposed here and no
-slice is named.**
-
-**A131 | A125's census needs correcting, and one prior correction of it was
-itself wrong.**
-Blocker: none. The measurements are made; what remains is FT's call on whether
-A125's earlier half is marked superseded.
+**A132 | `migrations/0022_bmf_table.sql` holds text a regeneration would make
+false, and whether an applied migration is ever corrected is unruled.**
+Blocker: unruled. A127 turns on the same root question and a ruling on either
+should be made for both.
 Pilot: DEBT
-Detail: A125 above, both halves; `scripts/`, `migrations/` and `docs/` as
-measured below.
-**FIRST, A CORRECTION OF A CORRECTION, recorded because the wrong correction is
-in this record.** A 2026-09-08 pass reported A125's four-site claim as stale, on
-the grounds that `scripts/d1-window-verify-import.mjs:26` creates `bmf` rather
-than `bmf_aside`. **That reading was wrong and A125 was right.** Claim 4 is a
-**D5 shape-site census, not a bmf_aside census**, and A125 says in its own words
-that `migrations/0022_bmf_table.sql:55` "creates `bmf`", grouping the
-verify-import site as banked residue without claiming it creates an aside.
-**All four sites verify at HEAD**, each read by line: `0022:55` is
-"CREATE TABLE bmf ("; `d1-window-generate.mjs:85` is the interpolated aside DDL;
-`d1-window-verify-import.mjs:26` is "CREATE TABLE bmf ("; and
-`bmf-verify-slice1.mjs:106` is the literal aside DDL.
-**WHAT IS ACTUALLY STALE, measured at HEAD across files and lines.** `bmf_aside`
-appears on **21 lines across 6 files**: `docs/bmf-load-scoping.md` 4,
-`docs/outstanding.md` 8, `migrations/0022_bmf_table.sql` 1,
-`scripts/bmf-parse.mjs` 1, `scripts/bmf-verify-slice1.mjs` 6, and
-`scripts/d1-window-generate.mjs` 1. Control: a `bmf_zzside` search returns zero
-files against six for `bmf_aside`.
-**CLAIM 1 NO LONGER HOLDS, AND DID NOT HOLD AS A COMMAND-AND-COUNT PAIRING EVEN
-WHEN WRITTEN.** It reads that a `bmf_aside` grep "returns six hits". At
-`23ed8d0`, the commit that introduced the sentence, that command returned
-**TWELVE** lines; excluding `docs/outstanding.md` itself it returned exactly the
-six the sentence enumerates. **The enumeration was right and the stated command
-never produced the stated number.** At HEAD the same command returns 21.
-**CLAIM 2 NO LONGER HOLDS, AND IT NOW CONTRADICTS A125's OWN LATER HALF.** It
-reads that no aside CREATE TABLE exists. That was true at `23ed8d0` for
-executable code, zero files under `scripts/` or `migrations/`, and is FALSE at
-HEAD, where `scripts/bmf-verify-slice1.mjs` carries one. **A125's later half
-names that same table as "the fourth" site**, so the entry asserts both, and
-**the earlier half is still headed "VERIFIED AT HEAD 2026-09-08" and is not
-marked superseded.**
-**CLAIM 3 NO LONGER HOLDS.** It reads "one code line" at
-`scripts/d1-window-generate.mjs:36`. **Eight code lines under `scripts/` now
-carry `bmf_aside`**: `bmf-parse.mjs:76`, `bmf-verify-slice1.mjs` at `:41`, `:45`,
-`:71`, `:95`, `:101` and `:106`, and `d1-window-generate.mjs:36`.
-**THE FORM DISTINCTION IS WHAT HID A SITE, and it is recorded so a later census
-spans it.** A literal aside-CREATE search returns ZERO hits in
-`scripts/d1-window-generate.mjs`, whose DDL is interpolated. A census running
-only the literal form is blind to it, which is the same class as the extractor
-that was blind to a plural.
-**NOTHING IN A125 IS EDITED BY THIS ENTRY.** Whether its earlier half is marked
-superseded is FT's call; this entry records the measurements rather than making
-it.
+Detail: `migrations/0022_bmf_table.sql` at the lines below; A127 in
+`### Gates other work`; A113 above, its "KNOWN STALE CONTENT IN THAT FILE" block;
+`docs/bmf-load-scoping.md` §15, R13 and R31.
+**THIS ENTRY EXISTS BECAUSE THE 2026-09-09 COVERAGE RULING ROUTES AROUND THESE
+SITES RATHER THAN RESOLVING THEM.** Structural byte-identity compares table shape
+and ignores comment text, so a regenerated file may differ in prose and still
+pass. **That removes the sites from the byte-identity question and leaves them
+exactly where they were, as a truth question about an applied artifact.**
+**THREE SITES, RELOCATED FROM A129 BEFORE ITS CLOSURE AND STATED IN FULL RATHER
+THAN AS A POINTER. THEIR MODES DIFFER AND THE SET IS NOT UNIFORM.**
+- **`:3` with `:6-7` — FALSE ON REGENERATION.** "HAND-WRITTEN AND PROVISIONAL
+  (R13a). THE LOADER IS AUTHORITATIVE FOR THIS DDL", and "THIS FILE IS
+  REGENERATED FROM THAT CONSTANT once it exists." A regenerated file is neither
+  hand-written nor awaiting regeneration.
+- **`:25-27` — FALSE ON REGENERATION, and a SECOND independent assertion rather
+  than a restatement of the first.** "R13a: this text is HAND-WRITTEN and
+  PROVISIONAL until A113 lands, then REGENERATED from that constant." It sits in
+  the `-- R13, AUTHORITY:` block bounded by blank lines at `:20` and `:28`,
+  outside the header block at `:1-19` where the first site's two citations both
+  fall.
+- **`:147` — STALE AT HEAD, NOT REGENERATION-DEPENDENT, AND LEFT DELIBERATELY.**
+  "D1 REMOTE FK ENFORCEMENT IS UNVERIFIED (CLAUDE.md §10); local is verified."
+  Remote enforcement was verified on `bmf-sandbox` 2026-09-07. A113 records the
+  comment as left in place "because an applied migration is a record of what
+  ran". **Whether that result transfers to production is A116, still open**, so
+  the production half of the sentence is not simply false.
+**A FOURTH SITE WAS LISTED BY A129 AND IS NOT ONE. RULED 2026-09-09.** `:11-12`
+reads that the body was "extracted VERBATIM from the A117 entry in
+docs/outstanding.md as committed at a5be8d9". **A129 called it false on the
+ground that A117 does not exist.** That ground fails twice over. The sentence is
+TIME-QUALIFIED to `a5be8d9`, a commit that exists and whose `docs/outstanding.md`
+carried exactly one A117 entry header, so it is a past-tense provenance
+statement. And A113 above had ALREADY dispositioned it in those terms — "that is
+a provenance statement in the past tense and remains true of the extraction" —
+**in text that predates A129's filing, verified by execution at `c8f2988`.**
+**The site survives regeneration and is not a false site.** Recorded because an
+entry listed as false something the same file had already found true, and only a
+re-derivation caught it.
+**THE TWO CANDIDATES A129 RECORDED AS UNDECIDABLE ARE NOT DECIDED BY THE
+COVERAGE RULING. THEY ARE REMOVED FROM ITS SCOPE, WHICH IS A DIFFERENT THING.**
+Both are prose, and structural coverage does not reach prose, so neither is a
+byte-identity question any longer; both remain instances of this entry's
+question. **(a) `:13`**, "or once A113 exists, edit the loader constant and
+regenerate", whose sentence opens at `:12`, presupposes A113 does not exist.
+**(b) A TENSE SPLIT PRESENT AT HEAD AND INDEPENDENT OF REGENERATION**: `:5` reads
+"The loader (A113) will" carrying to "carry" at `:6`, while `:23` reads "The
+loader (A113) carries" — the same fact in two tenses in one file.
+**WHY THIS CANNOT BE CLOSED BY EDITING.** The file is applied to `bmf-sandbox`
+and to `stewardhouse-pilot`, both at 22, and wrangler tracks applied migrations
+by NAME with no hash, so an edited file will not re-run and its bytes stop
+matching what both databases received. A113 and A127 both carry that caution and
+it is not restated here as a new finding.
+**A127 IS THE SAME ROOT QUESTION AND NOT A DUPLICATE.** Its site is
+`migrations/0001_initial.sql:222` and its subject a retired counsel name; these
+sites are in `0022` and the subject is derivation provenance. A127 already frames
+the shared caution as "the R13a caution applying to a file R13a was not written
+about". **What neither entry can answer alone is whether an applied migration
+holding text that is no longer true should ever be corrected.**
 
 ### Cheap and mechanical
 
