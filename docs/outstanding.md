@@ -1803,8 +1803,8 @@ Blocker: unruled. FT rules what byte-identity covers; no coverage option is
 chosen here.
 Pilot: BLOCKING
 Detail: `docs/bmf-load-scoping.md` §15 R13 and R13a; `migrations/0022_bmf_table.sql`,
-its header and its inline column comments; A113 above, which carries R13a and
-R15c in full.
+its comment text throughout and its inline column comments; A113 above, which
+carries R13a and R15c in full.
 **R13a's TWO STATED PURPOSES, VERBATIM**, because the coverage question is
 decided against them rather than against convenience: byte-identity "proves the
 derivation retroactively", and "any difference is drift found on day one rather
@@ -1849,6 +1849,51 @@ recommended, and which applies is FT's ruling.**
 tracks applied migrations by NAME with no hash, so a regenerated file will not
 re-run, and a byte difference is a finding to report rather than a diff to
 accept.
+
+**AMENDED 2026-09-09: THREE CORRECTIONS TO THE THREE-SITE LIST ABOVE. The list
+is left exactly as written and this block corrects it.**
+
+**FIRST, SITE 2's CITATION IS SHORT BY ONE LINE.** It reads `:11`; the quoted
+sentence spans **`:11-12`**, line 11 ending at the word "in" and
+`docs/outstanding.md as committed at a5be8d9.` sitting on line 12. Verified
+against the blob. **This is an internal inconsistency rather than a
+convention**, because site 1 in the same list writes `:6-7` for a two-line span.
+
+**SECOND, THE GROUND OFFERED AT SITE 2 DOES NOT BY ITSELF ESTABLISH THE FALSITY
+IT IS OFFERED FOR. THE CONCLUSION IS NOT DISTURBED HERE.** The ground is that
+A117 does not exist, verified at HEAD, and that is TRUE OF HEAD: re-verified
+2026-09-09 as zero A117 entry headers, against a control of one for A113. **But
+the migration's sentence is TIME-QUALIFIED.** It says the body was extracted
+from the A117 entry "in docs/outstanding.md as committed at a5be8d9", and that
+commit exists (2026-09-07) with its `docs/outstanding.md` carrying exactly
+**one** A117 entry header, against the same control of one for A113. A claim
+about a named past revision is not falsified by the present state of the file.
+**WHAT WOULD FALSIFY IT IS NOT RULED HERE**, and site 2's conclusion may well
+survive on a different ground; naming that ground is FT's call rather than this
+entry's.
+
+**THIRD, THE SET IS NOT EXHAUSTIVE. A FOURTH SITE EXISTS AT `:25-27`**, a second
+independent hand-written-and-provisional assertion, opening "R13a: this text is
+HAND-WRITTEN and PROVISIONAL until A113 lands, then REGENERATED from that
+constant." It is **NOT covered by site 1's ":3 and :6-7" citation**: it sits in a
+separate `-- R13, AUTHORITY:` block bounded by blank lines at `:20` and `:28`,
+where site 1's two citations both fall inside the header block at `:1-19`.
+Boundaries verified at HEAD.
+
+**THE `Detail:` LINE ABOVE WAS WIDENED IN THE SAME COMMIT AS THIS BLOCK**, from
+"its header" to "its comment text throughout", precisely so that it reaches this
+fourth site and site 3 at `:147`. Recorded so the two are read together: the gap
+in the pointer and the gap in the list were one gap, and neither is a separate
+open item.
+
+**TWO FURTHER CANDIDATES ARE RECORDED AS UNDECIDABLE RATHER THAN AS SITES**,
+because both turn on the coverage question this entry files and cannot be
+resolved ahead of it. (a) `:13`, "or once A113 exists, edit the loader constant
+and regenerate", which presupposes A113 does not exist; the sentence containing
+it opens at `:12`. (b) A TENSE SPLIT: `:5` reads "The loader (A113) will",
+carrying to "carry" at `:6`, while `:23` reads "The loader (A113) carries" — the
+same fact in two tenses in one file. Whether either is text false on emission
+depends on what byte-identity is ruled to cover.
 
 **A130 | Three of A113's eleven bullets are provable only across multiple loads,
 and R21's test admits no boundary that makes them provable on their own.**

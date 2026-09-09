@@ -612,6 +612,28 @@ accumulated since launch — **so production is intact and serving.**
 gap lasted roughly ten minutes and was the ruled order running, sandbox first
 then live. **Branch (b) is discharged for 0022 and branch (c) is satisfied.**
 
+**CONFIRMED AGAIN 2026-09-09, TWO DAYS ON, AND BY A DIFFERENT INSTRUMENT THAN
+THE ONE §6.10 PRESCRIBES.** The lockstep recorded above is a 2026-09-07 reading
+taken as the applies landed; this is an INDEPENDENT LATER OBSERVATION that the
+state held. **FT observed both databases at 22 applied migrations on
+2026-09-09** — `stewardhouse-pilot` and `bmf-sandbox` alike — by
+`d1 execute --remote` against `d1_migrations`. That matches the tree:
+`migrations/` holds **22** files, lowest `0001_initial.sql` and highest
+`0022_bmf_table.sql`, counted locally the same day.
+
+**THE INSTRUMENT MATTERS AS MUCH AS THE FIGURE.** `d1 migrations list --remote`
+was UNAVAILABLE: it returned **7403**, which §10's 7403 filing now carries as its
+**FIFTH occurrence** and the first observed on `stewardhouse-pilot`. The count
+therefore came from a direct SELECT, which is the fallback that filing
+prescribes and is NOT the closure evidence §6.10 step (4) names. **A reader
+meeting either of these should meet both**, which is why they cross-reference:
+the step and the command it names have now failed together on both databases,
+and the SELECT is what stands in.
+
+**NOT REPRODUCED HERE, AND NOT REPRODUCIBLE BY AN AGENT.** Both remote figures
+are FT-run only per §6.10 and §6.15. Only the `migrations/` file count was
+verified locally.
+
 **BOTH APPLIES EXECUTED 9 COMMANDS**, so sandbox and production received
 byte-identical work. That is a third data point on A116, alongside schema parity
 and runtime-behaviour parity, and like the others it is **evidence rather than an
@@ -2462,6 +2484,34 @@ correction.
   **NONE OF THE THREE HAS BEEN RUN.** They are definitions only, and the
   delegation-message problem is mitigated BY PROMPT rather than by
   configuration: nothing enforces it.
+  **CORRECTED 2026-09-09: "NONE OF THE THREE HAS BEEN RUN" IS RETIRED**, quoted
+  rather than edited so the change is visible where the stale claim sat.
+  **`adversary` has been run**, in a read-only pass on 2026-09-09, and it left
+  three files on disk under `.claude/agent-memory/adversary/`. `builder` and
+  `records` remain unrun.
+  **THAT RUN ESTABLISHED SOMETHING THE FRONTMATTER DENIES: `adversary` WRITES.**
+  Its definition carries `disallowedTools: Edit, Write` AND `memory: project`
+  (`.claude/agents/adversary.md:5-6`), and its own "## Your memory" section at
+  `:75-79` instructs it to "Write recurring failure SHAPES to it". **The write is
+  DECLARED in the body and CONTRADICTED in the one-line summary**, whose
+  `description:` at `:3` ends "Writes nothing." Counted across `.claude/agents/`
+  it is the only one of the three carrying that key, one match against zero for
+  `builder` and `records`.
+  **THE TRANSFERABLE POINT: A `disallowedTools` LINE DESCRIBES A TOOL SET, NOT A
+  WRITE SURFACE.** Denying `Edit` and `Write` does not make an agent read-only
+  when another mechanism writes on its behalf, and **"read-only" above should be
+  read as describing what the agent does to the REPOSITORY**, not as a claim that
+  it writes nothing anywhere.
+  **AND THE MEMORY PATH IS COVERED BY AN IGNORE RULE WRITTEN FOR ANOTHER PURPOSE,
+  WHICH IS LUCK RATHER THAN DESIGN.** `.claude/agent-memory/adversary/` resolves
+  to **`.gitignore:11`, `.claude/*`** — verified with `git check-ignore -v`,
+  against a control confirming `.claude/agents/adversary.md` is NOT ignored (exit
+  1, the `:12` negation). **Nothing in the tree names the agent-memory path**, so
+  the coverage is incidental: a narrower rule at `:11` would leave agent memory
+  untracked and visible, where a blanket stage would take it, which is the
+  exposure §6.20 exists for. **Nothing was harmed by that pass**:
+  `git status --short --untracked-files=all` returned zero lines after it, and no
+  tracked file was touched.
 
 ---
 
@@ -3001,6 +3051,37 @@ database and remains the fallback.
 while another succeeds on identical credentials. What is now established is
 WHERE the fault is not.
 
+**AMENDED 2026-09-09: A FIFTH OCCURRENCE, AND THE FIRST ON A SECOND DATABASE.**
+
+**WHAT FT OBSERVED, 2026-09-09.** `d1 migrations list --remote` returned **7403**
+against **`stewardhouse-pilot`**, on **wrangler 4.111.0**. `d1 execute --remote`
+succeeded on the same token in the same session, and the substitute SELECT
+against `d1_migrations` returned **22**.
+
+**WHAT IT ADDS IS CROSS-DATABASE CONFIRMATION, AND THAT IS THE WHOLE OF ITS
+WEIGHT.** The fourth occurrence was FT-run against `bmf-sandbox`, and it is what
+narrowed the note from the session to the endpoint. **This is the first
+observation of that refusal on `stewardhouse-pilot`**, so the endpoint reading no
+longer rests on a single database, and "a property of that one database" is ruled
+out alongside the session, the credential and first-call position.
+
+**IT ALSO CARRIES THE FIRST VERSION DATUM IN THIS FILING.** No occurrence above
+records one, so until now nothing here could say whether the fault was
+introduced, fixed, or unchanged across releases. `package.json` pins
+`wrangler: ^4` and the installed tree resolves to **4.111.0**, verified locally
+2026-09-09, so the failing version is the one this project runs today.
+
+**THE SUBSTITUTE IS NOT NEW AND WORKED AGAIN.** A plain
+`SELECT COUNT(*) FROM d1_migrations` is the workaround this filing has prescribed
+since 2026-09-01, and the one the 2026-09-07 amendment used for closure. **§6.10
+step (4) still names `migrations list` as the closure evidence it will accept,
+and that command has now been refused on BOTH databases**, so the SELECT is the
+fallback in both places rather than a sandbox-only accommodation.
+
+**THE CAUSE REMAINS UNKNOWN.** A fifth occurrence narrows where the fault is not.
+It explains nothing about why one endpoint is refused while another succeeds on
+identical credentials in the same session.
+
 ### Filed — `.dev.vars` corrupted to UTF-16 fails SILENTLY at every layer (2026-09-01)
 
 **SECOND OCCURRENCE.** Editing `.dev.vars` in Notepad re-saves it as UTF-16, and
@@ -3147,6 +3228,45 @@ are INERT here and fail silently** — they do not error, they simply do nothing
 
 **This binds any future database-provisioning runbook**, which must state the
 hand-copy step rather than assume the tool performs it.
+
+### Filed — `d1 list` reported `num_tables` 0 for a database holding 35 tables (FT-observed 2026-09-09)
+
+**PROVENANCE FIRST, BECAUSE IT IS WHAT MAKES THIS FILING WORTH ANYTHING.** Both
+figures were **observed by FT on 2026-09-09**, in the same session, against
+`stewardhouse-pilot`: `wrangler d1 list` printed **`num_tables` 0**, and
+`wrangler d1 execute --remote` returned **35 tables**. **The contradiction is
+therefore internal to one operator's own session, on one database, on one day**,
+not a report set against the tree. `file_size` was the honest signal in that same
+`d1 list` output.
+
+**NOT REPRODUCED, AND AN AGENT MUST NOT REPRODUCE IT.** Confirming it requires a
+`--remote` command, which is FT-run only per §6.10 and §6.15. A read-only agent
+pass verified only the tree-side facts below.
+
+**WHY THIS IS A FILING RATHER THAN A SHRUG: A ZERO IS NOT AN ERROR.** A count of
+0 tables reads as an empty database, which is a plausible state rather than an
+obviously broken one, so nothing in the output announces itself as wrong. That is
+this section's signature exactly — an instrument reporting confidently and
+wrongly, in a shape indistinguishable from a real result. **A wrong count that
+looked wrong would cost nothing.**
+
+**THE CONSEQUENCE, STATED AS A PROHIBITION: THIS FIELD MAY NOT BE USED AS
+EVIDENCE OF ANYTHING** — not that a database is empty, not that a migration
+created tables, not that a load landed. Where a table count is needed, ask the
+database: a plain `SELECT COUNT(*) FROM sqlite_master WHERE type='table'` through
+`d1 execute`. That is the same posture the 7403 filing already takes toward
+`migrations list`, and for the same reason: **when a reporting subcommand and a
+direct query disagree, the query is the one that read the data.**
+
+**NO PRIOR CLAIM IS RETRACTED BY THIS ENTRY.** Before this entry was written the
+field appeared NOWHERE in this repository — measured at `d3fe588`, zero matches
+across all tracked files — so nothing recorded here has ever rested on it. **This
+filing is now the only place it appears, and that is the point**: a
+plausible-looking zero is exactly the figure a future session would otherwise
+quote, and this is where it gets refused.
+
+**THE CAUSE IS UNKNOWN and none is offered.** A later session that sees the same
+thing should record what it finds rather than treat this as a diagnosis.
 
 ### Filed — `d1 export` DEFAULTS TO LOCAL when neither flag is given (promoted 2026-09-07)
 

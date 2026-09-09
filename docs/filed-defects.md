@@ -2618,3 +2618,37 @@ problem's clothes.
 **No recommendation. This entry does not say what belongs in an app, does not
 rank the surfaces or the parked items against each other, and proposes no
 build.** It exists so that a later decision has evidence.
+
+**Filed: `adversary`'s frontmatter `description` says "Writes nothing", and it
+writes.** `.claude/agents/adversary.md:3` ends its `description:` field with
+"Writes nothing." That sentence is false. The same file sets `memory: project` at
+`:6`, and its "## Your memory" section at `:75-79` instructs the agent to "Write
+recurring failure SHAPES to it". Confirmed by execution 2026-09-09: a read-only
+`adversary` pass left three files under `.claude/agent-memory/adversary/`.
+
+**The body is not wrong and does not need changing** — it declares the write
+plainly. What is wrong is the one-line summary, and the summary is the part a
+reader meets first, since `description` is what the harness surfaces when
+selecting an agent.
+
+**Two things make this worth filing rather than fixing silently.** The false
+sentence sits in a TRACKED file, so it is the project's claim rather than a
+session's. And **`:21-22` reinforces it in prose** — "You do not commit at all;
+`Edit` and `Write` are disallowed to you" — which is true as written and reads as
+a completeness claim standing next to `description`'s "Writes nothing."
+
+**The fix is a wording call rather than a mechanical one**, which is why no
+replacement string is proposed here: `description` doubles as the selection
+blurb, so whether it should say "writes only project memory", say nothing about
+writing, or drop the clause is a judgement about what that field is for.
+
+**Scope any fix against the other two definitions as well.** Counted across
+`.claude/agents/`, `builder` and `records` carry no `memory:` key — zero matches
+each, measured 2026-09-09 — so neither has this defect now, and either could
+acquire it the moment one is added.
+
+**No harm occurred and none is alleged.** The write landed inside
+`.claude/agent-memory/`, which `.gitignore:11` (`.claude/*`) covers, and
+`git status --short --untracked-files=all` returned zero lines after that pass.
+**The exposure is that the ignore rule was written for another purpose and the
+path is named nowhere**, so nothing would flag it if that rule narrowed.
