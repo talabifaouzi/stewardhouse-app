@@ -1226,6 +1226,15 @@ current figure lives here. **It is recorded because the filing added below
 requires exactly this**: after writing, re-measure any figure the write could
 have moved.
 
+**COUNT NOTE 2026-09-08, SECOND OF THE SAME DAY: the section now holds
+TWENTY-ONE rows.** Rule 21, the PowerShell fence convention, postdates the note
+directly above, which said TWENTY and was true at the commit that wrote it.
+**This is ORDINARY STALENESS, not the self-invalidating shape filed in §10**, and
+the distinction is worth keeping straight where the two sit four lines apart: the
+TWENTY was correct when committed and a LATER commit moved it, which is exactly
+the case a sweep can catch. Both notes are left as written, per this file's
+practice.
+
 Every substantive change runs as a **slice**. The rhythm:
 
 1. **Hard git-state gate.** Confirm current branch and HEAD before starting.
@@ -1951,6 +1960,33 @@ Every substantive change runs as a **slice**. The rhythm:
     **THE TRACE IT LEAVES IS THE COMMIT'S OWN FILE LIST**, so a bank can check
     it: the file list should contain exactly the paths the message names, and
     zero cache or emitted-artifact paths.
+21. **POWERSHELL FENCE CONVENTION (recorded 2026-09-08). THIS IS THE FIRST TIME
+    IT IS RECORDED AT HEAD.** It was in force as a session-prompt convention and
+    was never written into this file; it is being recorded now, and nothing here
+    should be read as claiming it was previously recorded.
+
+    **It sits with the agent definitions in `.claude/agents/` because it governs
+    what an agent HANDS BACK TO FT**, rather than what an agent does to the tree.
+
+    **A PowerShell code fence contains the bare command and NOTHING ELSE.** No
+    `PS>` prompt line. No comments. No placeholders. No blank decorative lines.
+
+    **VISUAL DISTINCTION IS MADE BY THE LABEL ABOVE THE FENCE, NEVER INSIDE IT.**
+    The reason is mechanical rather than aesthetic: **FT pastes the entire fence
+    contents**, so anything in there that is not the command is handed to the
+    parser and fails there.
+
+    **ANGLE BRACKETS ARE POWERSHELL REDIRECTION OPERATORS, so placeholders fail
+    at the parser too.** A fence containing a bracketed placeholder does not
+    prompt FT to substitute a value; it produces a redirection error. Name the
+    value in the label above the fence and put a real one in the fence.
+
+    **ONE COMMAND PER FENCE, with a one-line label above it.** Two commands in
+    one fence cannot be run half-way and cannot be reported on separately.
+
+    **`cd` IS ALWAYS ITS OWN FIRST COMMAND IN A FRESH WINDOW**, in its own fence,
+    because a command that assumes a working directory it did not set is a
+    command that runs somewhere else when the window is new.
 
 Stop background shells (dev server, watch loops) at bank time, and LAUNCH them
 as tracked background tasks so `TaskStop` applies at all. `TaskStop` is the
