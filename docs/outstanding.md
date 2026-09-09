@@ -22,6 +22,37 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
+**STANDING STATE A FRESH SESSION NEEDS, recorded 2026-09-08. NOT AN ENTRY, and
+deliberately so:** none of this has a completion state, so filing it as a counted
+item would leave it in the queue permanently. That is the same reasoning
+CLAUDE.md §6.10 gives for keeping its branch (c) obligation out of this file.
+
+**TWO LOCAL REFS EXIST THAT ORIGIN DOES NOT HAVE, and one of them is the only
+thing holding four commits.** Branch `slice-1-bmf-parser` at `aaf2c46` and tag
+`pre-rebase-slice1` at `a130bf9`, **neither pushed**. The tag is the ONLY
+reference from which the four PRE-REBASE slice-1 commits — `cb4bf24`, `140b0c9`,
+`a130bf9`, `bdb9918` — are reachable; they exist on this clone and nowhere else,
+and `git for-each-ref --contains a130bf9` returns exactly one ref. **Deleting
+that tag loses them.** The branch's own tip is reachable from `main`, so the
+branch ref is a label rather than the only handle.
+
+**THE EXTRACT AND THE EMITTED ARTIFACTS ARE ON DISK AND GITIGNORED**, which is
+why §6.20 requires staging by explicit path. `.bmf-cache/` holds the **2026-09-07
+extract**, five CSVs totalling **341,097,144 bytes** plus `extract.json`, ignored
+by `.gitignore`'s `.bmf-cache/` rule. `scripts/bmf-aside.tmp.sql` is the emitted
+artifact at **173,873,096 bytes in 5,805 statements**, and
+`scripts/bmf-aside.tmp.json` its sidecar, ignored by the `scripts/*.tmp.sql` and
+`scripts/*.tmp.json` rules. **A blanket stage on a branch whose `.gitignore`
+lacks those lines commits all of it.**
+
+**THREE SUBAGENT DEFINITIONS AND A VERIFICATION SCRIPT LANDED 2026-09-08.**
+`.claude/agents/builder.md`, `adversary.md` and `records.md` are tracked, and
+`scripts/verify-commit-tail.mjs` runs the post-commit tail as one pass/fail pass.
+**NONE OF THE THREE AGENTS HAS BEEN RUN.** They are definitions only, and the
+delegation-message problem is mitigated BY PROMPT rather than by configuration —
+each file tells the agent to treat a parent's claims as unverified, and nothing
+enforces it. CLAUDE.md §8 carries the same pointer for a reader who starts there.
+
 **As committed: 115 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,

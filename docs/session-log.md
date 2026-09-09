@@ -2301,3 +2301,162 @@ there were **zero files under `src/` and zero under `functions/`** — only
 `CLAUDE.md`, four `docs/` files and `migrations/0022_bmf_table.sql`. Every
 resulting Pages deploy therefore rebuilt an identical app, and a deploy does not
 apply migrations, **so no behavioural change reached production.**
+
+## Session — 2026-09-08 to 2026-09-09
+
+Fourteen commits, `23ed8d0` through `5bd916f`, across TWO arcs: the BMF slice-1
+build, and an agent-infrastructure build that came out of it. Recorded here
+because most of what FT ruled in this session did not become a commit of its own.
+
+**THE COMMITS, in order.** `23ed8d0` filed three open questions and refreshed the
+counts; `9365cd1` filed two findings measured against the live IRS endpoint;
+`d4b24de` `cd25359` `aaf2c46` are slice 1's three files; `7c3357b` recorded the
+first live extract capture; `009c048` recorded slice 1 landing on main; `b4c3dd3`
+closed A123 and filed A126; `a9d83ce` wrote the definition of done into §15;
+`c97e946` filed A127 and A128; `84fc360` repaired A128's citations; `abb2f92`
+ruled A128's fork and closed it; `c8f2988` filed A129, A130 and A131; `0247a23`
+consolidated the standing discipline into CLAUDE.md; `ccc7dd4` added three
+subagent definitions; `5bd916f` added the verification script.
+
+**SLICE 1 IS BUILT AND PROVEN.** `scripts/bmf-fetch.mjs` acquires and freezes,
+`scripts/bmf-parse.mjs` parses and emits, `scripts/bmf-verify-slice1.mjs` loads
+and asserts. The emitted artifact is `scripts/bmf-aside.tmp.sql`, **173,873,096
+bytes in 5,805 statements**, carrying **1,964,958 rows equal to distinct EINs**,
+zero duplicates, zero malformed, zero null RULING, and a REVENUE_AMT sum of
+4,317,294,050,545 over 1,391,216 rows. R21a is met in its own terms: done is a
+file on disk and a set of numbers matching.
+
+### The rulings that did not become their own commits
+
+**A125 RULED OPTION B, FOR SLICE 1 ONLY.** Slice 1's verifier creates a MINIMAL
+IN-MEMORY SCRATCH TABLE — a parsing tool under R27, existing for one check, named
+`bmf_aside` per R24 so the emitted file loads unmodified, and explicitly NOT the
+aside. **The real aside DDL still has no author**, and **R13a has not fired**,
+because its trigger is the authoring of the loader's constant and slice 1
+authored none. Both remainders transfer intact to whichever slice authors it.
+
+**A123 RULED: `ein TEXT` IS THE AFFINITY FLOOR, and the assertion is on VALUE and
+LENGTH, never on `typeof`.** The reason is that `typeof` CANNOT FAIL here: on an
+`ein TEXT` column it returns `text` for a correctly quoted EIN and for a defective
+unquoted one alike, so an assertion built on it passes in both cases and
+discriminates nothing. That is the check-that-cannot-fail class, caught before it
+shipped rather than after. The affinity floor and the reason `typeof` is excluded
+were relocated to `docs/bmf-load-scoping.md` §15 beside R21b BEFORE A123 closed,
+because closing an entry deletes it.
+
+**THE DEFINITION OF DONE'S DURABLE HOME RULED: `docs/bmf-load-scoping.md` §15,
+beside R21a.** FT rejected two candidates and the reasons are recorded so neither
+is re-proposed. **A113 was rejected** on the fuse reason that moved A121 and A122
+out of it: A113 closes when the loader exists, and the definition of done is a
+permanent record of what was proven rather than a checklist that expires. **A
+standalone file was rejected** as a third place to look. R21a is the ruling that
+requires the list to exist, so a reader who finds the ruling finds the list.
+
+**FIVE OF THE FIFTEEN ITEMS WERE UNRECOVERABLE from any tracked artifact** and
+were supplied by FT from the ratification. That gap is the sharpest confirmation
+of A126 available, and the list carries its provenance in three classes rather
+than being smoothed into one uniform set.
+
+**A128's FORK RULED: THE HEADER SENTENCE WAS WRONG, AND THE REPAIR WAS A FOURTH
+SOURCE RATHER THAN A SUBSTITUTION.** `docs/ruling-e-deletion-retention.md` §6
+sends exactly two clauses to a reviewing attorney, 3 and 6, and the entries whose
+subject is those clauses are A47 and A46 — the only two entries titled
+`Ruling E Clause N`, one per clause. A84 carries no clause in its own text: zero
+occurrences of `subpoena` against a control returning 2 for `delete` in the same
+entry, a Detail citing Strand 3 Layer 4 while subpoena posture is Layer 2 item
+(c), and a blocker line naming A47.
+
+**WHY A SUBSTITUTION WAS REFUSED, which is the transferable half.** Swapping A46
+for A84 would have made the clause mapping true while leaving A84 unaccounted for,
+and would have put a FIFTH entry into a paragraph that enumerates FOUR. **The
+paragraph was doing two jobs that do not reconcile as one sentence** — mapping
+clauses to entries, and accounting for all four counsel-gated items — so it now
+names FOUR sources rather than three. The roster of four is unchanged and A46
+stays `Pilot: POST` outside it.
+
+**ONE SOURCE IS DESCRIBED DIFFERENTLY FROM HOW THE RULING FRAMED IT**, because
+the document does not support the stronger form. The ruling said A84 is
+counsel-gated by its own Detail document at Strand 3 Layer 4. **Layer 4 contains
+no counsel gate**: its text is the governance requirement that a retention and
+deletion policy exist before pilot, which is why A84 is BLOCKING. That file's five
+counsel mentions all sit in Layer 2 or in §7. So Layer 4 was written as supplying
+the PRE-PILOT REQUIREMENT and A47 as supplying the GATE.
+
+**THE COUNSEL GROUPING RULED: THE FOUR COUNSEL-GATED ITEMS RESOLVE TO TWO
+CONVERSATIONS, NOT FOUR.** A47 and A84 are ONE SUBJECT AT TWO ALTITUDES, A84's
+blocker line naming A47 directly: A47 is the narrow factual predicate and A84 is
+the policy that cannot be written until it is answered. A68 is a DISTINCT
+QUESTION, controller identity under FERPA and NIL at institutional scale,
+overlapping A47 only through a shared input. A110 STANDS ALONE and nothing depends
+on it until A96 ships. **It is a ruling about how the questions group, not a
+merge**: all four stay open, separately classified, separately counted, and the
+counsel-gated count remains FOUR.
+
+**FT RULED "DEREK" A RETIRED NAME.** No such counsel exists or ever existed, no
+external counsel is retained and none is in pipeline. The name survives on 18
+lines across 8 files, including `migrations/0001_initial.sql:222`, which is an
+applied migration and cannot be edited casually. **Scoping the repair is a
+separate ruling FT has not made**, and no sweep was run.
+
+### The agent-infrastructure rulings
+
+**`.claude/agents/` IS TRACKED, RULED BY FT.** `.gitignore` line 11 became
+`.claude/*` with a `!.claude/agents/` negation. The negation alone would not have
+worked: a trailing-slash exclusion stops git descending into the directory, so
+the directory pattern had to change too.
+
+**REVIEW MOVED FROM PER-COMMIT TO PER-SESSION ON A WORKING BRANCH**, recorded as
+an AMENDMENT to §6.13 rather than a replacement. **Agents may commit freely on a
+working branch.** **Nothing reaches `main` and nothing is pushed without FT's
+review**, and that half is absolute regardless of how work is batched: never
+commit to `main` from an agent session, never push, never write to remote D1. FT
+still reads every diff before anything reaches `main`; what changed is the
+granularity, not the authority.
+
+**THE REASON THE DISCIPLINE MOVED TO CLAUDE.md AT ALL** is the artifact A126 was
+filed about: it was living in session prompts rather than at HEAD, and custom
+subagents load the full CLAUDE.md hierarchy at startup. What was already recorded
+was quoted and left alone; only what returned zero on a search was added.
+
+### What this session leaves standing
+
+**SLICES 2 AND 3 ARE NOT STARTED**, and A113 is not scoped beyond slice 1. A129
+records that byte-identity under R13a may not be satisfiable as stated; A130
+records that three of A113's eleven bullets are provable only across multiple
+loads, so R21's test admits no boundary that makes them provable on their own;
+A131 corrects A125's census. All three are open questions for FT.
+
+**THE THREE AGENTS HAVE NOT BEEN RUN.** They are definitions only, and the
+delegation-message problem they guard against is mitigated BY PROMPT rather than
+by configuration: each file instructs the agent to treat every claim in a parent's
+delegation message as unverified, and nothing enforces that.
+
+### Instrument failures this session, counted because the count is the finding
+
+**Line-wrapped phrases broke THREE separate matchers**, each returning a false
+zero on content that was present: a commit-body check, a frontmatter validator,
+and a session-log probe. The fix in every case was to normalise whitespace before
+matching, and the verification script now does so.
+
+**A negative control was written wrong TWICE**, both times by a line wrapping a
+trailer key to column 1, and the second was in a control written specifically to
+avoid the first. This produced the amendment recording that a control is not a
+control until it is verified negative.
+
+**`sed -n` silently stripped carriage returns from 793 lines mid-splice.** The
+rebuilt file had the correct line count and correct content; only counting CRs
+against the line count caught it.
+
+**A backslash-r written into a shell-embedded patch collapsed to nothing**,
+turning a `replace` into a line comment and breaking a file that had just passed.
+It was rebuilt with `String.fromCharCode(13)` and no escape sequence at all.
+
+**A splice used a head count of 1726 where 726 was meant**, duplicating about a
+thousand lines. Its own post-condition caught it before anything was installed.
+
+**AND THE VERIFICATION SCRIPT CONTAINED A CHECK THAT COULD NOT FAIL.** Its
+`.claude/agents/` assertion used plain `git check-ignore`, which consults the
+INDEX first, so a TRACKED path is never reported ignored no matter what the rules
+say. Deleting the negation from `.gitignore` left the run green. It now uses
+`--no-index`. **That was found by trying to induce the failure**, not by reading
+the code, which is the only thing that finds this class.
