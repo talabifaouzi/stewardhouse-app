@@ -58,56 +58,49 @@ enforces it. CLAUDE.md §8 carries the same pointer for a reader who starts ther
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
 BMF-and-Discover 13, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-09: THREE ENTRIES CLOSED, ONE FILED.**
-All four sit in `### BMF and Discover — open questions`. A129, A130 and A131 were
-CLOSED on FT rulings — byte-identity coverage, the three multi-load bullets, and
-the census correction — and A132 was FILED, recording that
-`migrations/0022_bmf_table.sql` holds text a regeneration would make false. **The
-three closure notes are consolidated into ONE note inside A125**, the next-lower
-surviving ID in that section, for the reason recorded there.
-**So OPEN goes 115 → 113, BLOCKING goes 25 → 23, and DEBT STAYS AT 63**; POST
-stays 27, summing to 113; the breakdown becomes
-7 + 16 + 7 + 13 + 32 + 35 + 3 = 113, the BMF-and-Discover tier going 15 → 13;
-the restatement further down becomes "sum to 113"; and the counsel-gated line
-becomes FOUR OF THE TWENTY-THREE.
-**DEBT HOLDING STILL IS A NET, NOT A NON-EVENT, and it is the figure here most
-likely to be misread.** A131 was DEBT and left; A132 is DEBT and arrived. Two
-changes that cancel. **A reader checking only the total would conclude nothing
-moved in that class**, and two things did.
-**THE BUILD CHAIN MOVES AND THE COUNSEL-GATED COUNT DOES NOT, to 19 and FOUR.**
-The definition is unchanged — BLOCKING minus the four counsel-gated items — and
-BLOCKING moved, so 23 − 4 = 19. **A47, A84, A68 and A110 were re-confirmed by
-execution**, not recall: all four present, all four inside OPEN, all four still
-carrying `Pilot: BLOCKING, and counsel-gated`, and the file-wide count of that
-marker is 4.
-**BOTH ENTRIES THAT LEFT BLOCKING WERE UNRULED SCOPING QUESTIONS, WHICH IS WHY
-THE COUNSEL-GATED SET IS UNTOUCHED.** A129 and A130 were closable by an FT ruling
-and both were closed by one. That set names what building cannot close, and a
-scoping question was never in it.
-**THE DIAGNOSTICS MOVE BY TWO AND BY NOTHING.** The enumerator goes from 113
-against 115 to 111 against 113, since A129, A130, A131 and A132 all carry
-plain-numeric headers, leaving the gap still exactly A50a and A50b. The file-wide
-`Pilot: DEBT` count stays 64 against 63 on both sides, for the netting reason
-above, the single extra still being FJ-7's own line inside FOUNDER JUDGMENT.
-**FOUR IDS ARE NOW RETIRED AND NOT REUSED: A128, A129, A130 AND A131.** Each
-still appears in this file, in the closure notes and in the arithmetic that
-recorded them, so reusing any would make those references ambiguous. **A132 was
-assigned BY EXECUTION** as the next number above the maximum, verified absent
-from this file and from the whole tree at HEAD before it was used.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-09: NOTHING OPENED, NOTHING CLOSED, AND
+ONE ENTRY WAS UPDATED IN PLACE.** A125's blocker moved from an open fork to a
+named dependency, on FT's ruling that the entry is not rulable ahead of slice 2's
+boundary, and the ruling with its four grounds was written onto the entry.
+**A125 STAYS OPEN AND STAYS BLOCKING**, so no entry changed state, **and every
+count is UNCHANGED and was re-derived rather than assumed.**
+**OPEN stays 113; BLOCKING 23, DEBT 63, POST 27**, summing to 113; the breakdown
+stays 7 + 16 + 7 + 13 + 32 + 35 + 3 = 113, the BMF and Discover tier staying 13;
+the restatement further down stays "sum to 113"; and the counsel-gated line stays
+FOUR OF THE TWENTY-THREE.
+**The build chain stays 19.** The definition is unchanged — BLOCKING minus the
+four counsel-gated items — and gives 23 − 4 = 19. **A47, A84, A68 and A110 were
+re-confirmed by execution**, not recall: all four present, all four inside OPEN,
+all four still carrying the counsel-gated marker, whose anchored count is 4.
+**A BLOCKER CHANGING SHAPE IS NOT AN ENTRY CHANGING STATE, and that distinction
+is why nothing here moves.** A125 was BLOCKING on an unruled fork and is BLOCKING
+on a dependency that has a name. **What it waits for changed; whether it waits
+did not**, and only the second is a state this file counts.
+**THE DIAGNOSTICS DO NOT MOVE EITHER.** The enumerator stays 111 against 113,
+the gap still exactly A50a and A50b, since nothing added or removed an entry
+header; and the file-wide `Pilot: DEBT` count stays 64 against 63, the single
+extra still being FJ-7's own line inside FOUNDER JUDGMENT.
+**ONE CORRECTION RODE THIS CHANGE AND IS COUNTED NOWHERE, because it is in
+another file.** CLAUDE.md §5's Individual row named A129, A130 and A131 as the
+open questions blocking the slice-2 scoping; all three closed in `c6f0fe5`, the
+commit immediately before this one, and the row was corrected to say what blocks
+it now.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. It recorded three entries filed and nothing closed.
-**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: a control file carrying one
-letter-suffixed and one plain-numeric header, asserted to return 2 on the
-suffix-aware pattern and 1 on the naive one, with A50a and A50b confirmed present
-in OPEN; **every deletion checked by its CLOSING line rather than by its header,
-which is what caught two orphaned lines of A131 that survived a replacement whose
-exactly-once assertions had ALL PASSED**; surviving neighbours A113, A119, A124,
-A125 and A127 asserted still present; line endings re-counted as
-carriage-returns-against-line-count with a known-LF control file whose EXISTENCE
-was checked before its result was trusted; and the 0022 construct sweep run
-against controls of 13 `NOT NULL` and 8 `CREATE`. The known false positive at
-`docs/propublica-spike-findings.md:694`, where `A68` is an NTEE code rather than
-an entry, is excluded by inspection.
+than-append rule. It recorded three entries closed and one filed.
+**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: the suffix-aware and naive
+patterns each asserted against a known letter-suffixed header AND a known
+plain-numeric one, with a mid-line occurrence asserted to match neither, so the
+control set spans both id formats rather than only the one the enumerator
+handles; each of the six anchored entry-header and classification patterns given
+a positive control that fires and a negative control that does not, **one of
+which was REBUILT after returning zero for want of a matching sample**, since a
+control that cannot fire proves nothing; every figure measured on HEAD and on the
+edited file and compared pair by pair, STATED as well as measured, because the
+stated side is parsed by first-match and a new paragraph above its source would
+shadow it; quoted strings verified against a flattened copy after a line-based
+grep returned a **FALSE NEGATIVE** on a phrase wrapped across two lines; and line
+endings re-counted as carriage-returns-against-line-count for both files touched,
+with a known-LF control asserted to return zero first.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
 dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 111 rather than 113, because
@@ -1724,7 +1717,9 @@ carries why it is not a new kind of problem.
 
 **A125 | `bmf_aside` has no DDL anywhere in the tree, and three rulings depend on
 it existing.**
-Blocker: unruled. The fork is FT's.
+Blocker: a scope pass bounding slice 2, which A113 above records as not made.
+RULED 2026-09-09 NOT RULABLE BEFORE IT: every candidate answer names a slice,
+and nothing in the tree bounds slice 2.
 Pilot: BLOCKING
 Detail: `docs/bmf-load-scoping.md` §15 R13, R16a, R24 and R27; A113's D5 item (2)
 above.
@@ -1854,6 +1849,66 @@ real aside.
 are banked experiment residue; and the verifier's scratch table is the fourth.
 D5 rules the shape must agree across its sites, and the verifier's docblock
 enumerates all four so a reader meets them together.
+**RULED 2026-09-09: THIS ENTRY IS NOT RULABLE AHEAD OF SLICE 2's BOUNDARY. IT
+STAYS OPEN AND STAYS BLOCKING, AND ITS BLOCKER BECOMES A NAMED DEPENDENCY RATHER
+THAN AN OPEN FORK.** The superseded line read "Blocker: unruled. The fork is
+FT's.", quoted rather than deleted so the change is visible where the stale claim
+sat.
+**THIS IS A RULING ABOUT RULABILITY AND NOT A DEFERRAL, and the distinction is
+the whole of it.** Nothing is put off and no judgement is withheld. What is
+recorded is that the question cannot be answered in the right order yet, and what
+has to exist before it can be. **A fork waits on someone deciding; a dependency
+waits on something being built**, and only the second names what would move it.
+**FIRST GROUND: THE TWO STILL-OPEN ITEMS ARE ONE QUESTION, NOT TWO.** The
+"STILL OPEN, FIRST" and "STILL OPEN, SECOND" blocks above are the aside DDL
+having no author and R13a's regeneration obligation not having fired. Both
+resolve when a slice authors the loader constant and neither resolves before it,
+because the second names the first's artifact as its own trigger: the obligation
+"transfers intact to whichever slice authors the constant". **One question with
+two consequences is not two questions**, and ruling the halves apart would rule
+the same thing twice.
+**SECOND GROUND: EVERY CANDIDATE ANSWER NAMES A SLICE.**
+`docs/bmf-load-scoping.md` §15, R31, records three candidate shapes and expresses
+no preference between them: that the constant grows to carry all three objects
+the migration creates, that the regeneration reference narrows, or that the two
+roles split into two constants. **All three describe what a slice must BUILD**
+rather than what FT must decide, so there is no fork here for a ruling to take.
+**THIRD GROUND: NOTHING IN THE TREE BOUNDS SLICE 2, MEASURED RATHER THAN
+ASSERTED.** `docs/bmf-load-scoping.md` carries three slice-named headings, R21,
+R22 and R28, and all three are SLICE-1 headings; only R21 states a boundary, "The
+slice-1 boundary stands: parse and emit, no database contact", and it bounds
+slice 1 by its own title and nothing further. "slice 2" occurs twice in that
+file, both inside R21 and both incidental — that slice 2 cannot be proven without
+slice 1, and that slice 1's artifact goes nowhere until slice 2 exists. Neither
+is a scope. Every other site states the same absence in different words: A113
+above, its "SLICE 2 IS NOT STARTED" block, and CLAUDE.md §5's Individual row.
+**Ruling authorship now would assign it to an artifact that has no edges.**
+**FOURTH GROUND: TWO RULINGS ALREADY POINT FORWARD TO THIS SAME UNSCOPED SLICE,
+AND A THIRD WOULD BE WORSE THAN NAMING THE DEPENDENCY OUTRIGHT.** The Option B
+ruling above defers four unobserved properties to "the slice that creates the
+real aside" and hands R13a's obligation to "whichever slice authors the
+constant". R31 leaves the single-constant question surfaced on the stated ground
+that ruling how that constant handles three tables "would specify an artifact
+whose authoring slice is unscoped", and calls that "A GROUND RATHER THAN A
+DEFERRAL" in those words. **A third ruling aimed at the same slice, asserting
+something about its contents, would add a claim that slice must satisfy before
+anyone has said what the slice is.**
+**THE SHAPE IS THE ONE THAT ELIMINATED REPAIR-THEN-COMPARE, AND IT IS NARROWED
+HERE RATHER THAN RESTATED.** The closure note below records that option out as
+"REPAIR IS CIRCULAR IN SCOPE: two of its candidates could not be classified until
+this question was ruled". **That is SELF-reference — an option that could not be
+specified before the ruling it was a candidate for — while R31's ground is
+FORWARD dependence on an artifact and a slice that do not exist.** They are the
+same CLASS, a refusal to rule on something whose edges are not yet fixed, and not
+the same circularity. Recorded at that precision because the stronger reading
+would assert more than the tree carries.
+**WHAT WOULD CLOSE THIS ENTRY, so the dependency is actionable rather than
+decorative:** a scope pass bounding slice 2, after which the slice that authors
+the loader constant meets R31's three candidate shapes, takes one, and fires
+R13a's byte-identity comparison against `migrations/0022_bmf_table.sql` under the
+coverage R31 ruled. **The caution rides with it unchanged** — that file is
+applied to both databases and wrangler matches by NAME, so a byte difference is a
+finding to report rather than a diff to accept.
 **A126 was CLOSED 2026-09-08 and has left this section; the remaining IDs are
 not renumbered, since renumbering would break every reference to them.** The
 durable home is RULED and WRITTEN: `docs/bmf-load-scoping.md` §15, beside R21a.
