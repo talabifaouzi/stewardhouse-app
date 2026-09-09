@@ -22,64 +22,61 @@ an item opens, closes, or moves, and the edit rides the commit that caused the
 change. That is the per-change cadence; the sweep above is the periodic backstop
 for what the cadence misses.
 
-**As committed: 112 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 115 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
-BMF-and-Discover 12, cheap-and-mechanical 32, large 35, and
+BMF-and-Discover 15, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-08: ONE ENTRY CLOSED, NOTHING FILED.**
-A128's fork was RULED — the header sentence was wrong, and the two entries whose
-subject is the two counsel-gated clauses are A47 and A46 — so the header was
-repaired and A128 closed, its standing content relocated first.
-**So OPEN goes 113 → 112 and DEBT goes 63 → 62**; BLOCKING stays 23 and POST
-stays 27, summing to 112; the breakdown becomes
-7 + 16 + 7 + 12 + 32 + 35 + 3 = 112, the gates-other-work tier giving up the one;
-and the restatement further down becomes "sum to 112".
-**THE BUILD CHAIN AND THE COUNSEL-GATED COUNT BOTH STAY PUT, at 19 and FOUR.**
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-08: THREE ENTRIES FILED, NOTHING
+CLOSED.** All three come from the slice-2 boundary scope pass and all three sit
+in `### BMF and Discover — open questions`. A129 records that byte-identity under
+R13a may not be satisfiable as stated. A130 records that three of A113's eleven
+bullets are provable only across multiple loads. A131 corrects A125's census, and
+carries a correction to a correction.
+**So OPEN goes 112 → 115, BLOCKING goes 23 → 25 and DEBT goes 62 → 63**; POST
+stays 27, summing to 115; the breakdown becomes
+7 + 16 + 7 + 15 + 32 + 35 + 3 = 115, the BMF-and-Discover tier taking all three;
+the restatement further down becomes "sum to 115"; and the counsel-gated line
+becomes FOUR OF THE TWENTY-FIVE.
+**THE BUILD CHAIN MOVES AND THE COUNSEL-GATED COUNT DOES NOT, to 21 and FOUR.**
 The definition is unchanged — BLOCKING minus the four counsel-gated items — and
-BLOCKING did not move, so 23 − 4 = 19 still. **A47, A84, A68 and A110 were
-re-confirmed by execution**, not recall: all four present, all four inside OPEN,
-all four still carrying `Pilot: BLOCKING, and counsel-gated`.
-**A46 DID NOT JOIN THEM, and the repair makes that visible rather than changing
-it.** The header now names A46 as one of the two entries the ruling document
-sends to counsel while stating that it is `Pilot: POST` and outside the four.
-Naming an entry in the mapping and counting it among the counsel-gated are
-different acts, and collapsing them is the error the old sentence made.
-**BOTH DIAGNOSTICS MOVE BY ONE.** The enumerator goes from 111 against 113 to
-110 against 112, since A128 was a plain-numeric header, leaving the gap still
-exactly A50a and A50b. The file-wide `Pilot: DEBT` count goes from 64 against 63
-to 63 against 62, the single extra still being FJ-7's own line inside FOUNDER
-JUDGMENT.
-**A128 IS NOT REUSED AND THE NEXT ID IS A129.** A128 closed on 2026-09-08 and
-its id still appears in this file, in its own closure note and in the arithmetic
-that recorded it, so reusing the number would make those references ambiguous.
-**ONE FIGURE WAS CORRECTED BY MEASUREMENT DURING THIS CHANGE**, recorded on
-A128's closure note rather than here: A128 stated that `Clause 6` occurs three
-times in this file, which was TRUE at `a9d83ce` and is SIXTEEN at `84fc360`,
-falsified by A128's own text.
+BLOCKING moved, so 25 − 4 = 21. **A47, A84, A68 and A110 were re-confirmed by
+execution**, not recall: all four present, all four inside OPEN, all four still
+carrying `Pilot: BLOCKING, and counsel-gated`.
+**NEITHER NEW BLOCKING ENTRY IS COUNSEL-GATED, and that is deliberate rather
+than an oversight.** A129 and A130 are unruled SCOPING questions, closable by an
+FT ruling and by building. The counsel-gated set exists to name what building
+cannot close, and putting a scoping question into it would make the set mean
+something else.
+**THE DIAGNOSTICS MOVE BY THREE AND BY ONE.** The enumerator goes from 110
+against 112 to 113 against 115, since A129, A130 and A131 are all plain-numeric
+headers, leaving the gap still exactly A50a and A50b. The file-wide
+`Pilot: DEBT` count goes from 63 against 62 to 64 against 63, the single extra
+still being FJ-7's own line inside FOUNDER JUDGMENT.
+**A128 IS STILL NOT REUSED AND THE IDS RUN A129, A130, A131.** A128 closed on
+2026-09-08 and its id still appears in this file, in its own closure note and in
+the arithmetic that recorded it, so reusing it would make those references
+ambiguous.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. It recorded A127 and A128 being filed with nothing closed.
+than-append rule. It recorded A128 closing with nothing filed.
 **CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: A8, A113, A115 and A116 as
-plain-numeric entry headers, and A50a and A50b as letter-suffixed ones, asserted
-to match the suffix-aware pattern and NOT the naive one; the `subpoena` absence
-in A84 established against a control returning 2 for `delete` in the same entry;
-the clause-to-entry scan re-run over BOTH `Clause N` and `Clauses N` after the
-singular-only form proved blind to the plural, which is the format-variant rule
-CLAUDE.md §10 records; the `Clause 6` counts taken at two named revisions with a
-`Clause 42` control returning zero at both; every block replacement gated on a
-post-condition asserting the OLD block's closing line is GONE from the result and
-PRESENT in the backup; and the line-ending check done by counting carriage
-returns against the line count, which caught `sed -n` silently stripping them
-from 793 lines mid-splice. The known false positive at
+plain-numeric entry headers and A50a and A50b as letter-suffixed ones, asserted
+to match the suffix-aware pattern and NOT the naive one; the `bmf_aside` census
+run over BOTH the literal `CREATE TABLE bmf_aside` form and the interpolated one,
+after the literal-only form proved blind to `scripts/d1-window-generate.mjs:85`;
+the 0022 line counters checked against `^` matching every line and `^ZZ` matching
+none, with the inline-comment counter checked against a known-clean and a
+known-commented string; and A125's claims re-tested at the revision that
+introduced them as well as at HEAD. The known false positive at
 `docs/propublica-spike-findings.md:694`, where `A68` is an NTEE code rather than
-an entry, is excluded by inspection and carries no `Clause` on its line.
+an entry, is excluded by inspection.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 110 rather than 112, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 113 rather than 115, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 63
-rather than 62, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 64
+rather than 63, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -87,7 +84,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 23 BLOCKING, 62 DEBT, 27 POST**, classification ruled
+**AGAINST THE PILOT GATE: 25 BLOCKING, 63 DEBT, 27 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-08,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -95,7 +92,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 112. The sentence
+totals above, which remain a count of OPEN entries and sum to 115. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -134,7 +131,7 @@ STATE is a live count wearing a date**, and must be maintained or it lies. The
 parenthetical here dated the CLASSIFICATION ACT, which is genuinely fixed at
 2026-09-02; the TOTALS were never fixed, and pairing the two made a live count
 look archival. **The date has been moved off the totals and onto the act.**
-**FOUR OF THE TWENTY-THREE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
+**FOUR OF THE TWENTY-FIVE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
 BY BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not
 one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
@@ -1768,6 +1765,135 @@ five of the fifteen were unrecoverable, that A124's own claim to the contrary
 was false, and that the understatement surfaced only when someone tried to use
 the record. That is where a later reader meets it, and repeating it here would
 be a second copy of a claim that already has a home.
+
+**A129 | Byte-identity under R13a may not be satisfiable as stated, and nothing
+says what it covers.**
+Blocker: unruled. FT rules what byte-identity covers; no coverage option is
+chosen here.
+Pilot: BLOCKING
+Detail: `docs/bmf-load-scoping.md` §15 R13 and R13a; `migrations/0022_bmf_table.sql`,
+its header and its inline column comments; A113 above, which carries R13a and
+R15c in full.
+**R13a's TWO STATED PURPOSES, VERBATIM**, because the coverage question is
+decided against them rather than against convenience: byte-identity "proves the
+derivation retroactively", and "any difference is drift found on day one rather
+than on load twelve".
+**MEASURED AT HEAD 2026-09-08, not carried forward.** The migration is
+**158 lines: 122 full-line comments, 5 blank, 31 SQL, of which 12 carry an
+inline comment, leaving 19 comment-free SQL lines.** Controls: a caret pattern
+matched all 158 lines, a caret-ZZ pattern matched none, and the inline-comment
+counter returned 0 on a known-clean string and 1 on a known-commented one.
+**NO CLEAN PROSE/SQL SPLIT EXISTS.** Only 19 of 158 lines are comment-free SQL,
+so every candidate boundary cuts through annotated lines rather than between
+blocks.
+**ALIGNMENT WHITESPACE IS ITSELF BYTES THE CONSTANT MUST REPRODUCE, AND NO
+SINGLE UNIFORM PADDING RULE REPRODUCES THE FILE.** Eleven inline comments begin
+at column 55 and one begins at column 56, the `revenue_amt` line carrying
+"absent stays distinct from zero". A generator padding every comment to one
+column produces a file differing from the applied artifact by one line.
+**UNDER FULL-FILE BYTE-IDENTITY THE CONSTANT WOULD EMIT TEXT FALSE ON EMISSION.**
+Three sites, quoted at HEAD:
+1. The header at `:3` and `:6-7`: "HAND-WRITTEN AND PROVISIONAL (R13a). THE
+   LOADER IS AUTHORITATIVE FOR THIS DDL" and "carry the full table definition as
+   a single named constant, and THIS FILE IS REGENERATED FROM THAT CONSTANT once
+   it exists." A regenerated file is neither hand-written nor awaiting
+   regeneration.
+2. `:11`: "The body below is the reviewed DDL, extracted VERBATIM from the A117
+   entry in docs/outstanding.md as committed at a5be8d9." **A117 does not
+   exist**: verified at HEAD, zero entry headers against a control of one for
+   A113, with its closure note present.
+3. `:147`: "D1 REMOTE FK ENFORCEMENT IS UNVERIFIED (CLAUDE.md §10); local is
+   verified." A113 already records this as known stale, left deliberately
+   because an applied migration is a record of what ran.
+**WHICH PURPOSE SURVIVES A WEAKER COMPARISON AND WHICH DOES NOT.** "Drift found
+on day one" SURVIVES: a normalised or structural comparison still catches a
+changed primary key, a lost NOT NULL, a renamed or dropped index, a changed type
+— the drift R16a names and R13b catches at run time. "Proves the derivation
+retroactively" DOES NOT SURVIVE: a weaker comparison establishes that the
+constant produces an EQUIVALENT file, which is a different claim from
+establishing that the hand-written file is what the constant would have produced.
+**FILED AS AN OPEN QUESTION. Coverage options are not enumerated here, none is
+recommended, and which applies is FT's ruling.**
+**ONE PROPERTY BINDS WHATEVER IS RULED**, and A113 already records it: wrangler
+tracks applied migrations by NAME with no hash, so a regenerated file will not
+re-run, and a byte difference is a finding to report rather than a diff to
+accept.
+
+**A130 | Three of A113's eleven bullets are provable only across multiple loads,
+and R21's test admits no boundary that makes them provable on their own.**
+Blocker: unruled. It is a scoping question and FT rules it.
+Pilot: BLOCKING
+Detail: `docs/bmf-load-scoping.md` §15 R7, R8c, R8e and R21; A113 above, the
+eleven-bullet block headed "WHAT THE SLICE NOW OWES".
+**R21's TEST, VERBATIM**: "slice 1 can be PROVEN on its own against §5's measured
+distributional figures, and slice 2 cannot be proven without slice 1."
+**THE THREE, EACH QUOTED FROM ITS OWN RULING.** R7: "Each load replaces the
+previous retained copy", with three generations retained, so the rule's own
+behaviour is unobservable until a third load exists. R8c: "After a verified-good
+swap the loader drops the oldest generation beyond three", which needs a fourth
+load before a drop can happen. R8e: "The trend check has no baseline until
+roughly the fourth load."
+**EVERY OTHER BULLET IS PROVABLE IN A SINGLE ACT**, whether locally, by an FT-run
+remote command, or after one load. These three are not provable by any single act
+at all.
+**THE CONSEQUENCE AGAINST R21's TEST, which is the finding rather than the
+observation.** R21 admits a boundary when a set can be PROVEN on its own. No
+boundary makes these three provable on their own, because their proof is not an
+event but a sequence of loads. **So any container holding them accepts a set
+whose proof is not a single event**, and any container excluding them leaves
+three ruled bullets assigned to nothing.
+**FILED AS AN OPEN SCOPING QUESTION. No slice structure is proposed here and no
+slice is named.**
+
+**A131 | A125's census needs correcting, and one prior correction of it was
+itself wrong.**
+Blocker: none. The measurements are made; what remains is FT's call on whether
+A125's earlier half is marked superseded.
+Pilot: DEBT
+Detail: A125 above, both halves; `scripts/`, `migrations/` and `docs/` as
+measured below.
+**FIRST, A CORRECTION OF A CORRECTION, recorded because the wrong correction is
+in this record.** A 2026-09-08 pass reported A125's four-site claim as stale, on
+the grounds that `scripts/d1-window-verify-import.mjs:26` creates `bmf` rather
+than `bmf_aside`. **That reading was wrong and A125 was right.** Claim 4 is a
+**D5 shape-site census, not a bmf_aside census**, and A125 says in its own words
+that `migrations/0022_bmf_table.sql:55` "creates `bmf`", grouping the
+verify-import site as banked residue without claiming it creates an aside.
+**All four sites verify at HEAD**, each read by line: `0022:55` is
+"CREATE TABLE bmf ("; `d1-window-generate.mjs:85` is the interpolated aside DDL;
+`d1-window-verify-import.mjs:26` is "CREATE TABLE bmf ("; and
+`bmf-verify-slice1.mjs:106` is the literal aside DDL.
+**WHAT IS ACTUALLY STALE, measured at HEAD across files and lines.** `bmf_aside`
+appears on **21 lines across 6 files**: `docs/bmf-load-scoping.md` 4,
+`docs/outstanding.md` 8, `migrations/0022_bmf_table.sql` 1,
+`scripts/bmf-parse.mjs` 1, `scripts/bmf-verify-slice1.mjs` 6, and
+`scripts/d1-window-generate.mjs` 1. Control: a `bmf_zzside` search returns zero
+files against six for `bmf_aside`.
+**CLAIM 1 NO LONGER HOLDS, AND DID NOT HOLD AS A COMMAND-AND-COUNT PAIRING EVEN
+WHEN WRITTEN.** It reads that a `bmf_aside` grep "returns six hits". At
+`23ed8d0`, the commit that introduced the sentence, that command returned
+**TWELVE** lines; excluding `docs/outstanding.md` itself it returned exactly the
+six the sentence enumerates. **The enumeration was right and the stated command
+never produced the stated number.** At HEAD the same command returns 21.
+**CLAIM 2 NO LONGER HOLDS, AND IT NOW CONTRADICTS A125's OWN LATER HALF.** It
+reads that no aside CREATE TABLE exists. That was true at `23ed8d0` for
+executable code, zero files under `scripts/` or `migrations/`, and is FALSE at
+HEAD, where `scripts/bmf-verify-slice1.mjs` carries one. **A125's later half
+names that same table as "the fourth" site**, so the entry asserts both, and
+**the earlier half is still headed "VERIFIED AT HEAD 2026-09-08" and is not
+marked superseded.**
+**CLAIM 3 NO LONGER HOLDS.** It reads "one code line" at
+`scripts/d1-window-generate.mjs:36`. **Eight code lines under `scripts/` now
+carry `bmf_aside`**: `bmf-parse.mjs:76`, `bmf-verify-slice1.mjs` at `:41`, `:45`,
+`:71`, `:95`, `:101` and `:106`, and `d1-window-generate.mjs:36`.
+**THE FORM DISTINCTION IS WHAT HID A SITE, and it is recorded so a later census
+spans it.** A literal aside-CREATE search returns ZERO hits in
+`scripts/d1-window-generate.mjs`, whose DDL is interpolated. A census running
+only the literal form is blind to it, which is the same class as the extractor
+that was blind to a plural.
+**NOTHING IN A125 IS EDITED BY THIS ENTRY.** Whether its earlier half is marked
+superseded is FT's call; this entry records the measurements rather than making
+it.
 
 ### Cheap and mechanical
 
