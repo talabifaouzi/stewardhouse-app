@@ -1951,6 +1951,81 @@ applied to both databases and wrangler matches by NAME — which is itself the
 subject of a filed queue entry.
 **RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
 reason: a heading would move this section's own heading and ruling counts.
+**R31's TWO DISPOSITIONS READ AS CONTRADICTORY AND ARE RECONCILED HERE. THIS IS A
+REPAIR OF WORDING, NOT OF SUBSTANCE, AND NOTHING R31 RULED CHANGES.** As written,
+R31 says of the two-purposes divergence "**ONE IMPLICATION IS SURFACED AND
+DELIBERATELY NOT RESOLVED, BECAUSE IT IS A GENUINE GAP AND IT IS FT'S**", and
+then, two blocks later, "**THE SLICE THAT AUTHORS THE CONSTANT MEETS THIS GAP AND
+RULES IT THEN**." The two sit in the FIRST and THIRD of three consecutive blocks.
+The first assigns the gap to FT and the second assigns its resolution to a slice,
+and a reader meeting both in one ruling cannot tell which governs. **Both
+sentences are left standing rather than edited**, so the reconciliation is visible
+where the ambiguity sat.
+**THE SEPARATION IS DESCRIBED STRUCTURALLY RATHER THAN AS A LINE DISTANCE,
+DELIBERATELY.** A count of lines between two quoted sentences in a live file is
+falsified by any future edit between them, and it is the shape CLAUDE.md §10 files
+as a measurement correct when written. **First-and-third-of-three says the same
+thing and survives edits above, below and between.**
+**THE READING THAT RECONCILES THEM, RULED 2026-09-09: THE GAP IS FT's TO NOTICE
+AND RECORD; THE SLICE THAT AUTHORS THE CONSTANT IS WHAT RESOLVES IT.** Those are
+different acts on the same object. Noticing that R13's wording is under-specified
+against R31's wide scope, and recording it so a builder meets it rather than
+discovers it, is the work R31 did and is FT's. Choosing how the constant is then
+shaped is the work of building it. **Neither sentence was wrong about its own
+act; each named a different one, and neither said so.**
+**THE SAME CLAUSE PROPAGATED, and it is corrected in the same commit.** A125 in
+`docs/outstanding.md` carries "**ONE IMPLICATION IS SURFACED AND NOT RESOLVED, AND
+IT IS FT'S**" inside its relocated summary of this ruling, in the same entry whose
+SECOND GROUND holds that all three candidate shapes "describe what a slice must
+BUILD rather than what FT must decide, so there is no fork here for a ruling to
+take." **One entry therefore carried both dispositions too**, inherited from this
+text rather than reached independently.
+
+**R33, RULED 2026-09-09: R13's PHRASE "a single named constant" IS INCIDENTAL
+WORDING, NOT LOAD-BEARING. PACKAGING IS THE BUILDER'S CALL.**
+**THE GROUNDS, and they are about where the singular came from.** R10c's stated
+concern is scattering, not the number one: "It lives in the loader as a **SINGLE
+NAMED CONSTANT, not scattered through the DDL**, carrying a comment that it is
+revisable at zero migration cost once Discover reveals real query patterns." R13
+then says the loader "carries the full table definition as a single named
+constant, **extending R10c** from the index list to the whole shape." **The
+singular is INHERITED from R10c rather than chosen for the whole shape**, and what
+R10c was protecting against — a DDL whose definition is scattered across the file
+— is not what a second named constant would produce. **§6.17 already grants the
+agent its own calls on "structure … and helper extraction"**, and whether one
+named constant becomes two is both.
+**TWO CONSEQUENCES, STATED RATHER THAN LEFT INFERABLE.**
+**FIRST, SHAPES 1 AND 3 ARE BOTH AVAILABLE TO THE BUILDER.** They carry identical
+coverage — all three tables and all five indexes — and differ only in packaging,
+shape 3 being shape 1 partitioned by role. A builder taking either satisfies the
+other's coverage incidentally.
+**SECOND, A BUILDER TAKING SHAPE 3 AMENDS R13's WORDING AT THAT POINT** rather
+than leaving code that contradicts a ruling. The amendment is a sentence in this
+section, made by the slice that makes the choice, and it is expected rather than
+exceptional.
+**SHAPE 2 APPEARS FORECLOSED BY R31's OWN COVERAGE RULING, AND IS RECORDED AS
+APPARENTLY FORECLOSED RATHER THAN RULED OUT.** R31 rules the comparison "runs
+over **all THREE tables** … **and all FIVE indexes**", which a narrowed
+regeneration reference would not satisfy. **But R31 does not say what the
+reference narrows TO.** `docs/slice-2-scope-pass.md` §7 reads it as narrowing to
+`bmf` alone, and on that reading the conflict is direct; on another reading it may
+not be. **The unresolved reading is why this is not a ruling against shape 2**,
+and a builder who takes shape 2 must settle what "narrows" meant before doing so.
+**`migrations/0022_bmf_table.sql` REPEATS "a single named constant" AT TWO SITES,
+AND THAT FIGURE IS SCOPED TO THAT FILE ALONE** — this ruling's own text adds
+occurrences of the phrase elsewhere in the tree, so a tree-wide count is a
+different and moving number. **ONE of the two wraps across lines and one does
+not**, which is why a line-oriented search finds exactly one of them, and the
+unwrapped site is the one it finds. One is in the future tense and one in the
+present. **A PLAIN FLATTEN STILL RETURNS ONE**, because the `-- ` comment
+continuation lands inside the phrase at the wrapping site; only a flatten that
+also collapses that continuation returns two. **They are APPLIED-MIGRATION TEXT
+and are NOT repaired here.** Whether an applied migration holding text that is no
+longer accurate should ever be corrected is A132's open question, and this ruling
+does not answer it or pre-empt it. A reader meeting either site should read it as
+a record of what was written when the file was applied.
+**RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
+reason: a heading would move this section's own heading and ruling counts.
 
 ### R14. A generation table is `bmf_gen_YYYYMMDDTHHMMSSZ`
 

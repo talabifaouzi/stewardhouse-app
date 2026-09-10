@@ -1931,6 +1931,35 @@ R13a's byte-identity comparison against `migrations/0022_bmf_table.sql` under th
 coverage R31 ruled. **The caution rides with it unchanged** — that file is
 applied to both databases and wrangler matches by NAME, so a byte difference is a
 finding to report rather than a diff to accept.
+**AMENDED 2026-09-09 BY R31's RECONCILIATION.** This entry's relocated summary
+carries "**ONE IMPLICATION IS SURFACED AND NOT RESOLVED, AND IT IS FT'S**", quoted
+rather than deleted so the change is visible where it sat. It is inherited from
+R31's own wording, which carried the same clause beside a second one assigning the
+resolution to a slice. **R31 now reconciles them: the gap is FT's to notice and
+record, the slice that authors the constant is what resolves it.** This entry's
+SECOND GROUND is unaffected and was always the compatible half.
+**R33 DOES NOT CLOSE THIS ENTRY AND DOES NOT CLOSE THE CONSTANT-SHAPE QUESTION.**
+It rules that R13's singular wording does not constrain packaging, which removes
+an apparent obstacle rather than taking a shape. **STILL OPEN, SECOND stands
+untouched**: R13a's regeneration obligation has not fired, because no constant has
+been authored.
+**STILL OPEN, FIRST IS CORRECTED, AND IT WAS FALSIFIED BY THE COMMIT BEFORE THIS
+ONE.** It reads "no ruling places its authorship in a slice", quoted rather than
+deleted. **R32 placed it in one**: slice 2's inside-list names "create the aside
+(A)" as its first element, and R16a makes the aside the constant's build target.
+That commit rewrote this entry's blocker line and did not touch this block. **THE
+CONTRADICTION IS CROSS-FILE RATHER THAN WITHIN THIS ENTRY, and that is why nothing
+inside A125 flags it**: this entry says no slice owns the aside, R32 in
+`docs/bmf-load-scoping.md` makes it slice 2's first element, and neither document
+cites the other on the point. **Measured inside this entry's range at `de795ed`,
+the commit immediately before this one, `R32` occurred zero times** — so this
+amendment is itself the first mention of R32 inside A125, and a reader
+re-measuring at HEAD will find occurrences rather than nothing. **The
+figure is anchored deliberately**: unanchored it would be a live count falsified
+by the commit carrying it, which is the shape CLAUDE.md §10 files and which this
+sentence would otherwise have become the fourth instance of. **What remains of
+STILL OPEN, FIRST is not authorship but authorship DISCHARGED: the constant still
+does not exist.**
 **A126 was CLOSED 2026-09-08 and has left this section; the remaining IDs are
 not renumbered, since renumbering would break every reference to them.** The
 durable home is RULED and WRITTEN: `docs/bmf-load-scoping.md` §15, beside R21a.
