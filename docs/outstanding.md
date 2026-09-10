@@ -64,61 +64,64 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 113 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 114 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
-BMF-and-Discover 13, cheap-and-mechanical 32, large 35, and
+BMF-and-Discover 14, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-09: NOTHING OPENED, NOTHING CLOSED, AND
-ONE ENTRY WAS UPDATED IN PLACE.** A125's blocker moved from an open fork to a
-named dependency, on FT's ruling that the entry is not rulable ahead of slice 2's
-boundary, and the ruling with its four grounds was written onto the entry.
-**A125 STAYS OPEN AND STAYS BLOCKING**, so no entry changed state, **and every
-count is UNCHANGED and was re-derived rather than assumed.**
-**OPEN stays 113; BLOCKING 23, DEBT 63, POST 27**, summing to 113; the breakdown
-stays 7 + 16 + 7 + 13 + 32 + 35 + 3 = 113, the BMF and Discover tier staying 13;
-the restatement further down stays "sum to 113"; and the counsel-gated line stays
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-10: ONE ENTRY WAS FILED AND NOTHING WAS
+CLOSED.** A133 was filed at the end of the BMF and Discover tier, recording that
+the BMF rulings R1 through R5 exist nowhere in full while the arc cites all five
+as authority. **It is the FIRST COUNT-MOVING CHANGE OF THIS ARC**, which is why
+the figures below move rather than holding as the last several changes left
+them.
+**OPEN 113 → 114; BLOCKING stays 23, DEBT 63 → 64, POST stays 27**, summing to
+114; the breakdown becomes 7 + 16 + 7 + 14 + 32 + 35 + 3 = 114, the BMF and
+Discover tier moving 13 → 14 and every other tier element unchanged; the
+restatement further down becomes "sum to 114"; and the counsel-gated line stays
 FOUR OF THE TWENTY-THREE.
 **The build chain stays 19.** The definition is unchanged — BLOCKING minus the
-four counsel-gated items — and gives 23 − 4 = 19. **A47, A84, A68 and A110 were
-re-confirmed by execution**, not recall: all four present, all four inside OPEN,
-all four still carrying the counsel-gated marker, whose anchored count is 4.
-**A BLOCKER CHANGING SHAPE IS NOT AN ENTRY CHANGING STATE, and that distinction
-is why nothing here moves.** A125 was BLOCKING on an unruled fork and is BLOCKING
-on a dependency that has a name. **What it waits for changed; whether it waits
-did not**, and only the second is a state this file counts.
-**THE DIAGNOSTICS DO NOT MOVE EITHER.** The enumerator stays 111 against 113,
-the gap still exactly A50a and A50b, since nothing added or removed an entry
-header; and the file-wide `Pilot: DEBT` count stays 64 against 63, the single
-extra still being FJ-7's own line inside FOUNDER JUDGMENT.
-**ONE CORRECTION RODE THIS CHANGE AND IS COUNTED NOWHERE, because it is in
-another file.** CLAUDE.md §5's Individual row named A129, A130 and A131 as the
-open questions blocking the slice-2 scoping; all three closed in `c6f0fe5`, the
-commit immediately before this one, and the row was corrected to say what blocks
-it now.
+four counsel-gated items — and gives 23 − 4 = 19. **A133 is DEBT, so it enters
+neither side of that subtraction.** **A47, A84, A68 and A110 were re-confirmed by
+execution**, not recall: all four present, all four inside OPEN, all four still
+carrying the counsel-gated marker, whose anchored count is 4.
+**WHY DEBT AND NOT POST IS ARGUED ON THE ENTRY AND NOT HERE.** A133 carries its
+own classification paragraph, taking A132 as the nearer precedent than A116.
+This block records the total; it does not re-make the judgement.
+**THE DIAGNOSTICS MOVE WITH THE COUNTS, AND THE GAP DOES NOT.** The enumerator
+goes 111 → 112 against 114, the gap still exactly A50a and A50b, because A133
+carries a plain-numeric id that BOTH enumerators see; and the file-wide
+count of `Pilot: DEBT` lines goes 64 → 65 against 64, the single extra still
+being FJ-7's own line inside FOUNDER JUDGMENT.
+**TWO CHANGES RODE THIS ONE AND ARE COUNTED NOWHERE, because they are in other
+files.** CLAUDE.md §6.15 gained the ruling that category (3) covers
+`bmf-sandbox`, and `docs/bmf-load-scoping.md` §15 gained R34, which applies that
+ruling to this arc. **§15's heading and ruling counts are UNCHANGED at 31 and
+28**, because R34 is recorded inline and carries no `###`, and both were
+re-measured after the write rather than reasoned about.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. It recorded three entries closed and one filed.
+than-append rule. It recorded nothing opened, nothing closed, and one entry
+updated in place.
 **CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: the suffix-aware and naive
 patterns each asserted against a known letter-suffixed header AND a known
 plain-numeric one, with a mid-line occurrence asserted to match neither, so the
 control set spans both id formats rather than only the one the enumerator
-handles; each of the six anchored entry-header and classification patterns given
-a positive control that fires and a negative control that does not, **one of
-which was REBUILT after returning zero for want of a matching sample**, since a
-control that cannot fire proves nothing; every figure measured on HEAD and on the
-edited file and compared pair by pair, STATED as well as measured, because the
-stated side is parsed by first-match and a new paragraph above its source would
-shadow it; quoted strings verified against a flattened copy after a line-based
-grep returned a **FALSE NEGATIVE** on a phrase wrapped across two lines; and line
-endings re-counted as carriage-returns-against-line-count for both files touched,
-with a known-LF control asserted to return zero first.
+handles; every stated figure re-parsed with the verifier's OWN eight patterns
+after the write, each confirmed to occur exactly once and to resolve to the site
+it is meant to read, because the stated side is taken by FIRST MATCH and this
+block sits above four of those sites; the quoted grounds in all three files
+checked against a FLATTENED copy, which is what caught two apparent absences that
+were the probe's fault rather than the tree's — one omitting a pair of bold
+markers, one searching a backtick where the source carries a typographic quote;
+and line endings re-counted as carriage-returns-against-line-count for all three
+files touched, with a known-LF control asserted to return zero first.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 111 rather than 113, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 112 rather than 114, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 64
-rather than 63, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 65
+rather than 64, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -126,15 +129,15 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 23 BLOCKING, 63 DEBT, 27 POST**, classification ruled
-2026-09-02 and the totals re-derived 2026-09-09,
+**AGAINST THE PILOT GATE: 23 BLOCKING, 64 DEBT, 27 POST**, classification ruled
+2026-09-02 and the totals re-derived 2026-09-10,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 113. The sentence
+totals above, which remain a count of OPEN entries and sum to 114. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -2134,6 +2137,60 @@ sites are in `0022` and the subject is derivation provenance. A127 already frame
 the shared caution as "the R13a caution applying to a file R13a was not written
 about". **What neither entry can answer alone is whether an applied migration
 holding text that is no longer true should ever be corrected.**
+
+**A133 | The BMF rulings R1 through R5 exist nowhere in full, and the arc cites
+them as authority.**
+Blocker: none named; the text may be unrecoverable.
+Pilot: DEBT
+Detail: A1 and A113 above; CLAUDE.md §6.10 and §5.1; `docs/bmf-load-scoping.md`
+§15, R32 and R34.
+**EVERY OCCURRENCE IN THE TREE IS A PARENTHETICAL CITATION OR A ONE-CLAUSE
+PARAPHRASE.** `docs/bmf-load-scoping.md` §15 carries its ruling bodies either as
+a `###` heading or as an inline `**Rn, RULED` block. **Its ruling headings begin
+at R6 and its lowest inline block is R12**, so R1 through R5 have neither, and a
+search of every tracked file for a ruling body in either form returns nothing for
+all five.
+**WHAT CAN BE RECONSTRUCTED, and the one site each fragment sits at:** **R1**
+orders the build sequence and rules that A1 gates running the load rather than
+writing the loader (A1 above); **R2** authorized the sandbox as standing
+infrastructure rather than a throwaway (CLAUDE.md §6.10); **R3** puts failure
+handling in the loader slice's scope rather than deferring it (A113 above);
+**R4** moved deliberate failure induction off live and onto the sandbox (A1
+above); **R5** governs the sandbox-live migration lockstep (CLAUDE.md §6.10
+branch (c), and §5.1's lockstep paragraph). **All five are cited as authority
+across the arc, and the reconstruction may be incomplete in ways no search
+reveals** — a clause nobody has restated is a clause no grep can find.
+**R10, R11 AND R15 SIT IN THE SAME POSITION, RECORDED AS OBSERVED RATHER THAN
+FILED**, because this entry's subject is R1 through R5. R11's substance was
+relocated into CLAUDE.md §6.10 as R11c–R11f, so it is not a clean instance and
+is not claimed as one.
+**THIS ENTRY IS NOT A CLAIM THAT THE RULINGS ARE WRONG OR THAT THE ARC SHOULD
+PAUSE.** It records that the arc rests on text it cannot read.
+**R34 RESTS ON R1 AND R4 AND COULD READ NEITHER.** Its cost paragraph cites R1's
+ordering and R4's venue relocation, both from paraphrases in this file rather
+than from the rulings. **A ruling built on a citation of a citation is the shape
+this entry exists to flag**, and it is flagged on the ruling that did it rather
+than in the abstract.
+**THE NAMESPACE IS OVERLOADED, AND THAT IS PART OF THIS ENTRY RATHER THAN A
+SEPARATE ONE.** At least **five distinct R1-through-R5 sets** exist, each
+confirmed by its own anchor: the BMF sandbox rulings; the advisor client-record
+rulings R1–R6 at `docs/client-record-rulings.md`; the P-3c consent rulings R1–R5
+in CLAUDE.md §5.1; the `enterpriseStats.js` R4 rate rule at `:94`; and the
+migration audit labels in `0016` and `0020`. **Plus `R2` meaning Cloudflare R2
+object storage at five sites in `docs/bmf-load-scoping.md`**, against two ruling
+uses in that same file. **`docs/filed-defects.md` already records one such
+collision** in terms — "R4, and a citation collision worth recording rather than
+working around" — so this is the second, and the pattern rather than the instance
+is what is filed here.
+**PILOT CLASSIFICATION, JUSTIFIED RATHER THAN ASSUMED. DEBT, on A132's
+precedent.** No pilot user reaches a ruling's text, which argues POST — and A116
+is classified POST on exactly that reasoning. **But POST in this file means "no
+pilot user reaches it", and the test is whether the ITEM is reached, not whether
+its text is.** These rulings are load-bearing on work happening now, so the
+honest reading is DEBT: "pilot can open with it recorded and honest", and filing
+this entry is what makes it recorded. **A132 is the closer precedent than A116**
+— it is a record-accuracy item about text that is wrong or missing in an artifact
+the build depends on, and it is DEBT.
 
 ### Cheap and mechanical
 

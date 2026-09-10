@@ -1711,6 +1711,59 @@ Every substantive change runs as a **slice**. The rhythm:
     because the protocol gates were never permission prompts. They are
     instructions in this document, and this rule says so explicitly so a future
     session cannot infer that a granted tool call is a granted decision.
+
+    **RULED 2026-09-09: CATEGORY (3) APPLIES TO `bmf-sandbox`. EVERY
+    `wrangler --remote` COMMAND IS FT-RUN REGARDLESS OF TARGET. NO SANDBOX
+    CARVE-OUT EXISTS AND NONE IS CREATED HERE.**
+
+    **THE GROUNDS, all three verified at HEAD.** **FIRST, THE GRAMMAR OF (3)
+    ITSELF.** It reads "`wrangler --remote` in any form, **and** any command that
+    writes to production" — two clauses, of which only the second names
+    production. The first is unqualified as to target, and a reading that
+    confines the whole category to production would have to treat its first
+    clause as surplus. **SECOND, THE TREE ALREADY APPLIES (3) TO THE SANDBOX
+    TWICE, WITHOUT CARVING IT OUT.** `docs/outstanding.md` says of creating the
+    database that "**Creating it is a remote act and is FT-run on that basis
+    alone, per CLAUDE.md §6.15 category (3)**", and §6.10's branch (c) says the
+    sandbox receiving every migration "**is FT-run like all remote D1 work**."
+    **THIRD, ALL THREE AGENT DEFINITIONS ALREADY SAY SO IN TERMS**, word for
+    word, `adversary.md`, `builder.md` and `records.md` alike: "**Never run a
+    remote D1 command.** `wrangler --remote` in any form is FT-run, **including
+    against `bmf-sandbox`**." `builder.md` adds "If a task appears to need one,
+    stop and say so." **This ruling ratifies what three artifacts already assumed
+    rather than deciding something new**, which is why it creates nothing.
+
+    **WHAT IT COSTS, RECORDED AS A COST AND NOT AS A DEFECT.** The builder may
+    exercise the loader against a **local D1 store**, which R27 expressly refused
+    to treat as equivalent to its in-memory carve-out: R27 records the
+    distinction as reasoning rather than permission, "so a later reader does not
+    extend it to a LOCAL D1 STORE — which IS persistent, IS bound to the tools,
+    and is exactly what §10's double-store filing is about." **R27's test is
+    whether a store is in-memory and ephemeral, and not merely whether it is
+    remote.** And A116 would not recognise it as the test venue, since that
+    entry says "**R2 AND R4 MAKE THE SANDBOX THE ENTIRE TEST VENUE**". The
+    builder may **not** exercise it against the sandbox, which R1 orders as the
+    test step: "create the sandbox, apply the ruled-table migration to it, build
+    the loader, **test it on the sandbox**, then run the production load."
+
+    **SO PARKER'S OBJECTION STANDS UNRESOLVED BY THIS RULING RATHER THAN ANSWERED
+    BY IT.** The builder may exercise the loader in a venue the rulings do not
+    name and may not exercise it in the venue they do. **That is the accepted
+    cost of the ruling, stated plainly so nobody later reads the objection as
+    having been disposed of.** The division of labour is A1's, unchanged since it
+    was written and untouched by R4's relocation of the venue: "**An agent can
+    prepare the exercise; it cannot run it.**" The builder prepares in full; FT
+    runs.
+
+    **WHAT THE OTHER READING WOULD HAVE REQUIRED, recorded so it is not
+    re-proposed cheaply.** Three things, none of them a wording change.
+    **Amending all three agent definitions**, each of which forecloses the
+    reading by name. **Adding a fourth row to `docs/bmf-load-scoping.md` §2's
+    split table**, which today grants `[agent-ok]` only to `--local` and marks
+    "Anything `--remote`" FT-only. And **making A116 load-bearing**: what a
+    sandbox result is worth would then gate what agent-run testing establishes,
+    and **A116 is unruled** — it records two agreements as evidence and says "Two
+    agreements do not establish a general rule."
 16. **CLAUDE.md IS NOT CAPPED AND IS NOT SPLIT. IT GROWS (FT-ruled 2026-08-21).**
     The question was scoped read-only against the tree with a cap and a split as
     the two candidate mechanisms. Neither was adopted.

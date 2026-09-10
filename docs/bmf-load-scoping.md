@@ -2500,6 +2500,29 @@ difference is a finding to report rather than a diff to accept.
 **RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
 reason: a heading would move this section's own heading and ruling counts.
 
+**R34, RULED 2026-09-09: §6.15(3) COVERS `bmf-sandbox`, AND R32's QUESTION 4 IS
+ANSWERED WITHOUT PARKER'S OBJECTION BEING RESOLVED.** R32 filed the §6.15 seam as
+the fourth of the four questions gating slice 2's start, and recorded it as
+"filed, not ruled". **It is now ruled, in CLAUDE.md §6.15, which is where the
+rule it construes lives.** Every `wrangler --remote` command is FT-run regardless
+of target; no sandbox carve-out exists.
+
+**THE CONSEQUENCE FOR THIS ARC, stated because a reader of R32 will come here for
+it.** Slice 2's builder writes the loader, exercises it against a local D1 store
+and against R27's in-memory check, and prepares the sandbox exercise in full —
+the file, the commands, the expected results and the controls. **FT runs it.**
+That is A1's own division, "An agent can prepare the exercise; it cannot run it",
+which R4 left untouched when it moved the venue off live.
+
+**PARKER'S OBJECTION IS NOT ANSWERED BY THIS. It is accepted as a cost.** R27
+refuses the local store as equivalent to in-memory, and A116 calls the sandbox
+the entire test venue, so the gap R32 named is real and survives the ruling. **A
+ruling that removes an ambiguity is not the same as one that removes a cost**,
+and this one does the first only.
+
+**RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
+reason: a heading would move this section's own heading and ruling counts.
+
 ### R22. Slice 1 proves against a FRESH download, not the 2026-08 extract
 
 **Forced by evidence rather than chosen.** The 2026-08 extract is not obtainable:
