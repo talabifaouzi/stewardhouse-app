@@ -1565,6 +1565,17 @@ TABLE DELIBERATELY DID NOT OBSERVE, each named in the verifier's own output:
 R10b's duplicate-`ein` rejection at INSERT, R16's `aside_schema_pk` and
 `aside_schema_notnull`, and R13b's post-swap index names. See A125 for the two
 things that remain open on the aside itself.
+**AMENDED 2026-09-10: THE SECOND HALF OF THAT SENTENCE IS SUPERSEDED, THE FIRST
+HALF STANDS.** The sentence is quoted rather than edited so the change is visible
+where the stale claim sat. **SLICE 2 IS STILL NOT STARTED.** But this entry IS
+now scoped beyond slice 1: **R32, ruled 2026-09-09, bounds slice 2** as the whole
+loader — candidate 3 of the four boundaries the scope pass published, thirteen
+elements A through M inside, and only R21c's three post-load operational items
+plus the FT-run production preconditions outside. **Where it lives:**
+`docs/bmf-load-scoping.md` §15, R32, recorded inline rather than as a `###`
+heading for R30's stated reason. **What this does NOT change:** the four
+unobserved properties named above are still unobserved, and the artifact and
+sidecar this entry inherits are unaffected.
 
 **A116 | Whether a sandbox result transfers to production.**
 Blocker: unruled. FT has not ruled it, and it is recorded as open rather than
@@ -1734,6 +1745,18 @@ it existing.**
 Blocker: the slice that authors R13's loader constant. **A BUILD, NOT A RULING.**
 RULED 2026-09-09 NOT RULABLE AHEAD OF SLICE 2's BOUNDARY: every candidate answer
 names a slice, and nothing in the tree bounds slice 2.
+**AMENDED 2026-09-10: "nothing in the tree bounds slice 2" IS NO LONGER TRUE**,
+quoted rather than deleted so the change is visible where the stale claim sat.
+**R32, ruled 2026-09-09, bounds slice 2** as the whole loader — thirteen elements
+A through M inside, R21c's three post-load items and the FT-run production
+preconditions outside — at `docs/bmf-load-scoping.md` §15, R32.
+**THE RULING ABOVE IS NOT REVERSED BY THIS, AND THAT IS THE POINT.** The clause
+was ONE of two grounds carrying it; the other is the SECOND GROUND below, that
+every candidate shape describes what a slice must BUILD. **R32 says so itself:**
+it discharges this entry's THIRD and FOURTH grounds "and neither of the other
+two", and names the SECOND GROUND as the reason the entry does not become
+rulable. **STAYS OPEN, STAYS BLOCKING, and the blocker line above already names a
+BUILD rather than a ruling**, which is the disposition that survives.
 **AMENDED 2026-09-09. The blocker line previously read "a scope pass bounding
 slice 2, which A113 above records as not made", quoted rather than deleted so the
 change is visible where the stale claim sat.** A scope pass now EXISTS, at
@@ -1908,6 +1931,33 @@ slice 1, and that slice 1's artifact goes nowhere until slice 2 exists. Neither
 is a scope. Every other site states the same absence in different words: A113
 above, its "SLICE 2 IS NOT STARTED" block, and CLAUDE.md §5's Individual row.
 **Ruling authorship now would assign it to an artifact that has no edges.**
+**THE THIRD GROUND IS DISCHARGED, 2026-09-10. Its heading — "NOTHING IN THE TREE
+BOUNDS SLICE 2, MEASURED RATHER THAN ASSERTED" — is quoted rather than deleted so
+the correction is visible where the stale claim sits.** It was a correct
+measurement when taken and was falsified by R32 the following day.
+**R32 DISCHARGED THE THIRD AND FOURTH GROUNDS AND NEITHER OF THE OTHER TWO, AND
+THIS IS RECORDED HERE BECAUSE ONLY R32 SAID SO.** The discharge is stated in
+`docs/bmf-load-scoping.md` §15, R32, under "WHAT THIS RULING DOES NOT DO", and
+nothing inside this entry carried it until now — **the same cross-file staleness
+this entry has already been bitten by once**, recorded in its STILL OPEN, FIRST
+correction, where a contradiction sat in two documents and neither cited the
+other. **The FOURTH GROUND goes with it**: R32 is the ruling those two
+forward-pointing rulings were waiting on, so the objection that a third would
+assert something about an unscoped slice no longer holds.
+**WHAT DOES NOT MOVE: the FIRST and SECOND grounds stand untouched**, and the
+SECOND is why this entry is still not rulable. **A125 closes by BUILD.**
+**THE THIRD GROUND'S OWN FIGURES HAVE ALREADY MOVED, AND THE MEASUREMENT IS
+GIVEN RATHER THAN ASSERTED.** It states that "slice 2" occurs TWICE in
+`docs/bmf-load-scoping.md`, both inside R21. That was true through `216a758` and
+was falsified by the rulings themselves: **`de795ed` took it to 4 and `0d129b0`
+to 5**, because R32 and R34 discuss slice 2 by name. **The 2026-09-10 pass that
+wrote this amendment did NOT touch that file**, so it moved the figure no
+further. **The ground's other half — the sites that state the same absence — IS
+moved by this pass**: A113's "SLICE 2 IS NOT STARTED" block and CLAUDE.md §5's
+Individual row are both corrected in the same commit, so two of the three named
+sites no longer state it. **The figures were true when taken and are not
+maintained forward** — they are evidence for a ground now discharged, not live
+counts.
 **FOURTH GROUND: TWO RULINGS ALREADY POINT FORWARD TO THIS SAME UNSCOPED SLICE,
 AND A THIRD WOULD BE WORSE THAN NAMING THE DEPENDENCY OUTRIGHT.** The Option B
 ruling above defers four unobserved properties to "the slice that creates the

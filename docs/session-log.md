@@ -2460,3 +2460,140 @@ INDEX first, so a TRACKED path is never reported ignored no matter what the rule
 say. Deleting the negation from `.gitignore` left the run green. It now uses
 `--no-index`. **That was found by trying to induce the failure**, not by reading
 the code, which is the only thing that finds this class.
+
+## Session — 2026-09-09 into 2026-09-10
+
+Seven commits, `f3226eb` through `0d129b0`, all docs — five files touched and no
+source file among them. **The session opened with four open items bearing on the
+BMF arc and closed with one of them ruled-but-still-open, three closed, two new
+entries filed, and slice 2 bounded for the first time.** Every figure below was
+re-derived at `0d129b0` rather than carried from session notes.
+
+**THE COMMITS, in order.** `f3226eb` filed two D1 hazards and retired three stale
+claims; `c6f0fe5` ruled byte-identity coverage structural and closed A129, A130
+and A131 while filing A132; `727613c` ruled A125 not rulable ahead of slice 2's
+boundary; `216a758` published the slice-2 scope pass; `de795ed` ruled R32;
+`14d28ac` reconciled R31 and ruled R33; `0d129b0` ruled R34 and filed A133. The
+first four are dated 2026-09-09 and the last three 2026-09-10.
+
+### What was open at session start, and where each landed
+
+**A129, byte-identity possibly unsatisfiable as stated — CLOSED.** Coverage is
+ruled STRUCTURAL: table shape only, across all three tables and all five indexes,
+every construct compared as attached to its named object. **R13a's "proves the
+derivation retroactively" does not survive**; "drift found on day one" does,
+intact. The weaker claim was accepted deliberately, and R31 records why under its
+own "WHY THE WEAKER CLAIM WAS ACCEPTED".
+**A130, three bullets provable only across a sequence of loads — CLOSED AS
+R21c.** R7, R8c and R8e come out of every slice's definition of done and become
+post-load operational verification, first checkable at loads three, four and
+roughly four. No slice can discharge them and none should carry them.
+**A131, A125's census — CLOSED**, absorbed into A125's supersession marker rather
+than corrected in place.
+**A125, the aside DDL's authorship — STILL OPEN, twice narrowed.** Ruled not
+rulable ahead of slice 2's boundary, then given a blocker that names a BUILD
+rather than a ruling. **R32 discharged its third and fourth grounds; the second is
+untouched and is why it does not become rulable** — every candidate shape
+describes what a slice must build, so there is no fork for a ruling to take.
+**A132 and A133 were FILED during the session, not carried into it.** A132 is
+DEBT and has been untouched since the commit that filed it; A133 is DEBT and is
+the last commit's own filing.
+**Slice 2's boundary — RULED.** See below.
+
+### R32, the slice-2 boundary
+
+**Candidate 3 of four: the whole loader.** Thirteen elements inside, A through M
+— create the aside, pre-flight, load, generation timestamp, stamp, the five
+pre-swap checks, `load_check` rows, swap, post-swap assertion, completion,
+pruning code, undo file, and read-only verification against D1. **Outside: only
+R21c's three, plus the FT-run production preconditions.**
+
+**Element M was unassigned in the first draft and was caught before the ruling
+banked.** The scope pass enumerates A through Q; the draft's inside-list ran A–L
+and its outside-list named only R21c's three, so M fell in neither. FT ruled it
+inside: it is the proof that the load and the swap worked. The ruling diverges
+from `docs/slice-2-scope-pass.md` §6 on that line and says so, leaving the scope
+pass stale rather than rewriting a dated snapshot.
+
+**Three of four seats recommended the narrower boundary and the ruling went the
+other way**, so the dissent is recorded on the ruling. Parker's objection is
+orthogonal, stands under every candidate, and was recorded with one overstatement
+corrected.
+
+### R31 reconciled, R33 and R34
+
+**R31 carried two dispositions that read as contradictory** — the gap is FT's,
+and the slice that authors the constant rules it — in the first and third of
+three consecutive blocks. **Reconciled: the gap is FT's to notice and record; the
+slice is what resolves it.** Different acts on the same object. The same clause
+had propagated into A125 and was corrected in the same commit.
+
+**R33: R13's "a single named constant" is incidental wording, not load-bearing.**
+The singular is inherited from R10c, whose stated concern is scattering rather
+than the number one. Packaging is the builder's call under §6.17. Shapes 1 and 3
+are both available; shape 2 is recorded as **apparently** foreclosed rather than
+ruled out, because R31 does not say what the narrowed reference narrows to.
+
+**R34: §6.15(3) covers `bmf-sandbox`.** Every `wrangler --remote` command is
+FT-run regardless of target. **It ratifies what three artifacts already assumed**
+— the grammar of (3), two existing applications in the tree, and all three agent
+definitions. **Its cost is recorded as a cost:** the builder may exercise the
+loader in a venue the rulings do not name and may not exercise it in the venue
+they do. Parker's objection is accepted, not answered.
+
+### Counts
+
+**Across the session: OPEN 115 → 114. BLOCKING 25 → 23. Build chain 21 → 19.**
+DEBT 63 → 64, POST unchanged at 27. The BMF and Discover tier 15 → 14.
+
+**TWO of the seven commits moved counts, not one, and the intermediate figures
+are recorded because the endpoints hide them.** `c6f0fe5` took OPEN 115 → 113,
+BLOCKING 25 → 23, the chain 21 → 19 and the BMF tier 15 → 13, closing three
+entries and filing one. `0d129b0` then took OPEN 113 → 114, DEBT 63 → 64 and the
+BMF tier 13 → 14 on A133's filing. **The other five commits held every figure
+steady**, which is why a reader comparing only the ends sees a net −1 that no
+single commit performed.
+**The header's arithmetic block describes the LAST change only**, by its own
+replace-rather-than-append rule, so its "113 → 114" is that commit's move and not
+the session's.
+
+### Instrument failures, counted because the count is the finding
+
+**Line-oriented greps returned false zeros on hard-wrapped CRLF FOUR times**,
+each on content that was present: the R8b quotation, the migration's two-site
+phrase count, R32's own discharge clause, and a §15 figure searched in the wrong
+case. Each was caught by flattening; none reached the tree. **The discharge
+clause is the one re-proven at HEAD in this entry's own verification**: a
+line-oriented grep for it returns 0 and exits 1, a flattened grep returns 1, and
+the clause wraps across two lines. The other three are attested by the session
+rather than re-derivable from the tree.
+
+**A count was falsified by the commit carrying it, twice.** An unanchored
+`R32`-inside-A125 measurement would have been the fourth instance of §10's filed
+shape; it was anchored to `de795ed` and stated in the past tense. Measured now,
+that anchor holds: zero occurrences at `de795ed`, four at HEAD. Its replacement
+then enumerated three occurrences where there were four, and the enumerating
+clause was dropped rather than renumbered, because any enumeration there moves.
+
+**A hardcoded section bound produced a false OPEN count of 110 twice** — once in
+an agent's post-edit check and once in the parent's — because the edit had moved
+the bounds it was measured from. Deriving bounds from the `## OPEN` and
+`## PARKED` markers returns 114. **The mechanism reproduces**: measured against
+`0d129b0`, applying the previous revision's literal bounds to that file returns
+**81**, so a stale bound does not fail — it answers confidently and wrongly.
+**That figure is ANCHORED to `0d129b0` deliberately, and the reason is this
+entry's own subject.** Unanchored it would be a live count, and the commit
+carrying this entry moves it: the same stale bounds against the working tree
+return 78, because the four staleness corrections shifted the lines they were
+measured from. **A demonstration of a stale-bound hazard would otherwise have
+gone stale in the act of being written**, which is CLAUDE.md §10's filed shape
+and would have been its fourth instance.
+
+**`verify-commit-tail.mjs` check 3 reads the HEAD blob**, so while `0d129b0` was
+being prepared it reported green on the then-HEAD's 113 while the working tree
+stood at 114. A working-tree simulation with regexes lifted from the script's own
+source was what tested that commit; the real verifier became a check on it only
+after the commit landed. **The script is not wrong to do this** — its own comment
+says a working-tree read passes on edits that were never committed — and it
+prints a note when the two diverge. What it cannot do is attest to an uncommitted
+edit.
