@@ -12,6 +12,29 @@ a count, a line number, a byte size or a grep result, that value is as observed
 during the pass and carries no later verification. A reader who needs a figure
 to be current re-measures it rather than quoting this file.
 
+**THIS FILE IS A SNAPSHOT. `docs/bmf-load-scoping.md` §15 AND
+`docs/outstanding.md` REMAIN THE AUTHORITATIVE HOMES** for every ruling and every
+queue entry it cites, and where either disagrees with this file, they are right
+and this file is stale. It is a dated record of one pass, never a second place
+where the rulings live.
+
+**THE `727613c` MARKER DATES THE PASS, NEVER THE FILE'S OWN HISTORY, AND THE TWO
+WERE NEVER THE SAME.** This file did not exist at `727613c`: the pass ran there,
+and the file was published afterward at `216a758`, whose parent is `727613c`.
+Every figure here is still as observed during that pass and none has been
+re-derived, which is exactly what the paragraph above says and the whole of what
+it says. **The file HAS been amended since publication**, by the commit carrying
+this paragraph and by any that follow. A reader must not take the marker as a
+guarantee that nothing here has been touched: it guarantees only that no figure
+was recomputed.
+
+**THE SNAPSHOT STATEMENT ABOVE PREVIOUSLY EXISTED ONLY IN `216a758`'s COMMIT
+MESSAGE**, which is the shape A126 filed and which `docs/bmf-load-scoping.md` §15
+records beside R21a — content that satisfies its requirement in a commit body and
+then lives in no tracked document. It is written into the file it governs so a
+reader meets it here rather than in `git log`. **The paragraph immediately above
+is new**, and is not a relocation of anything.
+
 **NO PREFERENCE IS EXPRESSED AND NOTHING IS RECOMMENDED.** The four candidate
 boundaries in §6 are set out for the seats to weigh. The pass declines to rank
 them, and that is deliberate rather than an omission.

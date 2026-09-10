@@ -2302,6 +2302,129 @@ content is stated here in full rather than pointed at.
 **RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
 reason: a heading would move this section's own heading and ruling counts.
 
+**R32, RULED 2026-09-09: SLICE 2 IS THE WHOLE LOADER. CREATE, LOAD, CHECK, SWAP,
+ASSERT, VERIFY, PRUNE, AND THE UNDO FILE.** Ruled against the four candidate
+boundaries published at `docs/slice-2-scope-pass.md` §6, which expresses no
+preference among them. **Candidate 3 is taken.**
+
+**INSIDE THE SLICE, THIRTEEN ELEMENTS, named by the scope pass's own letters so
+the list is checkable rather than paraphrasable:** create the aside (A); the
+pre-flight credential check (B); load the emitted file (C); mint the generation
+timestamp (D); open the stamp row (E); the five pre-swap checks (F); write the
+`load_check` rows (G); the swap (H); the post-swap assertion (I); completion
+written last (J); the pruning code (K); the undo file (L); and the read-only
+verification after the load, against D1 (M).
+
+**ELEMENT M WAS UNASSIGNED IN THE FIRST DRAFT OF THIS RULING AND IS PLACED HERE
+DELIBERATELY RATHER THAN ABSORBED SILENTLY.** The scope pass enumerates steps A
+through Q; the draft's inside-list ran A through L and its outside-list named
+only R21c's three plus the production preconditions, so M — §5's read-only
+verification, under R18 and R22a — fell in neither and the omission was caught
+before the ruling banked. **FT rules it INSIDE.** The ground: M is the proof that
+C and H worked, and a slice that loads and swaps without verifying against the
+real database proves nothing at the step that matters. **This diverges from
+`docs/slice-2-scope-pass.md` §6, whose candidate-3 text reads "Inside: A through
+L".** That file is a dated snapshot and is not rewritten to match; **this ruling
+is authoritative and the scope pass is stale on that line.**
+
+**OUTSIDE: only R21c's three post-load operational items, and every FT-run
+production precondition.** R7, R8c and R8e are already assigned out of every
+slice's definition of done by R21c above, and nothing here disturbs that.
+**Writing the pruning code is INSIDE; observing R8c is OUTSIDE**, and the two are
+not the same act. The production preconditions are §13's two — A1's rollback path
+closed and the auth-observability gap closed — together with R4's confinement of
+failure induction to the sandbox, none of which any build slice can discharge.
+
+**THE GROUND IS A113's, AND IT IS QUOTED RATHER THAN SUMMARISED.**
+`docs/outstanding.md` records "**RECOVERY IS NOT A SEPARATE ENTRY. IT IS THIS
+SLICE, ruled 2026-09-07 (R6-R9).**" Its reasoning: "a loader whose swap can leave
+production wrong, with no retained copy and no check that would have refused,
+ships the quiet-lie failure this project rules against, **and separating the two
+invites shipping the loader without them**. A separate recovery entry would gate
+nothing this entry does not already gate." **A boundary drawn at the swap would
+be the separation that sentence warns against**, shipping H and I while leaving L
+to a later slice that nothing schedules.
+
+**IT SATISFIES R21's TEST ON THE READING R21c ALREADY GENERALISED**, and the two
+places it strains are named rather than hidden. Every element A through K clears
+the test individually or is bound to its neighbour by an existing ruling: H and I
+cannot be separated because R8b says "Nothing currently validates the swap
+operation itself", and F's check 5 is already out under R21c. **M is the first
+strain, and it is a strain the ruling accepts on purpose.** The scope pass
+observed that M "is the *proof of* C and H rather than a step with a proof of its
+own" — which is exactly why FT places it inside rather than outside: a boundary
+that keeps the load and the swap while exporting their proof would satisfy the
+test only by never being tested. **L is the second.** Its rerun-safety under R6a
+is provable as an event by running the file twice, but whether it RECOVERS is
+provable only by inducing a failure, which R4 confines to the sandbox and **A116
+leaves unruled as to whether a sandbox result transfers at all.** This ruling
+accepts a sandbox exercise as the proof available and does not pre-empt A116.
+
+**THREE OF FOUR SEATS RECOMMENDED THE NARROWER BOUNDARY AND THE RULING WENT THE
+OTHER WAY. THE DISSENT IS RECORDED BECAUSE A RULING WRITTEN WITHOUT IT READS AS A
+CONSENSUS IT DID NOT HAVE.** Alex, Aisha and James argued for candidate 2,
+through the swap. Their objections, which stand unanswered rather than refuted:
+that **four rulings gate the slice's start** rather than its finish; that
+**authoring the loader constant is a prerequisite rather than a slice**; and that
+**recovery could be gated on the production run rather than bundled into the
+build**. The third is the strongest and is the one A113's reasoning answers
+directly — gating recovery on the run is what leaves the loader shippable without
+it.
+
+**PARKER'S OBJECTION IS ORTHOGONAL, STANDS UNDER EVERY CANDIDATE, AND IS RECORDED
+WITH ITS ONE OVERSTATEMENT CORRECTED.** As put: §6.15 reads `[agent-ok]` only to
+`--local`, the sandbox is remote, so the builder cannot exercise what it builds
+anywhere R4 permits. **The first two clauses are literally true** — §2's split
+table grants the agent "Load, swap, stamp, verify against `--local`" and marks
+"Anything `--remote`" FT-only, and every sandbox command is `--remote --config
+bmf-sandbox.toml`. **The third overstates**, because R4 forbids failure induction
+against LIVE and says nothing about `--local`, which that same table grants.
+**What survives the correction is sharper than what it removes:** A116's own
+entry says "**R2 AND R4 MAKE THE SANDBOX THE ENTIRE TEST VENUE**", and R1 orders
+the work "build the loader, test it on the sandbox, then run the production
+load". **So the builder may exercise the loader in a venue the rulings do not
+name, and may not exercise it in the venue they do.** R27 has already refused to
+extend its in-memory exemption to a local D1 store. **This is filed, not ruled**,
+and it is question 4 below.
+
+**FOUR QUESTIONS NOW GATE THE SLICE's START RATHER THAN ITS FINISH.** They are
+questions 1 through 4 of the scope pass's seventeen, and all four are open at
+this ruling. **They are named here so that a builder meets them before writing
+code rather than discovering them inside it.**
+- **R13's constant under R31's three candidate shapes.** Does the constant grow
+  to carry all three tables and five indexes, does the regeneration reference
+  narrow to `bmf` alone, or do the two roles split into two constants. **R31
+  expresses no preference. Whether this is FT's to rule or the slice's to build
+  is itself unsettled**: the scope pass heads its list "questions a ruling would
+  have to answer", while A125's SECOND GROUND holds that all three shapes
+  "describe what a slice must BUILD rather than what FT must decide, so there is
+  no fork here for a ruling to take." **That disagreement is surfaced, not
+  resolved.**
+- **Where the rollback path lives (A1).** This ruling places the undo FILE inside
+  the slice. It does not place the EXERCISE there, which §13 makes an FT-run
+  precondition on the production load.
+- **Which database the slice targets, and how it is addressed.** R28 exempts
+  slice 1 from the flag pair, `DB_NAME` and the `spawnSync`; nothing extends or
+  withholds that for slice 2, and both script precedents hardcode
+  `DB_NAME = 'stewardhouse-pilot'` with no `--config`.
+- **How §6.15's split applies to the sandbox**, per Parker above.
+
+**WHAT THIS RULING DOES NOT DO, stated because the nearest entry could be read as
+closing on it. A125 STAYS OPEN AND STAYS BLOCKING.** Its blocker was "a scope
+pass bounding slice 2", and this discharges that. **It discharges A125's THIRD
+and FOURTH grounds and neither of the other two.** The SECOND GROUND is untouched
+and is why the entry does not become rulable: every candidate shape for the
+constant "describes what a slice must BUILD", so there is no fork for a ruling to
+take and none is taken here. **A125 closes by BUILD, not by ruling** — its own
+closure clause requires that after the boundary, the slice authoring the constant
+meets R31's three shapes, takes one, and fires R13a's byte-identity comparison
+against `migrations/0022_bmf_table.sql`. **The caution rides unchanged:** that
+file is applied to both databases and wrangler matches by NAME, so a byte
+difference is a finding to report rather than a diff to accept.
+
+**RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
+reason: a heading would move this section's own heading and ruling counts.
+
 ### R22. Slice 1 proves against a FRESH download, not the 2026-08 extract
 
 **Forced by evidence rather than chosen.** The 2026-08 extract is not obtainable:

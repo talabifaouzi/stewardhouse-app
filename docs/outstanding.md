@@ -52,6 +52,17 @@ lacks those lines commits all of it.**
 delegation-message problem is mitigated BY PROMPT rather than by configuration —
 each file tells the agent to treat a parent's claims as unverified, and nothing
 enforces it. CLAUDE.md §8 carries the same pointer for a reader who starts there.
+**THAT FIRST SENTENCE IS RETIRED 2026-09-09, quoted rather than deleted so the
+change is visible where the stale claim sat.** `adversary` HAS been run, in a
+read-only pass on 2026-09-09 that left three files under
+`.claude/agent-memory/adversary/`; `builder` and `records` remain unrun. **The
+rest of the paragraph stands unchanged** — the prompt-only mitigation is still
+what holds. **That run also established that `adversary` writes, which its own
+one-line `description:` denies**, and its memory path is covered by
+`.gitignore:11`'s `.claude/*` rather than by any ignore rule naming it, so
+CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
+Detail: `docs/filed-defects.md`, the entry filing that `description` says
+"Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
 **As committed: 113 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
@@ -1717,9 +1728,20 @@ carries why it is not a new kind of problem.
 
 **A125 | `bmf_aside` has no DDL anywhere in the tree, and three rulings depend on
 it existing.**
-Blocker: a scope pass bounding slice 2, which A113 above records as not made.
-RULED 2026-09-09 NOT RULABLE BEFORE IT: every candidate answer names a slice,
-and nothing in the tree bounds slice 2.
+Blocker: the slice that authors R13's loader constant. **A BUILD, NOT A RULING.**
+RULED 2026-09-09 NOT RULABLE AHEAD OF SLICE 2's BOUNDARY: every candidate answer
+names a slice, and nothing in the tree bounds slice 2.
+**AMENDED 2026-09-09. The blocker line previously read "a scope pass bounding
+slice 2, which A113 above records as not made", quoted rather than deleted so the
+change is visible where the stale claim sat.** A scope pass now EXISTS, at
+`docs/slice-2-scope-pass.md`, and it does not discharge this: it proposes four
+candidate boundaries, expresses no preference, and rules none, so it does not by
+itself bound slice 2. **What closes this entry is a BUILD**, which this entry's
+own closing note already named — "the slice that authors the loader constant
+meets R31's three candidate shapes, takes one, and fires R13a's byte-identity
+comparison" — so the blocker line is brought into agreement with that note rather
+than changed in substance. **STAYS OPEN AND STAYS BLOCKING; no entry changed
+state and no count moves.**
 Pilot: BLOCKING
 Detail: `docs/bmf-load-scoping.md` §15 R13, R16a, R24 and R27; A113's D5 item (2)
 above.
