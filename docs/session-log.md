@@ -2597,3 +2597,265 @@ after the commit landed. **The script is not wrong to do this** — its own comm
 says a working-tree read passes on edits that were never committed — and it
 prints a note when the two diverge. What it cannot do is attest to an uncommitted
 edit.
+
+## Session — 2026-09-11
+
+Three commits, `9267814` through `5aed229`, all docs. Four files touched across
+the three, and no source file, no migration and no script among them:
+`CLAUDE.md`, `docs/bmf-load-scoping.md`, `docs/filed-defects.md` and
+`docs/outstanding.md`. **The session opened with four docs-train corrections
+outstanding and closed with all four made, one queue entry closed, one
+reclassified, and a production precondition restored nine days after it was
+released.** Session-open figures are anchored to `538a1f5` and session-close
+figures to `5aed229`.
+
+**THE COMMITS, in order.** `9267814` corrected two agent-memory absence claims,
+filed the false-zero rule as a `### Filed` block in §10, and amended §10's
+re-measure filing; it left every citation it displaced unrepaired, because each
+had already failed to resolve at `538a1f5`, and it did not touch
+`docs/outstanding.md`. `a1306bf` deleted three merged slice labels, converted
+four line-number citations into docs to section-and-title form, re-anchored
+A127's census, and added case folding to the new rule; it left the citations its
+own diff displaced unrepaired, because none of them resolved at `9267814`.
+`5aed229` restored precondition 2 on the production BMF load, moved A13 from
+POST to BLOCKING, held A92 at POST, and closed A75; it left five displaced
+citations in `docs/slice-2-scope-pass.md` unrepaired by ruling. All three are
+dated 2026-09-11. This entry's own commit is the fourth and moves no count.
+
+### What was open at session start, and where each landed
+
+Six items: four docs-train corrections and two of R32's start-gating questions.
+
+**The two agent-memory absence claims, CORRECTED at `9267814`.** CLAUDE.md §8's
+`.claude/agents/` bullet said nothing in the tree names the agent-memory path,
+and `docs/filed-defects.md`'s adversary entry said the path is named nowhere.
+Each is true of the ignore rules and false of the tree. The CLAUDE.md sentence
+was replaced in place with its original quoted beneath it; the filed-defects
+sentence stands and carries an amendment under it, per §6.18's promote-or-amend
+clause. Neither paragraph's conclusion changed: the ignore coverage is still
+incidental, resting on `.gitignore:11`'s `.claude/*` alone.
+
+**The wrap-artifact pattern, FILED at `9267814`.** It became a `### Filed` block
+in §10: a phrase match over stored text returns a false zero when the stored
+form differs from the searched form. Three parts, normalize both needle and
+haystack, prove the normalizer on a known-positive control for every transform
+with one spanning a wrap, and state the scope every absence claim was searched
+over.
+
+**`scripts/verify-commit-tail.mjs` check 3, AMENDED at `9267814` and not
+changed.** The script is post-commit by design and reads the committed blob, so
+it cannot discharge §10's re-measure rule. The pre-commit re-measure is made
+against the working tree, and the verifier's green after the commit and before
+any push is the check on that re-measure. No line of the script was edited this
+session.
+
+**R32's start-gating question 2, where the rollback path lives, STILL OPEN with
+its subject moved.** `docs/bmf-load-scoping.md:2508-2510` is byte-identical to
+its text at `538a1f5:2478-2480` and was shifted 30 lines by the day's inserts.
+What changed is what it points at: it says §13 makes the rollback exercise an
+FT-run precondition on the production load, and since `5aed229` the load again
+waits on both of §13's preconditions, one of which, A13, is a build rather than
+an FT-run act.
+
+**R32's start-gating question 3, which database slice 2 targets and how it is
+addressed, STILL OPEN and untouched.** `docs/bmf-load-scoping.md:2511-2514`,
+byte-identical and shifted by the same 30 lines.
+
+### Rulings, with the commit that recorded each
+
+Nine. Four of them reverse or supersede prior text, and they are named as such
+below: the restoration, the A13 reclassification, the case-folding amendment,
+and the replaced CLAUDE.md sentence in the docs-train corrections.
+
+**Precondition 2 on the production BMF load is RESTORED, reversing FJ-1's
+2026-09-02 release (`5aed229`).** FJ-1 had ruled that BMF proceeds on the
+rollback path alone. The reversal is recorded on FJ-1 itself, quoting the
+released sentence rather than deleting it, and takes no R-number. FJ-1's other
+half stands: the read surface is still built as an ordinary slice.
+
+**A13 moves POST to BLOCKING (`5aed229`).** It supersedes A13's own second
+sentence, "It does not gate the BMF load", quoted in place. The reasoning is
+A1's: a pilot user reaches an item through what it gates rather than through the
+item itself. A13 stays in cheap and mechanical and its blocker line is
+unchanged.
+
+**A92 stays POST (`5aed229`).** A13 can ship without the `email` column under
+migration 0021's E8 rule as that rule stands, so the production load does not
+wait on A92 even though A13 now gates that load.
+
+**A75 is CLOSED as false on arrival (`5aed229`).** Both of its factual claims
+were false when filed, not made false later. Its closure note rides A63, the
+next-lower surviving id in its section, and its id is neither renumbered nor
+reused.
+
+**Five displaced line-number citations in `docs/slice-2-scope-pass.md` are left
+UNREPAIRED (`5aed229`).** R32 records that file as a dated snapshot, so its
+citations are not maintained forward.
+
+**The §10 false-zero rule is FILED (`9267814`) and its case folding AMENDED in
+(`a1306bf`).** Case folding was added as a transform after two known-present
+phrases stored in capitals returned zero without it, and after the same gap made
+A127's census appear to fail at both candidate revisions when it resolves at
+both.
+
+**§10's re-measure filing is AMENDED (`9267814`)** to record that
+`verify-commit-tail.mjs` cannot discharge it, so a reader does not skip the
+pre-commit step on the strength of a post-commit green.
+
+**The two docs-train absence claims are CORRECTED (`9267814`), one by
+replacement and one by amendment.** CLAUDE.md §8's sentence was REPLACED IN
+PLACE, superseding it, with its original text quoted in the correction beneath
+it; `docs/filed-defects.md`'s stands and carries an amendment under it, because
+§6.18 rules that a finding sharpening an existing filing is an amendment to it
+and never a second entry. Each is true of the ignore rules and false of the
+tree, and the split in treatment is deliberate rather than incidental. **A127's
+census is ANCHORED (`a1306bf`).** Its "measured at HEAD 2026-09-08" clause
+stands, and one sentence now records that every listed line resolves at
+`c97e946`, the commit that recorded the census.
+
+### Branch pruning
+
+**Three merged slice labels were deleted by name at `a1306bf`**, each asserted 0
+commits ahead of `main` first. Every tip is reachable from `main`, re-verified
+at this commit by `git merge-base --is-ancestor`, so each SHA is recoverable and
+the labels held nothing the history does not:
+
+- `slice-1-bmf-parser` at `aaf2c469aa8d85c8272f25d57d79a0ccc9d7a707`
+- `slice-a18-ratebase-guard` at `0497cb63da11d2c03cdf02dabdab31d2f5a6f38a`
+- `slice-a20-workshops-copy` at `11fad0b5e8e018bfc67f42144a7353f037ae8e01`
+
+No tag and no `qa-audit` branch was touched.
+
+**Two local refs origin still lacks, re-measured after the deletions**, named on
+`docs/outstanding.md:31-35`: branch `qa-audit-enterprise` at `c74058a`, kept for
+its name rather than for retention per CLAUDE.md §6 rule 9 and its 2026-08-21
+correction, and tag `pre-rebase-slice1` at `a130bf9`, the only thing holding
+four commits that exist on this clone and nowhere else.
+
+### Filings added
+
+Five, with their line ranges measured after this commit's own writes.
+
+- The §10 false-zero filing, `CLAUDE.md:3666-3742`, added at `9267814`.
+- §10's re-measure amendment, `CLAUDE.md:3602-3615`, added at `9267814`.
+- The case-folding amendment inside the false-zero filing,
+  `CLAUDE.md:3738-3741`, added at `a1306bf`.
+- Three bullets appended to §10's known-false-positives register,
+  `CLAUDE.md:3637-3664`, added at this commit.
+- §13's restoration block, `docs/bmf-load-scoping.md:1585-1601`, added at
+  `5aed229`.
+
+**The dated markers this session left, anchored to `5aed229` and grouped by
+file, 27 lines across four files:** `docs/outstanding.md` 12, `CLAUDE.md` 7,
+`docs/bmf-load-scoping.md` 4, `docs/filed-defects.md` 4. Of the 27, 22 are
+themselves bold leads, which is this project's convention for a dated correction
+or amendment, 2 are `###` headings, and 5 are continuation lines inside a bolded
+paragraph. Scope searched: all 264 tracked files; zero elsewhere, including zero
+in this file at that revision. **Measured against the working tree, this commit
+adds FOUR dated lines to CLAUDE.md and TWO to this file**, so the anchored 7 is
+not the working-tree figure.
+
+### Counts
+
+**Across the session: OPEN 114 → 113. BLOCKING 23 → 24. DEBT 64 → 63. POST 27 →
+26. Build chain 19 → 20.**
+
+**One commit moved every one of them, and two entry moves account for the whole
+difference.** `5aed229` closed A75, which was DEBT, taking OPEN 114 → 113 and
+DEBT 64 → 63; and reclassified A13, taking POST 27 → 26 and BLOCKING 23 → 24.
+The build chain follows by its unchanged definition, BLOCKING minus the four
+counsel-gated, 23 − 4 = 19 at open and 24 − 4 = 20 at close. `9267814` and
+`a1306bf` held every figure steady; `9267814` did not touch
+`docs/outstanding.md` at all.
+
+**This entry's own commit moves none of the five.** It edits `CLAUDE.md` and
+this file, and `docs/outstanding.md` is untouched, so check 3's eight
+stated-versus-measured pairs and check 4's four derived identities read the
+same blob before and after.
+
+### Instrument failures, counted because the count is the finding
+
+Every item below is recorded in a scratch file under `.git` unless it is marked
+"reported in session", meaning it was reported in the session's conversation and
+appears in no scratch file.
+
+**FALSE ZEROS, FIVE, each on content that was present.** Two from case: two
+known-present phrases stored in capitals, found during commit B's scope pass,
+and A127's census, which first appeared to fail at both candidate revisions
+because a listed line carries "DEREK" in capitals. Together they added case
+folding to the rule. Two from line breaks: commit P's first citation sweep
+inherited a filename only from the same line, so a bare line number wrapped
+below its filename was invisible; and, reported in session, a completeness check
+in commit P's final pass matched a clause across a line break without
+flattening. One from probe construction: a completeness needle for this entry
+omitted the section sign in "§10" and reported present text missing.
+
+**A NEGATIVE CONTROL THAT WAS A TRUE POSITIVE, ONE.** `zzz_no_such_token_zzz` is
+carried by `docs/slice-2-scope-pass.md` as that document's own negative control,
+so a pass reusing it reads its own control as broken. Each pass that met it
+switched to a token verified to return zero.
+
+**CHECKS THAT COULD NOT FAIL ON THE CASE THEY EXISTED FOR, THREE.** A wrap
+detector whose negative control carried no period, so its bare-dot rule fired on
+every sentence-final period, 43 false positives; it was rebuilt on next-line
+lookahead. A citation sweep whose negative lookbehind excluded the named
+citation form, so it failed its own third control; its results were discarded
+unread. And commit P's second citation sweep, which judged a citation unmoved by
+comparing snapshot line N with working line N and so reported equal whenever
+both lines were blank; one displaced citation was missed that way, and a third
+pass decided by position from the diff hunks.
+
+**SHELL BEHAVIOR, TWO, both during this entry's own commit.** A
+regular-expression word-boundary escape lost a backslash in transit and landed
+as two literal backspace bytes; it was caught by reading raw bytes and repaired
+by naming the escape in prose, as §10's shell-escape filing prescribes. And a
+chain of checks joined with `&&` stopped at a control that correctly returned
+zero, leaving four checks unrun until the chain was split.
+
+**A FIGURE LABELED WITH A MOVING REF, ONE.** Commit A's draft labeled
+measurements "at HEAD" that described `538a1f5` and would have gone false the
+moment the commit landed; each became the hash.
+
+**REVIEWER-SIDE ERRORS CAUGHT BEFORE LANDING, SIX.** These were made by the
+reviewing session, not by the agent.
+
+- The rule for anchoring A127's census, as first issued, changed nothing when
+  two revisions both resolved. It was reversed the next pass, and the anchor to
+  `c97e946` landed at `a1306bf`.
+- A prompt asserted that CLAUDE.md's working tree was LF, carried forward from
+  an earlier report on a file the agent's own tool had rewritten; the working
+  tree is CRLF. Reported in session.
+- A guard for commit B named as its baseline a snapshot taken before the message
+  was rewritten. The guard failed, and was re-run against a baseline rebuilt
+  from the interdiff's recorded hashes. Reported in session.
+- The first draft of slice-2 ruling 1, sent to the advisory team, made A116 a
+  gate on the production load, contradicting FJ-1 and implying that A116 move
+  from POST to BLOCKING without a decision. An addendum to the team corrected
+  it. Reported in session.
+- The flatten rule was issued without backtick removal, then without case
+  folding, each added only after it failed.
+- A prompt listed `A113` among the tokens a bare `A13` matches. It does not, and
+  the register records the correction.
+
+**None of the six reached a commit.**
+
+### Open items carried out
+
+- **The four slice-2 rulings drafted for commit C**, pending the advisory team,
+  with ruling 1 now reading that the production load waits on A1 and A13 rather
+  than on A1 alone. No commit C exists.
+- **A13's five rulings**, pending the team, with A13's build to open next
+  session on a branch.
+- **Slice 2's definition of done**, unwritten. R21a requires it before the
+  build.
+- **Three unanchored citations of
+  `docs/enterprise-persistence-scoping.md:524-526`**, at
+  `docs/outstanding.md:1108`, `:3173` and `:3408`, plus the five displaced
+  `docs/slice-2-scope-pass.md` citations, for the 30-day sweep.
+- **The sweep itself**, due 2026-10-01 on a `Last swept: 2026-09-01` header, to
+  run before slice 2's first build commit, because §6.18 blocks build slices
+  alone.
+- **The four counsel-gated entries**, A47, A84, A68 and A110, whose mapping to
+  the two counsel conversations FT named is unconfirmed.
+- **This session's scratch files under `.git`**, untracked, unreachable from any
+  tree, and left in place.

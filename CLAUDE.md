@@ -3634,6 +3634,34 @@ date recorded.** Add to this list rather than re-deriving it.
   between the attendance gate and the migration's authoring precondition in
   `migrations/0022_bmf_table.sql`. **In both cases the BMF one is the LATER
   occurrence in the file.**
+- **`sole` matches inside `console`, so a case-folded search for the word
+  returns a large majority of lines that are not it.** The bulk sit in
+  `functions/` and `scripts/`. Measured 2026-09-11 at `5aed229`, scope all 264
+  tracked files: 137 lines match `sole` case-folded, of which 113 carry
+  `console` and 2 carry `solely`, leaving 22 where it is the word. The
+  discriminating form is a word-boundary match on the bare word, which returns
+  22, or the longer phrase actually being sought.
+- **`A13` matches inside `A130`, `A131`, `A132` and `A133`, so a bare search for
+  the queue id returns entries that are not it.**
+  `docs/slice-2-scope-pass.md:432` is the cleanest checkable site: that file
+  carries exactly one bare `A13` line and it is `A132`, so a bare search reports
+  a hit where a word-boundary search reports none. Measured 2026-09-11 at
+  `5aed229`, scope all 264 tracked files: bare `A13` returns 60 lines across six
+  files, of which 32 carry no word-boundary `A13` at all. The discriminating
+  form is a word-boundary match that refuses a following digit. **`A113` does
+  NOT collide and is not in that set**, recorded because a scratch report of
+  2026-09-11 named it among the colliding tokens and that claim is false: the
+  characters of `A113` do not contain `A13`, proven by a substring test over
+  all five tokens, and it is the prefix `A13` plus a digit that collides.
+- **`zzz_no_such_token_zzz` is NOT absent from the tree, so a pass reusing it as
+  a negative control gets a TRUE POSITIVE and reads its own control as broken.**
+  `docs/slice-2-scope-pass.md:225` carries it as that document's own documented
+  negative control: "`.bmf-cache`, with a negative control
+  (`zzz_no_such_token_zzz` -> exit 1) and a". Measured 2026-09-11 at `5aed229`,
+  scope all 264 tracked files: one line, in that one file. A token is a valid
+  negative control only for a scope that excludes the document describing it,
+  so the discriminator is to mint a fresh token per pass and assert it returns
+  zero before relying on it.
 
 ### Filed — a phrase match returns a false zero when the stored form differs from the searched form (promoted 2026-09-11)
 
