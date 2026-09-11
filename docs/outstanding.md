@@ -72,61 +72,65 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 113 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
-3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
-ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
-BMF-and-Discover 14, cheap-and-mechanical 31, large 35, and
+**As committed: 114 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
+six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
+7, BMF-and-Discover 15, cheap-and-mechanical 31, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-11: ONE ENTRY CLOSED AND ONE
-RECLASSIFIED.** OPEN moves 114 to 113, BLOCKING 23 to 24, DEBT 64 to 63, POST 27
-to 26, the breakdown to 7 + 16 + 7 + 14 + 31 + 35 + 3 = 113, the counsel-gated
-line to FOUR OF THE TWENTY-FOUR, and the build chain to 20 by the unchanged
-definition, 24 − 4 = 20. The diagnostics move with them: the naive enumerator
-111 against 113, the gap still exactly A50a and A50b, and the file-wide
-`Pilot: DEBT` count 64 against 63, the extra still FJ-7's own line inside the
-FOUNDER JUDGMENT section rather than an OPEN entry.
-**ONE ENTRY CLOSED: A75.** Both of its factual claims were false on arrival, and
-its closure note sits on A63 in cheap and mechanical, which is where the
-convention recorded on this file's A129, A130 and A131 note puts it.
-**ONE ENTRY RECLASSIFIED: A13**, POST to BLOCKING, staying in cheap and
-mechanical, so that section falls 32 to 31 by A75's closure alone.
-**SIX PLACES IN THIS FILE WERE UPDATED IN PLACE: FJ-1, A1, A8, A92, the
-critical-path chain sentence, and A63, which carries A75's closure note.** FJ-1
-records the reversal of its own 2026-09-02 release of precondition 2; A1 marks
-"it is the sole precondition on the RUN" false; A8 and the chain sentence each
-record that A13 gates the production load too; A92 records that it stays POST.
-A13's own superseded marker rides its reclassification and is counted with it
-rather than in this list of six.
-**SIX CHANGES IN THREE OTHER FILES RODE THIS ONE AND ARE COUNTED NOWHERE.**
-`docs/filed-defects.md` converted eight line-number citations to
-section-and-title form, gained a dated marker on its rollback-precondition
-filing and named the health check in one parked blocker;
-`docs/bmf-load-scoping.md` section 13 gained a restoration block and R32 an
-inline marker with no R-number; and CLAUDE.md section 11 gained a dated marker.
-**THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. It recorded nothing opened and nothing closed, with OPEN staying
-114, which is the state this change supersedes.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-11: ONE ENTRY OPENED AND NOTHING
+CLOSED.** OPEN moves 113 to 114, BLOCKING stays 24, DEBT 63 to 64, POST stays
+26, the breakdown to 7 + 16 + 7 + 15 + 31 + 35 + 3 = 114, the counsel-gated line
+unchanged at FOUR OF THE TWENTY-FOUR, and the build chain unchanged at 20 by the
+unchanged definition, 24 - 4 = 20. The diagnostics move with them: the naive
+enumerator 112 against 114, the gap still exactly A50a and A50b, and the
+file-wide `Pilot: DEBT` count 65 against 64, the extra still FJ-7's own line
+inside the FOUNDER JUDGMENT section rather than an OPEN entry.
+
+**ONE ENTRY OPENED: A134**, the production-load runbook, filed at DEBT in
+BMF-and-Discover, which is why that tier alone moves 14 to 15. **NOTHING
+CLOSED.**
+
+**FOUR PLACES IN THIS FILE WERE UPDATED IN PLACE: A1, A12, A13 and A113.** A1
+gains the closure condition R35 ruled, that the sandbox rollback exercise does
+not close it by itself; A12 records that its retention question covers
+`error_text` as well as `email`; A13 gains the five rulings of 2026-09-11 and
+the note that shipping makes migration 0021's no-endpoint sentence false; and
+A113 records that slice 2's four start-gating questions are all answered.
+
+**THREE CHANGES IN TWO OTHER FILES RODE THIS ONE AND ARE COUNTED NOWHERE.**
+`docs/bmf-load-scoping.md` §15 gained R35 through R38 and the advisory-panel
+line as inline blocks, and R32's start-gating question list gained an
+all-four-answered line; CLAUDE.md gained one sentence in §7 after its note on
+where R32 lives, and one in §6.15's 2026-09-09 block.
+
+**THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own
+replace-rather-than-append rule. It recorded one entry closed and one
+reclassified, with OPEN moving 114 to 113, which is the state this change
+supersedes.
 **CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: the false-zero filing's
 part (1) transforms run with a known-positive control for EACH of them asserted
-before any result was read, case folding included, plus a verified-negative token
-returning zero across the tracked tree, 264 files at `a1306bf`; queue ids and
-R-numbers matched with word boundaries, with `\bA13\b` asserted to reject A130,
-A132 and A113 before any id result was read; the entry walker asserted to
-reproduce the stated breakdown 7 + 16 + 7 + 14 + 31 + 35 + 3 = 113 before any
-count was trusted; every stated figure re-parsed with the verifier's OWN eight
-patterns against the WORKING TREE before committing, each confirmed to occur
-exactly once and to resolve to the site it is meant to read; the eight citation
-targets converted in `docs/filed-defects.md` re-verified by execution at
-`a1306bf` before any was converted; and line endings measured as
-carriage-returns-against-line-count before and after every write, with a
-known-CRLF and a known-LF control asserted first.
+before any result was read, the wrap control spanning a line break and case
+folding included, plus a freshly minted negative token verified to return zero
+across the tracked tree, 264 files at `3294d36`, before any result was read;
+queue ids and R-numbers matched with word boundaries that refuse a trailing
+digit; every insertion anchored on a line asserted to occur EXACTLY ONCE, with
+the R34 anchor rejected for occurring five times and replaced by the unique
+heading that follows it; each entry append placed by walking to the entry's last
+content line rather than by line number; the entry walker asserted to reproduce
+the stated breakdown 7 + 16 + 7 + 15 + 31 + 35 + 3 = 114 before any count was
+trusted; every stated figure re-parsed with the verifier's OWN eight patterns
+against the WORKING TREE before committing, each confirmed to occur exactly once
+and to resolve to the site it is meant to read; every quoted ruling text
+re-compared to its source after wrapping, normalized, and asserted unchanged;
+and line endings measured as carriage-returns-against-line-count before and
+after every write, with a known-CRLF and a known-LF control asserted first.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 111 rather than 113, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 112 rather than 114, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 64
-rather than 63, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 65
+rather than 64, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -134,7 +138,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 24 BLOCKING, 63 DEBT, 26 POST**, classification ruled
+**AGAINST THE PILOT GATE: 24 BLOCKING, 64 DEBT, 26 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-11,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -142,7 +146,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 113. The sentence
+totals above, which remain a count of OPEN entries and sum to 114. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -650,6 +654,14 @@ and tier placement is FT-ruled, which is the precedent A9's entry states in its
 own words. Recorded so a later reader knows this was looked at rather than
 missed.
 
+**CLOSURE CONDITION, RULED 2026-09-11 (R35).** The rollback exercise on the
+sandbox does not close A1 by itself. A1 closes only with FT's ruling on A116 or
+FT's recorded acceptance of the risk that a sandbox result does not transfer to
+production. **This answers the last question in the STILL UNRULED sentence
+above**: the load may proceed on accepted risk, once FT records it. The other
+three questions in that sentence stay unruled. A1 and A13 are the production
+load's two preconditions.
+
 ### Tier 5
 
 **A59 | Nav buttons sit at roughly 31px against the LOCKED 44px standard, and
@@ -735,6 +747,11 @@ purge that would enforce it. Setting a window unilaterally would invent the
 standard Clause 3 defers.
 Pilot: POST
 Detail: `migrations/0021_auth_send_log.sql`, its retention docblock.
+
+**RECORDED 2026-09-11: THE RETENTION QUESTION COVERS `error_text` AS WELL AS
+`email`.** `error_text` holds Resend's raw response on failure, and Resend's
+documented 403 testing-restriction message embeds an email address, so an
+address can reach the table through that column.
 
 **A14 | No purge path exists on any of the five append-only tables.**
 Blocker: the same absent scheduled execution, plus A47. Broader than A12 and NOT
@@ -1597,6 +1614,11 @@ heading for R30's stated reason. **What this does NOT change:** the four
 unobserved properties named above are still unobserved, and the artifact and
 sidecar this entry inherits are unaffected.
 
+**SLICE 2's START-GATING QUESTIONS ARE ALL ANSWERED, 2026-09-11**: question 1 by
+R33, question 4 by R34, question 2 by R35, and question 3 by R36 through R38,
+all in `docs/bmf-load-scoping.md` §15. **Slice 2 is still not started, and its
+definition of done is not written.**
+
 **A116 | Whether a sandbox result transfers to production.**
 Blocker: unruled. FT has not ruled it, and it is recorded as open rather than
 inferred from the rulings around it.
@@ -2262,6 +2284,22 @@ this entry is what makes it recorded. **A132 is the closer precedent than A116**
 — it is a record-accuracy item about text that is wrong or missing in an artifact
 the build depends on, and it is DEBT.
 
+**A134 | No production-load runbook exists, and the FT-run acts around the load
+are recorded across several entries.**
+Blocker: none. It must exist before the first production load.
+Pilot: DEBT
+Detail: A1; A13; `docs/bmf-load-scoping.md` §15, R34, R36, R37 and R38.
+**FILED 2026-09-11 on the advisory team's finding.** No tracked file carries a
+runbook for the production BMF load. Searched 2026-09-11 at `3294d36`, across
+all tracked files, for "runbook", "production load", "procedure" and "step by
+step"; the hits are two other runbooks, CLAUDE.md §6.10's migration-apply
+procedure, passing prose, and sentences that gate or order the load. None is a
+procedure for running it. **The acts it has to gather:** A1's rollback exercise
+on the sandbox and its closure condition (R35); FT's sign-in before and after
+each load, confirmed in A13's view; the load command itself, built by the loader
+under R36 and R37 and run by FT under R34; and the deletion of R38's local
+directory.
+
 ### Cheap and mechanical
 
 **A119 | One surface carries SIX names, and two of them render in the same
@@ -2720,6 +2758,26 @@ itself. **The first sentence above STANDS**: this is still an ordinary slice, it
 stays in cheap and mechanical, and its blocker line is unchanged.
 **IT CAN SHIP WITHOUT THE `email` COLUMN under migration 0021's E8 rule as that
 rule stands**, so the load does not wait on A92, which stays POST.
+
+**FIVE RULINGS, 2026-09-11, AS THE ADVISORY TEAM AMENDED THEM, WITH NO
+DISSENT.** (1) A13 ships when FT signs in to production and sees that attempt
+appear as a success row in the view. Before and after every production BMF load,
+FT signs in and confirms both attempts appear; a missing row after FT's own
+sign-in is the alarm. A134 records the step. (2) The view emits the HTTP status
+as an integer, and Resend's error name only when it belongs to Resend's
+documented set. Any other failure, including a network failure that never
+reached Resend, reads "unrecognized failure". The raw `error_text` never leaves
+the database. (3) The `email` column is omitted, and no masked or hashed form
+replaces it. A92 stays open. (4) The view returns the most recent 100 attempts,
+newest first, without pagination, and the time of the last success and of the
+last failure across the whole table. (5) The view states no health verdict and
+has no green state. A permanent line says that no rows means quiet or broken,
+and that a BMF load window leaves a gap, not failure rows. **The gate stays
+`requireOps`.**
+
+**WHEN A13 SHIPS**, migration 0021's sentence that no endpoint returns rows from
+this table becomes false. The build records that on A132 and does not edit the
+migration.
 
 **A90 | ADV-044, the radiogroup conversion, is deferred across three segmented
 controls.**

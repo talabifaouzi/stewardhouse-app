@@ -1783,6 +1783,7 @@ Every substantive change runs as a **slice**. The rhythm:
     sandbox result is worth would then gate what agent-run testing establishes,
     and **A116 is unruled** — it records two agreements as evidence and says "Two
     agreements do not establish a general rule."
+    Recorded in `docs/bmf-load-scoping.md` §15 as R34.
 16. **CLAUDE.md IS NOT CAPPED AND IS NOT SPLIT. IT GROWS (FT-ruled 2026-08-21).**
     The question was scoped read-only against the tree with a cap and a split as
     the two candidate mechanisms. Neither was adopted.
@@ -2381,6 +2382,8 @@ inside, with only R21c's three post-load operational items and the FT-run
 production preconditions outside. **Where R32 lives:**
 `docs/bmf-load-scoping.md` §15, recorded inline rather than as a `###` heading so
 that section's heading and ruling counts do not move.
+Its four start-gating questions are answered by R33 through R38, in the same
+section, as of 2026-09-11.
 **THIS IS THE FIFTH LIVE SITE OF THE SAME STALE CLAUSE, AND IT IS RECORDED AS
 FIFTH BECAUSE THE COUNT IS THE FINDING.** The other four are §5's Individual row
 in this file, and in `docs/outstanding.md` A113's "SLICE 2 IS NOT STARTED" block,

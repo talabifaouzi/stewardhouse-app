@@ -2514,6 +2514,9 @@ code rather than discovering them inside it.**
   `DB_NAME = 'stewardhouse-pilot'` with no `--config`.
 - **How §6.15's split applies to the sandbox**, per Parker above.
 
+**ALL FOUR ANSWERED, 2026-09-11.** Question 1 by R33, question 4 by R34,
+question 2 by R35, and question 3 by R36, R37 and R38, all in this section.
+
 **WHAT THIS RULING DOES NOT DO, stated because the nearest entry could be read as
 closing on it. A125 STAYS OPEN AND STAYS BLOCKING.** Its blocker was "a scope
 pass bounding slice 2", and this discharges that. **It discharges A125's THIRD
@@ -2552,6 +2555,51 @@ and this one does the first only.
 
 **RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
 reason: a heading would move this section's own heading and ruling counts.
+
+**R35, RULED 2026-09-11: SLICE 2 MAY FINISH WITH A1's EVIDENCE QUESTION AND A116
+BOTH OPEN.** Neither can be answered by building. The production load waits on
+A1 and A13, per `5aed229`. **A116 bears on the load only through A1**: A1 closes
+by an FT-run rollback exercise on the sandbox, and it closes only with FT's
+ruling on A116 or FT's recorded acceptance of the risk that a sandbox result
+does not transfer to production. That condition is recorded on A1.
+
+**R36, RULED 2026-09-11: EVERY LOADER RUN NAMES ITS TARGET DATABASE AND WHETHER
+IT IS LOCAL OR REMOTE. THERE IS NO DEFAULT.** A run missing either refuses to
+start. **This supersedes, for slice 2, §2's contract naming `--local` as the
+default.** §2 is not rewritten, because its contract stands for the scripts it
+describes. Every `--remote` run is FT-run, per R34.
+
+**R37, RULED 2026-09-11: R28's THREE EXEMPTIONS DO NOT EXTEND TO SLICE 2, AND
+THE SINGLE DB_NAME CONSTANT BECOMES A TWO-ENTRY MAP.** The `--local` /
+`--remote` pair and the `spawnSync` on `wrangler d1 execute` bind slice 2. The
+map binds each allowed database to its config: `bmf-sandbox` always runs with
+`--config bmf-sandbox.toml`, and `stewardhouse-pilot` never does. The loader
+never accepts `--config` from its caller, so a run cannot pair one database's
+name with the other's config. **That keeps the property CLAUDE.md §6.10 relies
+on**, that the two databases are addressed by opposite config paths. How the map
+is packaged is the builder's call, under R33.
+
+**R38, RULED 2026-09-11: SLICE 2's LOCAL VENUE IS A `--persist-to` DIRECTORY
+OUTSIDE THE REPOSITORY, ADDRESSED AS `bmf-sandbox`.** The loader takes the
+directory as a required argument and refuses one inside the repository. Because
+R37 binds `bmf-sandbox` to `--config bmf-sandbox.toml`, no local store is keyed
+on production's database id. Before the first run the builder applies every
+migration in `migrations/` to that store, locally, and names the store as
+CLAUDE.md §6.10 requires. The build's first act is one throwaway write, after
+which it confirms `.wrangler/state` is unchanged and locates the store file the
+write created. On every run the loader prints the resolved store path, fails if
+the directory holds more than one store file besides miniflare's own metadata
+file, prints the full wrangler command it runs, and prints the directory's size
+at exit. A134, the production-load runbook, states when the directory is
+deleted. **Parker's objection stands, as R34 accepted it**: a local store is not
+the venue the rulings name, and this ruling names the local store without making
+it that venue.
+
+**THE ADVISORY TEAM, FOUR SEATS, RECORDED NO DISSENT ON R35 THROUGH R38.**
+Parker amended R35 with A1's closure condition. Alex amended R37 from a two-name
+list to a map, and R38 with the migration prerequisite. Aisha amended R38 with
+the size print and the teardown. **RECORDED INLINE RATHER THAN AS `###` RULINGS,
+for R30's stated reason.**
 
 ### R22. Slice 1 proves against a FRESH download, not the 2026-08 extract
 
