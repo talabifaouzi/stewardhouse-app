@@ -2652,3 +2652,30 @@ acquire it the moment one is added.
 `git status --short --untracked-files=all` returned zero lines after that pass.
 **The exposure is that the ignore rule was written for another purpose and the
 path is named nowhere**, so nothing would flag it if that rule narrowed.
+
+**AMENDED 2026-09-11: "the path is named nowhere" is CORRECTED to "NO IGNORE
+SOURCE NAMES THE PATH", the original quoted rather than deleted so the change is
+visible where the stale claim sat.** It is TRUE of the ignore rules and FALSE of
+the tree. **Measured that day, by execution:** the tracked `.gitignore` is the
+only one in `git ls-files`; `.git/info/exclude` is present and carries no active
+pattern, six comment lines and nothing else; and `core.excludesFile` is UNSET. So
+`.gitignore:11`'s `.claude/*` is the SOLE rule covering the path, per
+`git check-ignore -v`, against a control confirming `.claude/agents/adversary.md`
+is not ignored and returns exit 1.
+
+**WHERE THE PATH IS NAMED, counting two strings, and the figure is ANCHORED TO
+`538a1f5` because this amendment's own text adds occurrences.** At that
+revision the full `.claude/agent-memory/adversary/` appeared on FOUR lines in
+THREE files: once in this entry, at its evidence line; twice in CLAUDE.md §8's
+`.claude/agents/` bullet; and once in `docs/outstanding.md` at that same
+revision, in the header paragraph recording that `adversary` has been run,
+recoverable with `git show 538a1f5:docs/outstanding.md`. The parent
+`.claude/agent-memory/` appeared on a FIFTH line, in the sentence immediately
+before the corrected one. **Five lines, three files, at `538a1f5`.**
+
+**The exposure the sentence states is unchanged**: nothing would flag the path if
+`.gitignore:11` narrowed.
+
+**AN AMENDMENT RATHER THAN A SECOND ENTRY, per CLAUDE.md §6.18**, which rules
+that a finding sharpening an existing filing is an amendment to it and never a
+second entry. The generalization sits in CLAUDE.md §10, the false-zero filing.

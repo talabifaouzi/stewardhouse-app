@@ -1266,6 +1266,25 @@ TWENTY was correct when committed and a LATER commit moved it, which is exactly
 the case a sweep can catch. Both notes are left as written, per this file's
 practice.
 
+**COUNT NOTE 2026-09-11: the FIVE recorded in the note headed ON A FIGURE THIS
+COMMIT ITSELF MOVED is now SIX, and this commit is what moved it.** That note's
+figure is left as measured, per this file's practice. The sixth is the §10
+re-measure filing, which carried no amendment until this commit added one; the
+other five are the foreign-key, scanner, 7403, UTF-16 and line-ending filings,
+re-counted at `538a1f5` rather than carried forward.
+**PLACED LAST IN THIS SEQUENCE RATHER THAN BESIDE THE FIGURE IT CORRECTS, and
+the reason is a positional reference.** The note headed SECOND OF THE SAME DAY
+says rule 21 "postdates the note directly above", so an insertion BETWEEN the ON
+A FIGURE note and that one changes what the phrase resolves to. An insertion
+anywhere else in the sequence does not.
+**THE PHRASE ALREADY MISRESOLVES, and that is reported rather than repaired.**
+It says the note directly above "said TWENTY". At `ccc7dd4`, the commit that
+wrote it, the note directly above was already the ON A FIGURE note, which says
+FIVE; the TWENTY note sat two notes up. `0247a23` had added the ON A FIGURE note
+six minutes earlier, so the reference was false on arrival rather than made false
+later. **Repairing it would mean editing text a prior commit banked**, and
+placing this note last leaves it exactly as it was rather than compounding it.
+
 Every substantive change runs as a **slice**. The rhythm:
 
 1. **Hard git-state gate.** Confirm current branch and HEAD before starting.
@@ -2586,10 +2605,35 @@ correction.
   WHICH IS LUCK RATHER THAN DESIGN.** `.claude/agent-memory/adversary/` resolves
   to **`.gitignore:11`, `.claude/*`** — verified with `git check-ignore -v`,
   against a control confirming `.claude/agents/adversary.md` is NOT ignored (exit
-  1, the `:12` negation). **Nothing in the tree names the agent-memory path**, so
+  1, the `:12` negation). **NO IGNORE SOURCE NAMES THE AGENT-MEMORY PATH**, so
   the coverage is incidental: a narrower rule at `:11` would leave agent memory
   untracked and visible, where a blanket stage would take it, which is the
-  exposure §6.20 exists for. **Nothing was harmed by that pass**:
+  exposure §6.20 exists for.
+  **CORRECTED 2026-09-11. The sentence was REPLACED IN PLACE and its original
+  text is quoted here: it read "Nothing in the tree names the agent-memory
+  path".** It is TRUE of the ignore rules and FALSE of the tree.
+  **Measured that day, by execution:** the tracked `.gitignore` is the only one
+  in `git ls-files`; `.git/info/exclude` is present and carries no active
+  pattern, six comment lines and nothing else; and `core.excludesFile` is UNSET.
+  So `.gitignore:11`'s `.claude/*` is the SOLE rule covering the path, per
+  `git check-ignore -v`, against a control confirming
+  `.claude/agents/adversary.md` is not ignored and returns exit 1.
+  **WHERE THE PATH IS NAMED, counting two strings, and the figure is ANCHORED TO
+  `538a1f5` because this correction's own text adds occurrences.** At that
+  revision the full `.claude/agent-memory/adversary/` appeared on FOUR lines in
+  THREE files: twice in this bullet, in the sentence immediately before the
+  corrected one and where the bullet records that the pass left three files on
+  disk; once in the `adversary` filing in `docs/filed-defects.md`; and once in
+  `docs/outstanding.md` at that same revision, in the header paragraph recording
+  that `adversary` has been run, recoverable with
+  `git show 538a1f5:docs/outstanding.md`. The parent `.claude/agent-memory/`
+  appeared on a FIFTH line, in that same `docs/filed-defects.md` filing.
+  **Five lines, three files, at `538a1f5`.** A count taken after this commit is a
+  different and moving number, which is the scoping R33 in
+  `docs/bmf-load-scoping.md` already applies to a phrase count of its own.
+  **The paragraph's point is unchanged and is not reworded**: what narrows is
+  the scope of the absence, not the conclusion drawn from it, and the coverage is
+  still incidental. **Nothing was harmed by that pass**:
   `git status --short --untracked-files=all` returned zero lines after it, and no
   tracked file was touched.
 
@@ -3554,6 +3598,21 @@ IT.** That rule distinguishes a figure describing a frozen act from one
 describing a live state. This one is narrower and sharper: a STATE figure
 measured a moment too early, by the person best placed to know it moved.
 
+**AMENDED 2026-09-11: `scripts/verify-commit-tail.mjs` CANNOT DISCHARGE THIS
+RULE, and a reader who assumes it does will skip the step.** The verifier is
+POST-COMMIT by design, which is how §2 names it, and check 3 reads the COMMITTED
+blob, `git show HEAD:docs/outstanding.md`, with the reason in its own comment: a
+working-tree read passes on edits that were never committed. **So the figure it
+checks is the one already written into history.** The pre-commit re-measure this
+rule requires is made against the WORKING TREE, and the verifier's green AFTER
+the commit and BEFORE any push is the check ON that re-measure rather than a
+substitute for it. **THE INSTANCE IS IN `docs/session-log.md`'s 2026-09-09 into
+2026-09-10 entry**, which records that while `0d129b0` was being prepared the
+verifier reported green on the then-HEAD's 113 while the working tree stood at
+114, and that a working-tree simulation with regexes lifted from the script's own
+source was what tested that commit. **The script is not wrong to read the blob.**
+What it cannot do is attest to an uncommitted edit.
+
 ### Filed — known false positives, a register (2026-09-08)
 
 **MATCHES THAT LOOK LIKE FINDINGS AND ARE NOT**, kept here so a census meets them
@@ -3574,6 +3633,77 @@ date recorded.** Add to this list rather than re-deriving it.
   between the attendance gate and the migration's authoring precondition in
   `migrations/0022_bmf_table.sql`. **In both cases the BMF one is the LATER
   occurrence in the file.**
+
+### Filed — a phrase match returns a false zero when the stored form differs from the searched form (promoted 2026-09-11)
+
+**THE HAZARD. A PHRASE MATCH OVER STORED TEXT RETURNS A FALSE ZERO WHEN THE
+STORED FORM DIFFERS FROM THE SEARCHED FORM.** The content is present, the matcher
+is reading a form nobody typed by hand, and the zero is indistinguishable from a
+true absence.
+
+**RECORDED INSTANCES, cited by document and entry rather than by line, and given
+BY CLASS RATHER THAN AS A TOTAL**, because the classes do not measure the same
+thing.
+
+- **WRAP CASES, three.** `docs/session-log.md`, the 2026-09-08 to 2026-09-09
+  entry, under its instrument-failures heading: a commit-body check, a
+  frontmatter validator and a session-log probe.
+- **WRAP CASES, four more.** `docs/session-log.md`, the 2026-09-09 into
+  2026-09-10 entry: the R8b quotation, the migration's two-site phrase count,
+  R32's own discharge clause, and a §15 figure searched in the wrong case.
+- **PROBE-CONSTRUCTION CASES, two.** In the CONTROLS USED FOR THIS CHANGE block
+  of `docs/outstanding.md` **as `0d129b0` wrote it**, recoverable with
+  `git show 0d129b0:docs/outstanding.md`: both were caught by checking against a
+  flattened copy, one omitting a pair of bold markers and one searching a backtick
+  where the source carries a typographic quote.
+- **THE SQL COMMENT-CONTINUATION CASE.** Recorded under R33 in
+  `docs/bmf-load-scoping.md` §15, where one of two occurrences of a phrase wraps
+  at a `-- ` leader, so a line-oriented search finds one and **a plain flatten
+  still finds one**.
+
+**THE RULE, THREE PARTS.**
+
+**(1) BEFORE TRUSTING A ZERO FROM ANY PHRASE MATCH, NORMALIZE BOTH THE NEEDLE AND
+THE HAYSTACK**, by these transforms: CRLF to LF; every whitespace run collapsed
+to one space across the whole file; a leading SQL comment leader stripped from
+each line before joining; asterisks, underscores and backticks REMOVED; and every
+quote character REMOVED, straight or typographic, single or double.
+
+**(2) PROVE THE NORMALIZER ON A KNOWN-POSITIVE CONTROL FOR EVERY TRANSFORM IN
+(1), ONE OF WHICH SPANS A WRAP, before reading any result.** One control per
+transform, because a normalizer that performs four of five steps returns the same
+confident zero as one that performs none, and only the control for the missing
+step can tell them apart. That is the scanner filing's discipline aimed at the
+normalizer rather than at the pattern.
+
+**(3) EVERY ABSENCE CLAIM STATES THE SCOPE THAT WAS SEARCHED. A claim wider than
+its search is false even when the search was correct.**
+
+**WHY THE PERMISSIVE FLATTEN, stated because a structure-preserving one looks
+more careful and is the wrong trade here.** The hazard is FALSE ZEROS.
+Over-joining can only err toward false POSITIVES, and a false positive cannot
+make an absence claim wrong: it sends a reader to a line that turns out not to
+match, and they read it. A structure-preserving flatten buys precision an absence
+claim does not need, and it carries its own defect surface, because it has to
+decide what a unit boundary is and it can be wrong about that silently.
+**Removal rather than mapping is chosen for the code and quote characters for the
+same reason**: mapping requires deciding which form is canonical, and removal does
+not.
+
+**WHY `scripts/verify-commit-tail.mjs` IS NOT CHANGED BY THIS FILING.** Its
+`norm()` already performs the whitespace step, and the comment introducing it
+records the three false zeros that put it there. And a miss in check 3 does not
+return a silent zero: an unparsed figure fires `CONTROL BROKEN` on the
+every-stated-figure-parsed control and the run exits non-zero. **It fails loudly,
+which is the property this rule exists to buy.**
+
+**PART (3)'s INSTANCES, and they are why that part is not decoration.** The two
+agent-memory sentences corrected on 2026-09-11, in §8's `.claude/agents/` bullet
+and in the `adversary` filing in `docs/filed-defects.md`, each said the path was
+named nowhere. **Each is TRUE of the ignore rules and FALSE of the tree**, and in
+both places the corrected sentence sits immediately after one naming the path.
+**No normalizer would have caught either.** Both searches were correct, and both
+claims were wider than the search that backed them.
 
 ---
 
