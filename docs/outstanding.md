@@ -28,13 +28,21 @@ item would leave it in the queue permanently. That is the same reasoning
 CLAUDE.md §6.10 gives for keeping its branch (c) obligation out of this file.
 
 **TWO LOCAL REFS EXIST THAT ORIGIN DOES NOT HAVE, and one of them is the only
-thing holding four commits.** Branch `slice-1-bmf-parser` at `aaf2c46` and tag
+thing holding four commits.** Branch `qa-audit-enterprise` at `c74058a` and tag
 `pre-rebase-slice1` at `a130bf9`, **neither pushed**. The tag is the ONLY
 reference from which the four PRE-REBASE slice-1 commits — `cb4bf24`, `140b0c9`,
 `a130bf9`, `bdb9918` — are reachable; they exist on this clone and nowhere else,
 and `git for-each-ref --contains a130bf9` returns exactly one ref. **Deleting
-that tag loses them.** The branch's own tip is reachable from `main`, so the
-branch ref is a label rather than the only handle.
+that tag loses them.** `qa-audit-enterprise` carries no unique objects and is
+kept for its NAME rather than for retention: CLAUDE.md §6, the slice protocol,
+rule 9 and its 2026-08-21 correction records that it is an ancestor of `main`
+on the first-parent line with zero commits ahead, that its audit doc is present
+on `main`, and that pushing it would preserve nothing.
+**THREE SLICE LABELS WERE DELETED 2026-09-11**, by name, each asserted 0 commits
+ahead of `main` first: `slice-1-bmf-parser` at `aaf2c46`,
+`slice-a18-ratebase-guard` at `0497cb6` and `slice-a20-workshops-copy` at
+`11fad0b`. Every one of those tips is reachable from `main`, so the labels held
+nothing the history does not.
 
 **THE EXTRACT AND THE EMITTED ARTIFACTS ARE ON DISK AND GITIGNORED**, which is
 why §6.20 requires staging by explicit path. `.bmf-cache/` holds the **2026-09-07
@@ -69,52 +77,36 @@ Detail: `docs/filed-defects.md`, the entry filing that `description` says
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
 BMF-and-Discover 14, cheap-and-mechanical 32, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-10: ONE ENTRY WAS FILED AND NOTHING WAS
-CLOSED.** A133 was filed at the end of the BMF and Discover tier, recording that
-the BMF rulings R1 through R5 exist nowhere in full while the arc cites all five
-as authority. **It is the FIRST COUNT-MOVING CHANGE OF THIS ARC**, which is why
-the figures below move rather than holding as the last several changes left
-them.
-**OPEN 113 → 114; BLOCKING stays 23, DEBT 63 → 64, POST stays 27**, summing to
-114; the breakdown becomes 7 + 16 + 7 + 14 + 32 + 35 + 3 = 114, the BMF and
-Discover tier moving 13 → 14 and every other tier element unchanged; the
-restatement further down becomes "sum to 114"; and the counsel-gated line stays
-FOUR OF THE TWENTY-THREE.
-**The build chain stays 19.** The definition is unchanged — BLOCKING minus the
-four counsel-gated items — and gives 23 − 4 = 19. **A133 is DEBT, so it enters
-neither side of that subtraction.** **A47, A84, A68 and A110 were re-confirmed by
-execution**, not recall: all four present, all four inside OPEN, all four still
-carrying the counsel-gated marker, whose anchored count is 4.
-**WHY DEBT AND NOT POST IS ARGUED ON THE ENTRY AND NOT HERE.** A133 carries its
-own classification paragraph, taking A132 as the nearer precedent than A116.
-This block records the total; it does not re-make the judgement.
-**THE DIAGNOSTICS MOVE WITH THE COUNTS, AND THE GAP DOES NOT.** The enumerator
-goes 111 → 112 against 114, the gap still exactly A50a and A50b, because A133
-carries a plain-numeric id that BOTH enumerators see; and the file-wide
-count of `Pilot: DEBT` lines goes 64 → 65 against 64, the single extra still
-being FJ-7's own line inside FOUNDER JUDGMENT.
-**TWO CHANGES RODE THIS ONE AND ARE COUNTED NOWHERE, because they are in other
-files.** CLAUDE.md §6.15 gained the ruling that category (3) covers
-`bmf-sandbox`, and `docs/bmf-load-scoping.md` §15 gained R34, which applies that
-ruling to this arc. **§15's heading and ruling counts are UNCHANGED at 31 and
-28**, because R34 is recorded inline and carries no `###`, and both were
-re-measured after the write rather than reasoned about.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-11: NOTHING OPENED AND NOTHING CLOSED.**
+No count moves. OPEN stays 114, BLOCKING 23, DEBT 64, POST 27, the breakdown
+stays 7 + 16 + 7 + 14 + 32 + 35 + 3 = 114, the counsel-gated line stays FOUR OF
+THE TWENTY-THREE, and the build chain stays 19 by the unchanged definition,
+23 − 4 = 19. The diagnostics are unmoved too: the naive enumerator 112 against
+114, the gap still exactly A50a and A50b, and the file-wide `Pilot: DEBT` count
+65 against 64, the extra still FJ-7's own line inside FOUNDER JUDGMENT.
+**TWO PLACES IN THIS FILE WERE UPDATED IN PLACE.** The local-refs block above
+now names the two refs origin lacks, measured after three merged slice labels
+were deleted by name; and A127's census is now anchored to `c97e946`.
+**THREE CHANGES RODE THIS ONE AND ARE COUNTED NOWHERE, because they are in other
+files.** CLAUDE.md §6 rule 18 cites the line-ending filing by title rather than
+by a stale ordinal; CLAUDE.md §10's false-zero filing gained case folding in
+part (1) with a dated amendment; and `docs/filed-defects.md`'s parked-items list
+converted four line-number citations into docs to section-and-title form.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. It recorded nothing opened, nothing closed, and one entry
-updated in place.
-**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: the suffix-aware and naive
-patterns each asserted against a known letter-suffixed header AND a known
-plain-numeric one, with a mid-line occurrence asserted to match neither, so the
-control set spans both id formats rather than only the one the enumerator
-handles; every stated figure re-parsed with the verifier's OWN eight patterns
-after the write, each confirmed to occur exactly once and to resolve to the site
-it is meant to read, because the stated side is taken by FIRST MATCH and this
-block sits above four of those sites; the quoted grounds in all three files
-checked against a FLATTENED copy, which is what caught two apparent absences that
-were the probe's fault rather than the tree's — one omitting a pair of bold
-markers, one searching a backtick where the source carries a typographic quote;
-and line endings re-counted as carriage-returns-against-line-count for all three
-files touched, with a known-LF control asserted to return zero first.
+than-append rule. It recorded one entry filed, nothing closed, and OPEN moving
+113 to 114, which is the change this one supersedes.
+**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: the false-zero filing's
+part (1) transforms run with a known-positive control for EACH of them asserted
+before any result was read, plus a negative control on a genuinely absent
+phrase; CASE FOLDING added as a transform and separately controlled, after
+two known-present phrases stored in capitals returned zero without it, and after
+the same gap made A127's census appear to fail at both candidate revisions when
+it resolves at both; every stated figure re-parsed with the verifier's OWN eight
+patterns against the WORKING TREE before committing, each confirmed to occur
+exactly once and to resolve to the site it is meant to read; every ref
+re-measured against origin after the deletions rather than predicted; and line
+endings measured as carriage-returns-against-line-count before and after every
+write, with a known-CRLF and a known-LF control asserted first.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
 dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 112 rather than 114, because
@@ -987,6 +979,7 @@ Blocker: none for the correction itself; the repair is unscoped and its scoping
 is a separate ruling FT has not made.
 Pilot: BLOCKING
 Detail: the eighteen lines enumerated below, measured at HEAD 2026-09-08.
+Every listed line resolves at `c97e946`, the commit that recorded the census.
 **NO EXTERNAL COUNSEL IS RETAINED AND NONE IS IN PIPELINE.** That was already
 the record — `docs/outstanding.md` states "Nothing in this repository records
 counsel as retained" — but the tree simultaneously names a specific person as

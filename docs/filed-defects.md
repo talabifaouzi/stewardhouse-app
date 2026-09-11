@@ -2477,17 +2477,21 @@ INDIVIDUAL:
   Blocker: none named.
 - In-product feedback channel, FILED AND UNSCHEDULED. Removed at `fbc1a9a`
   rather than persisted. Blocker: a deliberate design problem, not a restore.
-- Who-gave-to-whom view, UNBUILT (`CLAUDE.md:513`, `:1834`).
+- Who-gave-to-whom view, UNBUILT (CLAUDE.md §5.1, the "Accepted Phase-1
+  boundary" paragraph on enterprise gift tracking; CLAUDE.md §8, the
+  `docs/ruling-e-deletion-retention.md` bullet).
   Blocker: COUNSEL, ruling E Clause 6 subpoena posture.
 - Charitable-retention-floor. Blocker: COUNSEL, ruling E Clause 3.
 
 ADVISOR:
-- Stage-label renaming (`docs/filed-defects.md:38`). Blocker: the Q7 allowlist,
+- Stage-label renaming (this document, "Filed: advisor stage-label renaming,
+  blocked on the Q7 allowlist"). Blocker: the Q7 allowlist,
   itself counsel-gated.
 - Pipeline persistence: no `/api/pipeline` exists and `handleSave` persists
   nothing. Blocker: none named.
 - Every advisor WRITE, in production. Blocker: FT's `$.advisor.demo_gate`
-  designation, which `CLAUDE.md:517` records is "never a slice".
+  designation, which CLAUDE.md §5.1, the "NOT in the arc" paragraph on the
+  `demo_gate` designation, records is "never a slice".
 
 ENTERPRISE:
 - Gift tracking, an accepted Phase-1 boundary rather than a defect.

@@ -1956,10 +1956,11 @@ Every substantive change runs as a **slice**. The rhythm:
     **PROMOTION, THE THIRD PURPOSE, AND WHY IT EXISTS.** The line-ending check
     that could not fail was recorded in the session log as its "fifth
     instrument", was never filed here, and **recurred in a later session because
-    nothing warned it**. That filing is now §10's eighth. **A SESSION LOG RECORDS
-    WHAT HAPPENED; IT DOES NOT WARN THE NEXT SESSION.** This file is the one
-    loaded every session, so a hazard that stays in the log is a hazard nobody
-    meets again until they repeat it.
+    nothing warned it**. That check is now filed in §10, under the heading "a
+    line-ending check that COULD NOT FAIL, for the SECOND time".
+    **A SESSION LOG RECORDS WHAT HAPPENED; IT DOES NOT WARN THE NEXT SESSION.**
+    This file is the one loaded every session, so a hazard that stays in the log
+    is a hazard nobody meets again until they repeat it.
 
     **THE CRITERION. PROMOTE a finding if it is (a) a HAZARD THAT COULD RECUR —
     an instrument that cannot fail, a shell or tool behaviour that surprises, a
@@ -3666,8 +3667,9 @@ thing.
 **(1) BEFORE TRUSTING A ZERO FROM ANY PHRASE MATCH, NORMALIZE BOTH THE NEEDLE AND
 THE HAYSTACK**, by these transforms: CRLF to LF; every whitespace run collapsed
 to one space across the whole file; a leading SQL comment leader stripped from
-each line before joining; asterisks, underscores and backticks REMOVED; and every
-quote character REMOVED, straight or typographic, single or double.
+each line before joining; asterisks, underscores and backticks REMOVED; every
+quote character REMOVED, straight or typographic, single or double; and CASE
+FOLDED so a needle in one case finds a source in another.
 
 **(2) PROVE THE NORMALIZER ON A KNOWN-POSITIVE CONTROL FOR EVERY TRANSFORM IN
 (1), ONE OF WHICH SPANS A WRAP, before reading any result.** One control per
@@ -3704,6 +3706,11 @@ named nowhere. **Each is TRUE of the ignore rules and FALSE of the tree**, and i
 both places the corrected sentence sits immediately after one naming the path.
 **No normalizer would have caught either.** Both searches were correct, and both
 claims were wider than the search that backed them.
+
+**AMENDED 2026-09-11: CASE FOLDING ADDED TO PART (1)**, after two known-present
+phrases stored in capitals returned zero under the first version, and because the
+§15 instance listed above is described in its own source as a search in the wrong
+case.
 
 ---
 
