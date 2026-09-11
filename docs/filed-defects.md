@@ -1120,24 +1120,28 @@ Phase-1 boundary on enterprise gift tracking.
 
 **Filed: the BMF rollback path is a stated precondition on a production BMF
 load, and it lives only in the scoping doc rather than in this queue.**
-`docs/bmf-load-scoping.md:1026-1032` records two preconditions on any production
-load, both attributed to Parker and both marked ACCEPTED. The first is the
-rollback path; the second is the observability gap.
+`docs/bmf-load-scoping.md`, section 13, "The availability ruling", under its
+sub-heading "RULED as gating the LOAD, not the window", records two preconditions
+on any production load, both attributed to Parker and both marked ACCEPTED. The
+first is the rollback path; the second is the observability gap.
 
-**The rollback precondition, in full.** `:1029` states it as "The rollback path,
-open item 1 below, must be closed." Open item 1 sits at `:1142-1161`, and its
-finding is narrow and exact: the measured import committed ATOMICALLY on the
-success path, with an exact row count and no partial table ever visible
-(`:1144-1147`), but nothing failed during the run, so the rollback claim was
-never exercised (`:1149-1153`). `:1155` states the position in five words:
-"Success path proven. Failure path untested." `:1157-1161` records it as GATING
-the load rather than the window.
+**The rollback precondition, in full.** That sub-heading's first numbered item
+states it as "The rollback path, open item 1 below, must be closed." Open item 1
+is that document's "1. Whether the import rollback is a transaction or a
+compensating replay", and its finding is narrow and exact: the measured import
+committed ATOMICALLY on the success path, with an exact row count and no partial
+table ever visible, in its paragraph headed "NARROWED by the measurement in
+section 12", but nothing failed during the run, so the rollback claim was never
+exercised, in its paragraph headed "It does NOT test the rollback claim, because
+nothing failed". That item states the position in five words: "Success path
+proven. Failure path untested." Its paragraph headed "GATING, as of the section 13
+ruling" records it as GATING the load rather than the window.
 
-**The second precondition resolves, and already has a home.** `:1030-1032`
-points at CLAUDE.md section 11 for the auth-observability gap. **That reference
-resolves**: it is the filed open item on the auth observability gap, in
-CLAUDE.md section 11, "Production incident log". It is queued there as a
-near-term small build.
+**The second precondition resolves, and already has a home.** That sub-heading's
+second numbered item points at CLAUDE.md section 11 for the auth-observability
+gap. **That reference resolves**: it is the filed open item on the auth
+observability gap, in CLAUDE.md section 11, "Production incident log". It is
+queued there as a near-term small build.
 
 **CITATIONS RE-RESOLVED 2026-09-01 AND CONVERTED TO SECTION-AND-TITLE. The
 SUBSTANCE moved too.** This paragraph carried LINE NUMBERS into CLAUDE.md until
@@ -1155,11 +1159,27 @@ filing it points at. **A citation into a DOC now names the section and the
 filing title. Citations into SOURCE files keep their line numbers**, because
 those are checkable against a build and a doc's headings are the stabler
 address.
+**THE EIGHT CITATIONS INTO `docs/bmf-load-scoping.md` WERE CONVERTED 2026-09-11,
+on that same rule, and the numbers they carried are recorded here rather than
+left as a deletion.** They read `:1026-1032`, `:1029`, `:1030-1032`,
+`:1142-1161`, `:1144-1147`, `:1149-1153`, `:1155` and `:1157-1161`. All eight
+were written by `e8bb796` and all eight resolved exactly at that commit, verified
+by execution; all eight had drifted by `a1306bf`, the first three by 513 lines and
+the other five by 1,498. **The 2026-09-01 conversion above took the two tokens
+into CLAUDE.md and left these eight**, in this same filing, under a rule that did
+not distinguish them.
 
 **The substance moved as well:** `2726d40` shipped the send-outcome stamp, so
 "magic-link sends stamp nothing" is no longer true of the tree, and the section
 11 filing now says which half of the gap still stands. **Whether the corrected
 half satisfies this precondition is an FT call and is not made here.**
+**THE CALL WAS MADE 2026-09-11, and the sentence above is quoted rather than
+deleted so the change is visible where the open question sat: it read "Whether
+the corrected half satisfies this precondition is an FT call and is not made
+here."** FT ruled that the precondition STANDS. **The stamped half does NOT
+satisfy it**, and precondition 2 closes when A13, the auth health check read
+surface, ships. The reversal is recorded on FJ-1 in `docs/outstanding.md`, under
+FOUNDER JUDGMENT.
 
 **Why this is filed here.** Section 7 names this document as where live items
 go. The rollback precondition is live, it gates a production action, and it is
@@ -2470,7 +2490,8 @@ INDIVIDUAL:
   Blocker: the ingest itself, plus the Parker rollback precondition, filed in
   this document as "Filed: the BMF rollback path is a stated precondition on a
   production BMF load, and it lives only in the scoping doc rather than in this
-  queue".
+  queue", plus the auth health check precondition, which is A13 in
+  `docs/outstanding.md` and which FT restored on 2026-09-11.
 - Account-settings page, parked EXCEPT consent reversibility, which shipped.
   Blocker: none named; a founder decision.
 - Geo-selection weighting; AI-drafted org descriptions; the Discover design pass.

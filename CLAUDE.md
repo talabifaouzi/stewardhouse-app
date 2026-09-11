@@ -3850,6 +3850,15 @@ not the window".** That reference was resolved by reading the file on
 precondition, or whether it asked for an active signal, is an FT call and is
 deliberately not made here.
 
+**THE CALL WAS MADE 2026-09-11, and the sentence above is quoted rather than
+deleted so the change is visible where the open question sat: it read "Whether a
+durable record satisfies the precondition, or whether it asked for an active
+signal, is an FT call and is deliberately not made here."** FT ruled that the
+durable record does NOT satisfy it, and that alerting is not required. **The
+production BMF load waits on A13, the auth health check read surface, and on A1,
+the rollback path.** The reversal of the 2026-09-02 release is recorded on FJ-1
+itself, in `docs/outstanding.md` under FOUNDER JUDGMENT.
+
 ---
 
 ## 12. Production account inventory

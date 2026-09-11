@@ -1582,6 +1582,24 @@ fetch as a logout, that was still wrong on every one of those three entry paths,
 and the fix is the same fix. A smaller population meeting a false logout is
 still meeting a false logout.
 
+### RESTORED 2026-09-11: precondition 2 stands, and it is the read surface
+
+**Recorded here rather than by editing the ruling above**, on the same footing as
+the correction above it: what a room decided is not the agent's to revise.
+
+**Precondition 2 was RELEASED on 2026-09-02 and RESTORED on 2026-09-11, both by
+FT.** The 2026-09-02 ruling held that BMF proceeds on the rollback path alone.
+That release is reversed, and the two preconditions this section names are both
+live.
+
+**IT CLOSES WHEN A13, THE READ SURFACE, SHIPS.** Precondition 2 as written names
+two defects in one sentence, and FT settled which one it meant. **The stamping
+half closed at `2726d40` and does NOT satisfy it.** **Alerting, A94, is not part
+of it**, and is blocked on scheduled execution this project has never had.
+
+**Where the reversal lives:** `docs/outstanding.md`, the FOUNDER JUDGMENT
+section, entry FJ-1.
+
 ## 14. ProPublica data freshness, from correspondence
 
 **Source: an email reply from Andrea at ProPublica, received 2026-08-21,
@@ -2409,6 +2427,18 @@ slice's definition of done by R21c above, and nothing here disturbs that.
 not the same act. The production preconditions are §13's two — A1's rollback path
 closed and the auth-observability gap closed — together with R4's confinement of
 failure induction to the sandbox, none of which any build slice can discharge.
+
+**AMENDED 2026-09-11, INLINE AND WITH NO R-NUMBER, for R30's stated reason.**
+The clause "none of which any build slice can discharge" is NOT true of
+precondition 2 under FT's 2026-09-11 ruling, which restored that precondition
+and named A13, the auth health check read surface, as what closes it. **A13 IS A
+BUILD**, and the surviving half of the 2026-09-02 ruling still has it built as
+an ordinary slice. **The other two items in that sentence are unaffected**: the
+rollback exercise is FT-run, and R4's confinement of failure induction to the
+sandbox is not a slice's to discharge. **`docs/slice-2-scope-pass.md` element P
+carries the same claim**, in the cells marking its preconditions as not on a
+slice and as FT-run, and is LEFT UNREWRITTEN because this ruling records that
+file as a dated snapshot.
 
 **THE GROUND IS A113's, AND IT IS QUOTED RATHER THAN SUMMARISED.**
 `docs/outstanding.md` records "**RECOVERY IS NOT A SEPARATE ENTRY. IT IS THIS

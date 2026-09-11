@@ -72,48 +72,61 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 114 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
+**As committed: 113 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now ruled,
 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as six
 ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment 7,
-BMF-and-Discover 14, cheap-and-mechanical 32, large 35, and
+BMF-and-Discover 14, cheap-and-mechanical 31, large 35, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-11: NOTHING OPENED AND NOTHING CLOSED.**
-No count moves. OPEN stays 114, BLOCKING 23, DEBT 64, POST 27, the breakdown
-stays 7 + 16 + 7 + 14 + 32 + 35 + 3 = 114, the counsel-gated line stays FOUR OF
-THE TWENTY-THREE, and the build chain stays 19 by the unchanged definition,
-23 − 4 = 19. The diagnostics are unmoved too: the naive enumerator 112 against
-114, the gap still exactly A50a and A50b, and the file-wide `Pilot: DEBT` count
-65 against 64, the extra still FJ-7's own line inside FOUNDER JUDGMENT.
-**TWO PLACES IN THIS FILE WERE UPDATED IN PLACE.** The local-refs block above
-now names the two refs origin lacks, measured after three merged slice labels
-were deleted by name; and A127's census is now anchored to `c97e946`.
-**THREE CHANGES RODE THIS ONE AND ARE COUNTED NOWHERE, because they are in other
-files.** CLAUDE.md §6 rule 18 cites the line-ending filing by title rather than
-by a stale ordinal; CLAUDE.md §10's false-zero filing gained case folding in
-part (1) with a dated amendment; and `docs/filed-defects.md`'s parked-items list
-converted four line-number citations into docs to section-and-title form.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-11: ONE ENTRY CLOSED AND ONE
+RECLASSIFIED.** OPEN moves 114 to 113, BLOCKING 23 to 24, DEBT 64 to 63, POST 27
+to 26, the breakdown to 7 + 16 + 7 + 14 + 31 + 35 + 3 = 113, the counsel-gated
+line to FOUR OF THE TWENTY-FOUR, and the build chain to 20 by the unchanged
+definition, 24 − 4 = 20. The diagnostics move with them: the naive enumerator
+111 against 113, the gap still exactly A50a and A50b, and the file-wide
+`Pilot: DEBT` count 64 against 63, the extra still FJ-7's own line inside the
+FOUNDER JUDGMENT section rather than an OPEN entry.
+**ONE ENTRY CLOSED: A75.** Both of its factual claims were false on arrival, and
+its closure note sits on A63 in cheap and mechanical, which is where the
+convention recorded on this file's A129, A130 and A131 note puts it.
+**ONE ENTRY RECLASSIFIED: A13**, POST to BLOCKING, staying in cheap and
+mechanical, so that section falls 32 to 31 by A75's closure alone.
+**SIX PLACES IN THIS FILE WERE UPDATED IN PLACE: FJ-1, A1, A8, A92, the
+critical-path chain sentence, and A63, which carries A75's closure note.** FJ-1
+records the reversal of its own 2026-09-02 release of precondition 2; A1 marks
+"it is the sole precondition on the RUN" false; A8 and the chain sentence each
+record that A13 gates the production load too; A92 records that it stays POST.
+A13's own superseded marker rides its reclassification and is counted with it
+rather than in this list of six.
+**SIX CHANGES IN THREE OTHER FILES RODE THIS ONE AND ARE COUNTED NOWHERE.**
+`docs/filed-defects.md` converted eight line-number citations to
+section-and-title form, gained a dated marker on its rollback-precondition
+filing and named the health check in one parked blocker;
+`docs/bmf-load-scoping.md` section 13 gained a restoration block and R32 an
+inline marker with no R-number; and CLAUDE.md section 11 gained a dated marker.
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own replace-rather-
-than-append rule. It recorded one entry filed, nothing closed, and OPEN moving
-113 to 114, which is the change this one supersedes.
+than-append rule. It recorded nothing opened and nothing closed, with OPEN staying
+114, which is the state this change supersedes.
 **CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: the false-zero filing's
 part (1) transforms run with a known-positive control for EACH of them asserted
-before any result was read, plus a negative control on a genuinely absent
-phrase; CASE FOLDING added as a transform and separately controlled, after
-two known-present phrases stored in capitals returned zero without it, and after
-the same gap made A127's census appear to fail at both candidate revisions when
-it resolves at both; every stated figure re-parsed with the verifier's OWN eight
+before any result was read, case folding included, plus a verified-negative token
+returning zero across the tracked tree, 264 files at `a1306bf`; queue ids and
+R-numbers matched with word boundaries, with `\bA13\b` asserted to reject A130,
+A132 and A113 before any id result was read; the entry walker asserted to
+reproduce the stated breakdown 7 + 16 + 7 + 14 + 31 + 35 + 3 = 113 before any
+count was trusted; every stated figure re-parsed with the verifier's OWN eight
 patterns against the WORKING TREE before committing, each confirmed to occur
-exactly once and to resolve to the site it is meant to read; every ref
-re-measured against origin after the deletions rather than predicted; and line
-endings measured as carriage-returns-against-line-count before and after every
-write, with a known-CRLF and a known-LF control asserted first.
+exactly once and to resolve to the site it is meant to read; the eight citation
+targets converted in `docs/filed-defects.md` re-verified by execution at
+`a1306bf` before any was converted; and line endings measured as
+carriage-returns-against-line-count before and after every write, with a
+known-CRLF and a known-LF control asserted first.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 112 rather than 114, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 111 rather than 113, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 65
-rather than 64, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 64
+rather than 63, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -121,15 +134,15 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 23 BLOCKING, 64 DEBT, 27 POST**, classification ruled
-2026-09-02 and the totals re-derived 2026-09-10,
+**AGAINST THE PILOT GATE: 24 BLOCKING, 63 DEBT, 26 POST**, classification ruled
+2026-09-02 and the totals re-derived 2026-09-11,
 of which 5 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 114. The sentence
+totals above, which remain a count of OPEN entries and sum to 113. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -168,7 +181,7 @@ STATE is a live count wearing a date**, and must be maintained or it lies. The
 parenthetical here dated the CLASSIFICATION ACT, which is genuinely fixed at
 2026-09-02; the TOTALS were never fixed, and pairing the two made a live count
 look archival. **The date has been moved off the totals and onto the act.**
-**FOUR OF THE TWENTY-THREE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
+**FOUR OF THE TWENTY-FOUR BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
 BY BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not
 one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
@@ -240,6 +253,7 @@ without it, so A8 is BLOCKING. Its blocker is the BMF ingest, and the ingest is:
 create the sandbox (A114), write the ruled-table migration (A117), apply it to
 the sandbox, build the loader (A113), test it on the sandbox, then run the
 production load. **A1 gates the RUN, and none of the five steps before it.**
+**A13 GATES THE RUN TOO, ruled 2026-09-11**, and it is not one of the six steps.
 **IT READ FIVE UNTIL LATER THE SAME DAY, AND THE SIXTH STEP WAS NOT ADDED, IT
 WAS SEPARATED.** The earlier text ran "create the sandbox (A114), apply the
 ruled-table migration to it, build the loader (A113)", which folded WRITING the
@@ -613,6 +627,14 @@ SCOPE**: it is the sole precondition on the RUN. The loader build is A113 and
 the sandbox A114, and this entry gates neither. The sentence above saying A1 is
 "the only item between the queue and the ingest" was true under the prior
 reading and is superseded by this one.
+**MADE FALSE 2026-09-11 BY FT IN ONE CLAUSE, quoted rather than deleted: "it is
+the sole precondition on the RUN."** The run waits on two entries, this one and
+A13, the auth health check read surface, because FT reversed FJ-1's release of
+precondition 2 on 2026-09-11. **The rest of that paragraph stands**: the loader
+build is A113 and the sandbox A114, and this entry gates neither.
+**AND "A1 is now the only item between the queue and the ingest" IS NOW FALSE ON A
+SECOND GROUND**, having already been superseded above by the narrower reading of
+what this entry gates, which the paragraph above records.
 **A1 STAYS ONE FILING (ruled 2026-09-04).** Removing a false dependency is not a
 split: A1's subject is a single question, and "write the loader" was never
 inside it but hung off it.
@@ -702,6 +724,9 @@ Detail: `migrations/0021_auth_send_log.sql`, its E8 discipline note and the
 Surfaced 2026-09-02 by the FJ-1 ruling. Gates A13, and nothing else. The two
 answers are not equivalent: omitting the column leaves an operator unable to
 tell which address a failure belongs to.
+**STAYS POST, RULED 2026-09-11.** A13 can ship without the `email` column under
+migration 0021's E8 rule as that rule stands, so the production BMF load does not
+wait on this entry even though A13 now gates that load.
 
 **A12 | `auth_send_log` retention is unbounded, on the one table Tier 0 is about
 to make live.**
@@ -1176,6 +1201,8 @@ gated by A1 and are reachable today. **The prior line read "the BMF ingest,
 which is A1", which equated the ingest with one of its steps** and would tell a
 reader A8 is one answered question from unblocking. **It then read FIVE STEPS
 until A117 was filed**, folding writing the migration into applying it.
+**A13 ALSO GATES THE PRODUCTION LOAD, ruled 2026-09-11**, so the sixth step waits
+on two entries rather than on A1 alone.
 Pilot: BLOCKING
 Detail: `docs/discover-surface-spec.md`; `docs/bmf-load-scoping.md`.
 **FT RULED 2026-09-04: THE CAPABILITY IS INTENDED, AND PILOT CANNOT OPEN
@@ -2305,12 +2332,6 @@ rather than asserting anything false about a user's own data or capabilities.
 **No pilot decision turns on it, so pilot can open with it recorded.** The
 classification barely matters for scheduling, since the fix is one word.
 
-**A75 | `docs/bmf-load-scoping.md` cites its own two-preconditions passage one
-line short of where it starts.**
-Blocker: none. A self-citation inside a single file.
-Pilot: DEBT
-Detail: that document, section 13, "The availability ruling".
-
 **A76 | CLAUDE.md's manifest-drift note carries a `me.js` citation that never
 resolved.**
 Blocker: none, but it needs a decision rather than a renumber. This is a
@@ -2638,6 +2659,27 @@ Blocker: none named.
 Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: the plain-vite lever does not establish
 WHICH failure branch".
+**A75 was CLOSED 2026-09-11 and has left this section; its id is not
+renumbered and is not reused**, since renumbering would break every
+reference to the ids around it. Its title claimed that
+`docs/bmf-load-scoping.md` cites its own two-preconditions passage one line
+short of where it starts, and its blocker line called that a self-citation
+inside a single file. **BOTH CLAIMS WERE FALSE ON ARRIVAL.** No line-number
+self-citation of that passage exists in `docs/bmf-load-scoping.md` at
+`d077ea2`, the commit that filed A75; searched scope, the whole of that file
+at that revision, for a named `docs/bmf-load-scoping.md:NNNN` citation and
+for a bare `:10NN` one. A line-number citation of that passage does exist,
+in `docs/filed-defects.md`'s rollback-precondition filing, which cited it as
+`:1026-1032`; it was exact when written at `e8bb796` and still exact at
+`d077ea2`, so it was not one line short either.
+**THE REAL DEFECT IS CONVERTED IN THIS COMMIT: eight line-number citations that
+LIVED in `docs/filed-defects.md` and POINTED INTO `docs/bmf-load-scoping.md`,
+reading `:1026-1032`, `:1029`, `:1030-1032`, `:1142-1161`, `:1144-1147`,
+`:1149-1153`, `:1155` and `:1157-1161`, all stale at `a1306bf`, now name a
+section and a title.** Those eight numbers are quoted here as the values they
+carried and are NOT pointers to follow. They sat in the filing headed "Filed:
+the BMF rollback path is a stated precondition on a production BMF load", which
+now records them and their drift itself.
 
 **A38 | `AddAthleteModal`'s footer carries a small size on all three controls.**
 Blocker: none named. A provable 44px violation, and a size prop on three
@@ -2655,7 +2697,7 @@ enrollment paths disagree about name shape".
 **A13 | Nothing READS `auth_send_log`, because no endpoint was ever written.**
 Blocker: none for the endpoint itself. A92 governs whether `email` may be
 emitted.
-Pilot: POST
+Pilot: BLOCKING
 Detail: CLAUDE.md §11, the auth-observability filing; `docs/session-log.md`, the
 third 2026-09-01 entry, its "This bought FINDABILITY, not MONITORING" passage,
 which draws the read-versus-alerting distinction this entry used to collapse.
@@ -2667,6 +2709,17 @@ A94. A read endpoint needs an inbound HTTP request and nothing else:
 shape, and `functions/api/roster.js` is the precedent at 32 executable lines.
 **RULED 2026-09-02 (FJ-1): build it as an ordinary slice.** It does not gate the
 BMF load.
+**SUPERSEDED IN ITS SECOND SENTENCE 2026-09-11, quoted rather than deleted so the
+change is visible where the stale claim sits: it read "It does not gate the BMF
+load."** It does. **FT RULED 2026-09-11 that the production BMF load waits on the
+auth health check as well as the rollback path, and that the health check is this
+entry and not A94**, so POST moves to BLOCKING on the reasoning A1 gives in its
+own paragraph headed "FT RULED 2026-09-04: POST moves to BLOCKING", which turns on
+a pilot user reaching an item through what it gates rather than through the item
+itself. **The first sentence above STANDS**: this is still an ordinary slice, it
+stays in cheap and mechanical, and its blocker line is unchanged.
+**IT CAN SHIP WITHOUT THE `email` COLUMN under migration 0021's E8 rule as that
+rule stands**, so the load does not wait on A92, which stays POST.
 
 **A90 | ADV-044, the radiogroup conversion, is deferred across three segmented
 controls.**
@@ -3308,6 +3361,17 @@ and blocks nothing.
 that is not mechanical: migration 0021 forbids emitting `email` to any client
 under E8, so a read endpoint must omit the column or that rule must be amended.
 Blocker FT, because it is a privacy-posture ruling rather than infrastructure.
+**REVERSED 2026-09-11 BY FT. The ruled sentence is quoted rather than deleted so
+the change is visible where it sat: it read "BMF proceeds on the rollback path
+alone, which is A1 and is now the only standing precondition."** The production
+BMF load waits on the auth health check as well as the rollback path, so
+precondition 2 stands and A1 is one of the two. **The health check is A13, the
+read surface, and not A94, alerting.**
+**WHAT IS NOT REVERSED, and it is the larger half: the read-surface ruling of
+2026-09-02 STANDS.** A13 is still built as an ordinary slice. So does the
+sentence beside the reversed one, "The read surface is A13; alerting is A94 and
+blocks nothing", which is where the record separates the read surface from
+alerting.
 
 **FJ-2 | A9 disposition: a cleanup slice, or a ruling first on what may sit at
 rest in remote D1?**
