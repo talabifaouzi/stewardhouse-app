@@ -130,10 +130,18 @@ export async function onRequestGet(context) {
   if (resolved.error) return jsonError(resolved.error, resolved.status);
 
   const rows = await db
-    .selectFrom('auth_send_log')
-    .select(['id', 'outcome', 'error_text', 'attempted_at'])
-    .orderBy('attempted_at', 'desc')
-    .orderBy('id', 'desc')
+    .selectFrom('auth_send_log as l')
+    .leftJoin('person as p', (join) =>
+      join.on(sql`lower(p.invite_email) = lower(l.email)`))
+    .select([
+      'l.id as id',
+      'l.outcome as outcome',
+      'l.error_text as error_text',
+      'l.attempted_at as attempted_at',
+      'p.type as type',
+    ])
+    .orderBy('l.attempted_at', 'desc')
+    .orderBy('l.id', 'desc')
     .limit(WINDOW)
     .execute();
 
@@ -149,6 +157,7 @@ export async function onRequestGet(context) {
       attemptedAt: row.attempted_at,
       status,
       errorName: name,
+      type: row.type ?? null,
     };
   });
 
