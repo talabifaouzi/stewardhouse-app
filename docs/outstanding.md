@@ -2241,6 +2241,46 @@ the shared caution as "the R13a caution applying to a file R13a was not written
 about". **What neither entry can answer alone is whether an applied migration
 holding text that is no longer true should ever be corrected.**
 
+**AMENDED 2026-09-14 BY A13's BUILD. TWO FURTHER SITES, IN A DIFFERENT
+MIGRATION, AND THE TITLE NO LONGER COVERS THE CONTENTS.** The title names
+`0022`; these two are in `migrations/0021_auth_send_log.sql`. The title is left
+as written rather than edited, per this file's practice, and the discrepancy is
+recorded here where a reader meets it. **The closing question above already
+generalises past `0022`**, asking whether an applied migration holding text that
+is no longer true should ever be corrected, so what widens is the evidence and
+not the subject. They are deliberately NOT numbered into the three-site list,
+which is scoped to one file and to regeneration.
+**WHY THEY LAND HERE RATHER THAN IN THEIR OWN ENTRY.** A13 rules it: that
+entry's "WHEN A13 SHIPS" block records that the build notes the falsehood **on
+A132 and does not edit the migration**. A separate entry would ask this entry's
+question again about a third file.
+**SITE ONE, `0021:12`. HALF FALSE, AND THE HALVES MUST NOT BE COLLAPSED.**
+"Alerting is PARKED and nothing reads this table in code." **The first clause is
+STILL TRUE** — alerting is A94, `Pilot: POST`, and this project has no scheduled
+execution to build it on. **The second is FALSE**:
+`functions/api/auth-sends.js` reads the table.
+**SITE TWO, `0021:82-84`. THE SAME SHAPE, AND HERE THE TRUE HALF IS THE ONE THAT
+MATTERS.** "EMAIL IS STORED AND IS NEVER EMITTED (E8 discipline). No endpoint
+returns rows from this table; nothing in functions/ reads it. It is reachable
+only by a direct d1 execute, which is FT-only for --remote per §6.10."
+**THE E8 SENTENCE STANDS, AND NOTHING HERE WEAKENS IT.** A13's ruling (3) omits
+the `email` column with no masked or hashed substitute, and the element 2 and 3
+smoke asserted a seeded canary address absent from every response body, against
+a control confirming the canary was in the database at the time. **A reader who
+takes "this block is now false" to mean email is emitted has it backwards.**
+What is false is the REACHABILITY claim: an endpoint returns rows,
+`functions/` reads the table, and a direct `d1 execute` is no longer the only
+way in.
+**WHY THEY ARE NOT EDITED, which is this entry's own reason rather than a new
+one.** `0021` is applied on local AND on remote — §5.1 records the `--remote`
+apply at 2026-09-01 17:21:20 UTC and a live production send stamping a success
+row 67 seconds later — and wrangler tracks applied migrations by NAME with no
+hash, so an edited file will not re-run and its bytes stop matching what both
+databases received. That is verbatim the reason recorded above for `0022`.
+**WHAT THIS DOES NOT DO.** It does not make the question rulable. The blocker is
+unchanged and unruled, A127 still turns on the same root question, and a ruling
+on any of the three should be made for all three.
+
 **A133 | The BMF rulings R1 through R5 exist nowhere in full, and the arc cites
 them as authority.**
 Blocker: none named; the text may be unrecoverable.
