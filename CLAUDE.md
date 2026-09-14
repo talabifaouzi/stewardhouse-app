@@ -3138,6 +3138,90 @@ hazard was known, written down beside the code, and still not spanned. **Any
 census of code sites runs BOTH forms**, and a census is RE-MEASURED when cited
 rather than carried forward.
 
+**AMENDED 2026-09-14: "FORMAT VARIANTS" IS TOO NARROW. THE VARIANTS ARE OF ANY
+KIND, AND THE OBLIGATION BELONGS ON THE EVIDENCE RATHER THAN ON THE HABIT.** The
+2026-09-07 amendment above requires controls to span the FORMAT VARIANTS a check
+may encounter, and both of its examples are variants of how the DATA IS WRITTEN:
+plain-numeric against letter-suffixed ids, literal against interpolated DDL.
+**Three failures at `ed993ff` varied along axes that are not formats of the data
+at all** — which EDGE of a line the defect sat at, which MARK delimited it, and
+whether the check asked about RANGE or about REFERENT. **A reader applying
+"format variants" cold to a hyphen-at-line-end defect has no reason to treat line
+start and line end as two variants to span**, because neither is a format of
+anything.
+
+**THE REQUIREMENT, STATED ON THE EVIDENCE. BEFORE A CONTROL'S ZERO MAY BE READ AS
+AN ABSENCE, THAT CONTROL IS PROVEN AGAINST ONE KNOWN POSITIVE AND ONE KNOWN
+NEGATIVE AT EVERY VALUE OF EVERY DIMENSION THE DEFECT CAN VARY ALONG.** A zero
+from a control not so proven is not an absence. It is an unread result.
+
+**THE OPERATIONAL TEST FOR "THE CLASS", written out because that phrase is what
+gets applied cold: ENUMERATE THE DIMENSIONS, NEVER THE EXAMPLES.** A dimension is
+any axis along which the SAME defect presents differently. Write the axes down,
+count the values on each, and require a control per value. **The six this record
+has observed, given as INSTANCES and explicitly NOT as a closed list:**
+
+- **POSITION** — line start, line end. The hyphen split at `ed993ff`.
+- **MARK** — hyphen, backtick, quote. The token split at `ed993ff`.
+- **IDENTIFIER FORM** — plain numeric, letter-suffixed. The OPEN-entry
+  enumerator, which is the 2026-09-07 amendment above.
+- **CONSTRUCTION** — literal, interpolated. **The census rule immediately above
+  is this rule with that dimension already filled in**, and is an example of it
+  rather than a second obligation.
+- **STORED FORM** — wrapped, unwrapped, case-folded. The phrase-match filing
+  below.
+- **QUESTION ASKED** — range membership, referent identity. The cross-reference
+  control at `ed993ff`.
+
+**A SEVENTH AXIS WILL NOT BE A COUNTER-EXAMPLE TO THIS RULE. IT WILL BE THE RULE
+WORKING.** The list grows because defects keep arriving along axes nobody had
+written down, which is exactly why it is recorded as observed rather than
+published as complete.
+
+**COROLLARY ONE: AN UNPROVEN DIMENSION IS AN UNREAD DIMENSION, AND TWO CONTROLS
+ON ONE DIMENSION ARE WORTH LESS THAN ONE ON EACH OF TWO.** The OPEN-entry case
+proves it: FIVE controls passed and every one carried a plain-numeric id, so the
+set was deep on one axis and absent on the other. **Depth on an axis already
+covered buys nothing.**
+
+**COROLLARY TWO: AN EXCLUSION IS MEASURED, NOT ASSUMED.** Where a dimension is
+deliberately left out, the exclusion carries the figure that justifies it.
+**Worked case, `ed993ff`:** asterisks were excluded from a split-token matcher
+because bold spans cross line breaks throughout this record as house style and
+markdown renders them correctly, while a backtick split joins across the break
+with a space and does not. **Without the count the exclusion is a guess wearing a
+reason.**
+
+**AND THAT COUNT IS ANCHORED TO A REVISION, BECAUSE THE COMMIT QUOTING IT MOVED
+IT.** The figure was **644 lines in `docs/bmf-load-scoping.md` at `041827c`**,
+the revision the exclusion was decided against. **At `ed993ff` it is 766**, and
+the difference is that commit's own 331 added lines to that file. So `ed993ff`'s
+message cites the figure "at HEAD" and its own content falsified it — **the
+re-measure filing below, arriving inside a commit written partly about control
+discipline.** Recorded here rather than corrected in a banked message.
+
+**THREE INSTANCES AT `ed993ff`, NOT FOUR, AND THE TWO THAT ARE OUT ARE NAMED SO
+THEY ARE NOT FOLDED BACK IN.** The three: a matcher scoped to line START that
+missed line END; the same matcher scoped to the HYPHEN that missed a BACKTICK;
+and a cross-reference control scoped to RANGE where the class was REFERENT, so a
+reference that meant J and still said 13 pointed at K, resolved in range, and
+passed green. **OUT, first: the width threshold**, a constant chosen rather than
+measured, which is R8d's provenance rule and not this one. **OUT, second: a
+file-wide count that found a different list**, which spanned too MUCH rather than
+too little and belongs to the governing statement at the head of this section.
+**`ed993ff`'s closing sentence folds all of them together and overstates.** It is
+banked and is left standing; this paragraph is where the accurate classification
+lives.
+
+**THE BOUNDARY, STATED EXPLICITLY BECAUSE IT IS THE EASIEST THING TO BLUR: A
+NARROW SPECIFICATION IS NOT A NARROW CONTROL, AND THIS RULE DOES NOT REACH ONE.**
+The exactly-once-on-a-header filing below rules its own defect uncatchable by any
+control, in its own words: "The matcher was CORRECT — it matched exactly what it
+was told to match. **What was too narrow was the SPECIFICATION**, so verifying
+the instrument proves nothing here." **Widening a control cannot repair a
+specification that asked for the wrong thing**, and that filing's post-condition
+on the OUTCOME remains the only instrument that sees it.
+
 ### Filed — `d1 migrations list --remote` returned 7403 while `d1 execute --remote` worked (2026-09-01)
 
 **TWO COMMANDS AGAINST ONE DATABASE DISAGREED ABOUT AUTHORIZATION, IN THE SAME
