@@ -51,6 +51,92 @@
 // me.js's ops.writesEnabled boolean.
 //
 // -----------------------------------------------------------------------------
+// THE ACCOUNT TYPE, AND THE CONDITION IT IS EMITTED UNDER (A139, route b).
+//
+// The section above says what does not leave. This says what does, and why it
+// is allowed to — which is a CONDITIONAL answer rather than a settled one.
+//
+// EMITTED UNDER A92's RULING OF 2026-09-14, WHICH HOLDS ONLY WHILE ops IS
+// FT-EXCLUSIVE. The ground is not that a four-value enum is too coarse to
+// identify anyone. At one ops account the operator and the subject are the SAME
+// PERSON, so the type discloses nothing to its only reader. functions/_lib/
+// gate.js:168-171 already states the premise this rests on: requireOps
+// authorizes a full-fidelity operator view, "valid ONLY while ops is FT
+// exclusively".
+//
+// IF A SECOND OPS ACCOUNT IS EVER CREATED, THIS IS RE-RULED BEFORE THAT ACCOUNT
+// IS USABLE. Not gradually, and not at some population threshold: the
+// disclosure becomes real the moment a second reader exists. gate.js:162-166
+// carries the same condition and names what keeps it enforced — the ops-minting
+// guard in functions/api/invites.js, which refuses type 'ops' with a 403. IF
+// THAT GUARD IS EVER REMOVED, THIS EMISSION GOES WITH IT.
+//
+// IT DOES NOT REOPEN THE email COLUMN. A13's ruling (3) stands: the column is
+// omitted and no masked or hashed form replaces it. The type is emitted
+// ALONGSIDE that omission, never in place of it — a class label is not a
+// substitute for an identifier, and past one account per type it names neither
+// the address nor the person. A92 stays open and still governs the address.
+//
+// -----------------------------------------------------------------------------
+// WHY THE JOIN LOWERCASES BOTH SIDES, AND WHAT THAT COSTS.
+//
+// EVERY OTHER LOOKUP IN THIS CODEBASE COMPARES THE BARE COLUMN — the claim hook
+// at _lib/auth.js, the pre-send allowlist at api/auth/[[route]].js — so a reader
+// comparing this join to either will find it doing something different. The
+// reason is here rather than left to be inferred.
+//
+// THE TWO SIDES ARE STORED DIFFERENTLY. auth_send_log.email is whatever the user
+// TYPED: the middleware forwards the request body unchanged and better-auth's
+// magic-link plugin does not normalize. person.invite_email is stored
+// trim+lowercased by every path that writes it. A bare comparison therefore
+// works today only because nobody has typed a capital letter, and a mixed-case
+// sign-in would silently render no type rather than erroring.
+//
+// THE INDEX COST IS REAL AND IS RECORDED RATHER THAN DISCOVERED.
+// idx_person_invite_email is a plain UNIQUE index on the BARE column, so
+// lower(p.invite_email) cannot use it and this join is a scan of person. That is
+// free at current row counts — person holds single digits — and it is written
+// down so a later reader meets it as a known trade rather than as a surprise.
+//
+// LOWER() COLLAPSES A DISTINCTION THE UNIQUE INDEX PRESERVES, which is the one
+// way this join could return more rows than the table holds. The index is on the
+// bare column, so 'A@x.com' and 'a@x.com' can BOTH exist; both would match one
+// lower() comparison and DUPLICATE a log row.
+// FORECLOSED BY EVERY WRITE PATH, not by luck: api/invites.js:122,
+// api/athletes.js:135 and scripts/seed-invites.mjs:87 all trim().toLowerCase()
+// before storing. The only route in is a migration or hand-written SQL.
+// Measured zero case-colliding groups locally. A writer who adds a fourth path
+// owes this line a re-check.
+//
+// -----------------------------------------------------------------------------
+// TWO THINGS THIS JOIN DELIBERATELY DOES NOT DO.
+//
+// IT DOES NOT FILTER soft_deleted_at, AND THAT IS A DECISION RATHER THAN AN
+// OMISSION. roster.js:53 does filter it, which makes the absence here look like
+// a miss. Two reasons it is not. First, NOTHING IN THIS CODEBASE EVER WRITES
+// THAT COLUMN NON-NULL — every INSERT writes NULL and no UPDATE sets it;
+// api/invites/[id].js:52-64 records why deliberately, since a soft-deleted row
+// still occupies its address under a UNIQUE index with no partial predicate, and
+// no purge exists to free it. Second, and decisive even if it were written:
+// ROSTER.JS LISTS PERSONS AND THIS LISTS ATTEMPTS. An attempt happened. A
+// person's later disposition does not unhappen it, and dropping the row would
+// silently shorten a log whose whole purpose is completeness.
+//
+// IT DOES NOT GUARD person.type AGAINST AN UNEXPECTED VALUE. The enum lives as a
+// COMMENT at migrations/0001_initial.sql:127 and nowhere else — there is no
+// CHECK — so a value outside individual/staff/advisor/ops is possible in
+// principle, reachable only by a migration or a CLI seed. It renders AS ITSELF.
+// AN ALLOWLIST WOULD BE WORSE: mapping the four and rendering an em dash
+// otherwise would make an unexpected type INDISTINGUISHABLE FROM AN ABSENT ONE,
+// which is two different facts collapsed into one display. An operator seeing a
+// raw unexpected value learns something true; one seeing an em dash learns
+// nothing and is misled about which case they are in.
+//
+// A JOIN MISS EMITS null, which the view renders through its existing absent
+// idiom. What that em dash means in that column, and why it carries only one
+// meaning rather than two, is recorded at the view.
+//
+// -----------------------------------------------------------------------------
 // ORDERING, THE WINDOW, AND THE TIE-BREAK.
 //
 // Ruling (4) fixes the window: the most recent 100 attempts, newest first, no
