@@ -3010,13 +3010,15 @@ because it appeared in a brief alongside eight of them.
 ## Session — 2026-09-14 (second)
 
 A docs session with no build, opening on a completed merge and closing on a
-closure. **It banked FIVE commits**: `af4b07b`, five items across CLAUDE.md,
-the queue and this file; the A13 closure below; an A139 amendment that refuted
-the entry the closure had just filed; FT's ruling on the purpose question that
-amendment isolated; a section 12 filing recording that the one large-scale
-experiment this project has run is not evidence about recovery; an ordering
-reversal putting A113 upstream of A1's exercise; and an A141 amendment that
-answered one half of that entry and corrected the other.
+closure. **It banked EIGHT commits** — **a figure CORRECTED 2026-09-14, having
+read FIVE while the list beside it named seven**: `af4b07b`, five items across
+CLAUDE.md, the queue and this file; the A13 closure below; an A139 amendment
+that refuted the entry the closure had just filed; FT's ruling on the purpose
+question that amendment isolated; a section 12 filing recording that the one
+large-scale experiment this project has run is not evidence about recovery; an
+ordering reversal putting A113 upstream of A1's exercise; an A141 amendment
+that answered one half of that entry and corrected the other; and the A142
+filing, the unreviewed tax claim.
 **It began mid-flight**, with the A13 build already merged to `main` at
 `51fee6f` and three files carrying uncommitted edits from the session before it.
 
@@ -3361,6 +3363,58 @@ shape being reused outside the purpose it was built for.
 
 **Classification unchanged at POST**, stated on the entry rather than inferred:
 no pilot user reaches a local script whose output is never served.
+
+### A142, and a count that contradicted the list beside it
+
+**An advisory panel deferred Q3 to the team and FT asked for one sequence rather
+than four positions.** All four seats had agreed it is a counsel question; the
+split was sequencing only. **The sequence resolved it by placing the
+specification pass INSIDE the filing rather than before it**, which is what made
+Taylor's block-now and James's specify-first stop conflicting.
+
+**A142 IS FILED IN LARGE AT BLOCKING**, blocker FT to retain TAX counsel. Jordan
+disputed DEBT and was right: an unreviewed tax claim is not made honest by being
+recorded, and **a pilot user reaches this through what it gates** — recruiting
+material is the first thing a participant meets — which is the A1 and A8
+reasoning.
+
+**WHAT IS BLOCKED IS NAMED CONCRETELY** rather than left as a posture: outreach,
+decks, the landing page, onboarding and signup copy, anything sent to an athlete,
+parent, agent or publicist, and sales scripts. **The claim continues to live here
+and in project memory, marked unreviewed**, and the block is not gated on the
+specification pass — you do not need a sentence specified in order to decline to
+publish it.
+
+**A142 SITS OUTSIDE THE COUNSEL CHAIN AND THE ROSTER STAYS AT FOUR.** The chain's
+four items are about how the platform handles data and go to one privacy
+professional; this is about what the platform says and goes to a tax
+professional. **The trap is that A142 has the chain's shape, and shape is not
+subject.** Separating it also lets it clear first rather than inheriting the
+Clause 3 and 6 timeline.
+
+**PARKER'S CLASS-LEVEL INVARIANT WENT TO CLAUDE.md §7**, since it has no
+completion state. Its own entry says plainly that nothing enforces it: §7
+guardrails are convention-only, and **a rule about what must not be said leaves
+no artifact to inspect afterwards**, which makes it weaker than most of §7 rather
+than stronger for being important.
+
+**THE BUILD CHAIN MOVES 19 TO 20 AND NOW OVERSTATES BY ONE.** Its definition is
+BLOCKING minus the counsel-gated four; BLOCKING rose and the roster deliberately
+did not. **The roster was not widened to fix the arithmetic**, because its meaning
+is which items clear on the two named conversations. Twenty is what the
+definition yields; nineteen is what a build can move.
+
+**A COUNTING ERROR IN THIS ENTRY WAS FOUND AND CORRECTED, AND IT IS THE SECOND OF
+THE SESSION.** This entry's opening sentence read "It banked FIVE commits" while
+the list beside it named SEVEN. **The list was extended twice — for the ordering
+reversal and for the A141 amendment — and the count was not updated either
+time**, so two commits shipped with a figure contradicting the sentence it sits
+in. It now reads EIGHT, including this one.
+**IT IS THE SAME SHAPE AS THE OTHER ERROR THIS SESSION**, the ahead-of-origin
+count that listed already-pushed commits as unpushed: **a figure maintained from
+memory rather than derived from the thing it counts.** The queue header's own
+figures are re-derived by an enumerator every commit and have not drifted once;
+these two were not, and both did.
 
 **A line-ending measurement, recorded because CLAUDE.md §10 states otherwise.**
 All five of CLAUDE.md, `docs/outstanding.md`, `docs/filed-defects.md`,

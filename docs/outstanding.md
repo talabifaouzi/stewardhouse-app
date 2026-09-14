@@ -72,46 +72,57 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 120 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+**As committed: 121 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
 ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
-7, BMF-and-Discover 17, cheap-and-mechanical 33, large 37, and
+7, BMF-and-Discover 17, cheap-and-mechanical 33, large 38, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (eighth): NOTHING OPENED AND
-NOTHING CLOSED. EVERY FIGURE IS UNCHANGED.** OPEN 120, BLOCKING 23, DEBT 67,
-POST 30, the breakdown 7 + 16 + 7 + 17 + 33 + 37 + 3 = 120, the build chain 19
-by the unchanged definition, 23 - 4 = 19, and the counsel-gated roster four of
-the twenty-three. The diagnostics are unchanged with them: the naive enumerator
-118 against 120, the gap still exactly A50a and A50b, and the file-wide
-`Pilot: DEBT` count 68 against 67, the extra still FJ-7's own line inside the
-FOUNDER JUDGMENT section rather than an OPEN entry.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (ninth): ONE ENTRY OPENED AT
+BLOCKING AND NOTHING CLOSED.** OPEN moves 120 to 121 and **BLOCKING 23 to 24**;
+DEBT stays 67 and POST stays 30. A142 sits in Large, so that tier alone moves
+**37 to 38** and the breakdown reads 7 + 16 + 7 + 17 + 33 + 38 + 3 = 121.
+**THE BUILD CHAIN MOVES 19 TO 20**, because its definition is BLOCKING minus the
+counsel-gated four and BLOCKING rose while the roster did not. The counsel-gated
+sentence moves with it, from four of the twenty-three to **four of the
+twenty-four**. The diagnostics move with OPEN: the naive enumerator 119 against
+121, the gap still exactly A50a and A50b, and the file-wide `Pilot: DEBT` count
+**unchanged at 68 against 67**, because A142 is BLOCKING rather than DEBT.
 
-**ONE ENTRY WAS UPDATED IN PLACE: A141.** Nothing opened, nothing closed, and
-nothing was reclassified — **A141 stays POST**, which the entry now states rather
-than leaving to be inferred, because no pilot user reaches a local script whose
-output is never served.
+**THE BUILD-CHAIN FIGURE NOW OVERSTATES BY ONE, AND THAT IS RECORDED RATHER THAN
+CORRECTED.** The chain is defined as BLOCKING minus the counsel-gated roster, and
+this file states that it "tracks the BLOCKING count and nothing else". **A142 is
+counsel-blocked but deliberately OUTSIDE that roster**, because it belongs to a
+different counsel conversation — see the entry. So the figure counts one item no
+slice can advance. **The roster is not widened to fix the arithmetic**, because
+the roster's meaning is which items clear on the two conversations FT has named,
+and A142 does not. **Twenty is the figure the definition yields; nineteen is the
+number of BLOCKING items a build can actually move.**
 
-**A141 WAS AMENDED RATHER THAN CLOSED, BECAUSE ONE HALF OF IT WAS ANSWERED AND
-THE OTHER WAS WRONG.** The uniqueness half is closed by measurement, local only:
-the generator derives its EIN from the loop counter, so the values are unique by
-construction, and a load-one-volume run into a standalone file carrying 0022's
-shape INCLUDING the primary key returned 1,964,958 rows, 1,964,958 distinct EINs
-and zero duplicate failures, with a duplicate-insert control firing first.
-**The scenario the entry feared does not occur.**
+**ONE ENTRY OPENED: A142**, the unreviewed tax-treatment claim in the NIL
+positioning thesis, filed in Large at **BLOCKING** with blocker **FT, to retain
+TAX counsel**. Nothing closed and nothing was reclassified.
 
-**THE OTHER HALF NAMED THE WRONG FILE AND THE WRONG CLASS OF PROBLEM.** The
-verifier's keyless `CREATE` is a local test artifact and is harmless.
-`d1-window-generate.mjs:85` emits the same keyless `CREATE` and **that one
-ships**, inside the aside-swap file, followed by a `RENAME` that installs it
-over `bmf`. **It is a SHAPE SUBSTITUTION in the artifact, not a verification
-gap**, and a remote load would leave `bmf` without its primary key and without
-0022's three indexes.
+**IT IS BLOCKING RATHER THAN DEBT OR POST, ON THE A1 AND A8 REASONING.** DEBT
+means pilot can open with it recorded and honest, and **an unreviewed tax claim
+is not made honest by being recorded**. POST means no pilot user reaches it — but
+recruiting material is the FIRST thing a pilot participant encounters, so a pilot
+user reaches it through what it gates rather than through the item itself, which
+is exactly what moved A1 and A8.
 
-**WHY THAT WOULD NOT BE NOTICED IS THE PART THE AMENDMENT EXISTS FOR.** Unique
-EINs mean the load SUCCEEDS, and the success is what conceals the missing key.
-**The two halves of the entry are the same fact from opposite sides**: had the
-EINs collided, the substitution would have announced itself on the first
-duplicate.
+**THE SPECIFICATION PASS IS INSIDE THE ENTRY, NOT A GATE ON IT.** Filing came
+first deliberately: the claim has been sitting in a session-log entry, flagged
+and not filed, and §6.18 exists because a log records what happened and does not
+warn the next session. The pass — which entity, which expense category, which
+taxpayer, under what structure — is A142's first named action.
+
+**A142 SITS OUTSIDE THE COUNSEL CHAIN, AND THE COUNSEL-GATED ROSTER STAYS AT
+FOUR.** The four chain items are about how the platform HANDLES DATA and go to
+one privacy professional; this is about what the platform SAYS and goes to a tax
+professional. **A142 has the chain's shape and shape is not subject**, which is
+the trap the entry names explicitly.
+
+**CLAUDE.md §7 GAINS A CLASS-LEVEL INVARIANT**, because it has no completion
+state and this record has twice ruled that shape out of the queue.
 
 **NO OTHER QUEUE-RECORD FILE CHANGED.** `docs/filed-defects.md` is untouched.
 **One NON-queue-record file changed and is counted nowhere**,
@@ -174,7 +185,7 @@ known-CRLF and a known-LF control asserted first, both files being fully CRLF in
 the working tree.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 118 rather than 120, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 119 rather than 121, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
 ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 68
@@ -186,7 +197,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 23 BLOCKING, 67 DEBT, 30 POST**, classification ruled
+**AGAINST THE PILOT GATE: 24 BLOCKING, 67 DEBT, 30 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-14,
 of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -194,7 +205,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 120. The sentence
+totals above, which remain a count of OPEN entries and sum to 121. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -233,10 +244,16 @@ STATE is a live count wearing a date**, and must be maintained or it lies. The
 parenthetical here dated the CLASSIFICATION ACT, which is genuinely fixed at
 2026-09-02; the TOTALS were never fixed, and pairing the two made a live count
 look archival. **The date has been moved off the totals and onto the act.**
-**FOUR OF THE TWENTY-THREE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
-BY BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not
-one:
-a build chain, and a counsel chain that no slice advances. What moves the counsel
+**FOUR OF THE TWENTY-FOUR BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
+BY BUILDING: A47, A84, A68 and A110.**
+**A142 IS COUNSEL-BLOCKED AND IS DELIBERATELY NOT IN THIS ROSTER, added
+2026-09-14.** This roster's meaning is which BLOCKING items clear on the two
+conversations `docs/ruling-e-deletion-retention.md` §6 names. **A142 waits on a
+TAX professional and clears on neither**, so adding it would make the roster
+answer a different question than the one it was built for. The consequence is
+recorded in the arithmetic block above: the build chain overstates by one.
+So the pre-pilot path is TWO CHAINS, not one: a build chain, and a counsel
+chain that no slice advances. What moves the counsel
 chain is not uniform, and the record says so in FOUR places rather than three.
 **CORRECTED 2026-09-08. THIS PARAGRAPH SAID THREE PLACES AND MAPPED ONE OF THEM
 WRONG.** It read, verbatim: "the record says so in three places rather than one.
@@ -3522,6 +3539,81 @@ build-closable from their titles and blocker lines, not by reading each entry in
 full. **Three is a floor, not a total.**
 
 ### Large
+
+**A142 | The NIL positioning thesis asserts a tax treatment, and nobody has
+reviewed it.**
+Blocker: FT, to retain TAX counsel. Not the reviewing attorney the counsel chain
+names — see the chain note below.
+Pilot: BLOCKING
+Detail: `docs/session-log.md`, the 2026-09-14 entry, where the claim is flagged
+and not filed; project memory, `positioning-and-social.md`; CLAUDE.md §7, the
+invariant this entry produced.
+**THE CLAIM: dollars spent building philanthropy out as a business can be
+written off.** It arrived as one of eight rulings from a strategy session held
+outside this repository, which is the problem rather than an incidental detail —
+**nothing in the record distinguishes an unreviewed tax assertion from the seven
+ordinary product decisions beside it.** No counsel has been retained. No entity,
+expense category, taxpayer or structure is named.
+**BLOCKING RATHER THAN DEBT OR POST, ON THE A1 AND A8 REASONING.** DEBT means
+pilot can open with it recorded and honest; **an unreviewed tax claim is not made
+honest by being recorded**. POST means no pilot user reaches it; but recruiting
+material is the FIRST thing a pilot participant encounters, so **a pilot user
+reaches this through what it gates rather than through the item itself**, which
+is precisely the reasoning that moved A1 and A8 to BLOCKING.
+**THE AUDIENCE IS WHAT MAKES IT BLOCKING, not the claim's difficulty.** Phase 1
+is athletes only, roughly 18 to 22, plus their representatives. Many will be
+meeting structured money advice for the first time. **A tax claim in sales
+material is not positioning; it is the thing the reader acts on.**
+**IT ALSO SITS CLOSE TO THE §7 LINE.** Path B's test is exposure versus
+evaluative recommendation, and "you can write this off" **asserts the reader's
+outcome** rather than surfacing an option. Whether it crosses is not ruled here;
+that it is adjacent is why the invariant below is a §7 guardrail.
+
+**FIRST NAMED ACTION: THE SPECIFICATION PASS, WHICH IS INSIDE THIS ENTRY AND IS
+NOT A GATE ON IT.** Write the concrete version — **which entity, which expense
+category, which taxpayer, under what structure.** Internal, cheap, no counsel
+needed. **Handed over as written, the claim produces "it depends" and an
+invoice**, so the pass is what makes the engagement short and answerable.
+**THE FILING DELIBERATELY PRECEDED THE PASS.** The claim had been sitting in a
+session-log entry, flagged and not filed, and §6.18 exists because **a log
+records what happened and does not warn the next session.** The pass is real
+work, and work without a home is work nobody does.
+
+**BLOCKED MEANWHILE, NAMED CONCRETELY RATHER THAN AS A POSTURE.** The claim may
+not appear in: outreach to advisors or athletic departments; pitch or
+fundraising decks; the public landing page; onboarding or signup copy; anything
+sent to an athlete, a parent, an agent or a publicist; or sales scripts.
+**It CONTINUES to live in `docs/session-log.md` and in project memory, marked
+unreviewed**, which is where an unreviewed hypothesis belongs.
+**THE BLOCK IS NOT GATED ON THE SPECIFICATION PASS EITHER.** You do not need a
+sentence specified in order to decline to publish it, and the block is the only
+part of this entry addressing an irreversible harm: **a tax claim acted on by an
+18-to-22-year-old cannot be unsaid by a later correction.**
+
+**THIS ENTRY SITS OUTSIDE THE COUNSEL CHAIN, AND THE COUNSEL-GATED ROSTER STAYS
+AT FOUR.** The chain is A47, A84, A68 and A110, moved by the two conversations
+`docs/ruling-e-deletion-retention.md` §6 names. **Every one of those is about how
+the platform HANDLES DATA** — retention floors, deletion policy, the enterprise
+E3/E6/E8 seams, pre-claim visibility — **and all four go to the same kind of
+professional.** This is about what the platform SAYS, and it goes to a tax
+professional.
+**THE TRAP IS THAT A142 HAS THE CHAIN'S SHAPE: BLOCKING, unclosable by building,
+waiting on a person outside the project. SHAPE IS NOT SUBJECT.** Bundling it
+would do one of two harmful things: put a tax question to a privacy attorney,
+whose hedge would read like clearance; or widen the existing engagement's scope,
+which **silently changes what the chain means as a planning object** — a set of
+items that clear together when two named conversations happen.
+**SEPARATING IT ALSO LETS IT CLEAR FIRST.** The tax question is narrow and cheap
+once specified, and **it does not wait on Clauses 3 and 6.** Bundled, it would
+inherit their timeline for no reason.
+**THE ARITHMETIC COST IS RECORDED IN THE HEADER**: the build chain, defined as
+BLOCKING minus the counsel-gated four, now counts this entry and therefore
+overstates by one.
+
+**NOT RULED HERE, AND NOT BY ANYONE IN THIS REPOSITORY: whether the claim is
+correct.** No internal advisory seat is a tax professional, and nothing in this
+record is tax or legal advice. **This entry is about the claim being unreviewed,
+not about it being wrong.**
 
 **A118 | A staging environment is unbuilt, and the two cases it would serve
 SEPARATE rather than sharing one solution.**

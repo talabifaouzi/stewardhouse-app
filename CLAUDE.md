@@ -2234,6 +2234,38 @@ record, "CLOSED 2026-08-18: no modal opens through the BROWSER-AUTOMATION
 HARNESS", is the same shape: read it before treating a harness click that changes
 nothing as a product defect.
 
+### No tax-treatment representation without counsel sign-off (added 2026-09-14)
+
+**NO TAX-TREATMENT REPRESENTATION REACHES ANY USER-FACING OR SALES SURFACE
+WITHOUT COUNSEL SIGN-OFF.** Not the landing page, not onboarding or signup copy,
+not a pitch or fundraising deck, not outreach to advisors or athletic
+departments, not a sales script, and not anything sent to an athlete, a parent,
+an agent or a publicist.
+
+**IT IS A CLASS RULE RATHER THAN A DISPOSITION OF ONE CLAIM**, which is why it
+is here and not in the queue: it covers representations nobody has made yet, and
+**it has no completion state**, the property this record has twice ruled makes
+something a poor queue entry (§6.10's branch (c), and A137's rationale).
+
+**THE INSTANCE THAT PRODUCED IT IS A142**, the NIL positioning thesis's claim
+that dollars spent building philanthropy out as a business can be written off —
+unreviewed, no counsel retained, and filed BLOCKING because the audience is
+athletes roughly 18 to 22 and their representatives.
+
+**IT SITS IN §7 RATHER THAN §6 BECAUSE IT IS A GUARDRAIL, NOT A PROCESS STEP**,
+and it is adjacent to Path B rather than new: Path B's test is exposure versus
+evaluative recommendation, and a tax-treatment claim **asserts the reader's
+outcome** rather than surfacing an option.
+
+**NOTHING ENFORCES THIS, AND THAT IS STATED PLAINLY RATHER THAN SOFTENED.** Per
+§6's opening posture, every guardrail in §7 is convention-only: there is no CI,
+no hook, no lint and no test runner in this repository, and the single automated
+check in existence is `npm run build`, which reads none of this. **The only
+trace this rule leaves is a reviewer checking before publishing.** A rule about
+what must not be said has no artifact to inspect afterwards — unlike a migration
+or a commit trailer, an unsaid sentence leaves nothing behind — so **this one is
+weaker than most of §7, not stronger for being important.**
+
 ### Voice & tone (LOCKED)
 
 Quiet, editorial. Closer to Aesop or The Atlantic than a consumer app.
