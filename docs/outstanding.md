@@ -77,7 +77,7 @@ ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
 7, BMF-and-Discover 15, cheap-and-mechanical 33, large 37, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (fourth): NOTHING OPENED AND
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (fifth): NOTHING OPENED AND
 NOTHING CLOSED. EVERY FIGURE IS UNCHANGED.** OPEN 118, BLOCKING 23, DEBT 67,
 POST 28, the breakdown 7 + 16 + 7 + 15 + 33 + 37 + 3 = 118, the build chain 19
 by the unchanged definition, 23 - 4 = 19, and the counsel-gated roster four of
@@ -85,35 +85,39 @@ the twenty-three. The diagnostics are unchanged with them: the naive enumerator
 116 against 118, the gap still exactly A50a and A50b, and the file-wide
 `Pilot: DEBT` count 68 against 67, the extra still FJ-7's own line inside the
 FOUNDER JUDGMENT section rather than an OPEN entry.
-**A CHANGE THAT MOVES NO FIGURE IS NOT A CHANGE THAT MOVED NOTHING**, which is
-this block's standing hazard read from the other side: the previous entry here
-warned that an unchanged TOTAL can conceal two entries moving, and this one
-warns that unchanged TOTALS can conceal an entry's premise being refuted.
-**A139 WAS AMENDED, NOT BUILT AND NOT RECLASSIFIED.** Its scope pass refuted its
-own framing, its blocker widened from one route to both, and three findings were
-added to it. It stays DEBT, stays in cheap-and-mechanical, and stays open, so
-nothing a count can see is different.
+**A CHANGE THAT MOVES NO FIGURE IS NOT A CHANGE THAT MOVED NOTHING**, and this
+is now the SECOND consecutive change to demonstrate it, by a different mechanism
+than the first. The fourth concealed an entry's premise being refuted. **The
+fifth conceals a RULING**: FT settled the purpose question underneath A92, which
+changes what that entry is asking without changing anything a count can see.
+**A RULING THAT MOVES NO FIGURE IS THE HARDEST KIND TO FIND LATER**, since
+neither the totals nor the tier breakdown nor any diagnostic records that it
+happened, and the only trace is the entry text itself.
 
-**TWO ENTRIES WERE UPDATED IN PLACE: A139 AND A92**, and no entry opened,
-closed or changed classification.
+**THE SAME TWO ENTRIES WERE UPDATED IN PLACE AGAIN: A139 AND A92**, and no
+entry opened, closed or changed classification.
 
-**A139 CARRIES A SCOPE-PASS AMENDMENT THAT REFUTES ITS OWN PREMISE.** The pass
-was read-only, at `ffa27d2`. **The surface it names does not exist in the
-request**: one `/signin` route, one `callbackURL` constant, and the surface
-decided after verification by `AppDispatcher` on `identity.type`. Its two routes
-are therefore **not different products** but two implementations of one, both
-recording `person.type` and differing only in when it is read. Route (a) is
-refuted on cumulative grounds, and three findings were added: a case-
-normalization exposure, a soft-delete divergence, and `person.type` carrying no
-CHECK. **Its original text is kept rather than rewritten**, per this file's
-practice, so the refutation sits where the claim does.
+**FT RULED THE PURPOSE QUESTION, AND IT IS RECORDED ON A139.** Operator-side
+classification of auth attempts IS a legitimate function of the send-log view,
+because a failure confined to one type is a different signal from a general
+outage and the view exists for failures. **The field is in scope.** The ruling
+deliberately stops there: it does NOT rule that the type may be emitted, and the
+distance between those two is what is left.
 
-**A92's BLOCKER REACH WIDENED, AND ITS OWN CLASSIFICATION DID NOT.** It gates
-BOTH of A139's routes rather than only (b), because what triggers it is emitting
-the type rather than joining on `email` — at one account per type a four-value
-enum names one address, and a write-time capture emits the same value without
-touching `email`. A92 stays POST, stays FT-blocked, and still has nothing
-waiting on it.
+**A92 IS NOW RIPE RATHER THAN THEORETICAL, WHICH IS A CHANGE OF KIND AND NOT OF
+URGENCY.** Its question was "would we ever want this" and is now "may a field
+that names one subject in the live population be emitted to an ops operator".
+**Classification and blocker are unchanged and the assessment is recorded rather
+than assumed**: POST because `requireOps` gates the view so no pilot user
+reaches it, and FT because ripeness changes what is asked rather than who can
+answer.
+
+**BOTH ENTRIES GAINED THE FINDING NEITHER CARRIED: THE COSTS MOVE IN OPPOSITE
+DIRECTIONS WITH POPULATION.** Today the field barely helps and maximally
+discloses; at pilot scale it helps a great deal and the disclosure shrinks on its
+own. **The question became ripe at the worst point on both curves.** Alex's
+objection to a cardinality-indexed rule is recorded on A92, where such a rule
+would be written, and it survives the remedy Alex proposed for it.
 
 **NO OTHER QUEUE-RECORD FILE CHANGED.** `docs/filed-defects.md` is untouched.
 **One NON-queue-record file changed and is counted nowhere**,
@@ -829,6 +833,54 @@ DEBT.
 **STAYS POST, RULED 2026-09-11.** A13 can ship without the `email` column under
 migration 0021's E8 rule as that rule stands, so the production BMF load does not
 wait on this entry even though A13 now gates that load.
+
+**RIPE AS OF 2026-09-14, AND THAT IS A CHANGE OF KIND RATHER THAN OF URGENCY.**
+FT ruled that operator-side classification of auth attempts IS a legitimate
+function of the send-log view, which settles the purpose question A139's scope
+pass isolated. **This entry's question is therefore no longer "would we ever want
+this."** It is: **may a field that names ONE SUBJECT in the live population be
+emitted to an ops operator.** The first question could be deferred indefinitely
+because nothing turned on it. The second cannot be answered by building, by
+measuring, or by waiting, and **something now turns on it**: A139 is blocked on
+this entry outright.
+
+**CLASSIFICATION AND BLOCKER ARE UNCHANGED, AND THE ASSESSMENT IS RECORDED
+RATHER THAN ASSUMED.** Pilot stays **POST**: the send-log view is gated by
+`requireOps`, so no pilot user reaches it, which is POST's definition and is
+unaffected by ripeness. Blocker stays **FT**: ripeness changes what the question
+is, not who can answer it, and a privacy posture is not made infrastructural by
+becoming answerable. **Ripeness is not urgency and is deliberately not recorded
+as such.**
+
+**ONE PHRASE ABOVE IS NOW STRAINED AND IS NOT EDITED: "still nothing waits on
+it".** It was written to mean nothing URGENT waits, and that is still true, since
+A139 is DEBT and no pilot user reaches either. **But A139 now waits on this entry
+outright rather than conditionally**, so a reader taking the phrase literally
+would be wrong.
+
+**THE COSTS MOVE IN OPPOSITE DIRECTIONS WITH POPULATION, AND THIS ENTRY IS WHERE
+THAT BEARS ON THE DISCLOSURE.** The reason the type names one address is that the
+live population holds roughly one account per type. **That property is temporary
+and it decays in the direction that helps.** At pilot scale a type names a class
+rather than a person, so the disclosure this entry is about **shrinks on its own,
+without anyone ruling anything** — while the field's operational value rises over
+the same interval. **The exposure is therefore at its maximum on the day the
+question became ripe.** Recorded so that a later reader who finds the disclosure
+argument unpersuasive at their population understands it was not unpersuasive at
+the one it was written against, and so that a decision to wait is visible as a
+decision rather than as drift.
+
+**ALEX'S OBJECTION TO A CARDINALITY-INDEXED RULE, recorded because it is the
+strongest argument against the obvious fix and nothing here answers it.** The
+obvious posture is a rule scoped to fields that currently resolve to one subject
+in the live population. **Such a rule cannot be checked without re-running the
+population query**, so its scope is a function of row counts rather than of
+anything a reader can see in the text. A future reader meeting it **cannot tell
+which fields it covers** without measuring, and a rule whose membership must be
+measured is one that will be applied to whatever someone remembered to measure.
+**The alternative Alex named is to rule on PURPOSE instead — which FT has now
+done, and which did not dispose of this entry**, so the objection survives its
+own proposed remedy and stands against the remaining options rather than for one.
 
 **A12 | `auth_send_log` retention is unbounded, on the one table Tier 0 is about
 to make live.**
@@ -2973,6 +3025,41 @@ nothing prevents it.
 conditionally**, and what remains to rule is narrower than this entry first
 recorded: not which of two products to build, but whether emitting an account
 type at this population is a disclosure A92 governs.
+
+**PURPOSE RULED BY FT, 2026-09-14: YES. OPERATOR-SIDE CLASSIFICATION OF AUTH
+ATTEMPTS IS A LEGITIMATE FUNCTION OF THE SEND-LOG VIEW.** An operator needs to
+see which class of account an attempt belonged to, because **a failure confined
+to one type is a different signal from a general outage**, and the view exists
+for failures. **THE FIELD IS THEREFORE IN SCOPE FOR THIS VIEW.**
+
+**WHAT THAT RULING DOES NOT DO, stated because the distance between the two is
+the whole of what is left.** It does NOT rule that the type may be emitted. It
+settles that the view would be right to want it; it does not settle whether this
+population permits it. **Those are different questions and only the first is
+answered.** What remains is A92's, and A92 is now RIPE rather than theoretical.
+
+**THE COSTS MOVE IN OPPOSITE DIRECTIONS WITH POPULATION, WHICH NEITHER THIS
+ENTRY NOR A92 CARRIED UNTIL NOW.** Today the field **barely helps**: one
+operator holds every account, and attribution by timestamp works because FT
+recognises their own attempt as the newest row. Today the field **maximally
+discloses**, because a four-value enum names one address. **At pilot scale both
+invert.** The field helps a great deal, since an operator who does not know
+every address needs the class to read a run of failures at all; and the
+disclosure shrinks at the same time, because a type stops naming one person once
+there are many of each.
+
+**SO THE WORST MOMENT TO EMIT IT IS THE MOMENT IT IS WORTH LEAST, AND THE BEST
+MOMENT IS THE ONE IT IS WORTH MOST.** That is not an argument for either answer.
+It is the reason a ruling taken today on today's population may be the opposite
+of the ruling the same reasoning gives in six months, and **it is recorded here
+so that whoever rules knows they are ruling at the low point of the value curve
+and the high point of the exposure curve.**
+
+**ALEX'S OBJECTION TO THE OBVIOUS FIX IS RECORDED ON A92**, where the rule would
+be written. In short: a posture scoped to "fields that currently resolve to one
+subject" cannot be checked without re-running the population query, so a future
+reader cannot tell which fields it covers. **It is the strongest argument
+against the cardinality-indexed rule and it is not answered here.**
 
 **A35 | `parseRoster.js`'s header docblock denies a file-upload path that has
 existed since 2026-08-27.**

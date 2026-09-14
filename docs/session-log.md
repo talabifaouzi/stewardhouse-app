@@ -3010,11 +3010,12 @@ because it appeared in a brief alongside eight of them.
 ## Session — 2026-09-14 (second)
 
 A docs session with no build, opening on a completed merge and closing on a
-closure. **It banked THREE commits**: `af4b07b`, five items across CLAUDE.md,
-the queue and this file; the A13 closure below; and an A139 amendment that
-refuted the entry the closure had just filed. **It began mid-flight**, with
-the A13 build already merged to `main` at `51fee6f` and three files carrying
-uncommitted edits from the session before it.
+closure. **It banked FOUR commits**: `af4b07b`, five items across CLAUDE.md,
+the queue and this file; the A13 closure below; an A139 amendment that refuted
+the entry the closure had just filed; and FT's ruling on the purpose question
+that amendment isolated. **It began mid-flight**, with the A13 build already
+merged to `main` at `51fee6f` and three files carrying uncommitted edits from
+the session before it.
 
 ### `af4b07b` — §6.15, A138, A139, and two corrections here
 
@@ -3202,6 +3203,46 @@ count was 0, truncating every check after it; the run was repeated with `;`
 separators. That is the filed `A && B && C || D` entry arriving as an early exit
 rather than as a false fallback, and it is recorded because the filing describes
 the fallback shape and this was the other one.
+
+### The purpose ruling, and what it deliberately did not settle
+
+**An advisory panel screened three questions and FT ruled one of them.** The
+panel could not answer Q1 and said so: every seat reached the same hinge, whether
+operator-side classification of auth attempts is a legitimate function of the
+send-log view, and **that is a product question rather than an analysis one.** It
+returned to FT with a decision aid and no recommendation.
+
+**FT RULED YES.** An operator needs to see which class of account an attempt
+belonged to, because a failure confined to one type is a different signal from a
+general outage, and the view exists for failures. **The field is in scope.**
+
+**THE RULING STOPS THERE ON PURPOSE.** It does not rule that the type may be
+emitted. It makes A92 RIPE — its question moves from "would we ever want this" to
+"may a field that names one subject in the live population be emitted to an ops
+operator" — without moving A92's classification or blocker, and the assessment
+that neither moves is recorded on the entry rather than left to be inferred.
+
+**THE PANEL FOUND ONE THING NEITHER ENTRY CARRIED, AND IT IS NOW ON BOTH: THE
+COSTS MOVE IN OPPOSITE DIRECTIONS WITH POPULATION.** Today the field barely
+helps, because one operator holds every account and timestamp attribution works;
+today it maximally discloses, because a four-value enum names one address. At
+pilot scale both invert. **The question became ripe at the low point of the value
+curve and the high point of the exposure curve**, which is not an argument for
+either answer and is the reason a ruling taken now may be the opposite of the one
+the same reasoning gives later.
+
+**ALEX'S OBJECTION IS RECORDED BECAUSE IT IS THE STRONGEST ARGUMENT AGAINST THE
+OBVIOUS FIX.** A posture scoped to "fields that currently resolve to one subject"
+cannot be checked without re-running the population query, so a future reader
+cannot tell which fields it covers. **It survives the remedy its own author
+proposed**: Alex's alternative was to rule on purpose instead, FT has now done
+that, and it did not dispose of A92.
+
+**NOTHING OPENED, CLOSED OR WAS RECLASSIFIED.** This is the second consecutive
+change to move no figure, by a different mechanism than the first: the fourth
+concealed a premise being refuted, the fifth conceals a ruling. **A ruling that
+moves no figure is the hardest kind to find later**, and the queue header now
+says so.
 
 **A line-ending measurement, recorded because CLAUDE.md §10 states otherwise.**
 All five of CLAUDE.md, `docs/outstanding.md`, `docs/filed-defects.md`,
