@@ -3014,8 +3014,9 @@ closure. **It banked FIVE commits**: `af4b07b`, five items across CLAUDE.md,
 the queue and this file; the A13 closure below; an A139 amendment that refuted
 the entry the closure had just filed; FT's ruling on the purpose question that
 amendment isolated; a section 12 filing recording that the one large-scale
-experiment this project has run is not evidence about recovery; and an ordering
-reversal putting A113 upstream of A1's exercise.
+experiment this project has run is not evidence about recovery; an ordering
+reversal putting A113 upstream of A1's exercise; and an A141 amendment that
+answered one half of that entry and corrected the other.
 **It began mid-flight**, with the A13 build already merged to `main` at
 `51fee6f` and three files carrying uncommitted edits from the session before it.
 
@@ -3324,6 +3325,42 @@ the verifier creates `bmf` with NO primary key while 0022 declares
 that constraint, and whether the generator emits unique EINs across 1.96M rows
 has never been tested. **If they are not unique the exercise would induce the
 wrong failure by accident.**
+
+### A141, answered in one half and corrected in the other
+
+**The uniqueness question was answered by execution, local only.** The generator
+derives its EIN from the loop counter — `String(i).padStart(9, '0')` — so the
+values are unique by construction, and a load-one-volume generation of 1,964,958
+rows into a standalone `node:sqlite` file carrying **0022's shape including the
+primary key** returned 1,964,958 rows, 1,964,958 distinct EINs and zero duplicate
+failures. **A duplicate-insert control fired first**, because without it a keyless
+table produces the same zero. **The scenario A141 feared — a constraint violation
+nobody chose at an offset nobody picked — does not occur.**
+
+**THE OTHER HALF WAS WRONG ABOUT WHICH FILE AND WHICH CLASS OF PROBLEM, AND THE
+CORRECTION IS SHARPER THAN THE ORIGINAL.** A141 named the verifier. **The
+verifier's keyless CREATE is a local test artifact and is harmless.**
+`d1-window-generate.mjs:85` emits the same keyless CREATE and **that one ships**,
+inside the aside-swap file, followed at `:121-122` by `DROP TABLE bmf` and
+`ALTER TABLE bmf_aside RENAME TO bmf`. **So a remote load would install the
+keyless table over `bmf`**, losing the primary key and 0022's three indexes. It
+is a SHAPE SUBSTITUTION in the artifact, not a verification gap.
+
+**WHY IT WOULD NOT BE NOTICED IS THE PART WORTH KEEPING.** Unique EINs mean the
+load SUCCEEDS, and the success is what conceals the missing key. **The two halves
+of the entry are the same fact from opposite sides**: the uniqueness that makes
+the feared failure impossible is the uniqueness that makes the real defect
+silent. Had the EINs collided, the substitution would have announced itself on
+the first duplicate.
+
+**THE GENERATOR IS NOT WRONG ON ITS OWN TERMS**, which is why reading it in
+isolation finds nothing. Its docblock says indexes are omitted because their cost
+is already measured and would confound ingest time — **correct for a timing
+probe, wrong for anything that RENAMEs over a real table.** The defect is the
+shape being reused outside the purpose it was built for.
+
+**Classification unchanged at POST**, stated on the entry rather than inferred:
+no pilot user reaches a local script whose output is never served.
 
 **A line-ending measurement, recorded because CLAUDE.md §10 states otherwise.**
 All five of CLAUDE.md, `docs/outstanding.md`, `docs/filed-defects.md`,

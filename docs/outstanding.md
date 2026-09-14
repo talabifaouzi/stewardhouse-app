@@ -77,57 +77,41 @@ ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
 7, BMF-and-Discover 17, cheap-and-mechanical 33, large 37, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (seventh): TWO ENTRIES OPENED AND
-NOTHING CLOSED.** OPEN moves 118 to 120 and **POST 28 to 30**; BLOCKING stays 23
-and DEBT stays 67. Both new entries are POST and both sit in BMF-and-Discover,
-so that tier alone moves **15 to 17** and the breakdown reads
-7 + 16 + 7 + 17 + 33 + 37 + 3 = 120. The build chain is unchanged at 19, because
-its definition subtracts the counsel-gated four from BLOCKING and neither moved,
-and the counsel-gated roster stays four of the twenty-three. The diagnostics move
-with OPEN: the naive enumerator 118 against 120, the gap still exactly A50a and
-A50b, and the file-wide `Pilot: DEBT` count **unchanged at 68 against 67**,
-because both new entries are POST rather than DEBT.
-**THE ORDINAL SKIPS SIX, AND THAT IS THIS BLOCK'S OWN GAP RATHER THAN A
-MISCOUNT.** The sixth change of the day was the section 12 filing, which opened
-and closed nothing and did not renumber this block, so it went out reading
-"fifth" while describing itself correctly in every other respect. **No block ever
-said sixth.** Recorded because the ordinals are a sequence and a reader counting
-them will find one missing.
-**WHY THIS ONE OPENS ENTRIES WHEN THE TWO BEFORE IT OPENED NOTHING.** The fourth
-and fifth changes moved no figure at all — one concealed a premise being refuted,
-the other a ruling. **This change is the opposite shape: a scoping pass that
-found two things nobody had filed**, and both have completion states, so both are
-entries rather than notes. **A140** is the probe Worker's expired no-gate
-premise; **A141** is whether the generator's synthetic shape matches 0022's
-`bmf`. Neither gates the pilot and neither is reached by a pilot user, which is
-why both are POST.
-**THE SUBSTANCE OF THIS CHANGE IS AN ORDERING REVERSAL THAT MOVES NO FIGURE
-EITHER**, and it is the part a count cannot see: **A113 is now UPSTREAM of A1's
-rollback exercise**, because the loader is the instrument that makes the
-exercise legible and nothing writes `load_stamp` today.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (eighth): NOTHING OPENED AND
+NOTHING CLOSED. EVERY FIGURE IS UNCHANGED.** OPEN 120, BLOCKING 23, DEBT 67,
+POST 30, the breakdown 7 + 16 + 7 + 17 + 33 + 37 + 3 = 120, the build chain 19
+by the unchanged definition, 23 - 4 = 19, and the counsel-gated roster four of
+the twenty-three. The diagnostics are unchanged with them: the naive enumerator
+118 against 120, the gap still exactly A50a and A50b, and the file-wide
+`Pilot: DEBT` count 68 against 67, the extra still FJ-7's own line inside the
+FOUNDER JUDGMENT section rather than an OPEN entry.
 
-**TWO ENTRIES OPENED — A140 AND A141 — AND TWO WERE UPDATED IN PLACE: A1 AND
-A113.** Nothing closed and nothing was reclassified.
+**ONE ENTRY WAS UPDATED IN PLACE: A141.** Nothing opened, nothing closed, and
+nothing was reclassified — **A141 stays POST**, which the entry now states rather
+than leaving to be inferred, because no pilot user reaches a local script whose
+output is never served.
 
-**FT RULED THAT A1's EXERCISE DOES NOT RUN YET, AND THE GROUND IS AN ORDERING
-REVERSAL.** A scoping pass established that **a clean rollback and an import
-that never began produce byte-identical observable state** on every instrument
-the sandbox offers today — row count, `integrity_check`, `foreign_key_check`
-and `bmf_aside` absence all fail to separate them. **An exercise run now would
-produce a result nobody can read.** A1 carries the full instrument table.
+**A141 WAS AMENDED RATHER THAN CLOSED, BECAUSE ONE HALF OF IT WAS ANSWERED AND
+THE OTHER WAS WRONG.** The uniqueness half is closed by measurement, local only:
+the generator derives its EIN from the loop counter, so the values are unique by
+construction, and a load-one-volume run into a standalone file carrying 0022's
+shape INCLUDING the primary key returned 1,964,958 rows, 1,964,958 distinct EINs
+and zero duplicate failures, with a duplicate-insert control firing first.
+**The scenario the entry feared does not occur.**
 
-**THE FIX IS A113's LOADER, WHICH PUTS IT UPSTREAM OF A1's EXERCISE RATHER THAN
-DOWNSTREAM.** 0022 already declares `load_started_at` and `completed_at`, and
-nothing writes them; a loader that stamps before it attempts makes the two states
-trivially distinguishable, no row against a row with `completed_at` NULL. **The
-record has read the other way**, so the reversal is recorded on both entries.
+**THE OTHER HALF NAMED THE WRONG FILE AND THE WRONG CLASS OF PROBLEM.** The
+verifier's keyless `CREATE` is a local test artifact and is harmless.
+`d1-window-generate.mjs:85` emits the same keyless `CREATE` and **that one
+ships**, inside the aside-swap file, followed by a `RENAME` that installs it
+over `bmf`. **It is a SHAPE SUBSTITUTION in the artifact, not a verification
+gap**, and a remote load would leave `bmf` without its primary key and without
+0022's three indexes.
 
-**AND THE DECISIVE FAILURE CLASS IS NOT INDUCIBLE.** Constraint violation and
-oversized statement are inducible and cheap; oversized transaction is
-uncharacterized; **interrupted connection is not inducible at all**, because the
-import is server-side, and it is the class that produces the half-applied state a
-rollback undoes. A1's closure condition now names it as an unclosed gap rather
-than omitting it.
+**WHY THAT WOULD NOT BE NOTICED IS THE PART THE AMENDMENT EXISTS FOR.** Unique
+EINs mean the load SUCCEEDS, and the success is what conceals the missing key.
+**The two halves of the entry are the same fact from opposite sides**: had the
+EINs collided, the substitution would have announced itself on the first
+duplicate.
 
 **NO OTHER QUEUE-RECORD FILE CHANGED.** `docs/filed-defects.md` is untouched.
 **One NON-queue-record file changed and is counted nowhere**,
@@ -1458,7 +1442,11 @@ sandbox, or record that a count-only read on a sandbox may stay ungated.
 
 **A141 | Whether the generator's synthetic shape matches 0022's `bmf` is
 unverified, and the two disagree on the primary key.**
-Blocker: none named. One local run answers it.
+**TITLE SUPERSEDED 2026-09-14 AND KEPT RATHER THAN REWRITTEN**, per this file's
+practice: it is no longer unverified, and the disagreement is not where the
+title puts it. See the amendment below.
+Blocker: none named. The uniqueness half is ANSWERED; the shape half is a
+decision about a script.
 Pilot: POST
 Detail: `scripts/d1-window-generate.mjs`, its profile docblock;
 `scripts/d1-window-verify-import.mjs`, its `CREATE TABLE`;
@@ -1478,6 +1466,75 @@ violation nobody chose, at an offset nobody picked. If they ARE unique, nothing
 is wrong and the check costs one local run. **Either way the answer should be
 known BEFORE a remote load is spent**, which is the same reasoning the verifier's
 own docblock gives for existing.
+
+**AMENDED 2026-09-14, LOCAL ONLY, NO `--remote`. THE UNIQUENESS HALF IS
+ANSWERED AND THE OTHER HALF IS WRONG ABOUT WHICH FILE AND WHICH CLASS OF
+PROBLEM.** The paragraphs above are kept because they record what was suspected;
+what follows is what was measured.
+
+**(1) THE EINs ARE UNIQUE, BY CONSTRUCTION AND BY EXECUTION. THE FEARED SCENARIO
+DOES NOT OCCUR.** `d1-window-generate.mjs:101` reads
+`const ein = String(i).padStart(9, '0')` inside `for (let i = 1; i <= ROWS; i++)`,
+so **the EIN IS the loop counter**; `padStart` pads and never truncates, and
+1,964,958 needs seven digits in a nine-digit field, so a collision is impossible.
+**Confirmed by running it**: generated at load-one volume to a path outside the
+repo, 1,964,958 rows in 5,572 statements, then loaded into a standalone
+`node:sqlite` file carrying **0022's exact shape, primary key included** rather
+than the verifier's. Result: 1,964,958 rows, 1,964,958 distinct EINs, **zero
+duplicate failures**, min `000000001`, max `001964958`, `integrity_check ok`.
+**THE CONTROL FIRED BEFORE THE RESULT WAS TRUSTED** — a duplicate insert into an
+identically-declared table in the same file was refused with
+`UNIQUE constraint failed` — because without it a keyless table would have
+produced the same zero. NULL `revenue_amt` 569,235 and NULL `ntee_cd` 574,447
+matched the generator's own reported figures exactly.
+**SO "a constraint violation nobody chose, at an offset nobody picked" IS RULED
+OUT**, and that sentence above is answered rather than merely aged.
+
+**(2) THE FILE IS WRONG AND SO IS THE CLASS. IT IS NOT A VERIFICATION GAP; IT IS
+A SHAPE SUBSTITUTION IN THE ARTIFACT.** This entry names the verifier. **The
+verifier's keyless `CREATE` is a LOCAL TEST ARTIFACT and is harmless** — it
+builds a scratch file, proves the SQL loads, and is deleted.
+**`d1-window-generate.mjs:85` EMITS THE SAME KEYLESS `CREATE`, AND THAT ONE
+SHIPS.** It goes inside the aside-swap file itself, as
+`CREATE TABLE bmf_aside (ein TEXT NOT NULL, …)`, and `:121-122` follow it with
+`DROP TABLE bmf` and `ALTER TABLE bmf_aside RENAME TO bmf`. **So a remote load
+of the generated file would install the keyless table OVER `bmf`**, leaving it
+without its `PRIMARY KEY` and without 0022's three indexes —
+`idx_bmf_state_city`, `idx_bmf_ruling` and `idx_bmf_name`.
+**MEASURED, THE TWO KEYLESS SHAPES ARE IDENTICAL TO EACH OTHER.** All seven
+columns match 0022 in name, order, type and NOT NULL; the generator and the
+verifier differ from 0022 in exactly two respects, the primary key and the
+indexes, and in no respect from one another.
+
+**(3) WHY IT WOULD NOT BE NOTICED, WHICH IS WHAT MAKES IT DANGEROUS RATHER THAN
+MERELY WRONG.** Unique-by-construction EINs mean **the load SUCCEEDS**, and a
+successful load is exactly what conceals the missing key. Nothing errors, no
+count is off, `integrity_check` passes, and the table looks right until
+something depends on the constraint.
+**THE TWO HALVES OF THIS ENTRY ARE THE SAME FACT FROM OPPOSITE SIDES.** The
+uniqueness that makes the feared failure impossible is the same uniqueness that
+makes the real defect silent. **Had the EINs collided, the shape substitution
+would have announced itself on the first duplicate.**
+
+**(4) THE GENERATOR DECLARES NO INDEXES DELIBERATELY, AND ITS REASON IS GOOD
+FOR WHAT IT WAS BUILT FOR.** Its docblock at `:22` reads "No indexes: their cost
+is already measured and would confound ingest time." **That is correct for a
+timing probe** — index-build time was measured separately and would contaminate
+the window this script exists to measure. **It is wrong for anything that
+`RENAME`s over a real table.**
+**THE DEFECT IS NOT THE SHAPE. IT IS THE SHAPE BEING REUSED OUTSIDE THE PURPOSE
+IT WAS BUILT FOR.** A file designed to measure ingest time against a throwaway
+carries DDL chosen for that measurement, and A1's exercise proposes to point it
+at standing infrastructure. **Nothing in the script is wrong on its own terms**,
+which is why reading it in isolation finds nothing.
+
+**CLASSIFICATION UNCHANGED AT POST, stated rather than left to be inferred.**
+No pilot user reaches a test artifact: the generator is a local script, its
+output is never served, and the sandbox it would target is not a pilot surface.
+**POST's definition is met and ripeness does not move it.** The blocker line is
+narrowed above — the uniqueness half is closed by measurement, and what remains
+is a decision about whether the script keeps a shape it was right to choose and
+is now wrong to reuse.
 
 **A114 was CLOSED 2026-09-07 and has left this section; the remaining IDs are
 not renumbered, since renumbering would break every reference to them.** The
