@@ -72,27 +72,33 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 121 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+**As committed: 120 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
 ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
-7, BMF-and-Discover 17, cheap-and-mechanical 33, large 38, and
+7, BMF-and-Discover 17, cheap-and-mechanical 32, large 38, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (tenth): NOTHING OPENED AND NOTHING
-CLOSED. EVERY FIGURE IS UNCHANGED.** OPEN 121, BLOCKING 24, DEBT 67, POST 30,
-the breakdown 7 + 16 + 7 + 17 + 33 + 38 + 3 = 121, the build chain 20 by the
-unchanged definition, 24 - 4 = 20, and the counsel-gated roster four of the
-twenty-four. The diagnostics are unchanged with them: the naive enumerator 119
-against 121, the gap still exactly A50a and A50b, and the file-wide
-`Pilot: DEBT` count 68 against 67, the extra still FJ-7's own line inside the
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (eleventh): ONE ENTRY CLOSED AND
+NONE OPENED.** OPEN moves 121 to 120 and **DEBT 67 to 66**; BLOCKING stays 24
+and POST stays 30. A139 sat in cheap-and-mechanical, so that tier alone moves
+**33 to 32** and the breakdown reads 7 + 16 + 7 + 17 + 32 + 38 + 3 = 120.
+**THE BUILD CHAIN IS UNCHANGED AT 20**, because its definition subtracts the
+counsel-gated four from BLOCKING and BLOCKING did not move; the counsel-gated
+sentence stays four of the twenty-four.
+**THE FILE-WIDE `Pilot: DEBT` DIAGNOSTIC MOVES FOR THE FIRST TIME IN SEVERAL
+CHANGES, 68 to 67, AND IT IS WORTH SAYING WHY.** The last four changes each left
+it alone — they opened POST entries, opened a BLOCKING one, or moved no figure
+at all — and a reader watching one number sit still through four consecutive
+commits could reasonably start treating it as inert. **It moved now because A139
+IS DEBT**, which is the only classification that touches it. The naive
+enumerator moves with OPEN, 118 against 120, the gap still exactly A50a and
+A50b, and the extra on the file-wide count is still FJ-7's own line inside the
 FOUNDER JUDGMENT section rather than an OPEN entry.
 **THE BUILD-CHAIN OVERSTATEMENT RECORDED BY THE NINTH CHANGE STILL STANDS** at
 one, since A142 is unchanged and remains counsel-blocked outside the roster.
-**A RULING LANDED AND NO FIGURE MOVED, WHICH IS THE THIRD TIME THIS BLOCK HAS
-SAID SO.** A92's question was answered YES and A139 was unblocked, and **neither
-closes**: A92 stays open because what was answered was A139's question routed
-through it rather than A92's own, and A139 stays DEBT because being unblocked is
-not being built. **An unblocking moves no count at all**, which makes it the
-least visible kind of change this block records.
+**THIS IS THE FIRST CHANGE IN THE DAY'S RECORD TO CLOSE AN ENTRY BY BUILDING
+IT.** A13 closed on a screening result, A75 on a false premise, A114 and A117 on
+FT-run acts. **A139 closed because code shipped**, which is why DEBT moves and
+BLOCKING does not: what was built was never pilot-blocking, only unpaid.
 
 **THE BUILD-CHAIN FIGURE NOW OVERSTATES BY ONE, AND THAT IS RECORDED RATHER THAN
 CORRECTED.** The chain is defined as BLOCKING minus the counsel-gated roster, and
@@ -104,37 +110,28 @@ the roster's meaning is which items clear on the two conversations FT has named,
 and A142 does not. **Twenty is the figure the definition yields; nineteen is the
 number of BLOCKING items a build can actually move.**
 
-**TWO ENTRIES WERE UPDATED IN PLACE: A92 AND A139.** Nothing opened, nothing
-closed, and nothing was reclassified.
+**ONE ENTRY CLOSED: A139**, the send-log attribution gap, **because it was
+BUILT**. Nothing opened and nothing was reclassified. Its closure note sits on
+A138, the entry that preceded it, per the convention A75 and A13 both used, and
+its id is neither renumbered nor reused.
 
-**FT RULED A92's QUESTION YES: THE ACCOUNT TYPE MAY BE EMITTED IN THE SEND-LOG
-VIEW.** The ground is the **ops-exclusivity condition already in the record**
-rather than the population count: `gate.js:168-171` authorizes a full-fidelity
-operator view valid ONLY while ops is FT-exclusive, so **at one ops account the
-operator and the subject are the same person** and the type discloses nothing to
-its only reader.
+**WHAT SHIPPED IS ROUTE (b), THE READ-TIME JOIN**, across three commits on
+`slice-a139-type-column`, fast-forwarded to `main`: the join and the emit, five
+docblocks, and the view's fifth column with the A119 filing. **Route (a) was
+never built** — this entry's own scope pass refuted it.
 
-**THE CONDITION IS EXPLICIT AND IS ON AN ACCOUNT RATHER THAN A POPULATION.** If a
-second ops account is ever created, this is revisited **before that account is
-usable**, because the disclosure becomes real at that moment rather than
-gradually. **Alex's objection to a cardinality-indexed rule does not reach it**,
-and the condition is not new: `gate.js:162-166` already requires the Q6 posture
-re-ruled before a second ops account exists, kept enforced by the ops-minting
-guard in `invites.js`.
+**THE JOIN WAS PROVEN ON THE CASE IT EXISTS FOR.** Every check until the last ran
+against all-lowercase data, which is the condition the `lower()` join exists to
+fix, so a mixed-case row was seeded and read back through a running server under
+a minted ops session. It resolved; a bare-column join returned NULL against the
+same row. The store was restored to baseline and verified against a pre-smoke
+`VACUUM INTO` backup by row-id set, table by table.
 
-**IT DOES NOT REOPEN THE `email` COLUMN.** Ruling (3) stands, A92 still governs
-the address, and the type is emitted **alongside** the address being omitted
-rather than in place of it.
-
-**A92 STAYS OPEN, AND THAT IS THE SUBTLE PART.** What was answered is the
-question A139's scope pass ROUTED THROUGH A92; **A92's own title question, about
-the `email` column, is untouched.** So what is discharged is A92's role as
-A139's blocker, not A92.
-
-**A139 IS UNBLOCKED AND ROUTE (b) IS THE SURVIVING ROUTE**, route (a) having been
-refuted by A139's own scope pass. **Nothing is built in this commit**; the entry
-stays DEBT and stays open, now buildable, and it inherits A92's ops-exclusivity
-condition rather than settling it.
+**THREE RESIDUALS SURVIVE AND THE CLOSURE NOTE NAMES ALL THREE**, so nobody reads
+them as discharged with it: the **ops-exclusivity condition** is A92's and is
+docblocked at the endpoint; the **label inconsistency** is A119's and was banked
+with the build; and **A92 is open and governs the address**, which A139 never
+asked about.
 
 **NO OTHER QUEUE-RECORD FILE CHANGED.** `docs/filed-defects.md` is untouched.
 **One NON-queue-record file changed and is counted nowhere**,
@@ -197,11 +194,11 @@ known-CRLF and a known-LF control asserted first, both files being fully CRLF in
 the working tree.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 119 rather than 121, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 118 rather than 120, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 68
-rather than 67, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 67
+rather than 66, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -209,7 +206,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 24 BLOCKING, 67 DEBT, 30 POST**, classification ruled
+**AGAINST THE PILOT GATE: 24 BLOCKING, 66 DEBT, 30 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-14,
 of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -217,7 +214,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 121. The sentence
+totals above, which remain a count of OPEN entries and sum to 120. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -3233,184 +3230,44 @@ which is the failure A136 exists to record.
 is a moving target, so a list with no date cannot be audited against the version
 it came from, and a later reader cannot tell whether an absent name was never
 published or merely published after the list was written.
+**A139 was CLOSED 2026-09-14 and has left this section; its id is not renumbered
+and is not reused**, since renumbering would break every reference to the ids
+around it. Its title was "`auth_send_log` records no surface or account type, so
+the view cannot say whether an attempt was individual, advisor, enterprise or
+ops", and **its question is answered and built**: the send-log view attributes
+every attempt to an account type.
+**WHAT CLOSED IT.** Route (b), the read-time join, across three commits on
+`slice-a139-type-column` — `c015168` the join and the emit, `253dbf2` the five
+docblocks, `687e500` the view's fifth column and the A119 filing. **Route (a) was
+refuted by this entry's own scope pass** and was never built, so the fork the
+entry opened with closed by elimination on one side and by ruling on the other.
+**THE JOIN WAS PROVEN ON THE CASE IT EXISTS FOR, which no earlier check had
+reached.** Every verification until the last ran against all-lowercase local
+data — the condition the `lower()` join exists to fix — so a mixed-case row was
+seeded into the named local store and read back through a running server under a
+minted ops session: it resolved, where a bare-column join returned NULL against
+the same row. The store was restored to baseline and the row-id sets compared
+against a pre-smoke `VACUUM INTO` backup, table by table.
 
-**A139 | `auth_send_log` records no surface or account type, so the view cannot
-say whether an attempt was individual, advisor, enterprise or ops.**
-Blocker: NONE. **UNBLOCKED 2026-09-14**, and the two prior blocker lines are
-quoted rather than edited because each was true in turn: it first read "none for
-route (a). Route (b) is blocked on A92", then "A92, for BOTH routes" once the
-scope pass showed route (a) does not escape the disclosure question either.
-**FT ruled A92's question YES on ops-exclusivity grounds, so the gate is gone.**
-Pilot: DEBT
-Detail: `migrations/0021_auth_send_log.sql`, the table definition;
-`functions/_lib/sendOutcome.js`, its FORK 1 docblock; A92; A13's ruling (1),
-recorded in the closure note on A36.
-**THE COLUMN DOES NOT EXIST. THIS IS A CAPTURE GAP, NOT A VIEW DEFECT**, and the
-distinction decides where any fix goes. `auth_send_log` carries five columns —
-`id`, `email`, `outcome`, `error_text` and `attempted_at` — and none of them
-names a surface or an account type. **A13 SHIPPED EXACTLY WHAT ITS FIVE RULINGS
-SPECIFIED**, and no reading of them asked for attribution; the view cannot emit
-what the table never recorded.
-**TWO ROUTES, NEITHER RULED, AND THEY ARE DIFFERENT PRODUCTS RATHER THAN TWO
-IMPLEMENTATIONS OF ONE.**
-**(a) CAPTURE AT WRITE TIME** — a migration adding the column, plus an edit
-inside the send path to populate it. **This is the structured-capture branch
-FORK 1 ruled away from**, on the reasoning that a read slice should not become
-auth-path-adjacent; `sendOutcome.js:12` records that ruling as "PARSE over
-structured capture: no migration, and no edit to `functions/_lib/auth.js` or
-`functions/_lib/sender.js`". Taking route (a) now is not a violation of FORK 1,
-which governed A13's own scope, but it is a REVERSAL OF ITS REASONING and should
-be ruled as one rather than slipped in as an increment.
-**(b) DERIVE BY JOINING `person` ON `invite_email`** — no migration, and no
-touch to the auth path. **It joins on the column ruling (3) deliberately omits**,
-and it would make every row report an account type. **THAT IS CLOSE ENOUGH TO
-A92 THAT BUILDING IT WOULD ANSWER A92 BY IMPLEMENTATION RATHER THAN BY RULING**,
-which is the dependency this entry exists to record: A92 is FT-blocked precisely
-because it is a privacy posture, and a build that reaches the same place by
-inference does not stop being a posture decision for having skipped the ruling.
-**IDENTIFICATION BY TIMESTAMP HOLDS ONLY AT ONE ACCOUNT AND LOW VOLUME, AND THAT
-IS THE SHARP EDGE.** A13's ruling (1) relies on FT signing in and recognising
-that attempt as the newest row, which works because FT is effectively the only
-person signing in and the table holds three rows. **It stops working exactly
-where the view earns its keep.** A FAILURE row carries no attribution at all,
-and a failure nobody can attribute is the case A13 was built for: the July 2026
-outage ran silently for five days because nothing recorded that sends were
-failing, and a view that records failures without saying whose is a weaker
-instrument than it appears. **The gap therefore matters least in the state that
-closed A13 and most in the state that justifies it.**
-**FILED AT CLOSE, SCOPED NEXT SESSION. NOT DEFERRED AND NOT POST-PILOT.**
-
-**SCOPED 2026-09-14, READ-ONLY, AT `ffa27d2`. THE PASS REFUTES THIS ENTRY'S OWN
-PREMISE, AND THE ORIGINAL TEXT ABOVE IS KEPT RATHER THAN REWRITTEN** so that a
-reader meets the refutation where the claim sits. **The entry still names a real
-gap.** What it got wrong is what the gap is made of.
-
-**(1) THE SURFACE IS NOT KNOWABLE AT THE STAMP, AND IT DOES NOT EXIST IN THE
-REQUEST AT ALL.** There is ONE `/signin` route (`src/App.jsx:29`) and ONE
-`callbackURL`, the constant `'/app'` (`src/surfaces/auth/SignIn.jsx:100`, the
-only occurrence in the tree). The surface is decided AFTER verification, by
-`AppDispatcher` branching on `identity.type` at `:35`, `:39`, `:43` and `:47`.
-`sendMagicLink` is a better-auth plugin CALLBACK (`functions/_lib/auth.js:403`)
-receiving `{ email, url }`, with ZERO call sites in this codebase — better-auth
-invokes it. **So the title's "surface or account type" conflates two things, and
-only the second is recordable.** A user does not request a surface; they type an
-address into one form and are routed once the platform knows who they are.
-
-**(2) THE TWO ROUTES ARE NOT DIFFERENT PRODUCTS.** Both record `person.type`.
-They differ only in WHEN it is read — write-time against read-time. The text
-above says they are different facts. **They are not**, and the sentence calling
-them "DIFFERENT PRODUCTS RATHER THAN TWO IMPLEMENTATIONS OF ONE" is exactly
-backwards: they are two implementations of one.
-
-**(3) ROUTE (A) IS REFUTED ON ITS OWN TERMS, AND THE REASONS ARE CUMULATIVE
-RATHER THAN ALTERNATIVE.** It cannot capture the fact this entry names, per (1).
-It needs a migration, a `person` read ADDED TO THE SEND PATH, and an edit to
-`auth.js:449` reversing FORK 1's stated no-edit condition. Its column is
-PERMANENTLY MIXED: every pre-existing row gets an unbackfillable NULL, because
-the value was never captured and cannot be reconstructed from `email` without
-performing route (b)'s join anyway — **and that includes the 2026-09-01 17:22:27
-UTC row A13's screening evidence rests on.** And per (4) it does not escape the
-A92 question; it only avoids touching `email` on the way there.
-
-**(4) A92 GATES BOTH ROUTES, WHICH IS WHY THE BLOCKER LINE ABOVE IS CORRECTED.**
-At one account per type — the live population, local and per CLAUDE.md §12's
-production inventory alike — **emitting `type` names exactly one address to an
-operator who already knows which.** That is the work the omitted column would
-have done. Ruling (3) omitted `email` "and no masked or hashed form replaces
-it"; a four-value enum is not a hash, so on the narrow reading neither route
-breaches it. **The narrow reading is the rationalization this paragraph exists
-to refuse.** A field that resolves to a single known address in the live
-population is doing the omitted column's work whatever its cardinality says in
-the abstract, and **neither route reaches that decision by building.**
-
-**THREE FINDINGS THE ORIGINAL TEXT DOES NOT CARRY, filed here rather than as
-their own entries because each is a property of this same gap.**
-
-**(i) CASE NORMALIZATION. The exact join works today BY LUCK.**
-`auth_send_log.email` stores what the user TYPED: the middleware forwards the
-body unchanged (`functions/api/auth/[[route]].js:138`, `body: bodyText`) and
-better-auth's magic-link plugin does no normalization. `person.invite_email` is
-stored trim-lowercased. Measured on the local store: ZERO mixed-case values on
-either side, exact join 10 of 10. **The control is what makes this a finding
-rather than a reassurance** — an uppercase probe returns 0 on exact match and 1
-on `LOWER()`-normalized match. **A mixed-case sign-in would render no type
-rather than erroring**, which is the silent-degradation shape `sendOutcome.js`
-already warns about for its own parser.
-
-**(ii) SOFT-DELETE DIVERGENCE.** `person.soft_deleted_at` exists
-(`migrations/0001_initial.sql`) and `functions/api/auth-sends.js` has NO filter
-on it — measured 0 occurrences, against a control confirming the column is
-greppable elsewhere in `functions/` (2 in `roster.js`), so the absence is real
-and not a broken search. A write-time capture freezes a value that survives the
-person's deletion; a read-time join reports the type of a row that may since
-have been soft-deleted, or loses it if a filter is added. **Neither behaviour is
-ruled.**
-
-**(iii) `person.type` HAS NO CHECK CONSTRAINT.** Its enum is a COMMENT at
-`migrations/0001_initial.sql:127` and nowhere else — measured 0 `CHECK (type`
-in that file, against a control confirming CHECK constraints are greppable in
-`migrations/` (2 in 0016). Application code carries no `UPDATE` to the column,
-so immutability is CONVENTION rather than constraint. **That is the only
-mechanism by which write-time and read-time capture could ever disagree**, and
-nothing prevents it.
-
-**STATUS: UNCHANGED AT DEBT. The blocker is now A92 OUTRIGHT rather than
-conditionally**, and what remains to rule is narrower than this entry first
-recorded: not which of two products to build, but whether emitting an account
-type at this population is a disclosure A92 governs.
-
-**PURPOSE RULED BY FT, 2026-09-14: YES. OPERATOR-SIDE CLASSIFICATION OF AUTH
-ATTEMPTS IS A LEGITIMATE FUNCTION OF THE SEND-LOG VIEW.** An operator needs to
-see which class of account an attempt belonged to, because **a failure confined
-to one type is a different signal from a general outage**, and the view exists
-for failures. **THE FIELD IS THEREFORE IN SCOPE FOR THIS VIEW.**
-
-**WHAT THAT RULING DOES NOT DO, stated because the distance between the two is
-the whole of what is left.** It does NOT rule that the type may be emitted. It
-settles that the view would be right to want it; it does not settle whether this
-population permits it. **Those are different questions and only the first is
-answered.** What remains is A92's, and A92 is now RIPE rather than theoretical.
-
-**THE COSTS MOVE IN OPPOSITE DIRECTIONS WITH POPULATION, WHICH NEITHER THIS
-ENTRY NOR A92 CARRIED UNTIL NOW.** Today the field **barely helps**: one
-operator holds every account, and attribution by timestamp works because FT
-recognises their own attempt as the newest row. Today the field **maximally
-discloses**, because a four-value enum names one address. **At pilot scale both
-invert.** The field helps a great deal, since an operator who does not know
-every address needs the class to read a run of failures at all; and the
-disclosure shrinks at the same time, because a type stops naming one person once
-there are many of each.
-
-**SO THE WORST MOMENT TO EMIT IT IS THE MOMENT IT IS WORTH LEAST, AND THE BEST
-MOMENT IS THE ONE IT IS WORTH MOST.** That is not an argument for either answer.
-It is the reason a ruling taken today on today's population may be the opposite
-of the ruling the same reasoning gives in six months, and **it is recorded here
-so that whoever rules knows they are ruling at the low point of the value curve
-and the high point of the exposure curve.**
-
-**ALEX'S OBJECTION TO THE OBVIOUS FIX IS RECORDED ON A92**, where the rule would
-be written. In short: a posture scoped to "fields that currently resolve to one
-subject" cannot be checked without re-running the population query, so a future
-reader cannot tell which fields it covers. **It is the strongest argument
-against the cardinality-indexed rule and it is not answered here.**
-
-**RULED AND UNBLOCKED 2026-09-14. ROUTE (b) IS THE SURVIVING ROUTE.** FT ruled
-A92's question YES: the account type may be emitted, on the ops-exclusivity
-condition recorded there. **The paragraph above is kept because it framed the
-question correctly**, and the answer it was waiting for has arrived.
-**ROUTE (a) WAS REFUTED BY THIS ENTRY'S OWN SCOPE PASS**, cumulatively: it cannot
-capture the fact the entry names, it needs a migration plus a read on the send
-path plus an edit reversing FORK 1's stated no-edit condition, and its column
-would be permanently mixed with unbackfillable NULLs. **So the read-time join on
-`person` is what remains**, and the fork this entry opened with is closed by
-elimination on one side and by ruling on the other.
-**NOTHING IS BUILT IN THIS COMMIT.** The entry stays **DEBT** and stays open;
-what changed is that it is now buildable. **Three things the build must carry are
-already recorded above and are not restated here**: the case-normalization
-exposure, the soft-delete divergence, and `person.type` having no CHECK.
-**AND ONE CONDITION TRAVELS WITH IT FROM A92**: the ruling holds while ops is
-FT-exclusive, so a build that emits the type inherits that condition rather than
-settling it.
+**THREE RESIDUALS SURVIVE THIS CLOSURE AND NONE OF THEM IS A139's QUESTION.**
+They are named here so a reader arriving at the close does not read them as
+discharged with it.
+**(1) THE ops-EXCLUSIVITY CONDITION IS A92's, AND IT IS LIVE.** The type may be
+emitted only while ops is FT-exclusive; if a second ops account is ever created
+this is re-ruled BEFORE that account is usable. **It lives docblocked at the
+endpoint**, `functions/api/auth-sends.js`, with the argument in full, and it
+goes with the ops-minting guard in `functions/api/invites.js` if that guard is
+ever removed.
+**(2) THE LABEL INCONSISTENCY IS A119's, AND IT IS FILED THERE.** The Type column
+renders the RAW value, so an ops attempt reads `ops` in the send log and **Admin**
+in the roster — `TYPE_LABELS` is module-private in `OperationsRoster.jsx` and
+duplicating it would give the 2026-07-13 naming ruling a second place to drift.
+**The fix is an extraction, not a column.**
+**(3) A92 IS OPEN AND GOVERNS THE ADDRESS, WHICH A139 NEVER ASKED ABOUT.** Ruling
+(3) stands: the `email` column is omitted and no masked or hashed form replaces
+it. A type names a CLASS, and past one account per type it names neither the
+address nor the person, so A92's own cost — an operator unable to tell which
+address a failure belongs to — is untouched by this closure.
 
 **A35 | `parseRoster.js`'s header docblock denies a file-upload path that has
 existed since 2026-08-27.**

@@ -3010,7 +3010,7 @@ because it appeared in a brief alongside eight of them.
 ## Session — 2026-09-14 (second)
 
 A docs session with no build, opening on a completed merge and closing on a
-closure. **It banked NINE commits** — **a figure CORRECTED 2026-09-14, having
+closure. **It banked TEN commits** — **a figure CORRECTED 2026-09-14, having
 read FIVE while the list beside it named seven, and maintained by re-counting
 the list on every commit since**: `af4b07b`, five items across CLAUDE.md, the
 queue and this file; the A13 closure below; an A139 amendment that refuted the
@@ -3019,7 +3019,10 @@ amendment isolated; a section 12 filing recording that the one large-scale
 experiment this project has run is not evidence about recovery; an ordering
 reversal putting A113 upstream of A1's exercise; an A141 amendment that
 answered one half of that entry and corrected the other; the A142 filing, the
-unreviewed tax claim; and FT's ruling on A92, which unblocked A139.
+unreviewed tax claim; FT's ruling on A92, which unblocked A139; and the A139
+closure. **A139's BUILD is not in that count** — it was three commits on a slice
+branch, fast-forwarded to `main` by FT, and this list counts what the session
+banked directly.
 **It began mid-flight**, with the A13 build already merged to `main` at
 `51fee6f` and three files carrying uncommitted edits from the session before it.
 
@@ -3465,6 +3468,66 @@ ops-exclusivity condition rather than settling it.
 day to say so, and the least visible of the three: **an unblocking moves no count
 at all.** A92 did not close because the answer was to a borrowed question; A139
 did not close because being unblocked is not being built.
+
+### A139 built and closed, and the smoke that had not been run
+
+**The build was three elements rather than five.** Elements 3 and 4 merged — the
+view's pointer to the endpoint is a line inside the column's own docblock, not a
+separate change — and **element 5 was genuinely zero**: `GRID_COLUMNS` is
+consumed only inside `SendTable`, which the demo branch never reaches. That was
+confirmed rather than assumed, because a shared constant could have been reached
+from anywhere; the check went one hop further than "the demo renders no table"
+and followed `HEADER_ROW_STYLE` to its single consumer.
+
+**THE LABEL QUESTION RESOLVED AGAINST THE MAP.** `TYPE_LABELS` and
+`typeLabel()` are MODULE-PRIVATE in `OperationsRoster.jsx`, whose only export is
+its default component, so the send-log view cannot import them. Duplicating the
+map would give the 2026-07-13 naming ruling a second place to drift — the exact
+failure A119 tracks — so the column renders the RAW value and the inconsistency
+is filed on A119 rather than added to.
+
+**THE SMOKE IS THE PART WORTH KEEPING, BECAUSE NOTHING BEFORE IT HAD EXERCISED
+THE THING THE SLICE EXISTS FOR.** Every check through element 3 ran against
+all-lowercase local data, which is precisely the condition the `lower()` join was
+written to fix. So a mixed-case row was seeded into the store named `e7ff1add…`,
+derived by uppercasing an existing `invite_email` in-script and never printed,
+asserted to differ by CASE ONLY, and targeted at the ADVISOR person because no
+pre-existing row resolves to advisor — a row coming back as advisor could only
+have come from this join.
+**FOUR SQL CONTROLS, BOTH DIRECTIONS**: the bare-column join returned NULL, the
+`lower()` join returned advisor, the ten pre-existing rows were unaffected, and
+the joined total equalled the table total, ruling out the fan-out the docblock
+records. **Then through a RUNNING SERVER**, which SQL alone cannot show: HTTP
+200, the row present, type `advisor`, and `email` absent from the payload.
+**The §10 banner was read before trusting any of it** —
+`env.DB (stewardhouse-pilot)`, the config-resolved form, confirming the server
+was bound to the store that had been seeded rather than to the second one.
+
+**AN OPS SESSION HAD TO BE MINTED, which the smoke did not expect.** No
+ops-bound `auth_user` existed locally; only staff were claimed. So an
+`auth_user`, a `session` and a binding were seeded and then removed. **The
+secret never printed**: it was loaded with `sed`, passed by env, and the HMAC and
+cookie were computed and consumed inside one process, per §6.12.
+
+**TEARDOWN AND CLEANUP WERE VERIFIED RATHER THAN REPORTED.** `TaskStop` returning
+success is not evidence, per §6, so the port and process table were observed:
+zero listeners, zero `workerd`. The store was restored and checked against a
+pre-smoke `VACUUM INTO` backup by ROW-ID SET, table by table, with `person`'s
+full rows compared including `auth_user_id` so the ops row's claim state was
+proven restored rather than assumed.
+
+**ONE CONTROL FAILED DURING THE BUILD AND THE CONTROL WAS WHAT WAS WRONG.** A
+grid-track counter reported 7 against an expected 5 and the script refused to
+write. The grid was correct; the counter split on spaces and
+`minmax(230px, 1.3fr)` contains one. **Proven rather than assumed**: the naive
+counter reports 6 for the ORIGINAL 4-track grid, so it was broken from the
+moment it was written and would have failed against an unmodified file.
+
+**A139 CLOSED, AND THE CLOSURE NOTE NAMES THREE RESIDUALS** so they are not read
+as discharged with it: the ops-exclusivity condition is A92's, the label
+inconsistency is A119's, and A92 itself is open and governs the address, which
+A139 never asked about. **DEBT moves 67 to 66 and BLOCKING does not move**,
+because what was built was never pilot-blocking — only unpaid.
 
 **A line-ending measurement, recorded because CLAUDE.md §10 states otherwise.**
 All five of CLAUDE.md, `docs/outstanding.md`, `docs/filed-defects.md`,
