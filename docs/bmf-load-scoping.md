@@ -2717,14 +2717,22 @@ J 13 → 14, M 14 → 15, L unchanged at 16.
    Regenerate from the constant and `cmp` against the tracked file. It must be
    byte-identical **on the table shape**, which is the scope R31 gives
    byte-identity.
-   **ITS DONE IS THE SLICE PROOF, NOT A117's CLOSURE, AND COLLAPSING THE TWO
-   WOULD LET A DRIFT FINDING READ AS A CLOSURE.** The slice proof is that the
-   comparison RAN and produced a result; that is satisfied by either outcome.
-   **A117's closure follows on ONE outcome only.** Byte-identical closes it.
-   A difference does NOT: element 3 is still done, and A117 stays open with a
+   **ITS DONE IS THE SLICE PROOF: THE REGENERATION RAN AND THE COMPARISON
+   PRODUCED A RESULT, WHICH EITHER OUTCOME SATISFIES.** A byte difference is a
    finding to REPORT rather than a diff to accept — A125's caution rides
    unchanged, because that file is applied on both databases and wrangler
    matches by NAME.
+   **CORRECTED 2026-09-14, BY SUBTRACTION.** This entry shipped in `ed993ff`
+   making element 3's done turn on CLOSING A117, **and A117 has been CLOSED
+   since 2026-09-07.** An element cannot close an entry that does not exist.
+   **The consequence clause is REMOVED rather than rewritten in past tense**,
+   because the obligation above never depended on it and reads correctly without
+   it. **The R13a obligation was INHERITED BY A113 on that closure and is stated
+   in full there**, under its own heading "R13a, INHERITED FROM A117 ON ITS
+   CLOSURE" (`docs/outstanding.md:1770` as of `9aa67fc`). **It is deliberately
+   NOT restated here**: that heading exists precisely because the entry it came
+   from was deleted, and a second full statement is the duplication §6.18
+   refuses.
 4. **[letter D] MINT THE GENERATION TIMESTAMP.** The minted name matches
    `bmf_gen_YYYYMMDDTHHMMSSZ` (R14) and **EQUALS `load_stamp.load_started_at`**,
    which is the joinability R14 requires. **The ordering half is proved by its

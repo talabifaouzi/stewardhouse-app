@@ -1754,11 +1754,20 @@ line above does not say so.** A114 closed when `bmf-sandbox` was created, and
 0022 is now applied to the sandbox AND to live, so **the table exists with the
 ruled shape on both databases** — which is precisely what the clause above says
 the blocker is for. **A113 is reachable.**
-**READ THE BLOCKER AS A STATE, NOT AS AN ENTRY.** A117 remains OPEN on one
-remainder, R13a regeneration, which is A113's own work; so a reader following
-"Blocker: … A117" literally concludes A113 is blocked by an entry that is
-waiting on A113. **It is not.** The blocker was ever the TABLE EXISTING, and it
-does.
+**READ THE BLOCKER AS A STATE, NOT AS AN ENTRY.** **A117 IS CLOSED, since
+2026-09-07**, and its one remainder, R13a regeneration, was INHERITED BY THIS
+ENTRY on that closure — stated in full below, under "R13a, INHERITED FROM A117
+ON ITS CLOSURE". So a reader following "Blocker: … A117" literally is chasing an
+entry that no longer exists, and the work it named is this entry's own. The
+blocker was ever the TABLE EXISTING, and it does.
+**CORRECTED 2026-09-14. This passage read "A117 remains OPEN on one remainder,
+R13a regeneration, which is A113's own work", which was true when written and
+was falsified by that closure.** It is the sentence that propagated the same
+claim into the slice-2 definition of done at `docs/bmf-load-scoping.md` §15,
+where it shipped in `ed993ff` and is corrected in the same commit as this.
+**A stale STATUS claim about another entry is the one thing a reader cannot
+check without opening this file and counting entry headers**, which is why the
+correction is recorded rather than made silently.
 **FILED, NOT FIXED: a blocker line that names an ENTRY when what it needs is a
 STATE will misread the moment that entry stays open for an unrelated reason.**
 **R15b, 2026-09-07: THE FINDING STANDS AND R15 DOES NOT RESOLVE IT.** R15 removed
