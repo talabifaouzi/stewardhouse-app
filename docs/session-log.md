@@ -3010,8 +3010,9 @@ because it appeared in a brief alongside eight of them.
 ## Session — 2026-09-14 (second)
 
 A docs session with no build, opening on a completed merge and closing on a
-closure. **It banked TWO commits**: `af4b07b`, five items across CLAUDE.md, the
-queue and this file; and the A13 closure below. **It began mid-flight**, with
+closure. **It banked THREE commits**: `af4b07b`, five items across CLAUDE.md,
+the queue and this file; the A13 closure below; and an A139 amendment that
+refuted the entry the closure had just filed. **It began mid-flight**, with
 the A13 build already merged to `main` at `51fee6f` and three files carrying
 uncommitted edits from the session before it.
 
@@ -3153,6 +3154,54 @@ than from OPEN; the counsel-gated roster itself is unchanged at four, though the
 sentence naming it moves to four of the twenty-three. **An unchanged OPEN total
 is the figure most likely to be misread here**, so both the queue header and this
 entry say what it conceals.
+
+### The A139 scope pass, which refuted the entry filed two hours earlier
+
+**A read-only pass at `ffa27d2` was asked for before any build, and it refuted
+A139's own premise.** The entry names "no surface or account type"; **the
+surface does not exist in the request at all.** One `/signin` route
+(`App.jsx:29`), one `callbackURL` constant (`SignIn.jsx:100`, the only
+occurrence in the tree), and the surface decided AFTER verification by
+`AppDispatcher` branching on `identity.type`. `sendMagicLink` is a better-auth
+callback taking `{ email, url }` with **zero call sites in this codebase**.
+
+**THE ENTRY'S CENTRAL CLAIM WAS THAT ITS TWO ROUTES ARE DIFFERENT PRODUCTS. THEY
+ARE TWO IMPLEMENTATIONS OF ONE.** Both record `person.type`; they differ only in
+whether it is read at write time or at read time. Route (a) is refuted
+cumulatively — it cannot capture the named fact, it needs a migration plus a read
+on the send path plus an edit reversing FORK 1's no-edit condition, and its
+column is permanently mixed with unbackfillable NULLs including the row A13's
+screening rests on.
+
+**THE CORRECTION THAT MATTERS MOST IS THE BLOCKER LINE**, which read "none for
+route (a)". **A92 gates BOTH routes.** What triggers A92 is emitting the type,
+not joining on `email`: at one account per type a four-value enum names exactly
+one address to an operator who knows which, and a write-time capture emits the
+same value without touching `email`. **Avoiding the join avoids the mechanism
+and not the disclosure**, and that is the rationalization the amendment exists
+to refuse.
+
+**THREE FINDINGS WERE ADDED TO A139 RATHER THAN OPENED AS ENTRIES**, each a
+property of the same gap: `auth_send_log.email` stores what the user typed while
+`person.invite_email` is trim-lowercased, so the exact join works **by luck**
+(measured 0 mixed-case both sides, with an uppercase control returning 0 exact
+and 1 normalized); `auth-sends.js` has no `soft_deleted_at` filter, measured 0
+against a control finding 2 in `roster.js`; and `person.type` carries no CHECK,
+its enum being a comment at `0001_initial.sql:127`, so immutability is
+convention.
+
+**NOTHING OPENED, CLOSED OR WAS RECLASSIFIED, AND EVERY FIGURE IS UNCHANGED.**
+A139 stays DEBT in cheap-and-mechanical. The queue header records this as the
+inverse of its own standing hazard: the previous change warned that an unchanged
+TOTAL can conceal two entries moving, and this one warns that unchanged TOTALS
+can conceal a premise being refuted.
+
+**ONE §10 HAZARD FIRED DURING THE PASS AND WAS CAUGHT BY ITS OWN CONTROL.** A
+verification chain joined with `&&` short-circuited at a control whose legitimate
+count was 0, truncating every check after it; the run was repeated with `;`
+separators. That is the filed `A && B && C || D` entry arriving as an early exit
+rather than as a false fallback, and it is recorded because the filing describes
+the fallback shape and this was the other one.
 
 **A line-ending measurement, recorded because CLAUDE.md §10 states otherwise.**
 All five of CLAUDE.md, `docs/outstanding.md`, `docs/filed-defects.md`,

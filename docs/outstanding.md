@@ -77,97 +77,83 @@ ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
 7, BMF-and-Discover 15, cheap-and-mechanical 33, large 37, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (third): ONE ENTRY CLOSED AND ONE
-OPENED.** **OPEN STAYS AT 118**, **BLOCKING moves 24 to 23**, **DEBT 66 to 67**,
-POST stays 28, the breakdown to 7 + 16 + 7 + 15 + 33 + 37 + 3 = 118, and **the
-build chain moves 20 to 19** by the unchanged definition, 23 - 4 = 19.
-**AN UNCHANGED TOTAL IS THE READING MOST LIKELY TO BE TAKEN WRONG HERE, so it is
-stated rather than left to the figure:** OPEN did not stand still, it lost A13
-and gained A139. **CHEAP-AND-MECHANICAL IS UNCHANGED AT 33 FOR THE SAME REASON**
-— A13 left that tier and A139 joined it — which is why no tier figure moves even
-though two entries did.
-**WHAT DID MOVE IS THE CLASSIFICATION MIX, and that is the whole substance of
-this change.** A13 was BLOCKING and A139 is DEBT, so a pilot-blocking item was
-replaced by one the pilot can open with, recorded and honest. **THIS IS THE
-FIRST CHANGE IN THIS BLOCK'S RECORD TO MOVE BLOCKING DOWNWARD**, and the build
-chain moves with it because the definition subtracts the counsel-gated four from
-BLOCKING rather than from OPEN. **THE COUNSEL-GATED ROSTER ITSELF IS UNCHANGED
-AT FOUR** — A47, A84, A68 and A110 — **but the sentence naming it moves**,
-because it states that four OF THE BLOCKING TOTAL are counsel-gated and that
-total fell. The diagnostics move with DEBT rather than with OPEN: the naive
-enumerator 116 against 118, the gap still exactly A50a and A50b, and the
-file-wide `Pilot: DEBT` count 68 against 67, the extra still FJ-7's own line
-inside the FOUNDER JUDGMENT section rather than an OPEN entry.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (fourth): NOTHING OPENED AND
+NOTHING CLOSED. EVERY FIGURE IS UNCHANGED.** OPEN 118, BLOCKING 23, DEBT 67,
+POST 28, the breakdown 7 + 16 + 7 + 15 + 33 + 37 + 3 = 118, the build chain 19
+by the unchanged definition, 23 - 4 = 19, and the counsel-gated roster four of
+the twenty-three. The diagnostics are unchanged with them: the naive enumerator
+116 against 118, the gap still exactly A50a and A50b, and the file-wide
+`Pilot: DEBT` count 68 against 67, the extra still FJ-7's own line inside the
+FOUNDER JUDGMENT section rather than an OPEN entry.
+**A CHANGE THAT MOVES NO FIGURE IS NOT A CHANGE THAT MOVED NOTHING**, which is
+this block's standing hazard read from the other side: the previous entry here
+warned that an unchanged TOTAL can conceal two entries moving, and this one
+warns that unchanged TOTALS can conceal an entry's premise being refuted.
+**A139 WAS AMENDED, NOT BUILT AND NOT RECLASSIFIED.** Its scope pass refuted its
+own framing, its blocker widened from one route to both, and three findings were
+added to it. It stays DEBT, stays in cheap-and-mechanical, and stays open, so
+nothing a count can see is different.
 
-**ONE ENTRY CLOSED: A13**, the auth health check read surface, which shipped
-across nine elements and was screened on production by FT. Its id is not
-renumbered and is not reused, per the convention A75's closure states. It sat in
-cheap-and-mechanical and it was BLOCKING, which is why BLOCKING moves at all.
+**TWO ENTRIES WERE UPDATED IN PLACE: A139 AND A92**, and no entry opened,
+closed or changed classification.
 
-**ONE ENTRY OPENED: A139**, the missing surface and account type on
-`auth_send_log`, filed at DEBT in cheap-and-mechanical — the tier A13 vacated,
-which is why that figure stands still. **IT IS A CAPTURE GAP, NOT A VIEW
-DEFECT**, and that distinction is why it opens beside the closure rather than
-against it: A13 shipped exactly what its five rulings specified, and the column
-it would need does not exist on the table. **FILED AT CLOSE AND SCOPED NEXT
-SESSION, which is neither deferred nor post-pilot.**
+**A139 CARRIES A SCOPE-PASS AMENDMENT THAT REFUTES ITS OWN PREMISE.** The pass
+was read-only, at `ffa27d2`. **The surface it names does not exist in the
+request**: one `/signin` route, one `callbackURL` constant, and the surface
+decided after verification by `AppDispatcher` on `identity.type`. Its two routes
+are therefore **not different products** but two implementations of one, both
+recording `person.type` and differing only in when it is read. Route (a) is
+refuted on cumulative grounds, and three findings were added: a case-
+normalization exposure, a soft-delete divergence, and `person.type` carrying no
+CHECK. **Its original text is kept rather than rewritten**, per this file's
+practice, so the refutation sits where the claim does.
 
-**WHAT CLOSED IT IS A SCREENING RESULT, NOT A MERGE.** A13's ruling (1) sets its
-closure condition as FT signing in to production and seeing that attempt appear
-as a success row in the view. FT signed in at 15:22:56 UTC on 2026-09-14 and the
-attempt appears as the newest of three success rows. **THE OLDEST ROW IS WHAT
-MAKES THE VIEW CREDIBLE RATHER THAN MERELY PRESENT**: it reads 2026-09-01
-17:22:27 UTC, which is the 0021 `--remote` apply at 17:21:20 plus 67 seconds, the
-figure CLAUDE.md §5.1 and §11 both already record. The view is therefore reading
-rows the real stamp wrote before this slice existed, rather than rows the slice
-produced for itself.
+**A92's BLOCKER REACH WIDENED, AND ITS OWN CLASSIFICATION DID NOT.** It gates
+BOTH of A139's routes rather than only (b), because what triggers it is emitting
+the type rather than joining on `email` — at one account per type a four-value
+enum names one address, and a write-time capture emits the same value without
+touching `email`. A92 stays POST, stays FT-blocked, and still has nothing
+waiting on it.
 
-**SEVERAL ENTRIES IN THIS FILE WERE UPDATED IN PLACE**, all of them to record
-that the production BMF load now waits on A1 alone: the critical-path chain
-above, A1, A8 and FJ-1. **None of their superseded sentences was deleted**; each
-is quoted where it sat, per this file's practice. A134 was updated too, on the
-opposite footing — its runbook step is unchanged and is now PERFORMABLE.
-
-**ONE OTHER QUEUE-RECORD FILE CHANGED**, counted nowhere because this paragraph
-counts entries rather than files: `docs/filed-defects.md`, at three sites, all
-of them the same precondition-2 correction. **A NON-queue-record file changed
-too**, `docs/bmf-load-scoping.md`, at four sites including §13's own ruling
-block, which is where the two preconditions were written down in the first
-place.
+**NO OTHER QUEUE-RECORD FILE CHANGED.** `docs/filed-defects.md` is untouched.
+**One NON-queue-record file changed and is counted nowhere**,
+`docs/session-log.md`, whose 2026-09-14 (second) entry said this session
+"banked TWO commits" — a sentence this change makes false, and the reason that
+file is in the diff at all.
 
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own
-replace-rather-than-append rule. It recorded one entry opened and nothing
-closed, with OPEN moving 117 to 118, which is the state this change supersedes.
-**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: **A139 was DERIVED from
-the maximum ENTRY-HEADER id rather than the maximum token**, the anchored
-`^\*\*A[0-9]+[a-z]? \| ` form returning 138 as its maximum, and asserted to
-carry no entry header before use against a control confirming A138 does —
-**which is the trap §10's register files, walked deliberately**: the token
-`A139` was the overshoot that register names, and this change allocates it, so
-that bullet is amended in the same commit rather than left to contradict the
-queue; every stated figure re-derived by a suffix-aware section-scoped
-enumerator before and after the write, and the verifier's own eight patterns
-simulated against the WORKING TREE, since the script reads the committed blob
-and cannot attest to an uncommitted edit; **A13's closure verified as a MERGE
-and not merely as a branch** —
-`git rev-list --count main..slice-a13-auth-health` returns 0, and the nine
-element commits are reachable from `main` — because an entry closed on a
-branch that never landed
-is the sharpest form of this file disagreeing with the tree; the screening
-evidence corroborated ARITHMETICALLY rather than accepted, the oldest row's
-17:22:27 UTC recomputed from §5.1's 17:21:20 apply plus the 67 seconds that
-file records; every site claiming the load waits on two entries found by a
-word-boundary search that REFUSES A FOLLOWING DIGIT, against a control showing
-the bare form returns 114 matches where the bounded form returns 59 — figures
-ANCHORED to `af4b07b` rather than live, since this commit's own markers add
-`A13` occurrences and the same search afterwards returns 147 and 89 — because
-`A13` is a prefix of `A130` through `A133` and §10's register already files
-that collision; every insertion anchored on a block's FULL EXTENT and asserted
-to occur EXACTLY ONCE before any write, with append-style replacements
-exempted from the residue check by name rather than by silence; and line
-endings measured as carriage-returns-against-line-count on all four files,
-with a known-CRLF and a known-LF control asserted first, **all four being
-fully CRLF in the working tree**.
+replace-rather-than-append rule. It recorded one entry closed and one opened,
+with OPEN staying at 118 while BLOCKING fell 24 to 23 and DEBT rose 66 to 67,
+which is the state this change supersedes and does not disturb.
+**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: **every figure this block
+states was re-derived AFTER the write even though none of them was expected to
+move**, by the suffix-aware section-scoped enumerator and by the verifier's own
+eight patterns simulated against the WORKING TREE, because "unchanged" is a
+claim and an unverified one is worth nothing; twelve checks and ten controls
+passed and every figure came back identical. **Every citation written into A139
+was re-resolved by printing its numbered line at `ffa27d2` before it was
+quoted** — `SignIn.jsx:100`, `App.jsx:29`, `auth.js:403`, `auth.js:449`,
+`[[route]].js:138`, `0001_initial.sql:127` and the four `AppDispatcher`
+branches. **Every ABSENCE claim was paired with a known-positive control**, so a
+zero means the thing is missing rather than the search being broken: zero
+`soft_deleted_at` in `auth-sends.js` against two in `roster.js`, zero
+`CHECK (type` in `0001_initial.sql` against two CHECKs in 0016, zero
+`sendMagicLink` call sites against the definition itself, and one `callbackURL`
+in the whole tree. **The case-normalization finding rests on a control rather
+than on the data**, since the data is all-lowercase today: an uppercase probe
+returns 0 on exact match and 1 on `LOWER()`-normalized match, which is what
+makes "works by luck" a measurement rather than a worry. Local reads were taken
+against the store NAMED `e7ff1add…` per §10, two stores being present. Every
+insertion was anchored on a block's FULL EXTENT and asserted to occur EXACTLY
+ONCE before any write. Line endings were measured as
+carriage-returns-against-line-count on both files, with a known-CRLF and a
+known-LF control asserted first, **both being fully CRLF in the working tree**.
+**ONE §10 HAZARD FIRED AND ITS OWN CONTROL CAUGHT IT**: a verification chain
+joined with `&&` short-circuited at a control whose legitimate count was zero,
+silently truncating every check after it, and was re-run with `;` separators.
+The filing describes that hazard as a false FALLBACK; this was the other shape,
+an early EXIT, and it is recorded because the difference is what made it
+survivable.
 **RETAINED FROM THE SUPERSEDED BLOCK because it is still the record of how A135
 and A136 were derived: the "VISIBLE HONESTY" absence was measured twice, once
 literally at `e2d5a25` and once through the false-zero filing's part (1)
@@ -831,6 +817,15 @@ this entry is about. **BUILDING THAT ROUTE WOULD ANSWER THIS ENTRY BY
 IMPLEMENTATION RATHER THAN BY RULING**, which is the thing a POST-classified
 FT-blocked privacy posture exists to prevent. **The classification is unchanged
 at POST and the blocker is unchanged at FT.**
+**WIDENED LATER THE SAME DAY BY A139's SCOPE PASS: THIS ENTRY GATES BOTH OF
+A139's ROUTES, NOT ONLY (b).** The paragraph above is kept because it records
+the reading that held for a few hours. **The join is not what triggers this
+entry; EMITTING THE TYPE is.** At one account per type, a four-value enum names
+exactly one address to an operator who knows which, and a write-time capture
+emits the same value without ever touching `email`. **So avoiding the join
+avoids the mechanism and not the disclosure.** A139's blocker line was corrected
+accordingly. **Still POST, still FT, and still nothing waits on it**: A139 is
+DEBT.
 **STAYS POST, RULED 2026-09-11.** A13 can ship without the `email` column under
 migration 0021's E8 rule as that rule stands, so the production BMF load does not
 wait on this entry even though A13 now gates that load.
@@ -2857,7 +2852,10 @@ published or merely published after the list was written.
 
 **A139 | `auth_send_log` records no surface or account type, so the view cannot
 say whether an attempt was individual, advisor, enterprise or ops.**
-Blocker: none for route (a). Route (b) is blocked on A92.
+Blocker: A92, for BOTH routes. **CORRECTED 2026-09-14 and quoted rather than
+edited: the line read "none for route (a). Route (b) is blocked on A92."** The
+scope pass below establishes that route (a) does not escape the disclosure
+question either; it only avoids touching `email` on the way to it.
 Pilot: DEBT
 Detail: `migrations/0021_auth_send_log.sql`, the table definition;
 `functions/_lib/sendOutcome.js`, its FORK 1 docblock; A92; A13's ruling (1),
@@ -2896,6 +2894,85 @@ failing, and a view that records failures without saying whose is a weaker
 instrument than it appears. **The gap therefore matters least in the state that
 closed A13 and most in the state that justifies it.**
 **FILED AT CLOSE, SCOPED NEXT SESSION. NOT DEFERRED AND NOT POST-PILOT.**
+
+**SCOPED 2026-09-14, READ-ONLY, AT `ffa27d2`. THE PASS REFUTES THIS ENTRY'S OWN
+PREMISE, AND THE ORIGINAL TEXT ABOVE IS KEPT RATHER THAN REWRITTEN** so that a
+reader meets the refutation where the claim sits. **The entry still names a real
+gap.** What it got wrong is what the gap is made of.
+
+**(1) THE SURFACE IS NOT KNOWABLE AT THE STAMP, AND IT DOES NOT EXIST IN THE
+REQUEST AT ALL.** There is ONE `/signin` route (`src/App.jsx:29`) and ONE
+`callbackURL`, the constant `'/app'` (`src/surfaces/auth/SignIn.jsx:100`, the
+only occurrence in the tree). The surface is decided AFTER verification, by
+`AppDispatcher` branching on `identity.type` at `:35`, `:39`, `:43` and `:47`.
+`sendMagicLink` is a better-auth plugin CALLBACK (`functions/_lib/auth.js:403`)
+receiving `{ email, url }`, with ZERO call sites in this codebase — better-auth
+invokes it. **So the title's "surface or account type" conflates two things, and
+only the second is recordable.** A user does not request a surface; they type an
+address into one form and are routed once the platform knows who they are.
+
+**(2) THE TWO ROUTES ARE NOT DIFFERENT PRODUCTS.** Both record `person.type`.
+They differ only in WHEN it is read — write-time against read-time. The text
+above says they are different facts. **They are not**, and the sentence calling
+them "DIFFERENT PRODUCTS RATHER THAN TWO IMPLEMENTATIONS OF ONE" is exactly
+backwards: they are two implementations of one.
+
+**(3) ROUTE (A) IS REFUTED ON ITS OWN TERMS, AND THE REASONS ARE CUMULATIVE
+RATHER THAN ALTERNATIVE.** It cannot capture the fact this entry names, per (1).
+It needs a migration, a `person` read ADDED TO THE SEND PATH, and an edit to
+`auth.js:449` reversing FORK 1's stated no-edit condition. Its column is
+PERMANENTLY MIXED: every pre-existing row gets an unbackfillable NULL, because
+the value was never captured and cannot be reconstructed from `email` without
+performing route (b)'s join anyway — **and that includes the 2026-09-01 17:22:27
+UTC row A13's screening evidence rests on.** And per (4) it does not escape the
+A92 question; it only avoids touching `email` on the way there.
+
+**(4) A92 GATES BOTH ROUTES, WHICH IS WHY THE BLOCKER LINE ABOVE IS CORRECTED.**
+At one account per type — the live population, local and per CLAUDE.md §12's
+production inventory alike — **emitting `type` names exactly one address to an
+operator who already knows which.** That is the work the omitted column would
+have done. Ruling (3) omitted `email` "and no masked or hashed form replaces
+it"; a four-value enum is not a hash, so on the narrow reading neither route
+breaches it. **The narrow reading is the rationalization this paragraph exists
+to refuse.** A field that resolves to a single known address in the live
+population is doing the omitted column's work whatever its cardinality says in
+the abstract, and **neither route reaches that decision by building.**
+
+**THREE FINDINGS THE ORIGINAL TEXT DOES NOT CARRY, filed here rather than as
+their own entries because each is a property of this same gap.**
+
+**(i) CASE NORMALIZATION. The exact join works today BY LUCK.**
+`auth_send_log.email` stores what the user TYPED: the middleware forwards the
+body unchanged (`functions/api/auth/[[route]].js:138`, `body: bodyText`) and
+better-auth's magic-link plugin does no normalization. `person.invite_email` is
+stored trim-lowercased. Measured on the local store: ZERO mixed-case values on
+either side, exact join 10 of 10. **The control is what makes this a finding
+rather than a reassurance** — an uppercase probe returns 0 on exact match and 1
+on `LOWER()`-normalized match. **A mixed-case sign-in would render no type
+rather than erroring**, which is the silent-degradation shape `sendOutcome.js`
+already warns about for its own parser.
+
+**(ii) SOFT-DELETE DIVERGENCE.** `person.soft_deleted_at` exists
+(`migrations/0001_initial.sql`) and `functions/api/auth-sends.js` has NO filter
+on it — measured 0 occurrences, against a control confirming the column is
+greppable elsewhere in `functions/` (2 in `roster.js`), so the absence is real
+and not a broken search. A write-time capture freezes a value that survives the
+person's deletion; a read-time join reports the type of a row that may since
+have been soft-deleted, or loses it if a filter is added. **Neither behaviour is
+ruled.**
+
+**(iii) `person.type` HAS NO CHECK CONSTRAINT.** Its enum is a COMMENT at
+`migrations/0001_initial.sql:127` and nowhere else — measured 0 `CHECK (type`
+in that file, against a control confirming CHECK constraints are greppable in
+`migrations/` (2 in 0016). Application code carries no `UPDATE` to the column,
+so immutability is CONVENTION rather than constraint. **That is the only
+mechanism by which write-time and read-time capture could ever disagree**, and
+nothing prevents it.
+
+**STATUS: UNCHANGED AT DEBT. The blocker is now A92 OUTRIGHT rather than
+conditionally**, and what remains to rule is narrower than this entry first
+recorded: not which of two products to build, but whether emitting an account
+type at this population is a disclosure A92 governs.
 
 **A35 | `parseRoster.js`'s header docblock denies a file-upload path that has
 existed since 2026-08-27.**
