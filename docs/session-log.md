@@ -3013,8 +3013,9 @@ A docs session with no build, opening on a completed merge and closing on a
 closure. **It banked FIVE commits**: `af4b07b`, five items across CLAUDE.md,
 the queue and this file; the A13 closure below; an A139 amendment that refuted
 the entry the closure had just filed; FT's ruling on the purpose question that
-amendment isolated; and a section 12 filing recording that the one large-scale
-experiment this project has run is not evidence about recovery.
+amendment isolated; a section 12 filing recording that the one large-scale
+experiment this project has run is not evidence about recovery; and an ordering
+reversal putting A113 upstream of A1's exercise.
 **It began mid-flight**, with the A13 build already merged to `main` at
 `51fee6f` and three files carrying uncommitted edits from the session before it.
 
@@ -3282,6 +3283,47 @@ of the transfer risk. **A1 no longer closes on acceptance.** The exercise runs a
 production-comparable volume on the sandbox first, and **A1 closes on evidence.**
 Recorded on the entry beside the condition it replaces, which stood for three
 days.
+
+### The ordering reversal, and why the exercise does not run yet
+
+**A scoping pass on the rollback exercise found that the exercise cannot be
+read.** Asked what evidence would distinguish an import that never began from one
+that rolled back cleanly — one of A1's own four unruled items — the pass checked
+every instrument the sandbox offers and found **none of them separates the two**:
+row count, `integrity_check`, `foreign_key_check` and `bmf_aside` absence are
+identical in both states. **`bmf_aside` absence looks like a discriminator and is
+not**; it separates a partial failure that did NOT roll back from both others.
+
+**THE ANSWER IS NOT "NOTHING WOULD DISTINGUISH THEM", WHICH WOULD HAVE BEEN THE
+WRONG FINDING.** Migration 0022 already declares `load_started_at` and
+`completed_at` on `load_stamp`, and **nothing writes them**. A loader stamping
+before it attempts makes the discrimination deterministic: no row against a row
+with `completed_at` NULL.
+
+**SO A113 IS UPSTREAM OF A1's EXERCISE, WHICH REVERSES HOW THE RECORD HAS
+READ.** The loader is the instrument. FT ruled the exercise does not run yet, and
+the reversal is recorded on both entries because a reader arriving at either
+would otherwise infer the old order.
+
+**THE DECISIVE FAILURE CLASS IS NOT INDUCIBLE, AND THAT IS RECORDED AS A GAP
+RATHER THAN OMITTED.** Constraint violation is inducible cheaply and
+deterministically, since `bmf.ein` is a PRIMARY KEY and 0022's R10b says a
+duplicate fails at INSERT; an oversized statement is inducible and already
+characterized at the 100,000-byte ceiling; oversized transaction is
+uncharacterized. **Interrupted connection is not inducible at all** — the import
+is server-side, which is why section 12 measured a whole window with the client
+idle — **and it is the class that produces the half-applied state a rollback
+undoes.**
+
+**TWO ENTRIES WERE OPENED, both POST, both in BMF-and-Discover.** **A140**: the
+probe Worker is unauthenticated by a docblock premise that has expired, since it
+was written for a throwaway store and `bmf-sandbox` is standing infrastructure
+carrying a real deliverable address; its `database_id` is also dead. **A141**:
+the verifier creates `bmf` with NO primary key while 0022 declares
+`ein TEXT NOT NULL PRIMARY KEY`, so the local verification cannot have exercised
+that constraint, and whether the generator emits unique EINs across 1.96M rows
+has never been tested. **If they are not unique the exercise would induce the
+wrong failure by accident.**
 
 **A line-ending measurement, recorded because CLAUDE.md §10 states otherwise.**
 All five of CLAUDE.md, `docs/outstanding.md`, `docs/filed-defects.md`,

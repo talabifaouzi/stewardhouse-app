@@ -72,52 +72,62 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 118 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+**As committed: 120 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
 ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
-7, BMF-and-Discover 15, cheap-and-mechanical 33, large 37, and
+7, BMF-and-Discover 17, cheap-and-mechanical 33, large 37, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (fifth): NOTHING OPENED AND
-NOTHING CLOSED. EVERY FIGURE IS UNCHANGED.** OPEN 118, BLOCKING 23, DEBT 67,
-POST 28, the breakdown 7 + 16 + 7 + 15 + 33 + 37 + 3 = 118, the build chain 19
-by the unchanged definition, 23 - 4 = 19, and the counsel-gated roster four of
-the twenty-three. The diagnostics are unchanged with them: the naive enumerator
-116 against 118, the gap still exactly A50a and A50b, and the file-wide
-`Pilot: DEBT` count 68 against 67, the extra still FJ-7's own line inside the
-FOUNDER JUDGMENT section rather than an OPEN entry.
-**A CHANGE THAT MOVES NO FIGURE IS NOT A CHANGE THAT MOVED NOTHING**, and this
-is now the SECOND consecutive change to demonstrate it, by a different mechanism
-than the first. The fourth concealed an entry's premise being refuted. **The
-fifth conceals a RULING**: FT settled the purpose question underneath A92, which
-changes what that entry is asking without changing anything a count can see.
-**A RULING THAT MOVES NO FIGURE IS THE HARDEST KIND TO FIND LATER**, since
-neither the totals nor the tier breakdown nor any diagnostic records that it
-happened, and the only trace is the entry text itself.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (seventh): TWO ENTRIES OPENED AND
+NOTHING CLOSED.** OPEN moves 118 to 120 and **POST 28 to 30**; BLOCKING stays 23
+and DEBT stays 67. Both new entries are POST and both sit in BMF-and-Discover,
+so that tier alone moves **15 to 17** and the breakdown reads
+7 + 16 + 7 + 17 + 33 + 37 + 3 = 120. The build chain is unchanged at 19, because
+its definition subtracts the counsel-gated four from BLOCKING and neither moved,
+and the counsel-gated roster stays four of the twenty-three. The diagnostics move
+with OPEN: the naive enumerator 118 against 120, the gap still exactly A50a and
+A50b, and the file-wide `Pilot: DEBT` count **unchanged at 68 against 67**,
+because both new entries are POST rather than DEBT.
+**THE ORDINAL SKIPS SIX, AND THAT IS THIS BLOCK'S OWN GAP RATHER THAN A
+MISCOUNT.** The sixth change of the day was the section 12 filing, which opened
+and closed nothing and did not renumber this block, so it went out reading
+"fifth" while describing itself correctly in every other respect. **No block ever
+said sixth.** Recorded because the ordinals are a sequence and a reader counting
+them will find one missing.
+**WHY THIS ONE OPENS ENTRIES WHEN THE TWO BEFORE IT OPENED NOTHING.** The fourth
+and fifth changes moved no figure at all — one concealed a premise being refuted,
+the other a ruling. **This change is the opposite shape: a scoping pass that
+found two things nobody had filed**, and both have completion states, so both are
+entries rather than notes. **A140** is the probe Worker's expired no-gate
+premise; **A141** is whether the generator's synthetic shape matches 0022's
+`bmf`. Neither gates the pilot and neither is reached by a pilot user, which is
+why both are POST.
+**THE SUBSTANCE OF THIS CHANGE IS AN ORDERING REVERSAL THAT MOVES NO FIGURE
+EITHER**, and it is the part a count cannot see: **A113 is now UPSTREAM of A1's
+rollback exercise**, because the loader is the instrument that makes the
+exercise legible and nothing writes `load_stamp` today.
 
-**THE SAME TWO ENTRIES WERE UPDATED IN PLACE AGAIN: A139 AND A92**, and no
-entry opened, closed or changed classification.
+**TWO ENTRIES OPENED — A140 AND A141 — AND TWO WERE UPDATED IN PLACE: A1 AND
+A113.** Nothing closed and nothing was reclassified.
 
-**FT RULED THE PURPOSE QUESTION, AND IT IS RECORDED ON A139.** Operator-side
-classification of auth attempts IS a legitimate function of the send-log view,
-because a failure confined to one type is a different signal from a general
-outage and the view exists for failures. **The field is in scope.** The ruling
-deliberately stops there: it does NOT rule that the type may be emitted, and the
-distance between those two is what is left.
+**FT RULED THAT A1's EXERCISE DOES NOT RUN YET, AND THE GROUND IS AN ORDERING
+REVERSAL.** A scoping pass established that **a clean rollback and an import
+that never began produce byte-identical observable state** on every instrument
+the sandbox offers today — row count, `integrity_check`, `foreign_key_check`
+and `bmf_aside` absence all fail to separate them. **An exercise run now would
+produce a result nobody can read.** A1 carries the full instrument table.
 
-**A92 IS NOW RIPE RATHER THAN THEORETICAL, WHICH IS A CHANGE OF KIND AND NOT OF
-URGENCY.** Its question was "would we ever want this" and is now "may a field
-that names one subject in the live population be emitted to an ops operator".
-**Classification and blocker are unchanged and the assessment is recorded rather
-than assumed**: POST because `requireOps` gates the view so no pilot user
-reaches it, and FT because ripeness changes what is asked rather than who can
-answer.
+**THE FIX IS A113's LOADER, WHICH PUTS IT UPSTREAM OF A1's EXERCISE RATHER THAN
+DOWNSTREAM.** 0022 already declares `load_started_at` and `completed_at`, and
+nothing writes them; a loader that stamps before it attempts makes the two states
+trivially distinguishable, no row against a row with `completed_at` NULL. **The
+record has read the other way**, so the reversal is recorded on both entries.
 
-**BOTH ENTRIES GAINED THE FINDING NEITHER CARRIED: THE COSTS MOVE IN OPPOSITE
-DIRECTIONS WITH POPULATION.** Today the field barely helps and maximally
-discloses; at pilot scale it helps a great deal and the disclosure shrinks on its
-own. **The question became ripe at the worst point on both curves.** Alex's
-objection to a cardinality-indexed rule is recorded on A92, where such a rule
-would be written, and it survives the remedy Alex proposed for it.
+**AND THE DECISIVE FAILURE CLASS IS NOT INDUCIBLE.** Constraint violation and
+oversized statement are inducible and cheap; oversized transaction is
+uncharacterized; **interrupted connection is not inducible at all**, because the
+import is server-side, and it is the class that produces the half-applied state a
+rollback undoes. A1's closure condition now names it as an unclosed gap rather
+than omitting it.
 
 **NO OTHER QUEUE-RECORD FILE CHANGED.** `docs/filed-defects.md` is untouched.
 **One NON-queue-record file changed and is counted nowhere**,
@@ -180,7 +190,7 @@ known-CRLF and a known-LF control asserted first, both files being fully CRLF in
 the working tree.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 116 rather than 118, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 118 rather than 120, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
 ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 68
@@ -192,7 +202,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 23 BLOCKING, 67 DEBT, 28 POST**, classification ruled
+**AGAINST THE PILOT GATE: 23 BLOCKING, 67 DEBT, 30 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-14,
 of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -200,7 +210,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 118. The sentence
+totals above, which remain a count of OPEN entries and sum to 120. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -767,6 +777,89 @@ FAIL, reporting an error string, reads like a failure experiment at a glance,
 and it is the opposite — the failure is the probe's, caused by the import
 SUCCEEDING. **The same filing is recorded in section 12 itself**, so a reader
 arriving from either side meets it.
+
+**FT RULES 2026-09-14: THE EXERCISE DOES NOT RUN YET. THE ORDERING WAS
+BACKWARDS AND A SCOPING PASS PROVED IT.** This supersedes nothing above; it
+sequences it. **A1 still closes on evidence** — what changed is when the
+evidence becomes readable.
+
+**(1) THE DISCRIMINATOR DOES NOT EXIST. A CLEAN ROLLBACK AND AN IMPORT THAT
+NEVER BEGAN PRODUCE BYTE-IDENTICAL OBSERVABLE STATE TODAY.** This is one of
+this entry's own four unruled items, and the scoping pass answered it by
+checking every instrument the sandbox currently offers, one at a time:
+
+| Instrument | Never began | Rolled back | Separates? |
+|---|---|---|---|
+| `bmf` row count | prior count | prior count | **No** |
+| `integrity_check` | ok | ok | **No** |
+| `foreign_key_check` | empty | empty | **No** |
+| `bmf_aside` present | absent | absent | **No** |
+| Error to caller | none or upload error | an import error | **Uncharacterized** |
+
+**`bmf_aside` ABSENCE LOOKS LIKE A DISCRIMINATOR AND IS NOT**, which is worth
+naming because it is the one a reader reaches for. It separates a PARTIAL
+failure that did NOT roll back, which leaves the aside behind, from both other
+states. **It does not separate the two states this entry names.**
+**SO AN EXERCISE RUN NOW PRODUCES A RESULT NOBODY CAN READ.** A clean rollback
+and an import that never started would be reported identically, and the run
+would establish nothing either way.
+
+**(2) THE FIX IS A113's LOADER, NOT THE EXERCISE — WHICH REVERSES AN ORDERING
+THIS RECORD HAS HAD THE OTHER WAY.** Migration 0022 already declares the
+columns that make the two states trivially distinguishable: `load_stamp` carries
+`load_started_at TEXT NOT NULL`, `load_finished_at` ("when it STOPPED, success
+or failure") and `completed_at` ("NULL = not complete"). **A loader that stamps
+BEFORE it attempts the load makes the discrimination deterministic**: never-began
+leaves NO ROW, rolled-back leaves A ROW WITH `completed_at` NULL.
+**NOTHING WRITES THOSE TABLES TODAY.** They are empty on both databases.
+**THEREFORE A113 IS UPSTREAM OF THIS ENTRY'S EXERCISE, NOT DOWNSTREAM OF IT.**
+The record has read the other way: R1 orders the sandbox, the migration, the
+loader, the test, then the run, which puts the loader before the RUN but says
+nothing about the exercise, and A1 has been discussed as though its exercise
+could precede the loader because the exercise needs only a database and a file.
+**It needs a database, a file, and an instrument** — and the loader IS the
+instrument.
+
+**(3) THE DECISIVE FAILURE CLASS IS NOT INDUCIBLE, AND IT IS THE ONE THE
+ROLLBACK QUESTION IS ABOUT.** Four classes were assessed:
+
+| Class | Inducible on the sandbox? |
+|---|---|
+| Constraint violation mid-batch | **Yes**, cheaply and deterministically |
+| Statement exceeding a D1 limit | **Yes**, already characterized |
+| Interrupted connection | **NO** |
+| Oversized transaction | **Unknown** |
+
+**CONSTRAINT VIOLATION** induces on one edited byte: `bmf.ein` is
+`TEXT NOT NULL PRIMARY KEY`, and 0022's R10b states that a duplicate EIN
+therefore fails at INSERT rather than at index creation, so a duplicated EIN
+fires at an offset of the operator's choosing.
+**AN OVERSIZED STATEMENT** is already characterized: the hard ceiling is 100,000
+bytes, failing as `SQLITE_TOOBIG`, and the largest statement the parser emits is
+29,998, so an over-budget statement is a file edit.
+**AN INTERRUPTED CONNECTION IS NOT INDUCIBLE**, because the import is
+SERVER-SIDE. Killing the client after upload does not interrupt it, which is
+exactly why section 12 could measure a whole window with the client idle.
+**AN OVERSIZED TRANSACTION IS UNCHARACTERIZED.** The transaction boundary is the
+service's rather than the caller's, no limit was reached in section 12, and none
+is documented, so inducing it would mean discovering the limit first — a
+different experiment.
+
+**R4 IS NOT THE CONSTRAINT ON ANY OF THEM.** It confines induction TO the
+sandbox, which is where the exercise runs. What varies is whether each class is
+inducible at all.
+**THE NON-INDUCIBLE CLASS IS THE ONE THAT PRODUCES THE HALF-APPLIED STATE A
+ROLLBACK UNDOES.** Constraint violation and oversized statement are refusals the
+service makes cleanly; an interrupted connection is the case where work may have
+partially landed. **Nothing available to this project induces it.**
+
+**(4) CLOSURE CONDITION, AS IT NOW STANDS.** The exercise runs **AFTER A113's
+loader writes `load_stamp`**, and it covers **the classes that are inducible**,
+with **the non-inducible class NAMED AS AN UNCLOSED GAP rather than omitted**.
+A1 closes on that evidence. **An exercise that silently covered only what it
+could induce, and reported completeness, would be worse than none** — it would
+retire this entry on a result that never touched the failure mode the entry
+exists for.
 
 ### Tier 5
 
@@ -1340,6 +1433,52 @@ the surface, an intended capability that is not built, which is a different kind
 of thing from the questions around it. The item that actually gates the load is
 A1, in Tier 4.
 
+**A140 | The probe Worker is public and unauthenticated by design, and the
+database it would now bind to is not a throwaway.**
+Blocker: none named. It is a posture decision, not infrastructure.
+Pilot: POST
+Detail: `scripts/d1-window-worker/src/index.js`, its header docblock;
+`scripts/d1-window-worker/wrangler.jsonc`; A1's exercise; CLAUDE.md §6.10, the
+sandbox contents note.
+**THE WORKER SAYS WHY IT HAS NO GATE, and the reason has expired.** Its docblock
+reads "NO AUTH, NO GATE, deliberately. It reads synthetic rows in a throwaway
+store and holds nothing worth gating." **`bmf-window-probe` was a throwaway,
+created and deleted on 2026-08-19. `bmf-sandbox` is STANDING INFRASTRUCTURE
+under R2**, and CLAUDE.md §6.10 records it as carrying 44 seeded rows including
+one REAL DELIVERABLE ADDRESS.
+**BINDING IT CHANGES THE POSTURE THE WORKER WAS DESIGNED AGAINST**, even though
+the probe reads only `SELECT count(*) FROM bmf` and would expose a row count
+rather than any row. **The narrowness of the read is not the point**: the
+docblock's premise was the STORE, and the store changed.
+**ITS `database_id` IS ALSO DEAD** — the config still names
+`fb498c9d-0650-44c2-9a43-5090aa3c71b3` and its own comment says "Replace with a
+new throwaway before any deploy." **Three dispositions are available and none is
+ruled**: gate the Worker, create a fresh throwaway rather than binding the
+sandbox, or record that a count-only read on a sandbox may stay ungated.
+
+**A141 | Whether the generator's synthetic shape matches 0022's `bmf` is
+unverified, and the two disagree on the primary key.**
+Blocker: none named. One local run answers it.
+Pilot: POST
+Detail: `scripts/d1-window-generate.mjs`, its profile docblock;
+`scripts/d1-window-verify-import.mjs`, its `CREATE TABLE`;
+`migrations/0022_bmf_table.sql`.
+**THE VERIFIER CREATES `bmf` WITH NO PRIMARY KEY.** Its `CREATE TABLE bmf` names
+seven columns and declares no key at all. **0022 declares
+`ein TEXT NOT NULL PRIMARY KEY`**, and its R10b note says a duplicate EIN
+therefore fails at INSERT.
+**SO THE LOCAL VERIFICATION CANNOT HAVE EXERCISED THE CONSTRAINT THE SANDBOX
+CARRIES**, and whether the generator emits EINs unique across roughly 1.96M
+synthetic rows **has never been tested** — under the verifier's schema it could
+not have been.
+**IT MATTERS IN TWO DIRECTIONS AND ONLY ONE IS OBVIOUS.** If the synthetic EINs
+are NOT unique, a synthetic load against 0022's `bmf` fails on a duplicate, and
+**the exercise would induce the wrong failure by accident** — a constraint
+violation nobody chose, at an offset nobody picked. If they ARE unique, nothing
+is wrong and the check costs one local run. **Either way the answer should be
+known BEFORE a remote load is spent**, which is the same reasoning the verifier's
+own docblock gives for existing.
+
 **A114 was CLOSED 2026-09-07 and has left this section; the remaining IDs are
 not renumbered, since renumbering would break every reference to them.** The
 sandbox EXISTS: `bmf-sandbox`, `b52292d6-d2a9-4d53-b115-5b57322f4b58`, region
@@ -1466,6 +1605,16 @@ the most code, and no longer the first one that produces any.**
 Blocker: the sandbox, A114, and the migration that creates the table, A117. Both
 must land first so the loader is written against a table that already carries
 the ruled `PRIMARY KEY` on `EIN` plus indexes.
+**AND IT IS NOW UPSTREAM OF A1's ROLLBACK EXERCISE, ruled 2026-09-14, which is
+a reversal of how the record has read.** A1's exercise cannot produce a readable
+result until something writes `load_stamp`: a clean rollback and an import that
+never began are byte-identical on every instrument the sandbox offers today, and
+the columns that separate them — `load_started_at` and `completed_at`, declared
+in 0022 — are written by nothing. **The loader is the instrument**, so a loader
+that stamps BEFORE it attempts is what makes A1's exercise legible. **This adds
+no work to this entry** and imposes no new requirement on it; 0022's columns
+already exist and stamping is within the loader's own scope under R3. What
+changes is what DEPENDS on this entry. Full reasoning on A1.
 **BLOCKER DISCHARGED IN SUBSTANCE 2026-09-07, and this note exists because the
 line above does not say so.** A114 closed when `bmf-sandbox` was created, and
 0022 is now applied to the sandbox AND to live, so **the table exists with the
