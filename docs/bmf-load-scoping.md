@@ -153,12 +153,13 @@ assumed was out of reach. The same shape appears in `d1 migrations apply`, which
 runs each migration through `database.batch(splitSqlQuery(query).map(...))`.
 
 **And the CLI refuses to let you wrap it yourself.** `src/d1/trimmer.ts` strips a
-single leading `BEGIN TRANSACTION;` and `COMMIT;`, then, if any `BEGIN
-TRANSACTION` remains, throws: "Wrangler could not process the provided SQL file,
-as it contains several transactions. D1 runs your SQL in a transaction for you.
-Please export an SQL file from your SQLite database and try again." So the tool
-both supplies the transaction and declines to accept one from you. The migrations
-tree carries **no `BEGIN` or `COMMIT` anywhere**, and this is why it needs none.
+single leading `BEGIN TRANSACTION;` and `COMMIT;`, then, if any
+`BEGIN TRANSACTION` remains, throws: "Wrangler could not process the provided
+SQL file, as it contains several transactions. D1 runs your SQL in a transaction
+for you. Please export an SQL file from your SQLite database and try again." So
+the tool both supplies the transaction and declines to accept one from you. The
+migrations tree carries **no `BEGIN` or `COMMIT` anywhere**, and this is why it
+needs none.
 
 **So non-atomicity was never a property of DROP-then-RENAME.** It was a property
 of issuing two statements as two invocations. One invocation is one batch is one
@@ -210,12 +211,12 @@ creation. Verified in the same run: a repeated `EIN` was rejected with
 **THIS MAKES BOTH R8-2 AND R8-3 TAUTOLOGIES, and the second half is a finding of
 the scope pass rather than of the ruling.** R10a names R8-2, distinct `EIN`
 equals row count. **The same run's CONTROL established the other:** a NULL in a
-`NOT NULL` column is rejected identically, `NOT NULL constraint failed:
-bmf.name`, so R8-3, non-null on the four nationally-non-null fields, cannot fail
-either. **Both checks run against an aside that could not have been built if
-they would fail.** Whether they become `sqlite_master` assertions that the
-constraints EXIST is UNRULED, and that reframing is the only thing that would
-make either able to fail.
+`NOT NULL` column is rejected identically,
+`NOT NULL constraint failed: bmf.name`, so R8-3, non-null on the four
+nationally-non-null fields, cannot fail either. **Both checks run against an
+aside that could not have been built if they would fail.** Whether they become
+`sqlite_master` assertions that the constraints EXIST is UNRULED, and that
+reframing is the only thing that would make either able to fail.
 
 **R10c: THE SET IS PROVISIONAL AND MUST SAY SO.** It lives in the loader as a
 SINGLE NAMED CONSTANT, not scattered through the DDL, carrying a comment that it
@@ -796,8 +797,8 @@ concludes the two agree.
 Three tiers. The second is the strong one.
 
 **Structural.** Row count = 1,957,340. Distinct `EIN` = 1,957,340. Zero NULL in
-`NAME`, `CITY`, `STATE`, `RULING`. `PRAGMA integrity_check`. `PRAGMA
-foreign_key_check`.
+`NAME`, `CITY`, `STATE`, `RULING`. `PRAGMA integrity_check`.
+`PRAGMA foreign_key_check`.
 
 **Distributional, against figures measured independently on the source.** This
 is close to a checksum because the numbers are specific:
@@ -1344,8 +1345,8 @@ truth within roughly 100 ms, which is inside the +/-219 ms sampling bound.
 
 Run B's baseline carried a **31-sample decaying queue**, draining from **6,086 ms
 to 1,147 ms** at 17:47:19. That is **2.5 minutes before its import** and
-unrelated to any import window. The median-based threshold absorbed it: `p50 *
-10` gave 1,210 ms and none of those samples reached it.
+unrelated to any import window. The median-based threshold absorbed it:
+`p50 * 10` gave 1,210 ms and none of those samples reached it.
 
 **This is the straggler fix demonstrated on real data rather than on a stub.**
 Under the original p95-based threshold, that one burst would have set the bar
@@ -2018,68 +2019,66 @@ coverage and NO run-time coverage**, because nothing swaps them and R8b cannot
 see them. That is a fact about the design rather than a defect in it, recorded so
 a later reader does not meet the gap and read it as an oversight.
 **A FULL CONSTRUCT SWEEP FOUND NOTHING ELSE PRESENT TO COMPARE** — no DEFAULT,
-UNIQUE, COLLATE, AUTOINCREMENT, WITHOUT ROWID, STRICT, trigger, view, `ON
-CONFLICT` or generated column exists in that file, against controls of 13 `NOT
-NULL` and 8 `CREATE`.
-**ONE OF R13a's TWO STATED PURPOSES DOES NOT SURVIVE THIS, AND THE WEAKER CLAIM
-IS ACCEPTED DELIBERATELY.** R13a states both as two clauses of one sentence, so
-the distinction is R13a's own and is not read back into it.
-**"Any difference is drift found on day one rather than on load twelve" SURVIVES
-INTACT**: a structural comparison still catches a changed PRIMARY KEY, a lost NOT
-NULL, a renamed or dropped index, an index moved to different columns or onto a
-DIFFERENT TABLE, a dropped CHECK, a lost referential action, or a changed type
-— the drift R16a names and R13b catches at run time.
-**"Proves the derivation retroactively" DOES NOT SURVIVE.** A structural
-comparison establishes that the constant produces an EQUIVALENT SHAPE. **It does
-not establish that the hand-written file is what the constant would have
-produced, and no reader may take a passing structural comparison as proof of
-derivation.** That proof is not weakened here. It is given up.
-**WHY THE WEAKER CLAIM WAS ACCEPTED.** Full-file byte-identity would require the
-constant to emit statements about the file that are false the moment it emits
-them; the repair option's scope depended on the outcome of this very question;
-and SQL-only cannot be reproduced by any uniform padding rule, since of the
-twelve inline comments in `migrations/0022_bmf_table.sql` eleven begin at column
-55 and one at column 56. **R8b is the precedent for judging a comparison by what
-it establishes rather than by how strict it reads**, having refused a pre-swap
-schema comparison that "validates nothing on load ONE".
-**R13a's TEXT IS UNCHANGED AND IS STATED IN FULL ELSEWHERE, and a regenerating
-reader will probably meet one of those before meeting this amendment:**
+UNIQUE, COLLATE, AUTOINCREMENT, WITHOUT ROWID, STRICT, trigger, view,
+`ON CONFLICT` or generated column exists in that file, against controls of 13
+`NOT NULL` and 8 `CREATE`. **ONE OF R13a's TWO STATED PURPOSES DOES NOT SURVIVE
+THIS, AND THE WEAKER CLAIM IS ACCEPTED DELIBERATELY.** R13a states both as two
+clauses of one sentence, so the distinction is R13a's own and is not read back
+into it. **"Any difference is drift found on day one rather than on load twelve"
+SURVIVES INTACT**: a structural comparison still catches a changed PRIMARY KEY,
+a lost NOT NULL, a renamed or dropped index, an index moved to different columns
+or onto a DIFFERENT TABLE, a dropped CHECK, a lost referential action, or a
+changed type — the drift R16a names and R13b catches at run time. **"Proves the
+derivation retroactively" DOES NOT SURVIVE.** A structural comparison
+establishes that the constant produces an EQUIVALENT SHAPE. **It does not
+establish that the hand-written file is what the constant would have produced,
+and no reader may take a passing structural comparison as proof of derivation.**
+That proof is not weakened here. It is given up. **WHY THE WEAKER CLAIM WAS
+ACCEPTED.** Full-file byte-identity would require the constant to emit
+statements about the file that are false the moment it emits them; the repair
+option's scope depended on the outcome of this very question; and SQL-only
+cannot be reproduced by any uniform padding rule, since of the twelve inline
+comments in `migrations/0022_bmf_table.sql` eleven begin at column 55 and one at
+column 56. **R8b is the precedent for judging a comparison by what it
+establishes rather than by how strict it reads**, having refused a pre-swap
+schema comparison that "validates nothing on load ONE". **R13a's TEXT IS
+UNCHANGED AND IS STATED IN FULL ELSEWHERE, and a regenerating reader will
+probably meet one of those before meeting this amendment:**
 `docs/outstanding.md` under A113's "R13a, INHERITED FROM A117 ON ITS CLOSURE"
 block, which now carries a pointer here, and `migrations/0022_bmf_table.sql` at
 `:7-9` and at `:26-27`. **The migration's two cannot be corrected** — it is
 applied to both databases and wrangler matches by NAME — which is itself the
-subject of a filed queue entry.
-**RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
-reason: a heading would move this section's own heading and ruling counts.
-**R31's TWO DISPOSITIONS READ AS CONTRADICTORY AND ARE RECONCILED HERE. THIS IS A
-REPAIR OF WORDING, NOT OF SUBSTANCE, AND NOTHING R31 RULED CHANGES.** As written,
-R31 says of the two-purposes divergence "**ONE IMPLICATION IS SURFACED AND
-DELIBERATELY NOT RESOLVED, BECAUSE IT IS A GENUINE GAP AND IT IS FT'S**", and
-then, two blocks later, "**THE SLICE THAT AUTHORS THE CONSTANT MEETS THIS GAP AND
-RULES IT THEN**." The two sit in the FIRST and THIRD of three consecutive blocks.
-The first assigns the gap to FT and the second assigns its resolution to a slice,
-and a reader meeting both in one ruling cannot tell which governs. **Both
-sentences are left standing rather than edited**, so the reconciliation is visible
-where the ambiguity sat.
-**THE SEPARATION IS DESCRIBED STRUCTURALLY RATHER THAN AS A LINE DISTANCE,
+subject of a filed queue entry. **RECORDED INLINE RATHER THAN AS A `###` RULING
+OF ITS OWN**, for R30's stated reason: a heading would move this section's own
+heading and ruling counts. **R31's TWO DISPOSITIONS READ AS CONTRADICTORY AND
+ARE RECONCILED HERE. THIS IS A REPAIR OF WORDING, NOT OF SUBSTANCE, AND NOTHING
+R31 RULED CHANGES.** As written, R31 says of the two-purposes divergence "**ONE
+IMPLICATION IS SURFACED AND DELIBERATELY NOT RESOLVED, BECAUSE IT IS A GENUINE
+GAP AND IT IS FT'S**", and then, two blocks later, "**THE SLICE THAT AUTHORS THE
+CONSTANT MEETS THIS GAP AND RULES IT THEN**." The two sit in the FIRST and THIRD
+of three consecutive blocks. The first assigns the gap to FT and the second
+assigns its resolution to a slice, and a reader meeting both in one ruling
+cannot tell which governs. **Both sentences are left standing rather than
+edited**, so the reconciliation is visible where the ambiguity sat. **THE
+SEPARATION IS DESCRIBED STRUCTURALLY RATHER THAN AS A LINE DISTANCE,
 DELIBERATELY.** A count of lines between two quoted sentences in a live file is
-falsified by any future edit between them, and it is the shape CLAUDE.md §10 files
-as a measurement correct when written. **First-and-third-of-three says the same
-thing and survives edits above, below and between.**
-**THE READING THAT RECONCILES THEM, RULED 2026-09-09: THE GAP IS FT's TO NOTICE
-AND RECORD; THE SLICE THAT AUTHORS THE CONSTANT IS WHAT RESOLVES IT.** Those are
-different acts on the same object. Noticing that R13's wording is under-specified
-against R31's wide scope, and recording it so a builder meets it rather than
-discovers it, is the work R31 did and is FT's. Choosing how the constant is then
-shaped is the work of building it. **Neither sentence was wrong about its own
-act; each named a different one, and neither said so.**
-**THE SAME CLAUSE PROPAGATED, and it is corrected in the same commit.** A125 in
-`docs/outstanding.md` carries "**ONE IMPLICATION IS SURFACED AND NOT RESOLVED, AND
-IT IS FT'S**" inside its relocated summary of this ruling, in the same entry whose
-SECOND GROUND holds that all three candidate shapes "describe what a slice must
-BUILD rather than what FT must decide, so there is no fork here for a ruling to
-take." **One entry therefore carried both dispositions too**, inherited from this
-text rather than reached independently.
+falsified by any future edit between them, and it is the shape CLAUDE.md §10
+files as a measurement correct when written. **First-and-third-of-three says the
+same thing and survives edits above, below and between.** **THE READING THAT
+RECONCILES THEM, RULED 2026-09-09: THE GAP IS FT's TO NOTICE AND RECORD; THE
+SLICE THAT AUTHORS THE CONSTANT IS WHAT RESOLVES IT.** Those are different acts
+on the same object. Noticing that R13's wording is under-specified against R31's
+wide scope, and recording it so a builder meets it rather than discovers it, is
+the work R31 did and is FT's. Choosing how the constant is then shaped is the
+work of building it. **Neither sentence was wrong about its own act; each named
+a different one, and neither said so.** **THE SAME CLAUSE PROPAGATED, and it is
+corrected in the same commit.** A125 in `docs/outstanding.md` carries "**ONE
+IMPLICATION IS SURFACED AND NOT RESOLVED, AND IT IS FT'S**" inside its relocated
+summary of this ruling, in the same entry whose SECOND GROUND holds that all
+three candidate shapes "describe what a slice must BUILD rather than what FT
+must decide, so there is no fork here for a ruling to take." **One entry
+therefore carried both dispositions too**, inherited from this text rather than
+reached independently.
 
 **R33, RULED 2026-09-09: R13's PHRASE "a single named constant" IS INCIDENTAL
 WORDING, NOT LOAD-BEARING. PACKAGING IS THE BUILDER'S CALL.**
@@ -2570,16 +2569,16 @@ WITH ITS ONE OVERSTATEMENT CORRECTED.** As put: §6.15 reads `[agent-ok]` only t
 `--local`, the sandbox is remote, so the builder cannot exercise what it builds
 anywhere R4 permits. **The first two clauses are literally true** — §2's split
 table grants the agent "Load, swap, stamp, verify against `--local`" and marks
-"Anything `--remote`" FT-only, and every sandbox command is `--remote --config
-bmf-sandbox.toml`. **The third overstates**, because R4 forbids failure induction
-against LIVE and says nothing about `--local`, which that same table grants.
-**What survives the correction is sharper than what it removes:** A116's own
-entry says "**R2 AND R4 MAKE THE SANDBOX THE ENTIRE TEST VENUE**", and R1 orders
-the work "build the loader, test it on the sandbox, then run the production
-load". **So the builder may exercise the loader in a venue the rulings do not
-name, and may not exercise it in the venue they do.** R27 has already refused to
-extend its in-memory exemption to a local D1 store. **This is filed, not ruled**,
-and it is question 4 below.
+"Anything `--remote`" FT-only, and every sandbox command is
+`--remote --config bmf-sandbox.toml`. **The third overstates**, because R4
+forbids failure induction against LIVE and says nothing about `--local`, which
+that same table grants. **What survives the correction is sharper than what it
+removes:** A116's own entry says "**R2 AND R4 MAKE THE SANDBOX THE ENTIRE TEST
+VENUE**", and R1 orders the work "build the loader, test it on the sandbox, then
+run the production load". **So the builder may exercise the loader in a venue
+the rulings do not name, and may not exercise it in the venue they do.** R27 has
+already refused to extend its in-memory exemption to a local D1 store. **This is
+filed, not ruled**, and it is question 4 below.
 
 **FOUR QUESTIONS NOW GATE THE SLICE's START RATHER THAN ITS FINISH.** They are
 questions 1 through 4 of the scope pass's seventeen, and all four are open at

@@ -2463,7 +2463,10 @@ nothing is at risk and a reader who has fetched all branches can reach both.
 which is a reachability condition rather than a defect. Resolving it would mean
 either committing the two docs to `main`, which §6.9's anti-merge posture argues
 against, or amending each pointer to name the branch that has to be checked out
-first. Neither is proposed here. `docs/qa-audit-enterprise-2026-05-30.md` is
+first. **RULED 2026-09-14: THE SECOND OPTION IS TAKEN.** Each pointer below now
+says the file is ABSENT from `main` and names the branch to check out. The docs
+are NOT committed to `main`, because §6.9's anti-merge posture argues against it
+and the audit branches are reference-only. `docs/qa-audit-enterprise-2026-05-30.md` is
 unaffected: it is present on `main`, for the reason recorded in §6.9's
 correction.
 
@@ -2471,11 +2474,13 @@ correction.
   `qa-audit-enterprise` branch; HEAD of audit). Exec-summary "Medium: 76" is a
   typo at source (actual 60); CLAUDE.md previously inherited the typo as
   "173 findings" — corrected during the Enterprise ground-truth investigation.
-- `docs/qa-audit-operations-2026-06-09.md` — 56-finding Operations audit (on
-  `qa-audit-operations` branch; HEAD includes the 3-finding recon amendment).
-- `docs/qa-audit-advisor-2026-06-13.md` — 41-finding Advisor audit (on
-  `qa-audit-advisor` branch; audit's exec-summary "43" is a typo, ADV-034 +
-  ADV-037 never existed; +1 added during bundle 5 → denominator 42).
+- `docs/qa-audit-operations-2026-06-09.md` — 56-finding Operations audit.
+  **ABSENT FROM `main`; check out the `qa-audit-operations` branch to read it**,
+  whose HEAD includes the 3-finding recon amendment.
+- `docs/qa-audit-advisor-2026-06-13.md` — 41-finding Advisor audit.
+  **ABSENT FROM `main`; check out the `qa-audit-advisor` branch to read it.** The
+  audit's exec-summary "43" is a typo, ADV-034 + ADV-037 never existed; +1 added
+  during bundle 5 → denominator 42.
 - `docs/arc-history-enterprise.md` — Enterprise surface arc history, relocated
   verbatim from CLAUDE.md §5 on 2026-07-08 (every Critical/High commit, Sweeps
   1–4, Cluster I–IX, the 4-pattern not-a-finding taxonomy). Current-state lives
@@ -3670,6 +3675,42 @@ at the end of §6, the minified-bundle grep in §9, the scanner above, and this.
   and `docs/bmf-load-scoping.md` are CRLF.
 - **A file's working-tree line ending therefore carries NO information.** It is
   an artifact of which tool last wrote it, and it is invisible in git either way.
+
+**AMENDED 2026-09-14: THE PER-FILE LIST ABOVE HAS DRIFTED, AND THE BULLET BESIDE
+IT PREDICTED THAT IT WOULD.** Measured at `a5fb98e` in the working tree, ALL FIVE
+records documents are CRLF, one carriage return per line in every one:
+`CLAUDE.md` 4,116 over 4,116 lines, `docs/session-log.md` 3,701 over 3,701,
+`docs/outstanding.md` 4,354 over 4,354, `docs/filed-defects.md` 2,780 over 2,780,
+and `docs/bmf-load-scoping.md` 3,243 over 3,243. **The list above names
+`CLAUDE.md` and `docs/session-log.md` as LF**, measured 2026-09-07, and that is
+no longer true of either.
+
+**CONTROL, because a CR counter that reports CRLF for everything is the exact
+failure this filing exists for:** a known-LF two-line sample returns 0 and a
+known-CRLF two-line sample returns 2, both asserted before the five figures were
+read.
+
+**NOTHING IS BROKEN AND NOTHING WAS CONVERTED.** Every committed blob carries
+ZERO carriage returns, `core.autocrlf` is true, there is no `.gitattributes`,
+and git reports no modification from the difference. **This is an amendment
+rather than a defect for the reason the bullet above gives**: a working-tree line
+ending is an artifact of which tool last wrote the file. What the list was is a
+STATE figure wearing a date, and §5.1's event-versus-state rule says such a
+figure must be maintained or it lies.
+
+**`migrations/` IS UNCHANGED AT 11 LF AND 11 CRLF**, re-measured at the same
+revision across 22 files with zero mixed, so only the docs half of the list
+moved.
+
+**THESE FIVE FIGURES ARE AN OBSERVATION AT `a5fb98e`, NOT A STANDING PROPERTY,
+AND THEY WILL GO STALE THE SAME WAY THE LIST ABOVE DID.** The bullet two
+paragraphs up is why: a working-tree line ending is an artifact of which tool
+last wrote the file, so the NEXT tool to touch any of these five can falsify its
+figure without touching a word of its content. **Do not cite them as current.
+Re-measure, and record the revision beside whatever comes back**, which is the
+only form of this figure that is ever worth anything. **The durable claim is the
+bullet, not the list**: the working-tree ending carries no information, and every
+blob is LF regardless.
 
 **CONSEQUENCE FOR THE "MATCH AN EXISTING FILE" INSTINCT, which is how
 `0022_bmf_table.sql` was written.** That file was given CRLF by checking

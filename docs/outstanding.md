@@ -72,15 +72,31 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 120 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+**As committed: 122 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
 ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
-7, BMF-and-Discover 17, cheap-and-mechanical 32, large 38, and
+7, BMF-and-Discover 17, cheap-and-mechanical 34, large 38, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (eleventh): ONE ENTRY CLOSED AND
-NONE OPENED.** OPEN moves 121 to 120 and **DEBT 67 to 66**; BLOCKING stays 24
-and POST stays 30. A139 sat in cheap-and-mechanical, so that tier alone moves
-**33 to 32** and the breakdown reads 7 + 16 + 7 + 17 + 32 + 38 + 3 = 120.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (twelfth): TWO ENTRIES OPENED AND
+NONE CLOSED.** OPEN moves 120 to 122 and **DEBT 66 to 68**; BLOCKING stays 24
+and POST stays 30. Both new entries are cheap-and-mechanical, so that tier alone
+moves **32 to 34** and the breakdown reads 7 + 16 + 7 + 17 + 34 + 38 + 3 = 122.
+**THE FILE-WIDE `Pilot: DEBT` DIAGNOSTIC MOVES 67 TO 69**, two for two, because
+both entries are DEBT and that is the only classification which touches it. The
+naive enumerator moves with OPEN, **120 against 122**, the gap still exactly A50a
+and A50b, and the extra on the file-wide count is still FJ-7's own line inside
+the FOUNDER JUDGMENT section rather than an OPEN entry.
+**NEITHER ENTRY IS NEW WORK FOUND BY A SWEEP. BOTH CAME OFF THE DOCS TRAIN**,
+which this change dissolves: A143 is source work touching shipped behaviour and
+A144 is an FT-run remote act, and neither was ever a docs correction. Filing them
+is what makes them countable, and `.claude/agents/records.md` no longer names a
+train to carry them.
+**THE ELEVENTH CHANGE'S RECORD BELOW IS RETAINED RATHER THAN REPLACED**, because
+this change closes nothing and supersedes none of it. Its own superseded-block
+rule applies to a block this change contradicts, and it contradicts none.
+**THE SUPERSEDED ELEVENTH ARITHMETIC IS NOT QUOTED HERE**, per that same rule: it
+recorded OPEN 121 to 120, DEBT 67 to 66, cheap-and-mechanical 33 to 32, and the
+breakdown summing to 120.
 **THE BUILD CHAIN IS UNCHANGED AT 20**, because its definition subtracts the
 counsel-gated four from BLOCKING and BLOCKING did not move; the counsel-gated
 sentence stays four of the twenty-four.
@@ -206,7 +222,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 24 BLOCKING, 66 DEBT, 30 POST**, classification ruled
+**AGAINST THE PILOT GATE: 24 BLOCKING, 68 DEBT, 30 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-14,
 of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -1736,9 +1752,11 @@ Detail: `docs/propublica-spike-findings.md`, its note on the malformed batch.
 
 **A113 | The BMF loader does not exist. It is the step toward A8 that produces
 the most code, and no longer the first one that produces any.**
-Blocker: the sandbox, A114, and the migration that creates the table, A117. Both
-must land first so the loader is written against a table that already carries
-the ruled `PRIMARY KEY` on `EIN` plus indexes.
+Blocker: NONE. The STATE both named entries stood for is reached: the sandbox
+exists, and 0022 is applied to it and to live, so the table carries the ruled
+`PRIMARY KEY` on `EIN` plus indexes on BOTH databases. **A114 and A117 are both
+CLOSED** — entry-header count 0 each, against a control of 1 for this entry — so
+naming either here would point a reader at what no longer exists.
 **AND IT IS NOW UPSTREAM OF A1's ROLLBACK EXERCISE, ruled 2026-09-14, which is
 a reversal of how the record has read.** A1's exercise cannot produce a readable
 result until something writes `load_stamp`: a clean rollback and an import that
@@ -1768,8 +1786,19 @@ where it shipped in `ed993ff` and is corrected in the same commit as this.
 **A stale STATUS claim about another entry is the one thing a reader cannot
 check without opening this file and counting entry headers**, which is why the
 correction is recorded rather than made silently.
-**FILED, NOT FIXED: a blocker line that names an ENTRY when what it needs is a
-STATE will misread the moment that entry stays open for an unrelated reason.**
+**FILED, AND NOW FIXED ON THIS ENTRY: a blocker line that names an ENTRY when
+what it needs is a STATE misreads IN BOTH DIRECTIONS, and this filing originally
+stated only one of them.**
+**THE DIRECTION IT STATED:** the line misreads the moment that entry stays OPEN
+for an unrelated reason, so a reader concludes the work is blocked when the state
+the entry stood for is already reached.
+**THE DIRECTION THAT ACTUALLY OCCURRED, added 2026-09-14:** the entry CLOSES, and
+the line then points at something that DOES NOT EXIST. A114 and A117 both closed,
+and this entry's blocker line named both until this change.
+**THE SECOND DIRECTION IS THE WORSE ONE, because a closed entry leaves no text to
+read.** The first sends a reader to an entry whose content contradicts the line,
+which is recoverable in one step. The second sends them to nothing at all, and an
+absence is what a reader is least likely to treat as a finding.
 **R15b, 2026-09-07: THE FINDING STANDS AND R15 DOES NOT RESOLVE IT.** R15 removed
 this instance by closing A117; it did not remove the pattern, and the line above
 still names an entry rather than the state its own clause describes. **Whether to
@@ -3501,6 +3530,32 @@ reason its name implies.
 **STATED LIMIT ON THIS CHECK:** the fourteen remaining were judged
 build-closable from their titles and blocker lines, not by reading each entry in
 full. **Three is a floor, not a total.**
+
+**A143 | `OperationsRoster.jsx` reimplements the DataTable idiom instead of
+importing it.**
+Blocker: none named. A shared-component refactor.
+Pilot: DEBT
+Detail: this entry, and CLAUDE.md §10's foreign-key filing, where it has been
+recorded since 2026-08-27 as "reported and not fixed".
+It cites `DataTable.jsx` by line number in comments as its source, and imports it
+ZERO times against four mentions — measured at `a5fb98e` against a control of two
+files that DO import it. **A change to DataTable will not break it; it will
+silently drift.**
+**IT IS FILED HERE BECAUSE IT IS SOURCE WORK TOUCHING SHIPPED BEHAVIOUR**, not a
+docs correction. Recorded in a CLAUDE.md filing it was never counted, which is
+the whole reason it sat for eighteen days without a number.
+
+**A144 | `curriculum-materials-mock` sits on origin with no disposition.**
+Blocker: FT. Deleting an origin branch is a remote act, CLAUDE.md §6.15 (3).
+Pilot: DEBT
+Detail: this entry, and CLAUDE.md §6.9's branch inventory.
+`4754477`, 2026-05-23, one of origin's four heads. It is an ancestor of `main`
+with zero commits ahead, carries no unique objects, and is referenced nowhere in
+this repo. §6.9 records it with "No disposition proposed" so that a later
+inventory meets it as a known quantity rather than as a surprise.
+**AN AGENT CANNOT DISCHARGE THIS**, which is why it is an entry addressed to FT
+rather than a correction anyone else can make: every remote command is FT-run
+under §6.15 (3), and deleting a remote ref is one.
 
 ### Large
 

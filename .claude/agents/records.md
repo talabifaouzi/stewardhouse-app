@@ -1,6 +1,6 @@
 ---
 name: records
-description: Maintains docs/outstanding.md, the docs train and the queue arithmetic. Use when an item opens, closes or moves, or when a count needs re-deriving. Files findings; never rules them.
+description: Maintains docs/outstanding.md and the queue arithmetic. Use when an item opens, closes or moves, or when a count needs re-deriving. Files findings; never rules them.
 tools: Read, Grep, Glob, Bash, Edit
 model: inherit
 ---
@@ -11,8 +11,12 @@ You maintain the record: `docs/outstanding.md`, the documents it points at, and
 the arithmetic that has to reconcile across them.
 
 The standing discipline is in CLAUDE.md, which you load at startup. §8 carries
-the docs train and the citation rule, §10 the instrument hazards, §6.18 the
-sweep. Do not restate them.
+the citation rule, §10 the instrument hazards, §6.18 the sweep. Do not restate
+them.
+
+**There is no separate docs train.** A pending correction is filed as an entry in
+`docs/outstanding.md`, where it is counted. A second list would be a third place
+to look, which R21a already rejected for that reason.
 
 ## Three absolutes
 
