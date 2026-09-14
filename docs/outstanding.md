@@ -77,6 +77,38 @@ ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
 7, BMF-and-Discover 17, cheap-and-mechanical 34, large 38, and
 blocker-undetermined 3.
+
+**BEFORE YOU MOVE ANY FIGURE BELOW: A FIGURE STATED IN PROSE IS A SECOND SITE,
+AND IT MOVES WITH THE ARITHMETIC BLOCK.** This header states several counts
+TWICE — once as a figure in the block that records the change, and once as
+running prose elsewhere in the header that explains what the figure means.
+**Moving one without the other is not hypothetical. It is what `30b1eeb` did**,
+and `scripts/verify-commit-tail.mjs` caught two of the three: it reported stated
+118 against measured 120 on the naive enumerator, and stated 67 against measured
+69 on the file-wide `Pilot: DEBT` count.
+
+**THE THIRD WAS NOT CAUGHT BY ANYTHING, AND THAT IS THE PART TO CARRY FORWARD.**
+The FJ-7 paragraph says the three gate totals "sum to" a number, and the verifier
+checks eight stated-versus-measured pairs of which that sum is not one. **A
+figure stated in prose that the verifier does not check is stale with no
+instrument watching it**, so the only thing standing between it and a wrong
+number is an editor remembering it exists.
+
+**THE SITES, ENUMERATED SO THE NEXT EDITOR DOES NOT HAVE TO FIND THEM.** OPEN and
+the tier breakdown in the "As committed" sentence; the gate line's BLOCKING,
+DEBT and POST; the naive enumerator and the file-wide `Pilot: DEBT` figure in the
+enumerator paragraph; the three-totals sum in the FJ-7 paragraph; and the build
+chain, which is derived rather than counted. **Everything else in this header
+carrying a number is a DATED RECORD of a past change and is correctly frozen** —
+§5.1's event-versus-state rule is what separates the two, and the test is whether
+the sentence describes an act or a state.
+
+**THE CONTROL THAT WOULD CATCH ALL OF THEM DOES NOT EXIST YET, and it belongs in
+`scripts/verify-commit-tail.mjs` rather than here.** That is a `scripts/` change
+and therefore not a docs commit's to make; it is recorded here rather than filed
+as an entry because it has no completion state of its own until someone widens
+check 3, and this note is where an editor meets the gap.
+
 **ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (twelfth): TWO ENTRIES OPENED AND
 NONE CLOSED.** OPEN moves 120 to 122 and **DEBT 66 to 68**; BLOCKING stays 24
 and POST stays 30. Both new entries are cheap-and-mechanical, so that tier alone
@@ -210,11 +242,11 @@ known-CRLF and a known-LF control asserted first, both files being fully CRLF in
 the working tree.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 118 rather than 120, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 120 rather than 122, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 67
-rather than 66, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 69
+rather than 68, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -230,7 +262,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 120. The sentence
+totals above, which remain a count of OPEN entries and sum to 122. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
