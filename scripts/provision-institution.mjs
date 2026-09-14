@@ -71,6 +71,37 @@ function escapeSql(str) {
 
 // SQL literal for a value: NULL for null/undefined, bare number for numbers,
 // quoted+escaped for strings.
+//
+// CAUTION FOR ANY LOADER THAT COPIES THIS HELPER, AND THE BMF LOADER (A113) IS
+// THE ONE THAT WILL: docs/bmf-load-scoping.md section 2 names this file as one
+// of the two script precedents, so this is the value emitter a builder reaches
+// for first.
+//
+// THE `typeof v === 'number'` BRANCH BELOW EMITS A BARE NUMERIC LITERAL.
+// That is CORRECT for an INTEGER column and CATASTROPHIC for an identifier
+// stored as TEXT. SQLite TEXT affinity converts an unquoted numeric literal,
+// so an EIN written as 042103594 stores as '42103594' — one character
+// shorter, typeof still text, and NO error of any kind.
+//
+// IT IS THE FAILURE MODE THAT PASSES EVERY CHECK, which is why it is recorded
+// here and not left to the plan. The row count is right, the distinct count is
+// right, NOT NULL holds, and the PRIMARY KEY holds, because truncated values
+// stay unique. No schema construct prevents it: not the type, not the key, not
+// a CHECK. The damage is silent, national in scope, and skewed geographically,
+// since the leading digit is the IRS district prefix.
+//
+// SO ONE EMITTER IS ONLY A DEFENCE IF IT DISCRIMINATES BY COLUMN, NOT BY TYPE.
+// Putting every column through one small emitter is the right instinct — the
+// requirement is invisible to every gate, so there should be exactly one place
+// to get it wrong — but a GENERIC emitter dispatching on RUNTIME TYPE is itself
+// the mechanism by which an identifier reaches the number branch. Exclude a
+// column BY NAME; never by inspecting what its value happens to be.
+//
+// For the BMF table specifically: `revenue_amt` and `ruling` are INTEGER and
+// want this branch, and `ein` must never reach it. Hard requirement and full
+// reasoning: docs/bmf-load-scoping.md section 2. Failure mode: section 4, mode
+// 7. The nullable-column rule is R29 and is a separate branch, taken BEFORE
+// escaping: this helper's own String() wrap would emit the text 'null'.
 function sqlVal(v) {
   if (v === null || v === undefined || v === '') return 'NULL';
   if (typeof v === 'number') return String(v);

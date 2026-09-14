@@ -2622,6 +2622,337 @@ difference is a finding to report rather than a diff to accept.
 **RECORDED INLINE RATHER THAN AS A `###` RULING OF ITS OWN**, for R30's stated
 reason: a heading would move this section's own heading and ruling counts.
 
+**SLICE 2's DEFINITION OF DONE, WRITTEN 2026-09-14 BEFORE THE BUILD OPENS, AS
+R21a REQUIRES. SIXTEEN PROOFS, ONE PER ELEMENT.** R21a rules that a slice's
+definition of done is written before it is built or it drifts, and slice 1's
+was. **Nothing had been written for slice 2.** The A113 scope pass at
+`041827c` found it DERIVABLE from R21's event test, R21c's assignments and
+`docs/slice-2-scope-pass.md` §5 — and derivable is not written, which is the
+whole of what R21a forbids.
+
+**PLACED WITH R32 FOR R21a's OWN STATED REASON.** R21a's fifteen-item list sits
+with R21 so that "a reader who finds the ruling must find the list without
+hunting further"; R32 is the ruling that names these elements, so this sits with
+R32. **A113 was rejected as the home** on the same fuse reasoning that moved
+R21a's list out of it: A113 closes when the loader exists, and this is a
+permanent record of what was proven rather than a checklist that expires.
+**Recorded inline and with no R-number**, for R30's reason above.
+
+**NO CRITERION HERE IS NEW.** Every proof is R21's event test applied to an
+element, or §5's element-by-element application of it, or the ruling that
+already governs that element. Where the tree supplies no proof, this says so
+rather than inventing one.
+
+**THE FORM OF EVERY ENTRY IS "WHAT EVENT PROVES IT", not "what the element
+does".** An element is done when an observation exists that could have come out
+differently, which is R21's test stated as a requirement on evidence. **Every
+element has such an observation, including element 11 (H)**, whose proof is
+performed at element 12 (I) rather than at its own step; the heading's "one
+proof per element" is a claim about proofs EXISTING, not about where each is
+taken. **Element 11 (H) is the ONLY one of the sixteen whose proof is performed
+at another element.** Two entries could be misread as a second case and are
+not: element 10 (G) names a WINDOW that closes at element 14 (J) while its
+proof is taken at its own step, and element 15 (M) is the proof OF two other
+elements while its own proof is its checks running at its own step.
+
+**THE LIST IS KEYED BOTH WAYS, so it is checkable against the ruling that bounds
+the slice.** R32 names THIRTEEN elements, A through M; this list numbers
+SIXTEEN. Every entry carries its number and its R32 letter, and the three that
+have none say `[no R32 letter]` rather than leaving a reader to infer it.
+**All thirteen letters appear exactly once**, and items 1, 2 and 3 are the
+unlettered three: they are the authoring work R32's element list presupposes
+rather than names — the target map, the constant, and the regeneration.
+
+**EVERY IN-TEXT CROSS-REFERENCE CARRIES BOTH, AS "element 12 (I)", AND THAT IS A
+CONTROL RATHER THAN A STYLE.** Numbers move under a renumber and letters do not,
+so a reference carrying only a number can be made to point at a DIFFERENT
+element by an edit elsewhere in the list, while still resolving to a real
+element and still reading as a sentence. **A reference carrying both can be
+checked against the map mechanically**, and a stale one fails loudly instead of
+passing green. This list has been renumbered once already, which is precisely
+the event that produces that failure.
+
+**TWO ORDER CORRECTIONS ARE BUILT INTO THE NUMBERING, AND BOTH CORRECT A READING
+RATHER THAN AMENDING R32.** R32 names its elements "by the scope pass's own
+letters **so the list is checkable rather than paraphrasable**", which makes the
+letters LABELS and not a sequence. Read alphabetically they nonetheless suggest
+an execution order, and `docs/slice-2-scope-pass.md` §4 tabulates them that
+way. **Existing rulings require otherwise in two places.**
+
+**FIRST, THE EXECUTION ORDER IS D, E, A.** R14: the generation timestamp "must
+therefore be known when the aside is created, not computed at swap time", which
+puts D before A. And A113 in its own words: the columns that separate a load
+that failed from one that never began "are written by nothing", **"so a loader
+that stamps BEFORE it attempts is what makes A1's exercise legible"** — which
+puts E before A, because CREATING THE ASIDE IS ALREADY AN ATTEMPT. **This list
+therefore runs 4 = D, 5 = E, 6 = A**, and element 6 (A)'s proof is written
+against that order rather than against the published one.
+
+**SECOND, K EXECUTES BEFORE J.** The first form of this list put J at 13 and K at
+15, and K's done requires K to write a `load_check` row — which would then have
+landed AFTER `completed_at`. **R12c forbids that in terms: "the check rows are
+written BEFORE completion", so completion still means the record is whole.** §1
+states the other half, "Completion is written LAST, on success only", and §4 mode
+24 names the pair as a single failure mode, the stamp written out of order.
+**A definition of done requiring an element to do what the stamp rulings forbid
+is a defect in the definition, not a tension to note.** R8c is satisfied either
+way, because it asks only that the drop run "after a verified-good swap", and
+the verification is element 12 (I)'s assertion rather than element 14 (J)'s
+timestamp. **So K sits at 13, between the post-swap assertion and completion,
+and J stays LAST.** The list is RENUMBERED rather than annotated: K 15 → 13,
+J 13 → 14, M 14 → 15, L unchanged at 16.
+
+1. **[no R32 letter] THE TARGET MAP AND THE RUN BANNER (R36, R37).** A run
+   against each of the two map entries PRINTS its target database and its
+   local-or-remote venue before any statement executes, and **a run naming
+   neither REFUSES** — R36 rules no default, so the refusal is the event and not
+   the printing. A run passing `--config` is refused too (R37).
+2. **[no R32 letter] THE DDL CONSTANT (R13, R33).** A census of the loader
+   returns **exactly one site** defining the table shape, run in BOTH the
+   literal and the interpolated form, because §10's census rule records a DDL
+   census missing `d1-window-generate.mjs` for running only the first. R33
+   leaves packaging to the builder, so the proof is the single origin rather
+   than any particular shape.
+3. **[no R32 letter] R13a REGENERATION OF `migrations/0022_bmf_table.sql`.**
+   Regenerate from the constant and `cmp` against the tracked file. It must be
+   byte-identical **on the table shape**, which is the scope R31 gives
+   byte-identity.
+   **ITS DONE IS THE SLICE PROOF, NOT A117's CLOSURE, AND COLLAPSING THE TWO
+   WOULD LET A DRIFT FINDING READ AS A CLOSURE.** The slice proof is that the
+   comparison RAN and produced a result; that is satisfied by either outcome.
+   **A117's closure follows on ONE outcome only.** Byte-identical closes it.
+   A difference does NOT: element 3 is still done, and A117 stays open with a
+   finding to REPORT rather than a diff to accept — A125's caution rides
+   unchanged, because that file is applied on both databases and wrangler
+   matches by NAME.
+4. **[letter D] MINT THE GENERATION TIMESTAMP.** The minted name matches
+   `bmf_gen_YYYYMMDDTHHMMSSZ` (R14) and **EQUALS `load_stamp.load_started_at`**,
+   which is the joinability R14 requires. **The ordering half is proved by its
+   existing before element 6 (A) runs**, which is R14's "known when the aside is
+   created" observed rather than assumed.
+5. **[letter E] OPEN THE STAMP ROW.** One `load_stamp` row read back with
+   `load_started_at` non-null and **`completed_at` NULL**. The NULL is the
+   event: R12d makes the timestamps the status, so an open row is observably
+   distinct from a finished one. **It too must be observed before element 6 (A)
+   runs**, for the reason that element carries.
+6. **[letter A] CREATE THE ASIDE.** Self-proving by R16's own assertions, per
+   §5: `table_info` and `index_list` on the created aside, compared to the
+   constant. R16c names them `aside_schema_pk` and `aside_schema_notnull`;
+   R16b rules they run PRE-SWAP and are part of the gate. **AND, UNDER THE
+   CORRECTED ORDER, A SECOND PROOF THE PUBLISHED ORDER COULD NOT GIVE: A FAILURE
+   HERE IS LEGIBLE.** Because element 5 (E) already opened the stamp, an aside
+   creation that fails leaves a row with `load_started_at` set and
+   `completed_at` NULL — an attempt that failed. Had A run first, a failure
+   would have left NO ROW AT ALL, which is byte-identical to a load that never
+   began, and that is A1's void-versus-clean hazard reproduced inside the
+   loader. **The event proving the ORDER rather than the element is therefore
+   the FAILING run**: interrupt the loader during element 6 (A) and read
+   `load_stamp`; one open row must be there.
+7. **[letter B] THE PRE-FLIGHT CREDENTIAL CHECK.** Provable **at second zero**,
+   which R20b names as its whole value. The event is that it returns before the
+   multi-minute call. **R20a's half is proved separately**: a run against a
+   stale credential REPORTS and STOPS rather than re-authenticating.
+8. **[letter C] LOAD THE EMITTED FILE.** §3's explicit proof row: **aside row
+   count equals the parsed count** from slice 1's sidecar. §5 records the
+   stronger form and it is taken here — **all three of §5's tiers run against
+   the ASIDE before anything is swapped**, which is the same class of proof
+   slice 1 ran, against a real table instead of a scratch one.
+9. **[letter F] THE FIVE PRE-SWAP CHECKS — FOUR OF THEM.** Checks 1 through 4
+   are single-load observations, each producing a figure. **R8a supplies the
+   sharper event: a deliberately out-of-band figure must produce NO SWAP**, with
+   the aside left named and live untouched, and no flag able to bypass it. The
+   refusal is the proof; a pass alone cannot distinguish a working gate from an
+   absent one. Check 5 is not proved here — see THE FOUR below.
+   **THIS PROOF STATES ITS OWN GAP, ON R17c's STATED REASONING, BECAUSE A CHECK
+   THAT MISSES THE LIKELY FAILURE IS WORSE THAN NONE IF IT IS READ AS
+   COVERAGE.** The five checks **DO NOT COVER EIN WIDTH**. A truncated
+   leading-zero EIN — §2's hard-requirement failure, §4 mode 7 — **passes all
+   five**: the row count is right, the distinct count is right,
+   `aside_schema_pk` holds because truncated values stay unique,
+   `aside_schema_notnull` holds, and the two null rates are unmoved.
+   **The only instrument in this slice that catches it is element 15 (M)'s R21b
+   row-level pair, and element 15 (M) runs AFTER THE SWAP.** So the gate that
+   exists to stop a bad table reaching production cannot see this class at all,
+   and the catch is post-swap rather than pre-swap. **NO SIXTH CHECK IS RULED
+   HERE. This is a disclosure, not a build**, and it is recorded inside this
+   entry so that nobody reads "the five checks passed" as covering the one
+   failure mode §2 calls a hard requirement.
+10. **[letter G] THE `load_check` ROWS.** One row per R8 check, named per R16c,
+    **written BEFORE completion** (R12c). **THE PROOF IS TAKEN AT THIS STEP AND
+    IS NOT DEFERRED**: immediately after element 10 (G) runs, `load_check`
+    carries the R8 rows and `load_stamp.completed_at` is still NULL, and both
+    halves are read in one observation. §4 mode 24 is why that is a proof rather
+    than a detail — without the ordering every other field lies convincingly.
+    **THE SPAN TO ELEMENT 14 (J) IS R12c's ORDERING WINDOW, NOT THE LOCATION OF
+    THE PROOF.** The invariant must hold throughout that window, so reading the
+    stamp at ANY point inside it confirms the ordering — element 10 (G)'s own
+    step included. **Nothing here waits on a later element**, which is the
+    distinction element 11 (H) does not get to make.
+    **ITS SET IS R8's FIVE, AND IT IS NOT THE ONLY ELEMENT WRITING TO THIS
+    TABLE.** Element 13 (K) writes one more row, `prune_reached`, described at
+    that entry. **That row sits OUTSIDE this element's set and INSIDE the same
+    window**, which is why the window closes at element 14 (J) rather than at
+    element 10 (G). Reading "one row per R8 check" as "every row in the table"
+    would make element 13 (K)'s row look like an intruder rather than a second
+    writer.
+11. **[letter H] THE SWAP. ITS PROOF IS PERFORMED AT ELEMENT 12 (I), AND IS NOT
+    ABSENT.** R8b in its own words: "**Nothing currently validates the swap
+    operation itself**, only the data going into it" — which is why no
+    observation taken at H's own step can prove it, and why §5 concludes that H
+    and I cannot be separated by a boundary. **The event that proves H is
+    element 12 (I)'s assertion**: the live row count matching what element 9 (F)
+    verified, the dated generation table present under the expected name, and
+    the three index names in `index_list`. **A rename pair that mis-executed
+    fails at least one of those three**, so the observation discriminates and is
+    a proof rather than a formality. **What H lacks is a proof CO-LOCATED with
+    it, not a proof.**
+12. **[letter I] THE POST-SWAP ASSERTION.** Live row count matches what element
+    9 (F) verified; the dated generation table exists under the expected name;
+    and **`index_list` on the LIVE table carries the three index names**
+    (R13b). **One observation serving two elements**: it is element 11 (H)'s
+    proof and its own. It is also the run-time half of the A141 shape hazard,
+    which R13 catches at authoring time and this catches cheaper.
+13. **[letter K] THE PRUNING CODE — THE SEAM. SEE THE THREE PARAGRAPHS BELOW;
+    ITS DONE IS NARROWER THAN THE OTHER FIFTEEN.** It sits here, after element
+    12 (I) and before completion, because R8c requires a verified-good swap
+    first and R12c requires its `load_check` row before `completed_at`.
+    **THE ROW IS `prune_reached`**, named in R16c's convention for what it
+    checks — that the path was entered — with the retained-generation count in
+    `value`, which `migrations/0022_bmf_table.sql` defines as "the observed
+    figure as recorded". **R17b IS THE PRECEDENT THAT A `load_check` ROW NEED
+    NOT REPORT A DATA CHECK**: its skipped-trend row reads "skipped,
+    insufficient history", which R17b rules honest on the ground that "an absent
+    row reads as an omission". The same ground carries this row.
+    **THE FAILURE SEMANTICS INVERT WITH THE ORDER, AND THAT IS THE SHARPEST
+    ARGUMENT FOR IT.** Under the corrected order a K failure means
+    `completed_at` is NEVER WRITTEN: the load reads as incomplete and the stamp
+    tells the truth. **Under the published order, with K after J, a K failure
+    left a COMPLETED load carrying a failed prune** — a stamp asserting the
+    record is whole while a step after it had failed, which is §4 mode 24 in one
+    sentence.
+    **ONE CONSEQUENCE, RECORDED AS A CONSEQUENCE AND NOT A DEFECT: K NOW RUNS
+    BEFORE ELEMENT 15 (M).** The prune precedes the read-only verification
+    rather than following it. **R7 retains THREE generations**, so the generation
+    an undo would target survives the prune, and a verification failure at
+    element 15 (M) loses no recovery path.
+14. **[letter J] COMPLETION WRITTEN LAST.** `completed_at` non-null only after
+    element 10 (G)'s rows AND element 13 (K)'s row exist, and element 12 (I)
+    passed — which is R12c's "the check rows are written BEFORE completion"
+    stated as an ordering this list can be checked against. **The event is the
+    FAILING run, not the passing one**: on a failure `completed_at` stays NULL
+    and the aside is left named and stamped failed, which is R8's "Any failure
+    means NO SWAP" observed rather than asserted.
+15. **[letter M] READ-ONLY VERIFICATION AGAINST D1.** The EXTRACT-INDEPENDENT
+    checks R22a names — row count equals distinct `EIN`, per-file
+    contributions summing to the total, zero malformed rows, zero null
+    `RULING` — plus R21b's row-level pair, **a leading-zero EIN and a
+    comma-bearing name round-tripping byte for byte**. **NOT the four absolute
+    figures**, which R18 converted to provenance for R8-4's band centre. **ITS
+    OWN PROOF IS THOSE CHECKS RUNNING AND PASSING AT THIS STEP.** §5's
+    observation that M is "the proof of C and H rather than a step with a proof
+    of its own" describes its ROLE in the slice and not an absence, and it is
+    exactly why R32 places it inside: a boundary keeping the load and the swap
+    while exporting their proof would satisfy R21's test only by never being
+    tested. **It is also the only instrument covering element 9 (F)'s declared
+    gap**, one step too late to gate the swap.
+16. **[letter L] THE UNDO FILE.** **Provable as an event: rerun-safety under
+    R6a** — run the file TWICE, and the second run checks target names FIRST and
+    is a no-op rather than leaving a third state that is neither the old table
+    nor the new one. R14a's half is proved alongside: the undo mints its own
+    generation table in R14's format and its own stamp row records it. **NOT
+    proved, and stated as a limit rather than a gap: that it RECOVERS.** That
+    needs an induced failure, which R4 confines to the sandbox, which A1 records
+    as untested, and which A116 leaves unruled as to whether a sandbox result
+    transfers at all. R32 accepts a sandbox exercise as the proof available and
+    does not pre-empt A116; R35 rules the slice may FINISH with both open.
+    **ON LOAD ONE IT MEETS AN EMPTY GENERATION 1, AND THE ANSWER IS PART SETTLED
+    AND PART DEFERRED RATHER THAN SILENT.** 0022's `bmf` is empty, so the
+    retained generation is empty and a load-one undo restores an EMPTY TABLE.
+    **SETTLED: that is CORRECT and is not a failure of the undo.** The pre-load
+    state genuinely was empty, so restoring empty returns production exactly
+    where it was, and nothing reads `bmf` yet (R8f). **Element 16 (L)'s done is
+    UNAFFECTED**, because R6a's rerun-safety proof holds whether the restored
+    table carries 1.96M rows or none. **DEFERRED: R11f's own flagged
+    consequence**, in its words, that "a recovery to it under R7 would restore
+    nothing" — whether an empty generation 1 is acceptable as the ONLY recovery
+    target for load one. R11f records that as flagged and NOT resolved and
+    nothing here resolves it. **The distinction that must not collapse: the undo
+    MECHANISM is proven on load one; the undo's VALUE as data recovery is nil on
+    load one, by construction.**
+
+**K IS THE SEAM, AND IT IS STATED EXPLICITLY BECAUSE TWO RULINGS MEET ON IT
+POINTING OPPOSITE WAYS. R21c TAKES R8c OUT; R32 PUTS K IN.** R32 already names
+the distinction — "**Writing the pruning code is INSIDE; observing R8c is
+OUTSIDE**, and the two are not the same act" — and what follows turns that
+sentence into a definition of done, because a builder needs to know which half
+they are accountable for.
+
+**K'S DONE IS THAT THE PATH EXISTS AND IS REACHED. IT IS NOT THAT IT PRUNES
+CORRECTLY.** Precisely: after a verified-good swap the loader ENTERS the pruning
+path, COUNTS the retained generations it observed, and DROPS NOTHING, because on
+loads one through three there is nothing beyond three to drop. **Reaching it
+only after a verified-good swap is the other half**, and it is proved by the
+failing run of element 14 (J): on a failure the pruning path is not entered at
+all, which is R8c's "the drop only ever runs after a verified swap" observed
+rather than assumed. **WHAT IT EXCLUDES IS THE DROP ITSELF.** No fourth
+generation exists, R21c stamps R8c as first checkable at LOAD FOUR, and **a
+slice cannot manufacture that sequence** — which is the whole reason R21c
+assigned it out. So the code ships under this definition and the RULE it
+implements is verified later, by an operational check no slice owns.
+
+**HOW "REACHED" IS PROVEN ON LOAD ONE, WHERE THERE IS NOTHING TO PRUNE: NOT
+VACUOUSLY, AND ONLY IF K LEAVES A RECORD.** After load one's swap exactly ONE
+generation exists, the empty table 0022 created and element 11 (H) renamed away.
+Retention is three, so correct behaviour is to drop nothing. **A path that
+silently does nothing and a path that was never entered leave the same
+observable state.** That is A1's void-versus-clean hazard arriving one element
+later, and it is the same reason elements 4 (D) and 5 (E) were moved ahead of
+element 6 (A). **So K's done REQUIRES THE OBSERVATION, NOT THE SILENCE: K writes
+`prune_reached` carrying the retained-generation count it observed.** With that
+row, "reached" is proven on load one and the recorded count is 1. **Without it,
+"reached" is not proven at all on load one**, and calling it vacuously true
+would be precisely the coverage claim R17c refuses. **That row is why K sits at
+13 rather than 15**: R12c requires it before `completed_at`, so the observation
+and the stamp rulings agree only in this order. **This adds no check to R8's
+five and re-imports nothing R21c assigned out**: the row records what the loader
+OBSERVED, which is in-slice, and says nothing about whether pruning is CORRECT,
+which is not.
+
+**THE FOUR §5 FOUND UNPROVABLE IN ONE EVENT, AND WHERE EACH WENT.** §5 named
+them together — "F check 5 (trend), N (R7 retention), O (R8e baseline), K (R8c
+pruning). All four need a *sequence*." **Three went out whole and one SPLIT**,
+and the split is the only reason K needed paragraphs of its own. **Nothing R21c
+assigned out is re-imported here**, and the one entry that could be misread as
+doing so says why it does not.
+
+- **F's CHECK 5, THE TREND.** OUT, as R8e, under R21c. First checkable at
+  **roughly load four** — "roughly" is R8e's own word and R21c keeps it rather
+  than sharpening it. **R17b binds INSIDE the slice and is not a re-import**:
+  on loads one through three the check is SKIPPED and RECORDED as skipped, so
+  the skip is a `load_check` row under element 10 (G) rather than a silence.
+  **Recording that a check was skipped is not performing it**, and the trend
+  itself stays out.
+- **N, R7 RETENTION.** OUT under R21c, first checkable at **load three**. Never
+  among R32's thirteen; it is a scope-pass step letter, not an element of this
+  slice, which is why no numbered entry above carries it.
+- **O, R8e's BASELINE.** OUT under R21c, **roughly load four**. Also never among
+  the thirteen, and also carried by no numbered entry above.
+- **K's BEHAVIOUR, R8c PRUNING.** **THE ONE THAT SPLITS.** The RULE is OUT under
+  R21c at load four; the CODE is IN under R32 as element 13 (K). Its done is the
+  three paragraphs above.
+
+**WHAT THIS DEFINITION DOES NOT DO, stated because a definition of done is
+exactly the artifact someone reads as a completion claim.** It does not
+discharge A1, A116 or R4, and R35 rules that it need not. It does not make a
+sandbox result transfer to production. It does not touch the production
+preconditions, which are A1's rollback path and R4's confinement after A13
+satisfied the second. **It does not close element 9 (F)'s declared gap**, which
+no pre-swap check covers and which no sixth check is ruled here to cover. And it
+says nothing about the load being RIGHT in the world: §4 mode 25 stands
+unchanged — a load can complete, be wrong, and nothing alerts — with only modes
+16 and 17 between it and production, and R8f rules that stopping point
+deliberate.
+
 **R34, RULED 2026-09-09: §6.15(3) COVERS `bmf-sandbox`, AND R32's QUESTION 4 IS
 ANSWERED WITHOUT PARKER'S OBJECTION BEING RESOLVED.** R32 filed the §6.15 seam as
 the fourth of the four questions gating slice 2's start, and recorded it as
