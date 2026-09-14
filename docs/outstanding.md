@@ -89,7 +89,7 @@ and `scripts/verify-commit-tail.mjs` caught two of the three: it reported stated
 
 **THE THIRD WAS NOT CAUGHT BY ANYTHING, AND THAT IS THE PART TO CARRY FORWARD.**
 The FJ-7 paragraph says the three gate totals "sum to" a number, and the verifier
-checks eight stated-versus-measured pairs of which that sum is not one. **A
+checks forty-five stated-versus-measured pairs of which that sum is not one. **A
 figure stated in prose that the verifier does not check is stale with no
 instrument watching it**, so the only thing standing between it and a wrong
 number is an editor remembering it exists.
