@@ -3537,3 +3537,165 @@ no fix is proposed**: §10 also rules that a working-tree line ending carries no
 information, since every blob normalises to LF on staging, and this is that rule
 predicting its own list going stale. Left for a sweep rather than corrected
 inside a closure slice.
+
+## Session — 2026-09-14 (third)
+
+Three commits, `ed993ff` through `92d0bd7`, opening from `041827c`. Four files
+touched across the three: `CLAUDE.md`, `docs/bmf-load-scoping.md`,
+`docs/outstanding.md` and `scripts/provision-institution.mjs` — the one non-docs
+file, and comment-only, with every non-comment line asserted byte-identical to
+HEAD. **The session wrote slice 2's definition of done before the build opened,
+widened §10's control-scoping rule, and corrected a status claim the first of
+those commits had shipped false.** Nothing opened, nothing closed, and every
+queue figure is unchanged end to end. Session-open figures are anchored to
+`041827c` and session-close figures to `92d0bd7`.
+
+**THIS ENTRY FOLLOWS THE 2026-09-11 FORM, AND THE FILE OFFERS TWO.** The
+2026-09-14 (second) entry keys its sections to commits and topics, which suits
+the long exploratory session it records; 2026-09-11 uses fixed sections —
+commits, rulings with the commit that recorded each, counts, instrument
+failures — and this session's shape is that one: three tightly-scoped commits,
+six rulings, one instrument failure repeated five times. **It is a THIRD entry
+for the day rather than an extension of the second**, following the device
+2026-09-07 already used four times, and because the second entry's commit count
+has been corrected twice and moving it again buys nothing.
+
+**THE COMMITS, in order.** `ed993ff` wrote slice 2's definition of done into
+`docs/bmf-load-scoping.md` §15 beside R32 — sixteen proofs, one per element,
+keyed by number AND by R32's thirteen letters — and recorded the EIN
+column-not-type constraint at `scripts/provision-institution.mjs`'s value
+emitter, which is the tree's only such helper and carried no warning at all.
+`9aa67fc` widened §10's scanner filing from FORMAT variants to variants of any
+kind and gave "the class" an operational test, as an amendment rather than a
+second `### Filed` block. `92d0bd7` removed the A117 closure consequence from
+element 3 and corrected A113's own sentence, which was the source that
+propagated it.
+
+### Rulings, with the commit that recorded each
+
+Six. None reverses prior text. One entry below is a CORRECTION of a claim
+shipped earlier in the same session and is named as such rather than as a
+ruling.
+
+**Slice 2's definition of done is written BEFORE the build opens (`ed993ff`).**
+R21a requires it and slice 1's was written that way. The A113 scope pass found
+it DERIVABLE from R21's event test, R21c's assignments and the scope pass's §5,
+and derivable is not written, which is the whole of what R21a forbids. Placed
+with R32 for R21a's own placement reasoning; no R-number.
+
+**K executes BEFORE J (`ed993ff`).** K's done requires a `load_check` row, and
+at 15 that row would have landed after `completed_at`. R12c forbids it in
+terms — "the check rows are written BEFORE completion" — and R8c is satisfied
+either way, since it asks only that the drop follow a verified-good swap, which
+is element 12's assertion rather than element 14's timestamp. The list is
+RENUMBERED rather than annotated. **This corrects a READING and not R32**, which
+names its letters as labels and not a sequence; the same holds for the D, E, A
+ordering, which R14 and A1's legibility argument force.
+
+**Element 9's EIN-WIDTH GAP is DISCLOSED, and NO SIXTH CHECK is ruled
+(`ed993ff`).** The five pre-swap checks do not cover EIN width: a truncated
+leading-zero EIN passes all five, and the only instrument that catches it runs
+AFTER the swap. Recorded inside element 9's own proof on R17c's reasoning, that
+a check missing the likely failure is worse than none if it is read as coverage.
+**A disclosure, not a build.**
+
+**Element 3's done is the SLICE PROOF (`ed993ff`, corrected at `92d0bd7`).** The
+regeneration ran and the comparison produced a result, which either outcome
+satisfies; a byte difference is a finding to REPORT rather than a diff to
+accept, with A125's caution riding unchanged.
+
+**Element 16's LOAD-ONE ANSWER is part SETTLED and part DEFERRED (`ed993ff`).**
+Restoring an empty table on load one is CORRECT, because the pre-load state
+genuinely was empty, and R6a's rerun-safety proof is unaffected either way.
+R11f's flagged consequence — that a recovery under R7 would restore nothing — is
+DEFERRED, and nothing here resolves it. The undo MECHANISM is proven on load
+one; its VALUE as data recovery is nil on load one, by construction.
+
+**§10's control-scoping rule is widened, as an AMENDMENT and with NO R-NUMBER
+(`9aa67fc`).** "Format variants" was too narrow: three failures varied along
+axes that are not formats of the data at all. §6.18 rules that a finding
+sharpening an existing filing is an amendment and never a second entry, and
+§10's `### Filed` heading count is unchanged across the commit. **Not on R30's
+ground**, which governs §15's self-referential counts in another document: §10
+has never numbered its own rules, and every R-token in it is a citation.
+
+**A CORRECTION RATHER THAN A RULING (`92d0bd7`).** Element 3's done had been
+made to turn on CLOSING A117, and A117 closed on 2026-09-07. An element cannot
+close an entry that does not exist. Corrected by SUBTRACTION rather than
+restatement, leaving the obligation untouched, and A113's own sentence — the
+source — corrected in the same commit with its original wording quoted in place.
+
+### Held, not ruled, and carried forward
+
+**Two, and both gate opening the build.**
+
+**Element 3's §6.10 question.** R13a regenerates `migrations/0022_bmf_table.sql`
+from the loader's constant, and that file is APPLIED on both databases. Whether
+a byte-identical regeneration of an applied migration is a no-op or needs a
+branch-(b) note is ruled nowhere, and the definition of done does not decide it.
+
+**R34's cost, with Parker's objection standing unresolved.** The builder may
+exercise the loader against a LOCAL D1 store, which R27 refused to treat as
+equivalent to its in-memory carve-out, and may NOT exercise it against the
+sandbox, which R1 names as the test step and which A116 calls the entire test
+venue. R34 records this as an accepted cost rather than answering it.
+
+### Counts
+
+**Across the session: OPEN 120, BLOCKING 24, DEBT 66, POST 30, build chain 20 —
+every one unchanged at both ends.** Entry headers read 120 at `041827c` and 120
+at `92d0bd7`, and the highest allocated id is A142 at both, so nothing opened
+and nothing closed.
+
+**Only one of the three commits touched `docs/outstanding.md` at all**, and it
+changed prose inside A113 rather than any counted pattern. Simulated against the
+WORKING TREE before that commit and re-run against the COMMITTED blob after:
+entry headers 120, naive enumerator 118, file-wide DEBT 67, BLOCKING 24, POST
+30, identical either side. `scripts/verify-commit-tail.mjs` passes at
+`92d0bd7`, all checks and all controls.
+
+**No branch was cut, merged or pruned.** All three commits were made directly on
+`main` under per-commit approval. `origin/main` was moved once, by FT, across
+the first two; the third is unpushed at this entry's close.
+
+### Instrument failures, counted because the count is the finding
+
+**FIVE, AND THEY ARE ONE FAILURE.** Each control was scoped to the INSTANCE it
+had seen rather than to the CLASS the defect belonged to.
+
+**A hyphen at ONE EDGE.** A matcher for a hyphenated term split across a wrap
+checked line START; `byte-` at line END went past it.
+
+**ONE MARK.** Widened to both edges, the same matcher then missed a BACKTICK
+split, because it knew about hyphens.
+
+**RANGE INSTEAD OF REFERENT.** A cross-reference control asserted that every
+"element N" resolved inside 1..16. A reference that meant J and still said 13
+pointed at K, resolved in range, and passed green.
+
+**BYTES INSTEAD OF CHARACTERS.** A width cap was taken twice, 85 and 82, and
+reported as two sources disagreeing. They are ONE measurement in two UNITS:
+`awk` counts bytes, and §10 is dense with multibyte `§` and em dashes.
+
+**ONE ENTRY INSTEAD OF EVERY ENTRY.** The post-push pass ran the entry-header
+check for A113 and not for A117. Nobody decided to exempt it; A117's status
+arrived as prose rather than as a figure.
+
+**THE RULE FOR IT IS NOW IN §10, AND THE FIFTH ARRIVED TWO COMMITS AFTER IT.**
+`9aa67fc` widened the rule and named the shape; `92d0bd7` is that shape one
+level up, with the SUBJECT as the axis. §10's line-ending filing already states
+the general form — a rule applied selectively is a rule you do not have — and
+this is that, with the rule's own commit sitting in between. **Recorded, not
+re-argued.**
+
+**THREE OTHER FAULTS, NONE OF THEM THIS SHAPE, named so they are not folded in.**
+A file-wide proof count returned 6 against an expected 16, having found §1's
+six-item local-floor list — a correct answer to the question it actually asked,
+and a wrong-SUBJECT error rather than a narrow one. A width threshold of 80 was
+CHOSEN rather than measured, which is R8d's provenance rule. And a check of the
+added block read the SCRIPT SOURCE rather than the written output, where escaped
+backticks add a character, reporting 83 where the block was 81.
+
+**TWO PROSE DEFECTS CAME FROM THE PRINTED DIFF AND FROM NOTHING ELSE**, which is
+the bank rule stated as a measured cost: `single-load`, then `byte-identical`,
+each broken across a hard wrap while every count was green.
