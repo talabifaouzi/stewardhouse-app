@@ -15,6 +15,7 @@ import AdvisorPracticeDetail from './directories/AdvisorPracticeDetail.jsx';
 import OrganizationDetail from './directories/OrganizationDetail.jsx';
 import IndividualDetail from './directories/IndividualDetail.jsx';
 import OperationsRoster from './OperationsRoster.jsx';
+import OperationsSendLog from './OperationsSendLog.jsx';
 
 // Operations Overview stat values — computed once at module load from the
 // unified data layer. unified import is eager: it runs the three adapters +
@@ -188,6 +189,17 @@ function getNavItems(basePath) {
     // change only). See the `path.includes('/roster')` activeNav below and the
     // `<Route path="roster">` mount.
     { key: 'roster', label: 'Accounts', path: `${basePath}/roster` },
+    // A13. The route segment is named for the DATA and mirrors the endpoint,
+    // GET /api/auth-sends, for the reason recorded in that file: a path like
+    // /auth-health would assert in its own URL the health verdict ruling (5)
+    // forbids the view from stating. The nav label is display-layer under the
+    // 2026-07-13 naming ruling, which lets the two diverge — as 'roster' and
+    // "Accounts" already do — and it matches the page's h1 exactly, because
+    // A119 files a live defect where a surface's nav and heading disagree.
+    //
+    // Present on BOTH trees per FORK 2. The demo tree resolves this route to an
+    // absent state rather than to a fixture; it is not hidden.
+    { key: 'auth-sends', label: 'Sign-in email', path: `${basePath}/auth-sends` },
   ];
 }
 
@@ -200,6 +212,10 @@ export default function OperationsSurface() {
     path.includes('/advisors') ? 'advisors' :
     path.includes('/organizations') ? 'organizations' :
     path.includes('/roster') ? 'roster' :
+    // Checked after the five above, and safe in any position: no other segment
+    // in this surface contains "auth-sends", and this one contains none of
+    // theirs, so the chain's order carries no hidden dependency here.
+    path.includes('/auth-sends') ? 'auth-sends' :
     'home';
 
   // Chrome identity swap (O-1), mirroring AdvisorSurface / EnterpriseSurface:
@@ -265,6 +281,7 @@ export default function OperationsSurface() {
           <Route path="organizations" element={<OrganizationsDirectory />} />
           <Route path="organizations/:id" element={<OrganizationDetail />} />
           <Route path="roster" element={<OperationsRoster />} />
+          <Route path="auth-sends" element={<OperationsSendLog />} />
           <Route path="*" element={<Navigate to={basePath} replace />} />
         </Routes>
       </div>

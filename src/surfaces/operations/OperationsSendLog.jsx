@@ -1,15 +1,32 @@
 import { useEffect, useId, useState } from 'react';
 import { Card } from '../../components/Card.jsx';
+import { useOptionalAppIdentity } from '../../contexts/AppIdentityContext.jsx';
 import { formatInstantUTC } from './formatInstant.js';
 
 // Operations "Sign-in email" view — the read surface for auth_send_log
-// (A13, element 6). Reads GET /api/auth-sends, which is gated by requireOps.
+// (A13, elements 6 and 8). Reads GET /api/auth-sends, gated by requireOps.
 //
-// THIS FILE IS THE AUTHENTICATED BRANCH ONLY. It exports a NAMED component and
-// no default: the demo-tree branch and the switch between them are element 8,
-// and the route and nav item are element 4. Nothing mounts this yet, which is
-// why a green `npm run build` says nothing about it — vite bundles the entry
-// graph, and an unimported module is not in it.
+// TWO MODES, switched on useOptionalAppIdentity() exactly as OperationsRoster
+// does (null on the public demo tree, truthy under AppShell on /app/operations):
+//   - authenticated (/app/operations/auth-sends) → LIVE rows from the endpoint.
+//   - demo tree      (/operations/auth-sends)    → an ABSENT STATE. No rows, no
+//     fixture, no synthetic history.
+//
+// FORK 2 (FT-ruled) IS "PRESENT WITH ABSENT STATE", AND THE ALTERNATIVE IT
+// REJECTS IS WHY THE NAV ITEM APPEARS ON BOTH TREES. Hiding the item on the
+// demo tree would have been the easy option and it is the dishonest one: the
+// public tree is how this product is shown, and a surface that quietly omits
+// the page where sign-in delivery is inspected misrepresents what the platform
+// does. So the item is present, the route resolves, and the page says plainly
+// that the record it reads is live and therefore not here.
+//
+// THE DEMO BRANCH MUST NOT FETCH. Every other operations view can afford a
+// fixture; this one cannot invent send history without inventing a claim about
+// whether sign-in has been working, which is the §7 LIVE-honesty boundary and
+// ruling (5)'s no-verdict posture arriving at the same place from two
+// directions. DemoSendLog therefore has no effect and no request — an
+// unauthenticated call would 401 and render the error state, which would say
+// something false about the server rather than true about the tree.
 //
 // -----------------------------------------------------------------------------
 // RULING (5) GOVERNS THE WHOLE SHAPE: NO HEALTH VERDICT, AND NO GREEN STATE.
@@ -75,6 +92,17 @@ const EMPTY_STYLE = {
   fontStyle: 'italic',
   margin: 0,
   marginTop: 'var(--sh-space-5)',
+};
+
+// The demo-tree absent state. NOT italic, unlike EMPTY_STYLE: the empty state
+// above reports a fact about the data, while this reports a fact about the
+// tree, and rendering the second as a quiet aside would make it read like the
+// first — "no attempts recorded" rather than "this is not where they live".
+const ABSENT_STYLE = {
+  fontSize: 'var(--sh-text-sm)',
+  color: 'var(--sh-text-secondary)',
+  margin: 0,
+  maxWidth: '620px',
 };
 
 // 4 columns: time · outcome · HTTP status · Resend error. minWidth keeps the
@@ -225,6 +253,52 @@ function SendTable({ rows }) {
   );
 }
 
+// Shared by both modes, so the page announces itself identically whichever tree
+// it is mounted on. The h1 matches the nav label exactly ("Sign-in email"),
+// deliberately: A119 files a live defect where the Chrome header and the page
+// heading name the same surface differently, and there is no reason to add a
+// second instance of it here.
+function PageHeader({ headingId }) {
+  return (
+    <div>
+      <h1 id={headingId} style={{
+        fontFamily: 'var(--sh-font-serif)',
+        fontSize: 'var(--sh-text-2xl)',
+        color: 'var(--sh-text-primary)',
+        marginBottom: 'var(--sh-space-2)',
+      }}>
+        Sign-in email
+      </h1>
+      <p style={{
+        fontSize: 'var(--sh-text-md)',
+        color: 'var(--sh-text-secondary)',
+        marginBottom: 'var(--sh-space-8)',
+        maxWidth: '620px',
+      }}>
+        Every attempt to send a sign-in link, most recent first.
+      </p>
+    </div>
+  );
+}
+
+// The demo-tree branch. No fetch, no fixture, no marks: the two marks are
+// whole-table facts about live data, and rendering them as "—" here would
+// present an absence of live data as an absence of sends.
+function DemoSendLog({ headingId }) {
+  return (
+    <>
+      <PageHeader headingId={headingId} />
+      <Card aria-labelledby={headingId}>
+        <p style={ABSENT_STYLE}>
+          This view reads the live record of sign-in emails. Outside a signed-in
+          operations account there is nothing to read, and no sample stands in
+          for it.
+        </p>
+      </Card>
+    </>
+  );
+}
+
 export function AuthenticatedSendLog({ headingId }) {
   const localHeadingId = useId();
   const hid = headingId ?? localHeadingId;
@@ -255,24 +329,7 @@ export function AuthenticatedSendLog({ headingId }) {
 
   return (
     <>
-      <div>
-        <h1 id={hid} style={{
-          fontFamily: 'var(--sh-font-serif)',
-          fontSize: 'var(--sh-text-2xl)',
-          color: 'var(--sh-text-primary)',
-          marginBottom: 'var(--sh-space-2)',
-        }}>
-          Sign-in email
-        </h1>
-        <p style={{
-          fontSize: 'var(--sh-text-md)',
-          color: 'var(--sh-text-secondary)',
-          marginBottom: 'var(--sh-space-8)',
-          maxWidth: '620px',
-        }}>
-          Every attempt to send a sign-in link, most recent first.
-        </p>
-      </div>
+      <PageHeader headingId={hid} />
 
       <Card aria-labelledby={hid}>
         {state.status === 'loading' && (
@@ -309,4 +366,20 @@ export function AuthenticatedSendLog({ headingId }) {
       </Card>
     </>
   );
+}
+
+// The mode switch. useOptionalAppIdentity() is null on the public demo tree
+// (no AppShell provider above it) and carries the identity on the authenticated
+// tree, which is the same predicate OperationsRoster.jsx:589-593 uses.
+//
+// The heading id is minted HERE and passed down, so both branches label their
+// Card against the same h1 rather than each generating an id the other cannot
+// see.
+export default function OperationsSendLog() {
+  const headingId = useId();
+  const isAuthenticated = !!useOptionalAppIdentity();
+
+  return isAuthenticated
+    ? <AuthenticatedSendLog headingId={headingId} />
+    : <DemoSendLog headingId={headingId} />;
 }
