@@ -2859,3 +2859,135 @@ reviewing session, not by the agent.
   the two counsel conversations FT named is unconfirmed.
 - **This session's scratch files under `.git`**, untracked, unreachable from any
   tree, and left in place.
+
+## Session — 2026-09-14
+
+A filing session with no build. It opened on a brief carrying eight rulings from
+a strategy session held outside this repository, asked for two items to be filed,
+and named one question as open. **The session opened at `e2d5a25`, produced no
+code and no migrations, and banked ONE docs commit** carrying four filings and
+this entry: the A30 amendment across index and detail, A135, A136, A137, and the
+record below. Figures are anchored to `e2d5a25`, the session-open HEAD.
+
+**The brief asked for two filings and produced four**, because one of its two
+premises did not survive being checked against the tree. The amendment it asked
+for was made; the arc it asked for was filed as ONE entry rather than as an arc,
+because only one of its three components has a completion state; the open
+question it named was filed standalone; and a fourth entry was opened for a
+record the brief assumed was already here.
+
+### The brief as issued
+
+Reproduced verbatim below, and it is the BRIEF rather than the findings. Nothing
+in this block was verified before it was written, and one of its premises is
+corrected in the section that follows. It is recorded because the rulings in it
+were made elsewhere, and this file is the only place in the repository they are
+written down at all.
+
+```
+StewardHouse — filing session, no build.
+
+Read docs/outstanding.md at HEAD first, then propose-and-hold. No code,
+no migrations, nothing written without a diff I approve.
+
+Context: 9/12/26 strategy session. Positioning and social surface, ruled
+by me. Record lives in project memory (positioning-and-social.md).
+
+Rulings to record:
+- StewardHouse is NIL. Subscription/membership is NIL-related spend and a
+  budget line item. Sell it as part of NIL.
+- Brand strategy is the publicist's or agent's job. Our role is fitting
+  philanthropy into that plan and encouraging giving.
+- Social surface is clean under the no-ranking prohibition. Activity-based
+  visibility is not sorting, ranking, or bias.
+- No ranking or filtering of nonprofits or advisors. No favorites display.
+  That prohibition stands.
+- Athletes or their team, advisors, and athletic departments may all push
+  content. Whoever is active is active.
+- Distribution runs through other platforms (IG, FB, YouTube, Twitch, X).
+  Publishing from StewardHouse to them is where the value is protected.
+- This is app-side, not software-side.
+- Whole arc is post-pilot. It does not move ahead of Discover, A13, A1, or
+  the counsel-gated entries.
+
+Two items to file:
+1. Amend the filed activity-log write-alongside entry. athlete_activity is
+   athlete-scoped; multi-author publishing needs author and author_type on
+   the event plus per-type permissioning on the write path. The current
+   filed entry assumes the narrower shape. Amend it, don't build it.
+2. File the NIL/brand positioning + social publishing surface + app/software
+   split as a named future arc at the appropriate status.
+
+Open, not ruled: advisors and athletic departments are commercially
+interested parties publishing into an athlete-facing surface. Flag as an
+open question for counsel posture. Do not treat as decided.
+```
+
+### What the session found
+
+**The tree had not moved since 2026-09-11.** HEAD was `e2d5a25`, the working tree
+was clean, and `main` and `origin/main` pointed at the same commit. No drift, so
+every figure in `docs/outstanding.md` was read at the revision that wrote it.
+
+**Item 1's premise was inaccurate, and correcting it is why this session filed
+four things rather than two.** The brief names "the filed activity-log
+write-alongside entry" in a context that reads it as a P-2 filing. It is **A30**,
+an existing `Pilot: DEBT` entry that PREDATES P-2. The confusion has a traceable
+source: P-2's own "Newly filed (outside P-2)" list names as new at least two
+items already in this queue — **badge/E10 restoration is A29, and activity-log
+write-alongside is A30.** The amendment the brief asked for was made, to A30 and
+to its detail record; what the brief did not anticipate is that the list it was
+working from is not a list of new items.
+
+**The ratified P-2 ruling record is not in this repository.** A repo-wide grep for
+"VISIBLE HONESTY" at `e2d5a25` returns nothing, against a control returning 4 for
+a phrase known present, and the absence holds under wrap-tolerant normalization.
+Its rulings nevertheless **govern shipped code**: `functions/` cites P-2 L1, L2,
+L4, D6, D7, R2, FORK 1 and FORK 3 by id, in docblocks instructing a reader to
+implement exactly as ruled, and the text those ids name exists only in project
+memory. **Filed as its own entry this session.**
+
+**The counsel question was ruled to file STANDALONE rather than attach to the
+existing E11 counsel gate.** That gate already covers the `athlete` /
+`athlete_note` / `athlete_activity` / `athlete_reflection` write endpoints, but it
+gates them on the E3 unclaimed-row PII posture — what the platform may HOLD —
+where this asks who may PUBLISH. Same endpoint set, different question, and
+clearing E3 would not answer it.
+
+**A structural note came out of that ruling, and it is the kind that is cheaper to
+record now than to rediscover.** Every counsel-gated form in
+`docs/outstanding.md` is a BLOCKING variant: all four such `Pilot:` lines read
+"BLOCKING, and counsel-gated", and **zero POST lines mention counsel at all**. So
+a POST counsel-gated item has no existing form to take, and is reachable by an
+attorney-search grep only through the literal words "counsel posture" in its own
+text rather than through its classification.
+
+**That reliance was then found to be half-broken in this session's OWN output, and
+it was repaired before the commit.** The new entry carries the phrase twice, and
+as first drafted only ONE of the two was reachable by a line-oriented grep: the
+`Blocker:` line carried it contiguously, while the body occurrence was stored as
+`**counsel` / `posture**` ACROSS A LINE BREAK, so a naive search reached the
+entry through its blocker line and not through the sentence that explains it.
+Measured before the repair: three flattened, two line-oriented. This is §10's
+false-zero wrap hazard arriving inside the very filing that depends on the
+phrase being greppable, and it was caught only because the phrase was measured
+both ways rather than once. **The body was rewrapped so the phrase falls on one
+line**, and the two counts now agree at three.
+
+**The arc's queue status was RULED at session end: POST, and filed as A137.**
+The legal values are DEBT, BLOCKING and POST, and the recommendation that had
+been left on the table was taken. **What is filed is the social publishing
+surface ALONE.** The NIL positioning thesis and the app-side rather than
+software-side classification are NOT queue entries and are kept as rulings,
+living in project memory and reproduced in the brief above, **since neither has
+a completion state** — the same reasoning `docs/outstanding.md` already applies
+to the standing state in its own header and CLAUDE.md §6.10 applies to branch
+(c). Item 2 of the brief is therefore discharged in the only part of it a queue
+can hold, and A137 names the other two as rationale so that a later reader meets
+them as deliberate omissions rather than as things nobody got to.
+
+**The deductibility claim in the NIL thesis is unreviewed.** "Dollars spent
+building it out as a business can be written off" has no counsel behind it and was
+not verified here. **Flagged, not filed.** Whether it becomes a counsel question
+is pending, and it is named here so it is not later mistaken for a ruling merely
+because it appeared in a brief alongside eight of them.

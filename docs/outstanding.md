@@ -72,65 +72,76 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 114 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+**As committed: 117 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
 ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
-7, BMF-and-Discover 15, cheap-and-mechanical 31, large 35, and
+7, BMF-and-Discover 15, cheap-and-mechanical 32, large 37, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-11: ONE ENTRY OPENED AND NOTHING
-CLOSED.** OPEN moves 113 to 114, BLOCKING stays 24, DEBT 63 to 64, POST stays
-26, the breakdown to 7 + 16 + 7 + 15 + 31 + 35 + 3 = 114, the counsel-gated line
-unchanged at FOUR OF THE TWENTY-FOUR, and the build chain unchanged at 20 by the
-unchanged definition, 24 - 4 = 20. The diagnostics move with them: the naive
-enumerator 112 against 114, the gap still exactly A50a and A50b, and the
-file-wide `Pilot: DEBT` count 65 against 64, the extra still FJ-7's own line
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14: THREE ENTRIES OPENED AND NOTHING
+CLOSED.** OPEN moves 114 to 117, BLOCKING stays 24, DEBT 64 to 65, POST 26 to
+28, the breakdown to 7 + 16 + 7 + 15 + 32 + 37 + 3 = 117, and the build chain
+unchanged at 20 by the unchanged definition, 24 - 4 = 20. **THE COUNSEL-GATED
+LINE ALSO STAYS AT FOUR OF THE TWENTY-FOUR, AND A135 IS THE REASON TO SAY SO
+RATHER THAN LEAVE IT UNSTATED**: A135 is counsel-blocked, but that roster counts
+BLOCKING items and A135 is POST. A counsel-gated item and a counsel-gated
+BLOCKING item are different sets, and only the second is what the pre-pilot
+counsel chain is made of. The diagnostics move with the totals: the naive
+enumerator 115 against 117, the gap still exactly A50a and A50b, and the
+file-wide `Pilot: DEBT` count 66 against 65, the extra still FJ-7's own line
 inside the FOUNDER JUDGMENT section rather than an OPEN entry.
 
-**ONE ENTRY OPENED: A134**, the production-load runbook, filed at DEBT in
-BMF-and-Discover, which is why that tier alone moves 14 to 15. **NOTHING
-CLOSED.**
+**THREE ENTRIES OPENED: A135, A136 and A137.** A135, the counsel posture on
+advisors and athletic departments publishing into an athlete-facing surface, is
+filed at POST (undetermined) in Large. A137, the social publishing surface
+itself, is filed at POST in Large beside it. Those two move that tier 35 to 37.
+A136, the absent P-2 ruling record, is filed at DEBT in cheap-and-mechanical,
+which moves that tier 31 to 32. **NOTHING CLOSED.**
 
-**FOUR PLACES IN THIS FILE WERE UPDATED IN PLACE: A1, A12, A13 and A113.** A1
-gains the closure condition R35 ruled, that the sandbox rollback exercise does
-not close it by itself; A12 records that its retention question covers
-`error_text` as well as `email`; A13 gains the five rulings of 2026-09-11 and
-the note that shipping makes migration 0021's no-endpoint sentence false; and
-A113 records that slice 2's four start-gating questions are all answered.
+**ONE PLACE IN THIS FILE WAS UPDATED IN PLACE: A30.** Its Blocker line now names
+the multi-author shape alongside the enum-emission question it already carried.
+Its Pilot value is unchanged at DEBT and its Detail pointer is unchanged, and
+the line stays evidence-free per FJ-6 — the shape is named, and the proof for
+it sits in the detail record.
 
-**THREE CHANGES IN TWO OTHER FILES RODE THIS ONE AND ARE COUNTED NOWHERE.**
-`docs/bmf-load-scoping.md` §15 gained R35 through R38 and the advisory-panel
-line as inline blocks, and R32's start-gating question list gained an
-all-four-answered line; CLAUDE.md gained one sentence in §7 after its note on
-where R32 lives, and one in §6.15's 2026-09-09 block.
+**ONE CHANGE IN ONE OTHER QUEUE-RECORD FILE RODE THIS ONE AND IS COUNTED NOWHERE.**
+`docs/filed-defects.md`'s `athlete_activity` record gained an "Amended
+2026-09-14" block carrying the D1 ruling, the multi-author shape, and three
+unruled consequences. CLAUDE.md is untouched.
 
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own
-replace-rather-than-append rule. It recorded one entry closed and one
-reclassified, with OPEN moving 114 to 113, which is the state this change
-supersedes.
-**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: the false-zero filing's
-part (1) transforms run with a known-positive control for EACH of them asserted
-before any result was read, the wrap control spanning a line break and case
-folding included, plus a freshly minted negative token verified to return zero
-across the tracked tree, 264 files at `3294d36`, before any result was read;
-queue ids and R-numbers matched with word boundaries that refuse a trailing
-digit; every insertion anchored on a line asserted to occur EXACTLY ONCE, with
-the R34 anchor rejected for occurring five times and replaced by the unique
-heading that follows it; each entry append placed by walking to the entry's last
-content line rather than by line number; the entry walker asserted to reproduce
-the stated breakdown 7 + 16 + 7 + 15 + 31 + 35 + 3 = 114 before any count was
-trusted; every stated figure re-parsed with the verifier's OWN eight patterns
-against the WORKING TREE before committing, each confirmed to occur exactly once
-and to resolve to the site it is meant to read; every quoted ruling text
-re-compared to its source after wrapping, normalized, and asserted unchanged;
-and line endings measured as carriage-returns-against-line-count before and
-after every write, with a known-CRLF and a known-LF control asserted first.
+replace-rather-than-append rule. It recorded one entry opened and nothing
+closed, with OPEN moving 113 to 114, which is the state this change supersedes.
+**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: the three new A-numbers
+were DERIVED rather than assumed, from the maximum ENTRY-HEADER id rather than
+the maximum token — a distinction that earned itself, because a bare token scan
+returns `A139` from this paragraph's OWN text, where no such entry exists — each
+asserted to carry no entry header before use, against a control returning one
+for `A134`; the "VISIBLE HONESTY" absence was measured twice, once
+literally at `e2d5a25` and once through the false-zero filing's part (1)
+normalization with a positive control spanning a wrap, against a control
+returning 4 for a phrase known present; every source citation written into
+either file was re-resolved by printing its numbered lines, which MOVED TWO of
+them — the attendance-gate citation off the comment at `:155` onto the predicate
+at `:174`, and the enterprise-gate citation onto `:129-130`; every insertion
+anchored on the block's FULL EXTENT rather than its header, per the
+orphaned-body filing, asserted to occur EXACTLY ONCE in a dry run before any
+write, and asserted absent afterwards, which is also what caught a regex-bearing
+anchor this pass mis-escaped and replaced with a numeric one; the quote
+convention measured rather than assumed, which caught one typographic apostrophe
+this pass had itself introduced into a file carrying 365 straight ones and none;
+every stated figure re-derived from the file by a suffix-aware section-scoped
+enumerator BEFORE the edit, reproducing 114 / 112 / 24 / 64 / 26 / 65 exactly,
+and AGAIN after it; and line endings measured as
+carriage-returns-against-line-count before and after every write, with a
+known-CRLF and a known-LF control asserted first, both files being fully CRLF in
+the working tree.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 112 rather than 114, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 115 rather than 117, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 65
-rather than 64, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 66
+rather than 65, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -138,15 +149,15 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 24 BLOCKING, 64 DEBT, 26 POST**, classification ruled
-2026-09-02 and the totals re-derived 2026-09-11,
-of which 5 POST carry "(undetermined)" because their own text does not settle it,
+**AGAINST THE PILOT GATE: 24 BLOCKING, 65 DEBT, 28 POST**, classification ruled
+2026-09-02 and the totals re-derived 2026-09-14,
+of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
 own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 114. The sentence
+totals above, which remain a count of OPEN entries and sum to 117. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -2661,10 +2672,28 @@ author".
 
 **A30 | `athlete_activity` is a table with an event enum, no writer, and three
 consumers reading it as populated.**
-Blocker: deciding which acts emit which enum value.
+Blocker: two unruled questions — which acts emit which enum value, and whether
+the event carries an author, since a multi-author shape would put advisors and
+athletic departments into an athlete-facing record.
 Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed: `athlete_activity` exists as a table
 with an event enum".
+
+**A136 | The ratified P-2 ruling record is not in this repo.**
+Blocker: none named. Documentation reconciliation.
+Pilot: DEBT
+Detail: this entry.
+P-2's rulings — D1 through D10, the three FORK rulings, L1 through L7, and R1
+through R6 — exist only outside this repository. A repo-wide grep for
+"VISIBLE HONESTY" at `e2d5a25` returns nothing, against a control returning 4
+for a phrase known present. **They govern shipped code**: `functions/` cites
+P-2 L1, L2, L4, D6, D7, R2, FORK 1 and FORK 3 by id in docblocks that instruct
+a reader to "implement EXACTLY as ruled", and the text those ids name is
+nowhere a reader can reach it.
+**The record's own "Newly filed (outside P-2)" list names as new at least two
+items already filed here**: badge/E10 restoration is A29, and activity-log
+write-alongside is A30. Reconciling that list against this queue is the work —
+not importing the record wholesale, and not re-filing what it duplicates.
 
 **A35 | `parseRoster.js`'s header docblock denies a file-upload path that has
 existed since 2026-08-27.**
@@ -3233,6 +3262,50 @@ gate ships until E3/E6/E8 counsel clears"; and that document's §11 rulings tabl
 carries a live counsel-status field reading `pending` on all three. The present
 tense in "remain open" is what makes it a standing condition rather than a record
 of the past.
+
+**A135 | Advisors and athletic departments are commercially interested parties
+publishing into an athlete-facing surface.**
+Blocker: counsel posture. Not ruled.
+Pilot: POST (undetermined, needs FT)
+Detail: this entry.
+No capability today writes third-party-authored content into an athlete-facing
+record, so nothing is shipping against an unanswered question. It is filed
+because the multi-author shape on A30 raises it, and because the
+**counsel posture** on who may publish into an athlete's record — when the
+publisher has a commercial interest in that athlete — has never been put.
+**This is a DIFFERENT QUESTION ON THE SAME ENDPOINT SET.** The E11 gate already
+counsel-gates `athlete` / `athlete_note` / `athlete_activity` /
+`athlete_reflection` writes, and it gates them on the E3 **unclaimed-row PII**
+posture: whether a real name and email belonging to a non-signing party is
+personal data. That asks what the platform may HOLD. This asks who may PUBLISH,
+and it is not answered by clearing E3.
+Related: A30 (the table and the multi-author shape), A68 (the E3/E6/E8 seams).
+
+**A137 | The social publishing surface — multi-author content published from
+StewardHouse out to external platforms.**
+Blocker: post-pilot by ruling. Does not move ahead of Discover, A13, A1 or the
+counsel-gated entries.
+Pilot: POST
+Detail: this entry; `docs/session-log.md`, the 2026-09-14 entry.
+Ruled 2026-09-12, recorded 2026-09-14. The surface lets athletes or their team,
+advisors, and athletic departments push content; **whoever is active is active.**
+Activity-based visibility is not sorting, ranking or bias, so the surface is
+clean under the no-ranking prohibition, and **that prohibition stands intact**:
+no ranking or filtering of nonprofits or advisors, and no favorites display.
+Distribution runs through external platforms — Instagram, Facebook, YouTube,
+Twitch and X — and publishing from StewardHouse out to them is where the value
+sits.
+**TWO RULINGS PRODUCED THIS ENTRY AND ARE DELIBERATELY NOT FILED AS QUEUE
+ITEMS**, named here as rationale rather than as scope: the NIL/brand positioning
+thesis, and the app-side rather than software-side classification. **Neither has
+a completion state**, which is the same reason this file keeps its own standing
+state out of the count and CLAUDE.md §6.10 keeps branch (c) out. Both live
+outside this repository; `docs/session-log.md`'s 2026-09-14 entry carries them
+verbatim.
+**This entry is the SURFACE; A30 and A135 are its unruled preconditions.** A30
+carries the multi-author shape on `athlete_activity`, and A135 the counsel
+posture on commercially interested parties publishing into an athlete-facing
+surface.
 
 **A85 | Lesson deletion has no endpoint, and the authenticated advisor is told
 so after the attempt.**

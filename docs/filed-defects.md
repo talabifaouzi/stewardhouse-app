@@ -1118,6 +1118,67 @@ the `SignIn.jsx` closed record above names by its own name.
 values and when, and the `gift_made` value additionally touches the accepted
 Phase-1 boundary on enterprise gift tracking.
 
+**Amended 2026-09-14. AMENDMENT ONLY — THIS IS NOT A BUILD ITEM**, and the
+amendment makes that sharper rather than softer. Three things postdate the
+filing above, and the first of them converts "no fix proposed" from a gap into a
+decision.
+
+**(a) P-2 RULED THE TABLE STAYS UNWRITTEN (D1), AND THAT RULING POSTDATES THIS
+FILING. It is recorded here on FT's statement and IS NOT CHECKABLE IN THIS
+REPOSITORY**, because the ratified P-2 ruling record is not in it — which is its
+own queue entry, A136. So the paragraph above understates the position: there is
+a ruling, it is that nothing writes the table for now, and the three consumers
+go on reading an array that is empty by construction rather than by observation.
+**The distinction matters for how this entry is read.** A gap invites someone to
+close it; a ruling does not. Nothing here should be built because it looks
+unfinished.
+
+**(b) THE MULTI-AUTHOR SHAPE.** Writing the table for more than one author means
+the event carries an `author` and an `author_type`, and the write path carries
+per-type permissioning. **The table as built has neither.** Its columns are
+`id`, `athlete_id`, `date`, `type`, `label` and `created_at`
+(`migrations/0009_enterprise_schema.sql:232-241`), so an author dimension is a
+MIGRATION, not a column already present and unused — which is the cheaper thing
+a reader might assume from a table that already exists.
+
+**(c) THREE CONSEQUENCES, NONE OF THEM RULED.**
+
+**1. Per-type permissioning is a SECOND GATE, not a filter on the first.** The
+gate expresses exactly one principal, a staff person row
+(`functions/_lib/gate.js:129-130`). An advisor is not expressible at all, so
+per-type permissioning is a second gate rather than a filter on the first. The
+athletic department is expressible only as a named staff member, not as the
+institution, so multi-author publishing also raises an authorship question the
+gate cannot represent **even for the principal it does admit.**
+
+**2. E6 claim-gates the write path in ANY shape.** Every existing write against
+an athlete's own record already requires `management_mode = 'delegated'` EXACTLY
+**and** `person_id IS NOT NULL` — `functions/api/athletes/[id].js:273-274` for
+progression, and the same predicate at
+`functions/api/workshops/[id]/attendance.js:174` for attendance. An authored
+activity event is a write on the athlete's own record, so it inherits that gate
+whoever the author is. **A third party therefore cannot publish into the record
+of an athlete who has chosen self-management**, and that is the E6
+athlete-owns ruling working as designed rather than an obstacle to route around.
+
+**3. ON DELETE CASCADE destroys third-party authored events with the athlete's
+record.** `athlete_id` is declared `REFERENCES athlete(id) ON DELETE CASCADE`
+(`migrations/0009_enterprise_schema.sql:234`). Today that is harmless, because
+nothing writes the table. Under a multi-author shape it means an athlete
+deletion takes an advisor's or a department's authored events with it, with no
+record that they existed. **That is the D5 fault line again** — whose record is
+it, and what survives a deletion — arriving on a table where the answer has
+never been put. Note that the sibling column `athlete.person_id` is
+`ON DELETE SET NULL` rather than CASCADE, so the two are already not consistent
+about what a departing account takes with it.
+
+**WHERE THIS SITS: POST-PILOT, BEHIND Discover, A13, A1 and the counsel-gated
+entries.** Nothing here is scheduled and nothing here should be scheduled ahead
+of those. The counsel question the multi-author shape raises — advisors and
+athletic departments as commercially interested parties publishing into an
+athlete-facing surface — is filed separately as A135, because it is a question
+about permission rather than about this table.
+
 **Filed: the BMF rollback path is a stated precondition on a production BMF
 load, and it lives only in the scoping doc rather than in this queue.**
 `docs/bmf-load-scoping.md`, section 13, "The availability ruling", under its
