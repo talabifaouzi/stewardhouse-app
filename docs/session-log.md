@@ -2844,10 +2844,25 @@ reviewing session, not by the agent.
 - **The four slice-2 rulings drafted for commit C**, pending the advisory team,
   with ruling 1 now reading that the production load waits on A1 and A13 rather
   than on A1 alone. No commit C exists.
-- **A13's five rulings**, pending the team, with A13's build to open next
-  session on a branch.
-- **Slice 2's definition of done**, unwritten. R21a requires it before the
-  build.
+- **A13's five rulings**, recorded here as pending the team — **CORRECTED
+  2026-09-14: they were RULED 43 minutes after this entry banked.** `3294d36`,
+  carrying this entry, is timestamped 15:32:21; `e2d5a25` at 16:15:42 the same
+  day records them in `docs/outstanding.md`'s A13 entry as ruled by the advisory
+  team with no dissent. **This entry could not have known**, because `3294d36`
+  is an ancestor of `e2d5a25` and the ruling did not exist when the log closed.
+  The original clause is kept rather than deleted: it was true when written, and
+  what the correction records is the queue and the log disagreeing for as long
+  as nobody re-read one against the other.
+- **Slice 2's definition of done**, unwritten. **ATTRIBUTION CORRECTED
+  2026-09-14: R21a does NOT require it.** R21a is scoped to SLICE 1 by its own
+  text — `docs/bmf-load-scoping.md:2261-2264` reads "SLICE 1's DEFINITION OF DONE
+  IS WRITTEN BEFORE IT IS BUILT, or it drifts", and its fifteen-item list is
+  slice 1's. What is ruled for EVERY slice is **R21c**, which takes R7, R8c and
+  R8e OUT of every slice's definition of done — **a subtraction that presupposes
+  the thing without ever writing it.** **The item itself stands unchanged**: no
+  definition of done for slice 2 exists anywhere in the tree. Only the rule it
+  was hung on was wrong, and a requirement attributed to a rule that does not
+  make it is a requirement nobody can be held to.
 - **Three unanchored citations of
   `docs/enterprise-persistence-scoping.md:524-526`**, at
   `docs/outstanding.md:1108`, `:3173` and `:3408`, plus the five displaced

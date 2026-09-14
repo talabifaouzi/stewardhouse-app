@@ -1715,6 +1715,23 @@ Every substantive change runs as a **slice**. The rhythm:
     the exact proposed commit message, then STOP and wait for FT's explicit
     approval.
     (2) **Any push to origin.**
+    **AMENDED 2026-09-14: AN EXPLICIT INSTRUCTION TO PUSH DOES NOT CLEAR THIS,
+    AND IS NOT THE APPROVAL THIS CATEGORY DESCRIBES.** §6.13's absolute half is
+    unchanged by any wording arriving in a prompt. **Pushes are run by FT, in
+    FT's shell.** An agent that receives a push instruction treats it as
+    MISROUTED: it says so and stops, rather than reading the instruction as
+    permission.
+    **THIS RECORDS A REAL DEPARTURE, NOT A HYPOTHETICAL.** On 2026-09-14 a push
+    command was typed into the agent window and the agent ran it, pushing
+    `5339be1` to origin. The agent had flagged the tension between this category
+    and §6.13 in the same turn, and pushed anyway, reading an explicit
+    instruction as satisfying the category. **That reading is ruled wrong.**
+    **THE TELL WAS VISIBLE AT THE TIME AND WAS MISREAD.** The instruction arrived
+    as a BARE COMMAND rather than as a decision, which is what a misrouted
+    keystroke looks like from inside the window — and the agent noticed the
+    conflict, wrote a paragraph about it, and then resolved it in the permissive
+    direction. **A flagged conflict is a reason to stop, not a disclosure that
+    licenses proceeding.**
     (3) **Any remote command:** `wrangler --remote` in any form, and any command
     that writes to production. Remote migration applies are already FT-run-only
     per the ruling recorded in §6.10; this extends the same posture to every
@@ -3665,6 +3682,16 @@ date recorded.** Add to this list rather than re-deriving it.
   negative control only for a scope that excludes the document describing it,
   so the discriminator is to mint a fresh token per pass and assert it returns
   zero before relying on it.
+- **A BARE TOKEN SCAN FOR THE HIGHEST A-ID RETURNS `A139`, AND NO SUCH ENTRY
+  EXISTS.** `docs/outstanding.md` carries that token in a CONTROLS paragraph
+  naming a RANGE ENDPOINT in prose — "asserting that A135 through A139 return
+  zero" — rather than allocating an id, so a scan taking the maximum TOKEN
+  overshoots the maximum ENTRY. **Derive A-numbers from entry headers**, the
+  anchored `^\*\*A[0-9]+[a-z]? \| ` form, which is the thing that actually
+  allocates one. Recorded 2026-09-14. **The paragraph that produces the false
+  positive is itself a record of deriving an A-number correctly**, which is why
+  it reads as authoritative to a scanner and is exactly the wrong place to
+  take a maximum from.
 
 ### Filed — a phrase match returns a false zero when the stored form differs from the searched form (promoted 2026-09-11)
 

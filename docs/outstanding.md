@@ -72,51 +72,55 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 117 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+**As committed: 118 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
 ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
-7, BMF-and-Discover 15, cheap-and-mechanical 32, large 37, and
+7, BMF-and-Discover 15, cheap-and-mechanical 33, large 37, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-14: THREE ENTRIES OPENED AND NOTHING
-CLOSED.** OPEN moves 114 to 117, BLOCKING stays 24, DEBT 64 to 65, POST 26 to
-28, the breakdown to 7 + 16 + 7 + 15 + 32 + 37 + 3 = 117, and the build chain
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (second): ONE ENTRY OPENED AND
+NOTHING CLOSED.** OPEN moves 117 to 118, BLOCKING stays 24, DEBT 65 to 66, POST
+stays 28, the breakdown to 7 + 16 + 7 + 15 + 33 + 37 + 3 = 118, and the build chain
 unchanged at 20 by the unchanged definition, 24 - 4 = 20. **THE COUNSEL-GATED
 LINE ALSO STAYS AT FOUR OF THE TWENTY-FOUR, AND A135 IS THE REASON TO SAY SO
 RATHER THAN LEAVE IT UNSTATED**: A135 is counsel-blocked, but that roster counts
 BLOCKING items and A135 is POST. A counsel-gated item and a counsel-gated
 BLOCKING item are different sets, and only the second is what the pre-pilot
 counsel chain is made of. The diagnostics move with the totals: the naive
-enumerator 115 against 117, the gap still exactly A50a and A50b, and the
-file-wide `Pilot: DEBT` count 66 against 65, the extra still FJ-7's own line
+enumerator 116 against 118, the gap still exactly A50a and A50b, and the
+file-wide `Pilot: DEBT` count 67 against 66, the extra still FJ-7's own line
 inside the FOUNDER JUDGMENT section rather than an OPEN entry.
 
-**THREE ENTRIES OPENED: A135, A136 and A137.** A135, the counsel posture on
-advisors and athletic departments publishing into an athlete-facing surface, is
-filed at POST (undetermined) in Large. A137, the social publishing surface
-itself, is filed at POST in Large beside it. Those two move that tier 35 to 37.
-A136, the absent P-2 ruling record, is filed at DEBT in cheap-and-mechanical,
-which moves that tier 31 to 32. **NOTHING CLOSED.**
+**ONE ENTRY OPENED: A138**, the Resend error-name allowlist carrying a single
+name with the published set unfetched, filed at DEBT in cheap-and-mechanical,
+which is why that tier alone moves 32 to 33. **NOTHING CLOSED.**
 
-**ONE PLACE IN THIS FILE WAS UPDATED IN PLACE: A30.** Its Blocker line now names
-the multi-author shape alongside the enum-emission question it already carried.
-Its Pilot value is unchanged at DEBT and its Detail pointer is unchanged, and
-the line stays evidence-free per FJ-6 — the shape is named, and the proof for
-it sits in the detail record.
+**NO ENTRY IN THIS FILE WAS UPDATED IN PLACE.** The change is one appended entry
+and the arithmetic that follows from it.
 
-**ONE CHANGE IN ONE OTHER QUEUE-RECORD FILE RODE THIS ONE AND IS COUNTED NOWHERE.**
-`docs/filed-defects.md`'s `athlete_activity` record gained an "Amended
-2026-09-14" block carrying the D1 ruling, the multi-author shape, and three
-unruled consequences. CLAUDE.md is untouched.
+**NO OTHER QUEUE-RECORD FILE CHANGED.** `docs/filed-defects.md` is untouched.
+**Two NON-queue-record files did change and are counted nowhere**, per the
+2026-09-14 ruling that this paragraph counts queue-record files only: CLAUDE.md
+gained a §6.15 amendment on push authority and a §10 false-positive bullet, and
+`docs/session-log.md` gained two corrections inside its 2026-09-11 entry.
 
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own
-replace-rather-than-append rule. It recorded one entry opened and nothing
-closed, with OPEN moving 113 to 114, which is the state this change supersedes.
-**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: the three new A-numbers
-were DERIVED rather than assumed, from the maximum ENTRY-HEADER id rather than
-the maximum token — a distinction that earned itself, because a bare token scan
-returns `A139` from this paragraph's OWN text, where no such entry exists — each
-asserted to carry no entry header before use, against a control returning one
-for `A134`; the "VISIBLE HONESTY" absence was measured twice, once
+replace-rather-than-append rule. It recorded three entries opened and nothing
+closed, with OPEN moving 114 to 117, which is the state this change supersedes.
+**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: A138 was DERIVED from the
+maximum ENTRY-HEADER id and asserted to carry no header before use, against a
+control confirming A137 does — the token-scan trap this paragraph itself
+produces is now filed in §10's known-false-positives register rather than left
+to be rediscovered; every stated figure re-derived by a suffix-aware
+section-scoped enumerator before and after the write; the verifier's own eight
+patterns simulated against the WORKING TREE, since the script reads the
+committed blob and cannot attest to an uncommitted edit; every insertion
+anchored on a block's FULL EXTENT and asserted to occur EXACTLY ONCE in a dry
+run, with append-style replacements exempted from the residue check by name
+rather than by silence; the quote convention measured after every write; and
+line endings measured as carriage-returns-against-line-count on all three files,
+with a known-CRLF and a known-LF control asserted first. **Retained from the
+superseded block because it is still the record of how A135 and A136 were
+derived: the "VISIBLE HONESTY" absence was measured twice, once
 literally at `e2d5a25` and once through the false-zero filing's part (1)
 normalization with a positive control spanning a wrap, against a control
 returning 4 for a phrase known present; every source citation written into
@@ -137,11 +141,11 @@ known-CRLF and a known-LF control asserted first, both files being fully CRLF in
 the working tree.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 115 rather than 117, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 116 rather than 118, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 66
-rather than 65, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 67
+rather than 66, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -149,7 +153,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 24 BLOCKING, 65 DEBT, 28 POST**, classification ruled
+**AGAINST THE PILOT GATE: 24 BLOCKING, 66 DEBT, 28 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-14,
 of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -157,7 +161,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 117. The sentence
+totals above, which remain a count of OPEN entries and sum to 118. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -2734,6 +2738,30 @@ nowhere a reader can reach it.
 items already filed here**: badge/E10 restoration is A29, and activity-log
 write-alongside is A30. Reconciling that list against this queue is the work —
 not importing the record wholesale, and not re-filing what it duplicates.
+
+**A138 | The Resend documented-error-name allowlist carries one name, and the
+published set was never fetched.**
+Blocker: none named. It needs a SOURCE, not a decision.
+Pilot: DEBT
+Detail: `functions/_lib/sendOutcome.js`, its allowlist note; CLAUDE.md §11, the
+2026-07-20 incident, whose quoted response body is the only evidence there is.
+`RESEND_DOCUMENTED_ERROR_NAMES` holds exactly one entry, `validation_error`,
+taken from the body CLAUDE.md §11 quotes verbatim:
+`{"statusCode":401,"name":"validation_error","message":"API key is invalid"}`.
+**That is the whole of the evidence in this repository.** Resend's published
+error set is not here and was NOT fetched when the parser was written, by FT's
+ruling at build time.
+**THE GAP ERRS TOWARD SAYING LESS, WHICH IS WHY IT SHIPPED RATHER THAN
+BLOCKING.** A name absent from the allowlist reads as unrecognized, which is
+A13 ruling (2)'s own default for a failure it cannot classify. So an incomplete
+list WITHHOLDS a name it could have shown; it never ASSERTS a name that is
+wrong. The cost is a real Resend name rendering as unrecognized until someone
+adds it, and that is a smaller cost than a name written from recollection —
+which is the failure A136 exists to record.
+**CLOSING IT NEEDS A RETRIEVAL DATE, not just the names.** A vendor's error set
+is a moving target, so a list with no date cannot be audited against the version
+it came from, and a later reader cannot tell whether an absent name was never
+published or merely published after the list was written.
 
 **A35 | `parseRoster.js`'s header docblock denies a file-upload path that has
 existed since 2026-08-27.**
