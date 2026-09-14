@@ -738,6 +738,36 @@ itself, and that A1 closes only with FT's ruling on A116 or FT's recorded
 acceptance of the risk. **That condition is unaffected by A13 and is now the
 whole of what stands between the queue and the run.**
 
+**CLOSURE CONDITION CHANGED BY FT, 2026-09-14. THE ACCEPTANCE LIMB IS GONE.**
+R35 offered two ways to close: a ruling on A116, or **FT's recorded acceptance
+of the transfer risk**. **FT HAS RULED THAT A1 DOES NOT CLOSE ON ACCEPTANCE.**
+The rollback exercise runs **at production-comparable volume on the sandbox
+first**, and **A1 CLOSES ON EVIDENCE.** The paragraphs above are kept because
+they record the condition that stood from 2026-09-11 to 2026-09-14, and because
+R35's other half — that the exercise does not close A1 BY ITSELF — is not what
+changed.
+
+**FILED 2026-09-14: SECTION 12 IS NOT EVIDENCE ABOUT RECOVERY, AND THE RECORD
+IMPLIED IT WAS.** The scoping doc's section 12 carries four runs at roughly
+1.96M rows against a real remote D1, and they are cited around this entry as the
+large-scale evidence this project has. **NO RUN IN SECTION 12 EXERCISED A
+ROLLBACK, AT ANY SCALE.** All four measured read availability during a
+**SUCCESSFUL** import. Its MODE FAIL describes the PROBE's reads failing while
+the import ran; its 239 error samples carry one string, the
+long-running-import error, which reports an import in progress rather than one
+that broke; and its before/after records **"1,957,340 rows intact, aside gone,
+integrity_check ok"** — a clean swap.
+**WHAT SECTION 12 DOES ESTABLISH, stated so the filing does not read as
+dismissal.** That **the volume is survivable**, reproducibly, at load-one scale
+on remote D1; and that **reads degrade predictably while it loads**, failing
+fast at near-baseline latency with no staleness and no partial counts. **Both
+are real and both are useful to this entry.** Neither is about recovery.
+**THE CONFLATION IS EASY AND THAT IS WHY IT IS FILED**: a section headed MODE
+FAIL, reporting an error string, reads like a failure experiment at a glance,
+and it is the opposite — the failure is the probe's, caused by the import
+SUCCEEDING. **The same filing is recorded in section 12 itself**, so a reader
+arriving from either side meets it.
+
 ### Tier 5
 
 **A59 | Nav buttons sit at roughly 31px against the LOCKED 44px standard, and

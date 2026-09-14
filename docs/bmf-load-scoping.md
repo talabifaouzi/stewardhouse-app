@@ -1180,6 +1180,37 @@ three runs, with detection genuinely enabled each time. **No partial counts**:
 each run returned only its two expected values and nothing between them. **No
 queueing inside any window.**
 
+### WHAT THESE RUNS ARE EVIDENCE FOR, AND WHAT THEY ARE NOT
+
+**Filed 2026-09-14, because this section is cited as bearing on A1 and it does
+not.** Nothing above is retracted; what follows bounds it.
+
+**NO RUN IN THIS SECTION EXERCISED A ROLLBACK. NOT ONE, AT ANY SCALE.** All four
+runs measured read availability during a **SUCCESSFUL** import. The evidence
+says so in its own terms: MODE FAIL describes the PROBE's reads failing while
+the import ran, not the import failing; the 239 error samples carry exactly one
+string, the long-running-import error quoted above, which is the service
+reporting an import IN PROGRESS rather than one that broke; and the shape's own
+before/after check records **"1,957,340 rows intact, aside gone,
+integrity_check ok"** — a clean swap, not a recovered failure.
+
+**SO THIS SECTION IS EVIDENCE FOR TWO THINGS AND A THIRD IS OFTEN READ INTO
+IT.** It establishes that **the volume is survivable**: roughly 1.96M rows load
+in 14.4 to 17.8 seconds server-side, reproducibly, against a real remote D1. And
+it establishes that **reads degrade predictably while it loads**: they fail fast
+at near-baseline latency rather than queueing, with no staleness and no partial
+counts. **It establishes NOTHING about recovery**, because nothing was ever
+recovered from.
+
+**THE DISTINCTION MATTERS BECAUSE THE TWO ARE EASY TO CONFLATE AT A GLANCE.** A
+section headed MODE FAIL, reporting an error string, reads like a failure
+experiment. It is the opposite: the failure is the probe's, deliberately
+induced by the import succeeding, and the import's own outcome was success every
+time.
+
+**A1 ASKS A QUESTION THIS SECTION DOES NOT TOUCH**, and A1 now carries the same
+filing on its own entry so a reader arriving from either side meets it.
+
 ### Run 1, the first observation, and why it is not the primary evidence
 
 | Measurement | Figure |
@@ -1267,6 +1298,27 @@ the one thing that can be reasoned about.
 **SAMPLING PRECISION IS NO LONGER THE LIMITING FACTOR.** The bound is +/-219 ms
 against a 3,288 ms spread, so **variance dominates measurement error by about
 15x**, and finer sampling would buy nothing.
+
+**FILED 2026-09-14: THE END-STATE ROW COUNT AND THE RUN ORDER CANNOT BOTH BE
+RIGHT AS PRESENTED, AND THIS IS FILED RATHER THAN RECONSTRUCTED.** The
+aside-swap shape drops the live table and renames the aside, so **each run
+leaves its own file's row count behind**. Presented in the order A, B, C, run C
+uses File A and would leave **1,900,000**. The artifact-disposition row records
+the database as holding **1,957,340 synthetic rows at the end of the last run**,
+which is File B's count.
+**EITHER THE EXECUTION ORDER DIFFERS FROM THE PRESENTATION ORDER, OR ONE FIGURE
+IS IMPRECISE.** Nothing here decides which, and **no per-run before/after counts
+exist in this document to check against** — the probe's "two expected values"
+are described but never given as numbers. **A reconstruction was attempted and
+abandoned deliberately**: the only ordering that satisfies "Runs A and C used
+the same file against the same starting table" leaves File A's count at the end,
+which is the reading the disposition row contradicts.
+**NOTHING ABOVE DEPENDS ON THE ANSWER.** The window figures are per-run and
+measured; the import-file row counts are properties of the files; and the
+survivability and read-degradation findings hold under either reading. **What
+the gap costs is the ability to reconstruct the sequence**, which matters only
+if a future run needs to reproduce the starting conditions — and that is exactly
+what a rollback exercise would need.
 
 **The DROP-then-RENAME shape cost is NOT established, and an earlier figure is
 WITHDRAWN.** Run 1 was 14,436 ms for 5,548 statements and 1,957,340 rows with no

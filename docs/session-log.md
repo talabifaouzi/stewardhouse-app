@@ -3010,12 +3010,13 @@ because it appeared in a brief alongside eight of them.
 ## Session — 2026-09-14 (second)
 
 A docs session with no build, opening on a completed merge and closing on a
-closure. **It banked FOUR commits**: `af4b07b`, five items across CLAUDE.md,
+closure. **It banked FIVE commits**: `af4b07b`, five items across CLAUDE.md,
 the queue and this file; the A13 closure below; an A139 amendment that refuted
-the entry the closure had just filed; and FT's ruling on the purpose question
-that amendment isolated. **It began mid-flight**, with the A13 build already
-merged to `main` at `51fee6f` and three files carrying uncommitted edits from
-the session before it.
+the entry the closure had just filed; FT's ruling on the purpose question that
+amendment isolated; and a section 12 filing recording that the one large-scale
+experiment this project has run is not evidence about recovery.
+**It began mid-flight**, with the A13 build already merged to `main` at
+`51fee6f` and three files carrying uncommitted edits from the session before it.
 
 ### `af4b07b` — §6.15, A138, A139, and two corrections here
 
@@ -3243,6 +3244,44 @@ change to move no figure, by a different mechanism than the first: the fourth
 concealed a premise being refuted, the fifth conceals a ruling. **A ruling that
 moves no figure is the hardest kind to find later**, and the queue header now
 says so.
+
+### The section 12 filing, and a closure condition that lost a limb
+
+**A figures pass produced the number the panel had argued around without
+measuring**, and the number was not the finding. **Load one is 1,964,958 rows**,
+derived twice and independently — by counting the five extract CSVs on disk
+(1,964,958 after one header line each, with a control confirming exactly one
+non-data line per file and therefore no embedded newlines) and by counting the
+emitted artifact's tuple lines, 1,964,958 of them against 5,805 statement lines,
+residue zero. **The section 12 runs held up to 1,957,340**, a delta of 7,618
+rows or **0.389%**.
+
+**ONE METHOD FAILED AND IS RECORDED RATHER THAN DROPPED.** A stream-count of the
+three-character tuple separator returned ZERO, because the artifact is
+newline-delimited. **A zero from a pattern never proven to match is the §10
+shape**, and it was discarded rather than reported.
+
+**THE FINDING WAS THAT NO RUN IN SECTION 12 EXERCISED A ROLLBACK, AT ANY
+SCALE.** All four measured read availability during a SUCCESSFUL import: MODE
+FAIL is the PROBE's reads failing, the single error string reports an import in
+progress, and the before/after records a clean swap with integrity_check ok.
+**The record around A1 cited section 12 as the large-scale evidence this project
+has**, which it is — for volume survivability and predictable read degradation.
+**Not for recovery.** The filing is recorded on A1 and in section 12 itself so a
+reader arriving from either side meets it.
+
+**AN INCONSISTENCY IS FILED AND DELIBERATELY NOT RECONSTRUCTED.** The aside-swap
+leaves each run's own file count behind, so A/B/C in that order ends at File A's
+1,900,000, while the disposition row records 1,957,340. **No per-run
+before/after counts exist to check against**, and the reconstruction was
+attempted and abandoned rather than guessed.
+
+**FT CHANGED A1's CLOSURE CONDITION IN THE SAME BREATH, AND THE ACCEPTANCE LIMB
+IS GONE.** R35 offered two closes: a ruling on A116, or FT's recorded acceptance
+of the transfer risk. **A1 no longer closes on acceptance.** The exercise runs at
+production-comparable volume on the sandbox first, and **A1 closes on evidence.**
+Recorded on the entry beside the condition it replaces, which stood for three
+days.
 
 **A line-ending measurement, recorded because CLAUDE.md §10 states otherwise.**
 All five of CLAUDE.md, `docs/outstanding.md`, `docs/filed-defects.md`,
