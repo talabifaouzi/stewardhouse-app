@@ -3010,15 +3010,16 @@ because it appeared in a brief alongside eight of them.
 ## Session — 2026-09-14 (second)
 
 A docs session with no build, opening on a completed merge and closing on a
-closure. **It banked EIGHT commits** — **a figure CORRECTED 2026-09-14, having
-read FIVE while the list beside it named seven**: `af4b07b`, five items across
-CLAUDE.md, the queue and this file; the A13 closure below; an A139 amendment
-that refuted the entry the closure had just filed; FT's ruling on the purpose
-question that amendment isolated; a section 12 filing recording that the one
-large-scale experiment this project has run is not evidence about recovery; an
-ordering reversal putting A113 upstream of A1's exercise; an A141 amendment
-that answered one half of that entry and corrected the other; and the A142
-filing, the unreviewed tax claim.
+closure. **It banked NINE commits** — **a figure CORRECTED 2026-09-14, having
+read FIVE while the list beside it named seven, and maintained by re-counting
+the list on every commit since**: `af4b07b`, five items across CLAUDE.md, the
+queue and this file; the A13 closure below; an A139 amendment that refuted the
+entry the closure had just filed; FT's ruling on the purpose question that
+amendment isolated; a section 12 filing recording that the one large-scale
+experiment this project has run is not evidence about recovery; an ordering
+reversal putting A113 upstream of A1's exercise; an A141 amendment that
+answered one half of that entry and corrected the other; the A142 filing, the
+unreviewed tax claim; and FT's ruling on A92, which unblocked A139.
 **It began mid-flight**, with the A13 build already merged to `main` at
 `51fee6f` and three files carrying uncommitted edits from the session before it.
 
@@ -3415,6 +3416,55 @@ count that listed already-pushed commits as unpushed: **a figure maintained from
 memory rather than derived from the thing it counts.** The queue header's own
 figures are re-derived by an enumerator every commit and have not drifted once;
 these two were not, and both did.
+
+### A92 ruled YES, on a better ground than the panel found
+
+**FT ruled that the account type may be emitted in the send-log view, and the
+ground is not the one the panel argued over.** The panel split on population
+cardinality — whether a four-value enum that names one address today is the
+disclosure ruling (3) omitted. **FT ruled on the ops-EXCLUSIVITY condition
+already in the record instead.** `gate.js:168-171` authorizes a full-fidelity
+operator view "valid ONLY while ops is FT exclusively", so **at one ops account
+the operator and the subject are the same person**, and the type discloses
+nothing to its only reader. **The disclosure argument fails not because the enum
+is coarse but because there is nobody to disclose to.**
+
+**THAT GROUND IS BETTER THAN THE PANEL'S FOR THE REASON ALEX GAVE AGAINST THE
+PANEL'S.** Alex objected that a rule scoped to "fields that currently resolve to
+one subject" cannot be checked without re-running the population query, so a
+future reader cannot tell what it covers. **An ops-exclusivity condition is
+checked by asking how many ops accounts exist** — one discrete fact, with a
+discrete triggering event — and the ruling says explicitly that a second ops
+account triggers a revisit BEFORE that account is usable. **The disclosure
+becomes real at a moment rather than gradually.**
+
+**AND THE CONDITION IS NOT NEW, WHICH IS WHAT MAKES IT LOAD-BEARING.**
+`gate.js:162-166` already requires the Q6 posture re-ruled before a second ops
+account exists, and records that the ops-minting guard in `invites.js` is what
+restores that premise rather than merely asserting it. **The ruling attaches to a
+condition the code carries in two places**, and goes with the guard if the guard
+is ever removed.
+
+**A92 STAYS OPEN, AND THE REASON IS WORTH KEEPING.** What FT answered is the
+question A139's scope pass ROUTED THROUGH A92 — "may a field that names one
+subject be emitted to an ops operator" — because A139's blocker line pointed
+there. **That was A139's question wearing A92's number.** A92's own title
+question is about the `email` column, and it is untouched: ruling (3) stands, the
+column is omitted, and the type is emitted ALONGSIDE that omission rather than in
+place of it. The cost A92 names in its own first paragraph, an operator unable to
+tell which address a failure belongs to, **is not fixed by a class label.** So
+what is discharged is A92's ROLE AS A139's BLOCKER, not A92.
+
+**A139 IS UNBLOCKED AND ROUTE (b) SURVIVES.** Route (a) was refuted by A139's own
+scope pass, cumulatively; the read-time join on `person` is what remains, so the
+fork the entry opened with closed by elimination on one side and by ruling on the
+other. **Nothing was built.** A139 stays DEBT and now inherits A92's
+ops-exclusivity condition rather than settling it.
+
+**NOTHING OPENED OR CLOSED AND NO FIGURE MOVED.** This is the third change in the
+day to say so, and the least visible of the three: **an unblocking moves no count
+at all.** A92 did not close because the answer was to a borrowed question; A139
+did not close because being unblocked is not being built.
 
 **A line-ending measurement, recorded because CLAUDE.md §10 states otherwise.**
 All five of CLAUDE.md, `docs/outstanding.md`, `docs/filed-defects.md`,

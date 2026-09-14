@@ -77,16 +77,22 @@ ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
 7, BMF-and-Discover 17, cheap-and-mechanical 33, large 38, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (ninth): ONE ENTRY OPENED AT
-BLOCKING AND NOTHING CLOSED.** OPEN moves 120 to 121 and **BLOCKING 23 to 24**;
-DEBT stays 67 and POST stays 30. A142 sits in Large, so that tier alone moves
-**37 to 38** and the breakdown reads 7 + 16 + 7 + 17 + 33 + 38 + 3 = 121.
-**THE BUILD CHAIN MOVES 19 TO 20**, because its definition is BLOCKING minus the
-counsel-gated four and BLOCKING rose while the roster did not. The counsel-gated
-sentence moves with it, from four of the twenty-three to **four of the
-twenty-four**. The diagnostics move with OPEN: the naive enumerator 119 against
-121, the gap still exactly A50a and A50b, and the file-wide `Pilot: DEBT` count
-**unchanged at 68 against 67**, because A142 is BLOCKING rather than DEBT.
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (tenth): NOTHING OPENED AND NOTHING
+CLOSED. EVERY FIGURE IS UNCHANGED.** OPEN 121, BLOCKING 24, DEBT 67, POST 30,
+the breakdown 7 + 16 + 7 + 17 + 33 + 38 + 3 = 121, the build chain 20 by the
+unchanged definition, 24 - 4 = 20, and the counsel-gated roster four of the
+twenty-four. The diagnostics are unchanged with them: the naive enumerator 119
+against 121, the gap still exactly A50a and A50b, and the file-wide
+`Pilot: DEBT` count 68 against 67, the extra still FJ-7's own line inside the
+FOUNDER JUDGMENT section rather than an OPEN entry.
+**THE BUILD-CHAIN OVERSTATEMENT RECORDED BY THE NINTH CHANGE STILL STANDS** at
+one, since A142 is unchanged and remains counsel-blocked outside the roster.
+**A RULING LANDED AND NO FIGURE MOVED, WHICH IS THE THIRD TIME THIS BLOCK HAS
+SAID SO.** A92's question was answered YES and A139 was unblocked, and **neither
+closes**: A92 stays open because what was answered was A139's question routed
+through it rather than A92's own, and A139 stays DEBT because being unblocked is
+not being built. **An unblocking moves no count at all**, which makes it the
+least visible kind of change this block records.
 
 **THE BUILD-CHAIN FIGURE NOW OVERSTATES BY ONE, AND THAT IS RECORDED RATHER THAN
 CORRECTED.** The chain is defined as BLOCKING minus the counsel-gated roster, and
@@ -98,31 +104,37 @@ the roster's meaning is which items clear on the two conversations FT has named,
 and A142 does not. **Twenty is the figure the definition yields; nineteen is the
 number of BLOCKING items a build can actually move.**
 
-**ONE ENTRY OPENED: A142**, the unreviewed tax-treatment claim in the NIL
-positioning thesis, filed in Large at **BLOCKING** with blocker **FT, to retain
-TAX counsel**. Nothing closed and nothing was reclassified.
+**TWO ENTRIES WERE UPDATED IN PLACE: A92 AND A139.** Nothing opened, nothing
+closed, and nothing was reclassified.
 
-**IT IS BLOCKING RATHER THAN DEBT OR POST, ON THE A1 AND A8 REASONING.** DEBT
-means pilot can open with it recorded and honest, and **an unreviewed tax claim
-is not made honest by being recorded**. POST means no pilot user reaches it — but
-recruiting material is the FIRST thing a pilot participant encounters, so a pilot
-user reaches it through what it gates rather than through the item itself, which
-is exactly what moved A1 and A8.
+**FT RULED A92's QUESTION YES: THE ACCOUNT TYPE MAY BE EMITTED IN THE SEND-LOG
+VIEW.** The ground is the **ops-exclusivity condition already in the record**
+rather than the population count: `gate.js:168-171` authorizes a full-fidelity
+operator view valid ONLY while ops is FT-exclusive, so **at one ops account the
+operator and the subject are the same person** and the type discloses nothing to
+its only reader.
 
-**THE SPECIFICATION PASS IS INSIDE THE ENTRY, NOT A GATE ON IT.** Filing came
-first deliberately: the claim has been sitting in a session-log entry, flagged
-and not filed, and §6.18 exists because a log records what happened and does not
-warn the next session. The pass — which entity, which expense category, which
-taxpayer, under what structure — is A142's first named action.
+**THE CONDITION IS EXPLICIT AND IS ON AN ACCOUNT RATHER THAN A POPULATION.** If a
+second ops account is ever created, this is revisited **before that account is
+usable**, because the disclosure becomes real at that moment rather than
+gradually. **Alex's objection to a cardinality-indexed rule does not reach it**,
+and the condition is not new: `gate.js:162-166` already requires the Q6 posture
+re-ruled before a second ops account exists, kept enforced by the ops-minting
+guard in `invites.js`.
 
-**A142 SITS OUTSIDE THE COUNSEL CHAIN, AND THE COUNSEL-GATED ROSTER STAYS AT
-FOUR.** The four chain items are about how the platform HANDLES DATA and go to
-one privacy professional; this is about what the platform SAYS and goes to a tax
-professional. **A142 has the chain's shape and shape is not subject**, which is
-the trap the entry names explicitly.
+**IT DOES NOT REOPEN THE `email` COLUMN.** Ruling (3) stands, A92 still governs
+the address, and the type is emitted **alongside** the address being omitted
+rather than in place of it.
 
-**CLAUDE.md §7 GAINS A CLASS-LEVEL INVARIANT**, because it has no completion
-state and this record has twice ruled that shape out of the queue.
+**A92 STAYS OPEN, AND THAT IS THE SUBTLE PART.** What was answered is the
+question A139's scope pass ROUTED THROUGH A92; **A92's own title question, about
+the `email` column, is untouched.** So what is discharged is A92's role as
+A139's blocker, not A92.
+
+**A139 IS UNBLOCKED AND ROUTE (b) IS THE SURVIVING ROUTE**, route (a) having been
+refuted by A139's own scope pass. **Nothing is built in this commit**; the entry
+stays DEBT and stays open, now buildable, and it inherits A92's ops-exclusivity
+condition rather than settling it.
 
 **NO OTHER QUEUE-RECORD FILE CHANGED.** `docs/filed-defects.md` is untouched.
 **One NON-queue-record file changed and is counted nowhere**,
@@ -993,6 +1005,57 @@ question became ripe.** Recorded so that a later reader who finds the disclosure
 argument unpersuasive at their population understands it was not unpersuasive at
 the one it was written against, and so that a decision to wait is visible as a
 decision rather than as drift.
+
+**RULED BY FT 2026-09-14: YES. THE ACCOUNT TYPE MAY BE EMITTED IN THE SEND-LOG
+VIEW.**
+
+**THE GROUND IS THE ops-EXCLUSIVITY CONDITION ALREADY IN THE RECORD, NOT THE
+POPULATION COUNT.** `functions/_lib/gate.js:168-171` states that `requireOps`
+authorizes a FULL-FIDELITY operator view — "real names, emails, invite/bound
+status, no redaction" — and that this "is valid ONLY while ops is FT
+exclusively". **At one ops account the operator and the subject are the same
+person**, so the type discloses nothing to its only reader. **The disclosure
+argument fails not because the enum is coarse but because there is nobody to
+disclose to.**
+
+**THE CONDITION IS EXPLICIT AND IT IS A CONDITION ON AN ACCOUNT, NOT ON A
+POPULATION SIZE.** The ruling holds **while ops is FT-exclusive**. **If a second
+ops account is ever created, this is revisited BEFORE that account is usable**,
+because the disclosure becomes real at that moment rather than gradually.
+**ALEX'S OBJECTION DOES NOT REACH IT.** That objection is to a rule scoped to
+"fields that currently resolve to one subject", which cannot be checked without
+re-running the population query. **This rule is checked by asking how many ops
+accounts exist**, which is one discrete, observable fact with a discrete
+triggering event.
+
+**THE CONDITION IS NOT NEW, WHICH IS WHAT MAKES IT LOAD-BEARING RATHER THAN
+ASSERTED.** `gate.js:162-166` already requires that the Q6 posture "must be
+re-ruled BEFORE a second ops account exists", and records that the ops-minting
+guard in `functions/api/invites.js` — which refuses `type: 'ops'` with a 403 —
+is what restores that premise rather than merely assuming it. **So this ruling
+attaches to a condition the code already carries in two places, and the guard is
+what keeps it enforced. If that guard is ever removed, this ruling goes with
+it**, on the same sentence's own terms.
+
+**WHAT THIS DOES NOT DO, stated because it is the reading most likely to be
+taken too far.** **It does NOT reopen the `email` column.** A13's ruling (3)
+stands: the column is omitted and no masked or hashed form replaces it.
+**THIS ENTRY STILL GOVERNS THE ADDRESS.** The type is emitted ALONGSIDE the
+address being omitted, not IN PLACE OF it — a class label is not a substitute
+for an identifier, and nothing here treats it as one.
+
+**THIS ENTRY STAYS OPEN, AND THE DISTINCTION IS WHY.** What FT answered is the
+question A139's scope pass ROUTED THROUGH this entry — "may a field that names
+one subject in the live population be emitted to an ops operator" — and the RIPE
+block above records that reframing. **That was A139's question wearing A92's
+number, because A139's blocker line pointed here.** **A92's OWN question is its
+title's**: migration 0021 forbids emitting `email`, so a read endpoint must omit
+the column or the rule must be amended. **That is untouched.** The cost this
+entry names in its own first paragraph — "omitting the column leaves an operator
+unable to tell which address a failure belongs to" — is **not fixed by emitting
+a type**, which names a class and, past one account per type, names neither.
+**SO WHAT IS DISCHARGED IS A92's ROLE AS A139's BLOCKER, NOT A92.**
+**Classification unchanged: Pilot POST, Blocker FT.**
 
 **ALEX'S OBJECTION TO A CARDINALITY-INDEXED RULE, recorded because it is the
 strongest argument against the obvious fix and nothing here answers it.** The
@@ -3157,10 +3220,11 @@ published or merely published after the list was written.
 
 **A139 | `auth_send_log` records no surface or account type, so the view cannot
 say whether an attempt was individual, advisor, enterprise or ops.**
-Blocker: A92, for BOTH routes. **CORRECTED 2026-09-14 and quoted rather than
-edited: the line read "none for route (a). Route (b) is blocked on A92."** The
-scope pass below establishes that route (a) does not escape the disclosure
-question either; it only avoids touching `email` on the way to it.
+Blocker: NONE. **UNBLOCKED 2026-09-14**, and the two prior blocker lines are
+quoted rather than edited because each was true in turn: it first read "none for
+route (a). Route (b) is blocked on A92", then "A92, for BOTH routes" once the
+scope pass showed route (a) does not escape the disclosure question either.
+**FT ruled A92's question YES on ops-exclusivity grounds, so the gate is gone.**
 Pilot: DEBT
 Detail: `migrations/0021_auth_send_log.sql`, the table definition;
 `functions/_lib/sendOutcome.js`, its FORK 1 docblock; A92; A13's ruling (1),
@@ -3313,6 +3377,24 @@ be written. In short: a posture scoped to "fields that currently resolve to one
 subject" cannot be checked without re-running the population query, so a future
 reader cannot tell which fields it covers. **It is the strongest argument
 against the cardinality-indexed rule and it is not answered here.**
+
+**RULED AND UNBLOCKED 2026-09-14. ROUTE (b) IS THE SURVIVING ROUTE.** FT ruled
+A92's question YES: the account type may be emitted, on the ops-exclusivity
+condition recorded there. **The paragraph above is kept because it framed the
+question correctly**, and the answer it was waiting for has arrived.
+**ROUTE (a) WAS REFUTED BY THIS ENTRY'S OWN SCOPE PASS**, cumulatively: it cannot
+capture the fact the entry names, it needs a migration plus a read on the send
+path plus an edit reversing FORK 1's stated no-edit condition, and its column
+would be permanently mixed with unbackfillable NULLs. **So the read-time join on
+`person` is what remains**, and the fork this entry opened with is closed by
+elimination on one side and by ruling on the other.
+**NOTHING IS BUILT IN THIS COMMIT.** The entry stays **DEBT** and stays open;
+what changed is that it is now buildable. **Three things the build must carry are
+already recorded above and are not restated here**: the case-normalization
+exposure, the soft-delete divergence, and `person.type` having no CHECK.
+**AND ONE CONDITION TRAVELS WITH IT FROM A92**: the ruling holds while ops is
+FT-exclusive, so a build that emits the type inherits that condition rather than
+settling it.
 
 **A35 | `parseRoster.js`'s header docblock denies a file-upload path that has
 existed since 2026-08-27.**
