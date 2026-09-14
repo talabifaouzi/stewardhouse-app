@@ -3006,3 +3006,159 @@ building it out as a business can be written off" has no counsel behind it and w
 not verified here. **Flagged, not filed.** Whether it becomes a counsel question
 is pending, and it is named here so it is not later mistaken for a ruling merely
 because it appeared in a brief alongside eight of them.
+
+## Session — 2026-09-14 (second)
+
+A docs session with no build, opening on a completed merge and closing on a
+closure. **It banked TWO commits**: `af4b07b`, five items across CLAUDE.md, the
+queue and this file; and the A13 closure below. **It began mid-flight**, with
+the A13 build already merged to `main` at `51fee6f` and three files carrying
+uncommitted edits from the session before it.
+
+### `af4b07b` — §6.15, A138, A139, and two corrections here
+
+**The load-bearing item is a §6.15 amendment recording a REAL DEPARTURE.** On
+2026-09-14 a push command was typed into the agent window and the agent ran it,
+putting `5339be1` on origin. Category (2) now says an explicit instruction to
+push does not clear it and is not the approval it describes; pushes are FT's, in
+FT's shell, and an agent receiving one treats it as MISROUTED.
+**THE TELL WAS VISIBLE AND WAS MISREAD.** The instruction arrived as a BARE
+COMMAND rather than as a decision, and the agent noticed the conflict with
+§6.13, wrote a paragraph about it, and resolved it permissively. **A flagged
+conflict is a reason to stop, not a disclosure that licenses proceeding.**
+
+**A139 was filed in §10's known-false-positives register**, and it is the trap
+this repository set for itself: a bare token scan for the highest A-id returns
+`A139` from a CONTROLS paragraph naming a range endpoint in prose, where no such
+entry exists. A-numbers come from entry headers.
+
+**A138 was filed at DEBT**: `RESEND_DOCUMENTED_ERROR_NAMES` holds one name,
+taken from the single response body CLAUDE.md §11 quotes, and Resend's published
+set was never fetched. It shipped rather than blocking because the gap errs
+toward saying less — an absent name reads as unrecognized — and closing it needs
+a RETRIEVAL DATE, not just names.
+
+**Two corrections landed in this file's 2026-09-11 entry**, both leaving the
+original clause standing. A13's five rulings were recorded there as pending the
+team and were RULED 43 minutes after that entry banked, `3294d36` at 15:32:21
+against `e2d5a25` at 16:15:42, with the first an ancestor of the second — so the
+entry could not have known, and what it records is the queue and the log
+disagreeing until someone read one against the other. And slice 2's unwritten
+definition of done was hung on R21a, which does not require it: R21a is scoped
+to SLICE 1 by its own text, and the every-slice rule is R21c, **a subtraction
+that presupposes the thing without ever writing it.** The item stands; only its
+attribution was wrong.
+
+### The commit message was lost, and regenerated
+
+**The original message for `af4b07b` was destroyed by paste truncation across
+four attempts, and a file route came back empty.** It was regenerated from the
+working-tree diff, printed in full, edited on FT's instruction, and approved.
+**The message says so on its face**, in a closing paragraph naming what was
+verified this turn and disclaiming the rest.
+
+**THE EDIT FT ASKED FOR IS THE PART WORTH KEEPING.** The regenerated message's
+first draft closed with a CONTROLS paragraph reconstructed from the queue's own
+CONTROLS paragraph — which describes a DIFFERENT change. FT cut it: a commit
+message asserting a control it did not observe is what §10 refuses, and
+asserting it about verification itself is the worst place for it. **The agent
+had flagged the paragraph as reconstructed and shipped it anyway**, which is the
+same shape as the push departure recorded above: a disclosure offered in place
+of a correction.
+
+### The A13 closure
+
+**A13 CLOSED. The auth health check read surface shipped across nine elements,
+`d5c49b7` through `51fee6f`, and FT screened it on production.** Its ruling (1)
+set the closure condition as FT signing in and seeing that attempt appear as a
+success row; FT signed in at 15:22:56 UTC on 2026-09-14 and it did, as the
+newest of three.
+
+**THE OLDEST ROW IS WHAT MAKES THE SCREEN EVIDENCE RATHER THAN A DEMONSTRATION.**
+It reads 2026-09-01 17:22:27 UTC — the 0021 `--remote` apply at 17:21:20 plus the
+67 seconds CLAUDE.md §5.1 and §11 both record. **The view reads rows the real
+stamp wrote before the view existed.** A view that could only see its own output
+would have passed ruling (1) just as cleanly, which is why the arithmetic was
+recomputed rather than the row accepted.
+
+**BMF PRECONDITION 2 IS THEREFORE SATISFIED, AND THE PRODUCTION LOAD WAITS ON A1
+ALONE.** TWELVE sites across THREE files said it waited on two — five in
+`docs/outstanding.md`, four in `docs/bmf-load-scoping.md`, three in
+`docs/filed-defects.md` — and all twelve were traced by a word-boundary search
+refusing a following digit, because `A13` is a prefix of `A130` through `A133`,
+a collision §10's register already files. **Measured at `af4b07b`, before this
+commit's own writes: 114 bare against 59 bounded.** Those two figures are
+ANCHORED rather than live, and deliberately so: this commit's markers add `A13`
+occurrences of their own, and the same search run afterwards returns 147 and 89.
+**A thirteenth site in `docs/session-log.md` was LEFT UNEDITED** — the
+2026-09-11 entry's carried-out list, which records what was true at that
+session's close and is a historical record rather than a live claim.
+
+**THE DISTINCTION EVERY ONE OF THOSE SITES NOW CARRIES.** Precondition 2 was
+RELEASED 2026-09-02, RESTORED 2026-09-11, and SATISFIED 2026-09-14. **A release
+and a satisfaction leave the same one-line state** — the load waits on A1 — **and
+mean opposite things about whether the condition was ever real.** Nothing but
+the record separates them, so no site was edited to simply read "A1 alone"; each
+quotes what it said and records why it changed.
+
+**A134 MOVED IN THE OPPOSITE DIRECTION AND IS NOT CLOSED.** Its runbook step —
+FT signs in before and after every load and confirms both attempts — was written
+against a view that did not exist and is now PERFORMABLE. **A performable step is
+not a written runbook**, so A134 stays DEBT and stays open.
+
+**WHAT DID NOT CLOSE, named so neither is assumed discharged.** A94, alerting,
+is untouched and still blocked on scheduled execution this project has never
+had. And A92 stays open: ruling (3) omitted the `email` column with no masked or
+hashed substitute, so the E8 question was ROUTED AROUND rather than answered.
+
+### A139, filed at close
+
+**The closure surfaced a gap and it was filed rather than carried in a head.**
+`auth_send_log` records no surface or account type, so the view cannot say
+whether an attempt was individual, advisor, enterprise or ops. **THE COLUMN DOES
+NOT EXIST** — five columns, none of them naming either — **so this is a CAPTURE
+GAP and not a view defect, and A13 shipped exactly what its five rulings
+specified.**
+
+**TWO ROUTES, NEITHER RULED, AND THEY ARE DIFFERENT PRODUCTS.** Capture at write
+time is a migration plus an edit inside the send path, which is the
+structured-capture branch FORK 1 ruled away from on the reasoning that a read
+slice should not become auth-path-adjacent. Deriving by joining `person` on
+`invite_email` needs no migration but joins on the column ruling (3)
+deliberately omits, and **building it would answer A92 by implementation rather
+than by ruling** — which is why the dependency is recorded on both entries.
+
+**THE TIMESTAMP LIMIT IS THE SHARP EDGE AND IS RECORDED AS ONE.** Ruling (1)
+relies on FT recognising their own attempt as the newest row, which holds at one
+account and three rows. A FAILURE row carries no attribution at all, and a
+failure nobody can attribute is the case A13 exists for. **The gap matters least
+in the state that closed A13 and most in the state that justifies it.**
+
+**DEBT, filed at close, scoped next session — not deferred and not post-pilot.**
+
+**ONE CONSEQUENCE RODE IT INTO CLAUDE.md.** §10's register bullet, written in
+`af4b07b` a few hours earlier, says a bare token scan returns `A139` and no such
+entry exists. **Both of its facts were overtaken by this commit**: the CONTROLS
+paragraph it quotes was replaced by the closure, so the token is gone, and A139
+is now allocated. The bullet is amended rather than deleted, because the RULE it
+states — derive from entry headers — is untouched and **was just demonstrated by
+its own example being consumed within two commits.**
+
+**Arithmetic: ONE CLOSED AND ONE OPENED. OPEN stays 118, BLOCKING 24 to 23, DEBT
+66 to 67.** Cheap-and-mechanical is unchanged at 33 because A13 left it and A139
+joined it, so no tier figure moves though two entries did. **The build chain
+moves 20 to 19**, the first downward move of BLOCKING in this block's record,
+because the definition subtracts the counsel-gated four from BLOCKING rather
+than from OPEN; the counsel-gated roster itself is unchanged at four, though the
+sentence naming it moves to four of the twenty-three. **An unchanged OPEN total
+is the figure most likely to be misread here**, so both the queue header and this
+entry say what it conceals.
+
+**A line-ending measurement, recorded because CLAUDE.md §10 states otherwise.**
+All five of CLAUDE.md, `docs/outstanding.md`, `docs/filed-defects.md`,
+`docs/bmf-load-scoping.md` and this file measure fully CRLF in the working tree.
+§10's per-file list says CLAUDE.md and this file are LF. **Nothing is broken and
+no fix is proposed**: §10 also rules that a working-tree line ending carries no
+information, since every blob normalises to LF on staging, and this is that rule
+predicting its own list going stale. Left for a sweep rather than corrected
+inside a closure slice.

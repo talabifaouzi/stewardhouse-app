@@ -3692,6 +3692,20 @@ date recorded.** Add to this list rather than re-deriving it.
   positive is itself a record of deriving an A-number correctly**, which is why
   it reads as authoritative to a scanner and is exactly the wrong place to
   take a maximum from.
+  **BOTH OF THIS BULLET'S FACTS WERE OVERTAKEN THE SAME DAY IT WAS WRITTEN, and
+  it is kept because the RULE it states is what matters and the rule is
+  untouched.** The CONTROLS paragraph it quotes no longer exists: the A13
+  closure replaced it, so the `A135 through A139` string is gone from
+  `docs/outstanding.md` and the token that produced the overshoot is not there
+  to be scanned. And `A139` IS NOW AN ALLOCATED ENTRY, filed in that same
+  closure as the `auth_send_log` attribution gap, so "no such entry exists" is
+  false. **The worked example was consumed within two commits of being
+  recorded**, which is the strongest possible evidence for the rule it
+  illustrates: derive from entry headers, because the token landscape moves
+  under you. **A reader wanting the live version of this trap should re-derive
+  it rather than trust this example**, and the register's own opening rule —
+  re-measure a census when citing it rather than carrying it forward — is what
+  says so.
 
 ### Filed — a phrase match returns a false zero when the stored form differs from the searched form (promoted 2026-09-11)
 

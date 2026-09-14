@@ -77,50 +77,99 @@ ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
 7, BMF-and-Discover 15, cheap-and-mechanical 33, large 37, and
 blocker-undetermined 3.
-**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (second): ONE ENTRY OPENED AND
-NOTHING CLOSED.** OPEN moves 117 to 118, BLOCKING stays 24, DEBT 65 to 66, POST
-stays 28, the breakdown to 7 + 16 + 7 + 15 + 33 + 37 + 3 = 118, and the build chain
-unchanged at 20 by the unchanged definition, 24 - 4 = 20. **THE COUNSEL-GATED
-LINE ALSO STAYS AT FOUR OF THE TWENTY-FOUR, AND A135 IS THE REASON TO SAY SO
-RATHER THAN LEAVE IT UNSTATED**: A135 is counsel-blocked, but that roster counts
-BLOCKING items and A135 is POST. A counsel-gated item and a counsel-gated
-BLOCKING item are different sets, and only the second is what the pre-pilot
-counsel chain is made of. The diagnostics move with the totals: the naive
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (third): ONE ENTRY CLOSED AND ONE
+OPENED.** **OPEN STAYS AT 118**, **BLOCKING moves 24 to 23**, **DEBT 66 to 67**,
+POST stays 28, the breakdown to 7 + 16 + 7 + 15 + 33 + 37 + 3 = 118, and **the
+build chain moves 20 to 19** by the unchanged definition, 23 - 4 = 19.
+**AN UNCHANGED TOTAL IS THE READING MOST LIKELY TO BE TAKEN WRONG HERE, so it is
+stated rather than left to the figure:** OPEN did not stand still, it lost A13
+and gained A139. **CHEAP-AND-MECHANICAL IS UNCHANGED AT 33 FOR THE SAME REASON**
+— A13 left that tier and A139 joined it — which is why no tier figure moves even
+though two entries did.
+**WHAT DID MOVE IS THE CLASSIFICATION MIX, and that is the whole substance of
+this change.** A13 was BLOCKING and A139 is DEBT, so a pilot-blocking item was
+replaced by one the pilot can open with, recorded and honest. **THIS IS THE
+FIRST CHANGE IN THIS BLOCK'S RECORD TO MOVE BLOCKING DOWNWARD**, and the build
+chain moves with it because the definition subtracts the counsel-gated four from
+BLOCKING rather than from OPEN. **THE COUNSEL-GATED ROSTER ITSELF IS UNCHANGED
+AT FOUR** — A47, A84, A68 and A110 — **but the sentence naming it moves**,
+because it states that four OF THE BLOCKING TOTAL are counsel-gated and that
+total fell. The diagnostics move with DEBT rather than with OPEN: the naive
 enumerator 116 against 118, the gap still exactly A50a and A50b, and the
-file-wide `Pilot: DEBT` count 67 against 66, the extra still FJ-7's own line
+file-wide `Pilot: DEBT` count 68 against 67, the extra still FJ-7's own line
 inside the FOUNDER JUDGMENT section rather than an OPEN entry.
 
-**ONE ENTRY OPENED: A138**, the Resend error-name allowlist carrying a single
-name with the published set unfetched, filed at DEBT in cheap-and-mechanical,
-which is why that tier alone moves 32 to 33. **NOTHING CLOSED.**
+**ONE ENTRY CLOSED: A13**, the auth health check read surface, which shipped
+across nine elements and was screened on production by FT. Its id is not
+renumbered and is not reused, per the convention A75's closure states. It sat in
+cheap-and-mechanical and it was BLOCKING, which is why BLOCKING moves at all.
 
-**NO ENTRY IN THIS FILE WAS UPDATED IN PLACE.** The change is one appended entry
-and the arithmetic that follows from it.
+**ONE ENTRY OPENED: A139**, the missing surface and account type on
+`auth_send_log`, filed at DEBT in cheap-and-mechanical — the tier A13 vacated,
+which is why that figure stands still. **IT IS A CAPTURE GAP, NOT A VIEW
+DEFECT**, and that distinction is why it opens beside the closure rather than
+against it: A13 shipped exactly what its five rulings specified, and the column
+it would need does not exist on the table. **FILED AT CLOSE AND SCOPED NEXT
+SESSION, which is neither deferred nor post-pilot.**
 
-**NO OTHER QUEUE-RECORD FILE CHANGED.** `docs/filed-defects.md` is untouched.
-**Two NON-queue-record files did change and are counted nowhere**, per the
-2026-09-14 ruling that this paragraph counts queue-record files only: CLAUDE.md
-gained a §6.15 amendment on push authority and a §10 false-positive bullet, and
-`docs/session-log.md` gained two corrections inside its 2026-09-11 entry.
+**WHAT CLOSED IT IS A SCREENING RESULT, NOT A MERGE.** A13's ruling (1) sets its
+closure condition as FT signing in to production and seeing that attempt appear
+as a success row in the view. FT signed in at 15:22:56 UTC on 2026-09-14 and the
+attempt appears as the newest of three success rows. **THE OLDEST ROW IS WHAT
+MAKES THE VIEW CREDIBLE RATHER THAN MERELY PRESENT**: it reads 2026-09-01
+17:22:27 UTC, which is the 0021 `--remote` apply at 17:21:20 plus 67 seconds, the
+figure CLAUDE.md §5.1 and §11 both already record. The view is therefore reading
+rows the real stamp wrote before this slice existed, rather than rows the slice
+produced for itself.
+
+**SEVERAL ENTRIES IN THIS FILE WERE UPDATED IN PLACE**, all of them to record
+that the production BMF load now waits on A1 alone: the critical-path chain
+above, A1, A8 and FJ-1. **None of their superseded sentences was deleted**; each
+is quoted where it sat, per this file's practice. A134 was updated too, on the
+opposite footing — its runbook step is unchanged and is now PERFORMABLE.
+
+**ONE OTHER QUEUE-RECORD FILE CHANGED**, counted nowhere because this paragraph
+counts entries rather than files: `docs/filed-defects.md`, at three sites, all
+of them the same precondition-2 correction. **A NON-queue-record file changed
+too**, `docs/bmf-load-scoping.md`, at four sites including §13's own ruling
+block, which is where the two preconditions were written down in the first
+place.
 
 **THE SUPERSEDED BLOCK IS NOT QUOTED HERE**, per this block's own
-replace-rather-than-append rule. It recorded three entries opened and nothing
-closed, with OPEN moving 114 to 117, which is the state this change supersedes.
-**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: A138 was DERIVED from the
-maximum ENTRY-HEADER id and asserted to carry no header before use, against a
-control confirming A137 does — the token-scan trap this paragraph itself
-produces is now filed in §10's known-false-positives register rather than left
-to be rediscovered; every stated figure re-derived by a suffix-aware
-section-scoped enumerator before and after the write; the verifier's own eight
-patterns simulated against the WORKING TREE, since the script reads the
-committed blob and cannot attest to an uncommitted edit; every insertion
-anchored on a block's FULL EXTENT and asserted to occur EXACTLY ONCE in a dry
-run, with append-style replacements exempted from the residue check by name
-rather than by silence; the quote convention measured after every write; and
-line endings measured as carriage-returns-against-line-count on all three files,
-with a known-CRLF and a known-LF control asserted first. **Retained from the
-superseded block because it is still the record of how A135 and A136 were
-derived: the "VISIBLE HONESTY" absence was measured twice, once
+replace-rather-than-append rule. It recorded one entry opened and nothing
+closed, with OPEN moving 117 to 118, which is the state this change supersedes.
+**CONTROLS USED FOR THIS CHANGE**, per CLAUDE.md §10: **A139 was DERIVED from
+the maximum ENTRY-HEADER id rather than the maximum token**, the anchored
+`^\*\*A[0-9]+[a-z]? \| ` form returning 138 as its maximum, and asserted to
+carry no entry header before use against a control confirming A138 does —
+**which is the trap §10's register files, walked deliberately**: the token
+`A139` was the overshoot that register names, and this change allocates it, so
+that bullet is amended in the same commit rather than left to contradict the
+queue; every stated figure re-derived by a suffix-aware section-scoped
+enumerator before and after the write, and the verifier's own eight patterns
+simulated against the WORKING TREE, since the script reads the committed blob
+and cannot attest to an uncommitted edit; **A13's closure verified as a MERGE
+and not merely as a branch** —
+`git rev-list --count main..slice-a13-auth-health` returns 0, and the nine
+element commits are reachable from `main` — because an entry closed on a
+branch that never landed
+is the sharpest form of this file disagreeing with the tree; the screening
+evidence corroborated ARITHMETICALLY rather than accepted, the oldest row's
+17:22:27 UTC recomputed from §5.1's 17:21:20 apply plus the 67 seconds that
+file records; every site claiming the load waits on two entries found by a
+word-boundary search that REFUSES A FOLLOWING DIGIT, against a control showing
+the bare form returns 114 matches where the bounded form returns 59 — figures
+ANCHORED to `af4b07b` rather than live, since this commit's own markers add
+`A13` occurrences and the same search afterwards returns 147 and 89 — because
+`A13` is a prefix of `A130` through `A133` and §10's register already files
+that collision; every insertion anchored on a block's FULL EXTENT and asserted
+to occur EXACTLY ONCE before any write, with append-style replacements
+exempted from the residue check by name rather than by silence; and line
+endings measured as carriage-returns-against-line-count on all four files,
+with a known-CRLF and a known-LF control asserted first, **all four being
+fully CRLF in the working tree**.
+**RETAINED FROM THE SUPERSEDED BLOCK because it is still the record of how A135
+and A136 were derived: the "VISIBLE HONESTY" absence was measured twice, once
 literally at `e2d5a25` and once through the false-zero filing's part (1)
 normalization with a positive control spanning a wrap, against a control
 returning 4 for a phrase known present; every source citation written into
@@ -144,8 +193,8 @@ SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
 dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 116 rather than 118, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 67
-rather than 66, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 68
+rather than 67, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -153,7 +202,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 24 BLOCKING, 66 DEBT, 28 POST**, classification ruled
+**AGAINST THE PILOT GATE: 23 BLOCKING, 67 DEBT, 28 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-14,
 of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -200,7 +249,7 @@ STATE is a live count wearing a date**, and must be maintained or it lies. The
 parenthetical here dated the CLASSIFICATION ACT, which is genuinely fixed at
 2026-09-02; the TOTALS were never fixed, and pairing the two made a live count
 look archival. **The date has been moved off the totals and onto the act.**
-**FOUR OF THE TWENTY-FOUR BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
+**FOUR OF THE TWENTY-THREE BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
 BY BUILDING: A47, A84, A68 and A110.** So the pre-pilot path is TWO CHAINS, not
 one:
 a build chain, and a counsel chain that no slice advances. What moves the counsel
@@ -273,6 +322,12 @@ create the sandbox (A114), write the ruled-table migration (A117), apply it to
 the sandbox, build the loader (A113), test it on the sandbox, then run the
 production load. **A1 gates the RUN, and none of the five steps before it.**
 **A13 GATES THE RUN TOO, ruled 2026-09-11**, and it is not one of the six steps.
+**CLOSED 2026-09-14, and the sentence above is kept rather than deleted so the
+change is visible where the claim sat: A13 SHIPPED AND WAS SCREENED, SO THE RUN
+WAITS ON A1 ALONE.** What gated the run was the auth health check read surface,
+and it exists; FT signed in to production on 2026-09-14 and the attempt appeared
+in the view. **The six steps are unchanged** — A13 was never one of them, which
+is why closing it removes a gate rather than a step.
 **IT READ FIVE UNTIL LATER THE SAME DAY, AND THE SIXTH STEP WAS NOT ADDED, IT
 WAS SEPARATED.** The earlier text ran "create the sandbox (A114), apply the
 ruled-table migration to it, build the loader (A113)", which folded WRITING the
@@ -651,6 +706,15 @@ the sole precondition on the RUN."** The run waits on two entries, this one and
 A13, the auth health check read surface, because FT reversed FJ-1's release of
 precondition 2 on 2026-09-11. **The rest of that paragraph stands**: the loader
 build is A113 and the sandbox A114, and this entry gates neither.
+**MADE TRUE AGAIN 2026-09-14 BY A13's CLOSURE, and the quoted clause is
+RESTORED rather than re-quoted.** A13 shipped and was screened on production, so
+precondition 2 is satisfied and **A1 is once more the sole precondition on the
+RUN**. The 2026-09-11 paragraph above is left standing because it records a real
+interval, from 2026-09-11 to 2026-09-14, during which the run waited on two
+entries. **A reader should not take this as the 2026-09-02 release being
+reinstated**: that release held precondition 2 did not gate the load at all,
+and what happened here is the opposite — the precondition gated it and was then
+MET.
 **AND "A1 is now the only item between the queue and the ingest" IS NOW FALSE ON A
 SECOND GROUND**, having already been superseded above by the narrower reading of
 what this entry gates, which the paragraph above records.
@@ -676,6 +740,13 @@ production. **This answers the last question in the STILL UNRULED sentence
 above**: the load may proceed on accepted risk, once FT records it. The other
 three questions in that sentence stay unruled. A1 and A13 are the production
 load's two preconditions.
+**SUPERSEDED IN ITS LAST SENTENCE 2026-09-14, quoted rather than deleted: "A1
+and A13 are the production load's two preconditions."** A13 closed on that date.
+**A1 IS THE PRODUCTION LOAD'S ONLY REMAINING PRECONDITION.** R35's substance is
+untouched: it rules that the sandbox rollback exercise does not close A1 by
+itself, and that A1 closes only with FT's ruling on A116 or FT's recorded
+acceptance of the risk. **That condition is unaffected by A13 and is now the
+whole of what stands between the queue and the run.**
 
 ### Tier 5
 
@@ -751,6 +822,15 @@ Detail: `migrations/0021_auth_send_log.sql`, its E8 discipline note and the
 Surfaced 2026-09-02 by the FJ-1 ruling. Gates A13, and nothing else. The two
 answers are not equivalent: omitting the column leaves an operator unable to
 tell which address a failure belongs to.
+**BOTH HALVES OF THAT SENTENCE MOVED 2026-09-14 AND IT IS QUOTED RATHER THAN
+EDITED: "Gates A13, and nothing else."** A13 CLOSED, having shipped without the
+column under ruling (3), so this entry gates nothing that is still open — and
+**it acquired a second dependant the same day.** A139's route (b) would identify
+an attempt's surface by joining `person` on `invite_email`, which is the column
+this entry is about. **BUILDING THAT ROUTE WOULD ANSWER THIS ENTRY BY
+IMPLEMENTATION RATHER THAN BY RULING**, which is the thing a POST-classified
+FT-blocked privacy posture exists to prevent. **The classification is unchanged
+at POST and the blocker is unchanged at FT.**
 **STAYS POST, RULED 2026-09-11.** A13 can ship without the `email` column under
 migration 0021's E8 rule as that rule stands, so the production BMF load does not
 wait on this entry even though A13 now gates that load.
@@ -1235,6 +1315,10 @@ reader A8 is one answered question from unblocking. **It then read FIVE STEPS
 until A117 was filed**, folding writing the migration into applying it.
 **A13 ALSO GATES THE PRODUCTION LOAD, ruled 2026-09-11**, so the sixth step waits
 on two entries rather than on A1 alone.
+**CLOSED 2026-09-14: A13 SHIPPED AND WAS SCREENED, so the sixth step waits on A1
+alone again.** The sentence above is kept because it records why this blocker
+line read two entries for three days. **A8's blocker is otherwise unchanged and
+is still SIX STEPS**, of which five are reachable today.
 Pilot: BLOCKING
 Detail: `docs/discover-surface-spec.md`; `docs/bmf-load-scoping.md`.
 **FT RULED 2026-09-04: THE CAPABILITY IS INTENDED, AND PILOT CANNOT OPEN
@@ -2354,6 +2438,14 @@ on the sandbox and its closure condition (R35); FT's sign-in before and after
 each load, confirmed in A13's view; the load command itself, built by the loader
 under R36 and R37 and run by FT under R34; and the deletion of R38's local
 directory.
+**ONE OF THOSE ACTS BECAME PERFORMABLE 2026-09-14, AND THE STEP ITSELF IS
+UNCHANGED.** A13 shipped and was screened, so "FT's sign-in before and after each
+load, confirmed in A13's view" now names a view that exists. **The step was
+written against a surface that had not been built**, and this entry is untouched
+apart from this note: nothing in the runbook's scope, blocker or classification
+moves, and A134 stays DEBT and stays open, because a performable step is not a
+written runbook. **A13's closure removes a GATE on the load and removes nothing
+from this list.**
 
 ### Cheap and mechanical
 
@@ -2763,6 +2855,48 @@ is a moving target, so a list with no date cannot be audited against the version
 it came from, and a later reader cannot tell whether an absent name was never
 published or merely published after the list was written.
 
+**A139 | `auth_send_log` records no surface or account type, so the view cannot
+say whether an attempt was individual, advisor, enterprise or ops.**
+Blocker: none for route (a). Route (b) is blocked on A92.
+Pilot: DEBT
+Detail: `migrations/0021_auth_send_log.sql`, the table definition;
+`functions/_lib/sendOutcome.js`, its FORK 1 docblock; A92; A13's ruling (1),
+recorded in the closure note on A36.
+**THE COLUMN DOES NOT EXIST. THIS IS A CAPTURE GAP, NOT A VIEW DEFECT**, and the
+distinction decides where any fix goes. `auth_send_log` carries five columns —
+`id`, `email`, `outcome`, `error_text` and `attempted_at` — and none of them
+names a surface or an account type. **A13 SHIPPED EXACTLY WHAT ITS FIVE RULINGS
+SPECIFIED**, and no reading of them asked for attribution; the view cannot emit
+what the table never recorded.
+**TWO ROUTES, NEITHER RULED, AND THEY ARE DIFFERENT PRODUCTS RATHER THAN TWO
+IMPLEMENTATIONS OF ONE.**
+**(a) CAPTURE AT WRITE TIME** — a migration adding the column, plus an edit
+inside the send path to populate it. **This is the structured-capture branch
+FORK 1 ruled away from**, on the reasoning that a read slice should not become
+auth-path-adjacent; `sendOutcome.js:12` records that ruling as "PARSE over
+structured capture: no migration, and no edit to `functions/_lib/auth.js` or
+`functions/_lib/sender.js`". Taking route (a) now is not a violation of FORK 1,
+which governed A13's own scope, but it is a REVERSAL OF ITS REASONING and should
+be ruled as one rather than slipped in as an increment.
+**(b) DERIVE BY JOINING `person` ON `invite_email`** — no migration, and no
+touch to the auth path. **It joins on the column ruling (3) deliberately omits**,
+and it would make every row report an account type. **THAT IS CLOSE ENOUGH TO
+A92 THAT BUILDING IT WOULD ANSWER A92 BY IMPLEMENTATION RATHER THAN BY RULING**,
+which is the dependency this entry exists to record: A92 is FT-blocked precisely
+because it is a privacy posture, and a build that reaches the same place by
+inference does not stop being a posture decision for having skipped the ruling.
+**IDENTIFICATION BY TIMESTAMP HOLDS ONLY AT ONE ACCOUNT AND LOW VOLUME, AND THAT
+IS THE SHARP EDGE.** A13's ruling (1) relies on FT signing in and recognising
+that attempt as the newest row, which works because FT is effectively the only
+person signing in and the table holds three rows. **It stops working exactly
+where the view earns its keep.** A FAILURE row carries no attribution at all,
+and a failure nobody can attribute is the case A13 was built for: the July 2026
+outage ran silently for five days because nothing recorded that sends were
+failing, and a view that records failures without saying whose is a weaker
+instrument than it appears. **The gap therefore matters least in the state that
+closed A13 and most in the state that justifies it.**
+**FILED AT CLOSE, SCOPED NEXT SESSION. NOT DEFERRED AND NOT POST-PILOT.**
+
 **A35 | `parseRoster.js`'s header docblock denies a file-upload path that has
 existed since 2026-08-27.**
 Blocker: none named. Documentation only.
@@ -2828,53 +2962,33 @@ Blocker: filed as an observation, not a defect.
 Pilot: DEBT
 Detail: `docs/filed-defects.md`, "Filed as an OBSERVATION, not a defect: the two
 enrollment paths disagree about name shape".
-
-**A13 | Nothing READS `auth_send_log`, because no endpoint was ever written.**
-Blocker: none for the endpoint itself. A92 governs whether `email` may be
-emitted.
-Pilot: BLOCKING
-Detail: CLAUDE.md §11, the auth-observability filing; `docs/session-log.md`, the
-third 2026-09-01 entry, its "This bought FINDABILITY, not MONITORING" passage,
-which draws the read-versus-alerting distinction this entry used to collapse.
-**BLOCKER CORRECTED AND ENTRY SPLIT 2026-09-02.** It read SCHEDULED EXECUTION
-for both halves of its own title. That is true of ALERTING only, which is now
-A94. A read endpoint needs an inbound HTTP request and nothing else:
-`requireOps` (`functions/_lib/gate.js:147`) is type-only and reusable, migration
-0021 already created `idx_auth_send_log_attempted_at` for the newest-first
-shape, and `functions/api/roster.js` is the precedent at 32 executable lines.
-**RULED 2026-09-02 (FJ-1): build it as an ordinary slice.** It does not gate the
-BMF load.
-**SUPERSEDED IN ITS SECOND SENTENCE 2026-09-11, quoted rather than deleted so the
-change is visible where the stale claim sits: it read "It does not gate the BMF
-load."** It does. **FT RULED 2026-09-11 that the production BMF load waits on the
-auth health check as well as the rollback path, and that the health check is this
-entry and not A94**, so POST moves to BLOCKING on the reasoning A1 gives in its
-own paragraph headed "FT RULED 2026-09-04: POST moves to BLOCKING", which turns on
-a pilot user reaching an item through what it gates rather than through the item
-itself. **The first sentence above STANDS**: this is still an ordinary slice, it
-stays in cheap and mechanical, and its blocker line is unchanged.
-**IT CAN SHIP WITHOUT THE `email` COLUMN under migration 0021's E8 rule as that
-rule stands**, so the load does not wait on A92, which stays POST.
-
-**FIVE RULINGS, 2026-09-11, AS THE ADVISORY TEAM AMENDED THEM, WITH NO
-DISSENT.** (1) A13 ships when FT signs in to production and sees that attempt
-appear as a success row in the view. Before and after every production BMF load,
-FT signs in and confirms both attempts appear; a missing row after FT's own
-sign-in is the alarm. A134 records the step. (2) The view emits the HTTP status
-as an integer, and Resend's error name only when it belongs to Resend's
-documented set. Any other failure, including a network failure that never
-reached Resend, reads "unrecognized failure". The raw `error_text` never leaves
-the database. (3) The `email` column is omitted, and no masked or hashed form
-replaces it. A92 stays open. (4) The view returns the most recent 100 attempts,
-newest first, without pagination, and the time of the last success and of the
-last failure across the whole table. (5) The view states no health verdict and
-has no green state. A permanent line says that no rows means quiet or broken,
-and that a BMF load window leaves a gap, not failure rows. **The gate stays
-`requireOps`.**
-
-**WHEN A13 SHIPS**, migration 0021's sentence that no endpoint returns rows from
-this table becomes false. The build records that on A132 and does not edit the
-migration.
+**A13 was CLOSED 2026-09-14 and has left this section; its id is not renumbered
+and is not reused**, since renumbering would break every reference to the ids
+around it. Its title was "Nothing READS `auth_send_log`, because no endpoint was
+ever written", and it was the last BLOCKING item in this section.
+**WHAT CLOSED IT.** The read surface shipped across nine element commits,
+`d5c49b7` through `51fee6f`, all reachable from `main`: the send-outcome parser
+and the Resend name allowlist, `GET /api/auth-sends` behind `requireOps`, the two
+whole-table marks, the route and nav, the view itself, a UTC instant formatter
+with the zone named in its output, and the record on A132 that two sentences in
+migration 0021 became false when it shipped.
+**ITS FIVE RULINGS OF 2026-09-11 ARE DISCHARGED, AND RULING (1) IS WHAT ACTUALLY
+CLOSED IT.** That ruling set the closure condition as FT signing in to
+production and seeing that attempt appear as a success row in the view, and on
+2026-09-14 FT signed in at 15:22:56 UTC and the attempt appeared as the newest of
+three rows. **The oldest row is the load-bearing one for anyone auditing this
+later**: 2026-09-01 17:22:27 UTC, the 0021 `--remote` apply plus 67 seconds, a
+figure CLAUDE.md §5.1 and §11 both carry. **The view reads rows the real stamp
+wrote before the view existed**, which is what distinguishes a working read
+surface from one that can only see its own output.
+**WHAT DID NOT CLOSE WITH IT, named so neither is assumed discharged.** A94,
+alerting, is untouched and still blocked on scheduled execution this project has
+never had; ruling (5) is why the view states no health verdict and has no green
+state. And A92 stays open: ruling (3) omitted the `email` column with no masked
+or hashed substitute, so the E8 question was ROUTED AROUND rather than answered.
+**A13's closure therefore satisfies BMF precondition 2** — recorded on A1, A8,
+FJ-1 and the critical-path chain above — **and the production load now waits on
+A1 alone.**
 
 **A90 | ADV-044, the radiogroup conversion, is deferred across three segmented
 controls.**
@@ -3566,6 +3680,15 @@ alone, which is A1 and is now the only standing precondition."** The production
 BMF load waits on the auth health check as well as the rollback path, so
 precondition 2 stands and A1 is one of the two. **The health check is A13, the
 read surface, and not A94, alerting.**
+**SATISFIED 2026-09-14. PRECONDITION 2 IS MET, AND THIS IS NOT THE 2026-09-02
+RELEASE RETURNING.** A13 shipped and FT screened it on production, so the
+quoted sentence is true again by a different route: it was released in 2026-09-02
+on the reasoning that precondition 2 did not gate the load, reversed on
+2026-09-11, and is now true because the precondition was BUILT AND MET.
+**THE DISTINCTION IS THE WHOLE VALUE OF THIS ENTRY.** A precondition waived and
+a precondition satisfied leave the same one-line state — the load waits on A1 —
+and only this record separates them. **FJ-1 itself is unchanged as a founder
+judgment**; what changed is the world it was ruling about.
 **WHAT IS NOT REVERSED, and it is the larger half: the read-surface ruling of
 2026-09-02 STANDS.** A13 is still built as an ordinary slice. So does the
 sentence beside the reversed one, "The read surface is A13; alerting is A94 and

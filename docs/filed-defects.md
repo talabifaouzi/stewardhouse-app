@@ -250,9 +250,13 @@ again beside a link to sign-in; nothing retries afterward without a click.
 
 **What this does NOT close.** The BMF availability ruling itself
 (`docs/bmf-load-scoping.md` section 13) stands, along with both preconditions it
-put on a production load. And the panel it introduced has its own filing, the
-12px action-row spacing entry above, which is an affordance question rather than
-a behavioural one.
+put on a production load. **AMENDED 2026-09-14: the ruling and both
+preconditions still stand as written, and precondition 2 is now SATISFIED**, A13
+having shipped and been screened on production, so the load waits on the
+rollback path alone. **Nothing about this entry changes**: the retry ladder was
+never a precondition and closing one does not touch it.
+And the panel it introduced has its own filing, the 12px action-row spacing
+entry above, which is an affordance question rather than a behavioural one.
 
 **Filed: the AppShell retry panel puts a state reset and a navigation 12px
 apart.** The cap-state action row (`AppShell.jsx:292-306`) places the "Try again"
@@ -1241,6 +1245,13 @@ here."** FT ruled that the precondition STANDS. **The stamped half does NOT
 satisfy it**, and precondition 2 closes when A13, the auth health check read
 surface, ships. The reversal is recorded on FJ-1 in `docs/outstanding.md`, under
 FOUNDER JUDGMENT.
+**IT SHIPPED, AND PRECONDITION 2 CLOSED 2026-09-14.** FT signed in to production
+at 15:22:56 UTC and the attempt appeared in the view, which is the closure
+condition A13's ruling (1) set. **THE ROLLBACK PRECONDITION — THE SUBJECT OF
+THIS FILING — IS UNAFFECTED AND IS NOW THE ONLY ONE LEFT.** That is the reason
+this note sits here rather than only on FJ-1: this filing exists because the
+rollback half lived nowhere but a scoping doc, and it is now the whole of what
+gates a production load.
 
 **Why this is filed here.** Section 7 names this document as where live items
 go. The rollback precondition is live, it gates a production action, and it is
@@ -2551,8 +2562,10 @@ INDIVIDUAL:
   Blocker: the ingest itself, plus the Parker rollback precondition, filed in
   this document as "Filed: the BMF rollback path is a stated precondition on a
   production BMF load, and it lives only in the scoping doc rather than in this
-  queue", plus the auth health check precondition, which is A13 in
-  `docs/outstanding.md` and which FT restored on 2026-09-11.
+  queue". **The auth health check precondition, A13, was restored by FT on
+  2026-09-11 and SATISFIED on 2026-09-14**, so it is no longer a blocker here;
+  it is named rather than dropped because this list was read against it for
+  three days.
 - Account-settings page, parked EXCEPT consent reversibility, which shipped.
   Blocker: none named; a founder decision.
 - Geo-selection weighting; AI-drafted org descriptions; the Discover design pass.

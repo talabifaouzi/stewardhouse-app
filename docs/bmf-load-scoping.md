@@ -1597,6 +1597,30 @@ two defects in one sentence, and FT settled which one it meant. **The stamping
 half closed at `2726d40` and does NOT satisfy it.** **Alerting, A94, is not part
 of it**, and is blocked on scheduled execution this project has never had.
 
+### CLOSED 2026-09-14: precondition 2 is MET, and the load waits on precondition 1
+
+**Recorded here rather than by editing the ruling above**, on the same footing as
+the two notes above it: what a room decided is not the agent's to revise. **The
+ruling's two preconditions stand exactly as written. One of them is now
+satisfied.**
+
+**A13 SHIPPED AND WAS SCREENED ON PRODUCTION.** FT signed in at 15:22:56 UTC on
+2026-09-14 and that attempt appears as the newest of three success rows in the
+view, which is the closure condition A13's own ruling (1) set. The oldest row
+reads 2026-09-01 17:22:27 UTC, the 0021 `--remote` apply plus 67 seconds, so the
+view is reading rows the stamp wrote before the view existed.
+
+**SO A PRODUCTION BMF LOAD NOW WAITS ON PRECONDITION 1 ALONE**, the rollback
+path, which is A1 and is open. **A1's closure condition is R35's and is
+unaffected by this**: the sandbox exercise does not close it by itself, and it
+closes only with FT's ruling on A116 or FT's recorded acceptance of the risk
+that a sandbox result does not transfer to production.
+
+**THE DISTINCTION THIS SECTION HAS TO KEEP.** Precondition 2 was RELEASED on
+2026-09-02, RESTORED on 2026-09-11, and SATISFIED on 2026-09-14. A release and a
+satisfaction leave the same one-line state and mean opposite things about
+whether the condition was ever real. **This one was real, and it was met.**
+
 **Where the reversal lives:** `docs/outstanding.md`, the FOUNDER JUDGMENT
 section, entry FJ-1.
 
@@ -1651,6 +1675,12 @@ finding stands untouched, and so does fork 1 in the spike doc.
 gates the load on the rollback path (open item 1) and on the auth-observability
 gap filed in CLAUDE.md section 11. Nothing above addresses either, and this
 section must not be cited as bearing on them.
+**STILL TRUE OF THIS SECTION AFTER 2026-09-14, and that is the point of saying
+so.** The auth-observability precondition was satisfied that day by A13, and
+**nothing in this section contributed to it**. A reader meeting a satisfied
+precondition beside a section that disclaims resolving it should read the
+disclaimer as holding: correspondence about data freshness did not close it, a
+build did.
 
 **It does not re-open the load arc**, and it does not answer open item 3, which
 asks whether absence-from-BMF is the whole gate. If anything it sharpens that
@@ -2435,10 +2465,17 @@ and named A13, the auth health check read surface, as what closes it. **A13 IS A
 BUILD**, and the surviving half of the 2026-09-02 ruling still has it built as
 an ordinary slice. **The other two items in that sentence are unaffected**: the
 rollback exercise is FT-run, and R4's confinement of failure induction to the
-sandbox is not a slice's to discharge. **`docs/slice-2-scope-pass.md` element P
-carries the same claim**, in the cells marking its preconditions as not on a
-slice and as FT-run, and is LEFT UNREWRITTEN because this ruling records that
-file as a dated snapshot.
+sandbox is not a slice's to discharge.
+**AMENDED AGAIN 2026-09-14, SAME FOOTING AND SAME REASON: THE BUILD HAPPENED.**
+A13 shipped and was screened on production, so precondition 2 is SATISFIED and
+the sentence's original clause is true again of what REMAINS. **The production
+preconditions on a slice-2 load are now A1's rollback path and R4's confinement,
+and neither is a build slice's to discharge.** The 2026-09-11 amendment is kept
+because it records the one interval in which that clause was false, and because
+it is the evidence that a precondition CAN be a build rather than an FT-run act.
+**`docs/slice-2-scope-pass.md` element P carries the same claim**, in the cells
+marking its preconditions as not on a slice and as FT-run, and is LEFT
+UNREWRITTEN because this ruling records that file as a dated snapshot.
 
 **THE GROUND IS A113's, AND IT IS QUOTED RATHER THAN SUMMARISED.**
 `docs/outstanding.md` records "**RECOVERY IS NOT A SEPARATE ENTRY. IT IS THIS
@@ -2558,10 +2595,14 @@ reason: a heading would move this section's own heading and ruling counts.
 
 **R35, RULED 2026-09-11: SLICE 2 MAY FINISH WITH A1's EVIDENCE QUESTION AND A116
 BOTH OPEN.** Neither can be answered by building. The production load waits on
-A1 and A13, per `5aed229`. **A116 bears on the load only through A1**: A1 closes
-by an FT-run rollback exercise on the sandbox, and it closes only with FT's
-ruling on A116 or FT's recorded acceptance of the risk that a sandbox result
-does not transfer to production. That condition is recorded on A1.
+A1 and A13, per `5aed229`. **SUPERSEDED IN THAT LAST CLAUSE 2026-09-14, quoted
+rather than deleted: A13 CLOSED, so the production load waits on A1 alone.**
+R35's ruling is untouched — it is about what slice 2 may finish with, and both
+A1's evidence question and A116 are still open.
+**A116 bears on the load only through A1**: A1 closes by an FT-run rollback
+exercise on the sandbox, and it closes only with FT's ruling on A116 or FT's
+recorded acceptance of the risk that a sandbox result does not transfer to
+production. That condition is recorded on A1.
 
 **R36, RULED 2026-09-11: EVERY LOADER RUN NAMES ITS TARGET DATABASE AND WHETHER
 IT IS LOCAL OR REMOTE. THERE IS NO DEFAULT.** A run missing either refuses to
