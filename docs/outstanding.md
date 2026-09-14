@@ -2830,6 +2830,22 @@ than drift: `operations` (route, directory, Chrome config key, nav keys,
 `--sh-operations-accent`), `ops` (DB `type` enum, `RequireType`, `CURRENT_OPS_USER`,
 `$.ops.demo_gate`, `requireOps`), and `'Operations'` as a DATA VALUE in the
 unified layer, which the surface-colour lookup keys on.
+**A FOURTH USER-VISIBLE SITE ARRIVED 2026-09-14 AND IT DOES NOT USE THE MAP.**
+A139's send-log view gained a Type column rendering `person.type`, and it shows
+the RAW value — so an ops attempt reads **`ops`** there and **Admin** in the
+roster, two views apart on the same surface. **This is recorded rather than
+fixed, and the reason is that fixing it cheaply would make it worse.**
+`TYPE_LABELS` and `typeLabel()` are MODULE-PRIVATE in `OperationsRoster.jsx`,
+which exports only its default component, so the send-log view cannot import
+them; **duplicating the map would create a second place for the 2026-07-13
+ruling to drift**, which is the failure this entry exists to track rather than
+one to add to. **The fix is an extraction** — one shared display-label helper
+both views import — and that is a refactor rather than a column.
+**IT SHARPENS THIS ENTRY RATHER THAN MERELY LENGTHENING IT.** The collision the
+entry opens with is a header and a heading disagreeing in ONE viewport. This is
+the same value disagreeing across TWO views of the same surface, which is the
+form a reader is least likely to catch, because they never see both at once.
+
 **`Admin` IS THE RAREST NAME IN THE REPO AND THE ONLY ONE A VISITOR IS GREETED
 WITH:** 9 hits in `src/` against 33 for `Operations`, 54 for `operations` and 22
 for `ops`.

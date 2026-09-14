@@ -105,10 +105,33 @@ const ABSENT_STYLE = {
   maxWidth: '620px',
 };
 
-// 4 columns: time · outcome · HTTP status · Resend error. minWidth keeps the
-// instant column from wrapping mid-timestamp; the overflow-x wrapper scrolls on
-// narrow viewports, matching RosterTable's idiom.
-const GRID_COLUMNS = 'minmax(230px, 1.3fr) 0.7fr 0.6fr minmax(160px, 1.2fr)';
+// 5 columns: time · type · outcome · HTTP status · Resend error. minWidth keeps
+// the instant column from wrapping mid-timestamp; the overflow-x wrapper scrolls
+// on narrow viewports, matching RosterTable's idiom.
+const GRID_COLUMNS = 'minmax(230px, 1.3fr) 0.6fr 0.7fr 0.6fr minmax(160px, 1.2fr)';
+
+// THE TYPE COLUMN (A139, route b). The account type the attempt belonged to,
+// resolved server-side by joining person on a case-normalized email. It is
+// emitted under A92's ruling of 2026-09-14, which HOLDS ONLY WHILE ops IS
+// FT-EXCLUSIVE; the argument and the condition live at the endpoint,
+// functions/api/auth-sends.js, and are deliberately not restated here.
+//
+// WHAT THE EM DASH MEANS IN THIS COLUMN, said rather than left to be derived:
+// THE JOIN FOUND NO PERSON ROW. That is the only thing it can mean. The second
+// reading a reader might reach for — that the person row exists and its type is
+// null — CANNOT OCCUR, because person.type is NOT NULL (0001_initial.sql:127).
+// So unlike the Status and Error columns, where an em dash covers more than one
+// situation, this one is unambiguous.
+//
+// NO LABEL MAP, AND THAT IS A KNOWN INCONSISTENCY RATHER THAN AN OVERSIGHT.
+// The 2026-07-13 naming ruling renders type 'ops' as "Admin" at Operations
+// display sites, and the roster does exactly that. Its TYPE_LABELS and
+// typeLabel() are MODULE-PRIVATE in OperationsRoster.jsx — that file exports
+// only its default component — so they cannot be imported here, and DUPLICATING
+// the map would create a second place for the ruling to drift. This column
+// therefore renders the RAW value, so 'ops' reads "ops" here and "Admin" one
+// view away. Filed on A119, which already enumerates the Admin display sites
+// and is where the naming collision is tracked.
 
 const HEADER_ROW_STYLE = {
   display: 'grid',
@@ -218,6 +241,7 @@ function SendTable({ rows }) {
       <div role="table" aria-label="Sign-in email attempts" style={{ minWidth: '680px' }}>
         <div role="row" style={HEADER_ROW_STYLE}>
           <div role="columnheader">Attempted</div>
+          <div role="columnheader">Type</div>
           <div role="columnheader">Outcome</div>
           <div role="columnheader">Status</div>
           <div role="columnheader">Error</div>
@@ -240,6 +264,10 @@ function SendTable({ rows }) {
             <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>
               {formatInstantUTC(r.attemptedAt)}
             </div>
+            {/* Raw value, not a label map — see the TYPE COLUMN note above.
+                The em dash here means the join found no person row, and nothing
+                else: person.type is NOT NULL. */}
+            <div role="cell" style={{ color: 'var(--sh-text-secondary)' }}>{r.type ?? '—'}</div>
             {/* Same token for both outcomes, deliberately. See ruling (5) note
                 at the head of this file: colouring a failure is a verdict, and
                 colouring a success is the green state the ruling forbids. */}
