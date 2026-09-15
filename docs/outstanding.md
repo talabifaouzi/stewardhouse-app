@@ -27,7 +27,7 @@ deliberately so:** none of this has a completion state, so filing it as a counte
 item would leave it in the queue permanently. That is the same reasoning
 CLAUDE.md §6.10 gives for keeping its branch (c) obligation out of this file.
 
-**TWO LOCAL REFS EXIST THAT ORIGIN DOES NOT HAVE, and one of them is the only
+**LOCAL REFS EXIST THAT ORIGIN DOES NOT HAVE, and one of them is the only
 thing holding four commits.** Branch `qa-audit-enterprise` at `c74058a` and tag
 `pre-rebase-slice1` at `a130bf9`, **neither pushed**. The tag is the ONLY
 reference from which the four PRE-REBASE slice-1 commits — `cb4bf24`, `140b0c9`,
