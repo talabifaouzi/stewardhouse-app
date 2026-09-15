@@ -93,7 +93,7 @@ src/
 │   ├── landing/Landing.jsx
 │   ├── individual/                 # 15 .jsx files (paused at v0.6.1)
 │   ├── advisor/                    # 16 .jsx files — 8-section IA, audited 2026-06; QA arc complete (bundles 1–12 banked, tail triage included)
-│   ├── enterprise/                 # 7 surface files + reports/, setup/, shared/
+│   ├── enterprise/                 # 6 routed files (shell + 5 sections) + reports/, shared/
 │   └── operations/
 │       ├── OperationsSurface.jsx              # Overview + route shell + 5 directory routes
 │       └── directories/
