@@ -72,10 +72,10 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 122 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+**As committed: 125 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
 ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
-7, BMF-and-Discover 17, cheap-and-mechanical 34, large 38, and
+7, BMF-and-Discover 17, cheap-and-mechanical 36, large 39, and
 blocker-undetermined 3.
 
 **BEFORE YOU MOVE ANY FIGURE BELOW: A FIGURE STATED IN PROSE IS A SECOND SITE,
@@ -89,7 +89,7 @@ and `scripts/verify-commit-tail.mjs` caught two of the three: it reported stated
 
 **THE THIRD WAS NOT CAUGHT BY ANYTHING, AND THAT IS THE PART TO CARRY FORWARD.**
 The FJ-7 paragraph says the three gate totals "sum to" a number, and the verifier
-checks forty-five stated-versus-measured pairs of which that sum is not one. **A
+checks forty-six stated-versus-measured pairs of which that sum is not one. **A
 figure stated in prose that the verifier does not check is stale with no
 instrument watching it**, so the only thing standing between it and a wrong
 number is an editor remembering it exists.
@@ -108,6 +108,36 @@ the sentence describes an act or a state.
 and therefore not a docs commit's to make; it is recorded here rather than filed
 as an entry because it has no completion state of its own until someone widens
 check 3, and this note is where an editor meets the gap.
+
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-15 (thirteenth): THREE ENTRIES OPENED
+AND NONE CLOSED.** OPEN moves 122 to 125 and **DEBT 68 to 71**; BLOCKING stays 24
+and POST stays 30. A145 is large; A146 and A147 are cheap-and-mechanical, so that
+tier alone moves **34 to 36**, large moves **38 to 39**, and the breakdown reads
+7 + 16 + 7 + 17 + 36 + 39 + 3 = 125.
+**THE FILE-WIDE `Pilot: DEBT` DIAGNOSTIC MOVES 69 TO 72**, three for three,
+because all three entries are DEBT and that is the only classification which
+touches it. The naive enumerator moves with OPEN, **123 against 125**, the gap
+still exactly A50a and A50b, and the extra on the file-wide count is still FJ-7's
+own line inside the FOUNDER JUDGMENT section rather than an OPEN entry.
+**THE BUILD CHAIN HOLDS AT 20**, because BLOCKING did not move and the definition
+subtracts the counsel-gated four from it.
+**THE TARGET ARITHMETIC FOR THIS CHANGE WAS WRONG BY ONE ENTRY, and it is
+recorded because the mechanism is this file's own.** It was issued as OPEN 124
+with cheap 35 and large 39, which is internally consistent and which counts TWO
+new entries against the THREE the rulings name. The figures were a variant
+published one pass earlier, for a shape where this change filed a branch
+disposition and not the claim-table entry, and they were carried forward rather
+than re-derived when that shape changed. **A figure carried forward is the defect
+this whole check exists to catch**, and here it was caught by re-deriving before
+writing rather than by the verifier afterwards.
+**THE SLICE LABEL `slice-verify-widen-check3` WAS DELETED 2026-09-15**, by name,
+after asserting 0 commits ahead of `main` and printing `git branch --contains`
+for `7493793`, the same two assertions the three labels deleted 2026-09-11 got.
+It was local-only and outside all four §6.15 categories, so an agent could
+discharge it, which is what separates it from A144 and why it is recorded here
+rather than filed as an entry.
+**THE TWELFTH CHANGE'S RECORD BELOW IS RETAINED RATHER THAN REPLACED**, per its
+own rule: this change closes nothing and contradicts none of it.
 
 **ARITHMETIC OF THE LAST CHANGE, 2026-09-14 (twelfth): TWO ENTRIES OPENED AND
 NONE CLOSED.** OPEN moves 120 to 122 and **DEBT 66 to 68**; BLOCKING stays 24
@@ -242,11 +272,11 @@ known-CRLF and a known-LF control asserted first, both files being fully CRLF in
 the working tree.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 120 rather than 122, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 123 rather than 125, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 69
-rather than 68, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 72
+rather than 71, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -254,7 +284,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 24 BLOCKING, 68 DEBT, 30 POST**, classification ruled
+**AGAINST THE PILOT GATE: 24 BLOCKING, 71 DEBT, 30 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-14,
 of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -262,7 +292,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 122. The sentence
+totals above, which remain a count of OPEN entries and sum to 125. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -3589,6 +3619,38 @@ inventory meets it as a known quantity rather than as a surprise.
 rather than a correction anyone else can make: every remote command is FT-run
 under §6.15 (3), and deleting a remote ref is one.
 
+**A146 | The verifier cannot be told which HEAD the caller expected.**
+Blocker: none named. One optional argument.
+Pilot: DEBT
+Detail: this entry, and CLAUDE.md §10, the mid-operation read filing.
+A run that lands between two git operations prints a state that no longer exists
+by the time the output is read, and nothing in the output says so. The mechanical
+half is small: accept an optional expected-HEAD argument and FAIL when HEAD is
+not what the caller named, so a stale read refuses instead of reporting.
+**THE HAZARD AND THE READER'S RULE ARE NOT THIS ENTRY**, they are in §10 per
+§6.18, because a rule has no completion state and this does.
+
+**A147 | The claim table's numerals are literals, so every moving figure edits
+`scripts/` as well as this file.**
+Blocker: FT. Whether a claim derives its numeral or keeps a literal is a ruling,
+not a refactor, and it is the same tension D8 records as cached-or-derived.
+Pilot: DEBT
+Detail: this entry, and the claim table in
+`scripts/verify-commit-tail.mjs`, check 3's PAIRS and DERIVED_CLAIMS.
+Measured against the table at `c012626`: **44 claim literals, of which 21 carry a
+numeral that moves whenever a total moves**, and **seven rows across four
+distinct locators quote the arithmetic block's own digits** rather than anchoring
+on stable prose. The consequence is not theoretical and was found by using it:
+this filing could not be a docs-only commit, because opening three entries moves
+OPEN, DEBT, two tiers, the file-wide diagnostic, the naive enumerator and the
+FJ-7 sum, and every claim carrying one of those numerals has to be reissued in
+the same commit or check 3b fails on unaccounted numerals.
+**THE TENSION IS REAL IN BOTH DIRECTIONS, which is why it is FT's.** A derived
+claim would collapse the churn to nothing. It would also stop the guard catching
+a claim nobody updated, because a claim that reads its own answer from the
+measurement can never disagree with it. The literal is what makes the table a
+second opinion rather than an echo.
+
 ### Large
 
 **A142 | The NIL positioning thesis asserts a tax treatment, and nobody has
@@ -4076,6 +4138,32 @@ Pilot: DEBT
 Detail: `functions/api/workshops.js:10-12`, which accepts no facilitator from the
 body; `src/surfaces/enterprise/ScheduleWorkshopModal.jsx:13-14`, which does not
 collect one.
+
+**A145 | Word-form figures sit outside check 3b's completeness guard.**
+Blocker: FT, on how a stated figure is told apart from prose. The ruling comes
+first because the code cannot be written without it.
+Pilot: DEBT
+Detail: this entry, and `scripts/verify-commit-tail.mjs`, check 3b's NUMERAL
+tokeniser, which matches digit runs and nothing else.
+Individual pairs assert several word-form figures. **There is no completeness
+over the class**, so a new one written into the header tomorrow reproduces the
+FJ-7 mechanism with the guard passing clean.
+**WHY THE DIGIT TOKENISER'S TRICK DOES NOT TRANSFER, measured rather than
+assumed.** The figure region carries **118 word-form number tokens on 92 distinct
+lines**, against 352 digit occurrences. 38 of those lines are already FROZEN keys
+from the digit side, so **54 would need a new entry**. The discrimination is the
+hard part, not the inventory: **`one` appears 38 times, `two` 24, `four` 18 and
+`three` 16**, which is 96 of the 118, and almost all of it is ordinary English.
+**`one number` at line 138 and `at one` at line 145 are the same token and only
+the second is a figure.** The digit tokeniser never had to make that judgement.
+**ONE LIVE INSTANCE, so this is not hypothetical.** Line 151 reads
+`THE BUILD-CHAIN FIGURE NOW OVERSTATES BY ONE`. That is a live quantity stated in
+words, and no pair asserts it: the `overstatement` pair scrapes line 145 instead.
+Two sites, one asserted, which is the shape this whole check exists to remove.
+**A CANDIDATE RULING, NAMED AND NOT RECOMMENDED**: require stated figures in the
+header to be written as digits. The existing guard would then cover the class
+with no new tokeniser, and this entry would collapse to cheap and mechanical.
+That it is one ruling away from small is the argument for ruling before building.
 
 ### Blocker undetermined
 
