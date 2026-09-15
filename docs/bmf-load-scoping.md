@@ -3026,6 +3026,13 @@ deleted. **Parker's objection stands, as R34 accepted it**: a local store is not
 the venue the rulings name, and this ruling names the local store without making
 it that venue.
 
+**AMENDED 2026-09-15 BY THE SLICE THAT MADE THE CHOICE, per R33's precedent that
+a builder amends a ruling's wording at the point the choice is made:
+`--persist-to` is REQUIRED on a local run and REFUSED on a remote one, because
+this ruling's unqualified "required argument" is read against its own stated
+purpose, which is entirely about the local store, and FT ruled that reading on
+2026-09-15.**
+
 **THE ADVISORY TEAM, FOUR SEATS, RECORDED NO DISSENT ON R35 THROUGH R38.**
 Parker amended R35 with A1's closure condition. Alex amended R37 from a two-name
 list to a map, and R38 with the migration prerequisite. Aisha amended R38 with
