@@ -2197,7 +2197,7 @@ sidecar this entry inherits are unaffected.
 **SLICE 2's START-GATING QUESTIONS ARE ALL ANSWERED, 2026-09-11**: question 1 by
 R33, question 4 by R34, question 2 by R35, and question 3 by R36 through R38,
 all in `docs/bmf-load-scoping.md` §15. **Slice 2 is still not started, and its
-definition of done is not written.**
+definition of done WAS WRITTEN 2026-09-14** at that file's §15, `ed993ff`.
 
 **A116 | Whether a sandbox result transfers to production.**
 Blocker: unruled. FT has not ruled it, and it is recorded as open rather than
