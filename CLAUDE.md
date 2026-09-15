@@ -3941,6 +3941,61 @@ phrases stored in capitals returned zero under the first version, and because th
 §15 instance listed above is described in its own source as a search in the wrong
 case.
 
+### Filed — a read taken mid-operation returns a state that no longer exists (2026-09-15)
+
+**A RUN THAT LANDS BETWEEN TWO GIT OPERATIONS REPORTS A TREE THAT HAS ALREADY
+CEASED TO EXIST, AND NOTHING IN ITS OUTPUT SAYS SO.** The instrument is not
+faulty and the output is not wrong. It is an accurate description of a moment
+that had already passed by the time anyone read it.
+
+**THE OBSERVED CASE, 2026-09-15.** An agent ran `scripts/verify-commit-tail.mjs`
+while FT was operating the same working tree. The run landed between an FT
+`git checkout main` and an FT `git merge --ff-only`, and printed
+`HEAD c4935a9 on main` with **24 PASS / 0 FAIL** — the PRE-widening script
+against a tree state that was gone before the output was read. **It was nearly
+reported as a result.**
+
+**WHAT CAUGHT IT WAS THE COUNT, NOT THE CONTENT.** Every line of that output was
+internally consistent and individually plausible. **24 PASS was impossible for
+the check AS IT STOOD THAT DAY, which made 45 pairs.** It makes 46 at `868c264`.
+**Both figures are observations at a revision and neither is a live count**,
+because §5.1's event-versus-state rule binds this sentence as much as any other
+and nothing in this file watches its figures. The number was wrong in a way the
+SHAPE of the output was not, which is why reading it for correctness would not
+have caught it and glancing at its size did.
+
+**THE READER'S RULE: CHECK THE IDENTITY LINE AGAINST THE SHA YOU EXPECTED BEFORE
+READING ANY RESULT.** The verifier prints `HEAD <sha> on <branch>` as its first
+line for exactly this. Until A146 lands that is a rule for the reader; after it
+the script refuses, because A146 gives it an optional expected-HEAD argument that
+FAILS when HEAD is not what the caller named.
+
+**IT GENERALISES PAST THIS SCRIPT.** Any read taken while another operator acts
+on the same working tree can return a state that no longer exists — a `git
+status`, a file read, a build, a test run. The hazard is not the tool. It is that
+a working tree is shared mutable state and a read of it is a snapshot carrying no
+timestamp.
+
+**IT IS NOT A MEMBER OF THE MATCHER-FAULT FAMILY, and that distinction is why it
+is filed separately rather than as an amendment.** The delta-counting hazard, the
+minified-bundle grep, the scanner and the line-ending check are instruments that
+MEASURED WRONGLY. The short-circuit filing above is an instrument that NEVER RAN.
+**This is an instrument that ran correctly and measured a world that then
+changed.** No better pattern and no control on a pattern could have caught it,
+which is also why the governing statement at the head of this section does not
+reach it: reading the output is exactly what happened, and the output was true
+when it was produced.
+
+**THE CHEAP DEFENCE IS AN EXPECTED-MAGNITUDE CHECK ON A FIGURE YOU ALREADY
+KNOW.** Before reading a result, know roughly what size it should be. A count
+that is impossible for the thing you ran is visible at a glance and needs no
+instrument at all.
+
+**AND THE UPSTREAM HALF, because it is not only the reader's problem.** Two
+people acting on one working tree is what creates this, the same way §6.19
+records a prompt issued into a window that is already working. If a read matters,
+it should not be taken while someone else is mid-operation on the same tree.
+
 ---
 
 ## 11. Production incident log
