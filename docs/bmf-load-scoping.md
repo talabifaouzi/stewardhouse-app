@@ -2813,6 +2813,38 @@ J 13 → 14, M 14 → 15, L unchanged at 16.
     fails at least one of those three**, so the observation discriminates and is
     a proof rather than a formality. **What H lacks is a proof CO-LOCATED with
     it, not a proof.**
+    **THE SWAP OWES THREE INDEX RENAMES ON TOP OF THE RENAME PAIR, AND SQLITE
+    HAS NO STATEMENT THAT PERFORMS ONE (filed 2026-09-15, out of the item 2
+    build).** Index names are database-global in SQLite and `ALTER TABLE RENAME`
+    does not rename indexes, so the aside's three cannot be created under the
+    live names while the live table still holds them. The loader's constant
+    therefore renders them `idx_bmf_aside_state_city`, `idx_bmf_aside_ruling`
+    and `idx_bmf_aside_name`.
+    **WHAT THAT LEAVES AFTER THE RENAME PAIR IS WORSE THAN A MISSING STEP.**
+    Renaming live to its dated name TAKES ITS INDEXES WITH IT, so
+    `idx_bmf_state_city`, `idx_bmf_ruling` and `idx_bmf_name` still exist and are
+    now attached to the GENERATION table, while the new live table carries the
+    three `idx_bmf_aside_` names. **Element 12 (I)'s `index_list` assertion —
+    the proof this entry rests on — therefore fails on all three, against names
+    that are PRESENT in the database and merely on the wrong object.** That is
+    R31's "attached to a DIFFERENT OBJECT does not satisfy the comparison"
+    arriving at run time rather than at authoring time.
+    **THE RESOLUTION IS ELEMENT H's AND IS DELIBERATELY NOT FILED HERE.** SQLite
+    has no `ALTER INDEX`, so an index rename is a DROP and a CREATE, and whether
+    the generation table keeps indexes at all is a question about what R7's
+    retained backup is for. Both are H's to settle. **What is filed is the
+    obligation: H is not done when the two tables have swapped names.**
+    **THE MECHANISM ABOVE IS REASONED FROM SQLITE's DOCUMENTED SEMANTICS AND WAS
+    NOT MEASURED**, because the build slice that filed it was gated against
+    creating a table anywhere. The measurement that settles it is one in-memory
+    `node:sqlite` session under R27: create a table with a named index, rename
+    the table, and read `index_list` on both names.
+    **RECORDED HERE BECAUSE IT IS INVISIBLE FROM H's OWN STEP.** Nothing in the
+    swap reads an index name, so an omission surfaces one element later as
+    element 12 (I)'s assertion, where it reads as a bad swap rather than as a
+    step nobody wrote. The obligation is H's; the symptom is I's. **Recorded
+    inline and with no R-number**, for R30's reason. The same obligation is
+    stated in code above `asideStatements` in `scripts/bmf-load.mjs`.
 12. **[letter I] THE POST-SWAP ASSERTION.** Live row count matches what element
     9 (F) verified; the dated generation table exists under the expected name;
     and **`index_list` on the LIVE table carries the three index names**

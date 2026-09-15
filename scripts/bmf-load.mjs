@@ -8,12 +8,20 @@
 // assertion (I), completion written last (J), the pruning code (K), the undo
 // file (L), and the read-only verification against D1 (M).
 //
-// WHAT THIS FILE IMPLEMENTS TODAY: DEFINITION-OF-DONE ITEM 1 ONLY, the target
-// map and the run banner (R36, R37, R38). It resolves and validates its
-// arguments, prints the banner, and then REFUSES TO PROCEED. It creates no
-// table, contacts no database, spawns no wrangler process, reads no file and
-// executes no statement. Every element listed above is UNBUILT, and this file
-// says so at exit rather than implying otherwise by succeeding.
+// WHAT THIS FILE IMPLEMENTS TODAY: DEFINITION-OF-DONE ITEMS 1 AND 2 ONLY — the
+// target map and the run banner (R36, R37, R38), and the DDL constant (R13,
+// R33). It resolves and validates its arguments, prints the banner, and then
+// REFUSES TO PROCEED. It creates no table, contacts no database, spawns no
+// wrangler process, reads no file and executes no statement. Every element
+// listed above is UNBUILT, and this file says so at exit rather than implying
+// otherwise by succeeding.
+//
+// ITEM 2 ADDS DATA AND RENDERERS, NOT BEHAVIOUR. The DDL constant and the five
+// functions that render it — columnSql, createTableSql, indexNameFor,
+// createIndexSql, asideStatements — are defined and called by nothing. Their
+// consumers are element A, which creates the aside, and definition-of-done item
+// 3, which regenerates migrations/0022_bmf_table.sql under R13a. Neither is
+// built, so a run behaves exactly as it did before item 2 landed.
 //
 // Usage:
 //   node scripts/bmf-load.mjs --db=bmf-sandbox --local --persist-to=<dir>
@@ -54,6 +62,200 @@ const TARGETS = {
   'bmf-sandbox': { config: 'bmf-sandbox.toml' },
   'stewardhouse-pilot': { config: null },
 };
+
+// ---------------------------------------------------------------------------
+// THE DDL CONSTANT (definition-of-done item 2; R13, R33, R31, R16a, R24).
+//
+// R13 makes THIS FILE authoritative for the DDL and makes
+// migrations/0022_bmf_table.sql derive from it. R31 fixes what the derivation is
+// compared over: all THREE tables (bmf, load_stamp, load_check) and all FIVE
+// indexes, every construct compared AS ATTACHED TO ITS NAMED OBJECT. DDL below
+// therefore carries all three, keyed by object name, with each object's indexes
+// nested inside it rather than listed apart, so that "attached to its named
+// object" is a property of the structure rather than of a convention.
+//
+// SHAPE 1 OF R31's THREE, TAKEN DELIBERATELY. R33 rules packaging the builder's
+// call and leaves shapes 1 and 3 both available: one constant carrying all three
+// objects, or two constants partitioned by role. This is shape 1, so R13's "a
+// single named constant" holds literally and R33's second consequence — that a
+// builder taking shape 3 amends R13's wording — does not fire. The role
+// divergence R31 names is real and is carried as a FIELD on each object,
+// builtByLoader, rather than as a second container.
+//
+// R16a, THE OPERATIONAL JOB: the loader builds the aside from its own constant.
+// The aside is bmf_aside (R24), a bmf TWIN — one table and three indexes.
+// load_stamp and load_check are created ONCE by the migration and are never
+// built by the loader at all (R12e, R8c), which is what builtByLoader records.
+// R31 names that divergence and leaves it unresolved; carrying the role on the
+// object resolves it without narrowing the coverage R31 fixes.
+//
+// R10c: THE INDEX SET IS PROVISIONAL and revisable at ZERO migration cost. This
+// is a replace-all design, so every load rebuilds the whole set and a change
+// costs one edit here plus one load cycle, not a migration.
+const ASIDE_TABLE = 'bmf_aside'; // R24: the aside and the emitted INSERTs agree on this name.
+
+const DDL = {
+  // (1) THE BMF TABLE. Shape: docs/bmf-load-scoping.md §1.
+  // ein NOT NULL is LOAD-BEARING: in SQLite a non-INTEGER PRIMARY KEY does NOT
+  // imply NOT NULL, so deleting it accepts a NULL EIN. TEXT is correct for
+  // leading zeros and does NOT protect them — the loader must QUOTE every EIN
+  // (§2 hard requirement; §4 mode 7).
+  // D4: no CHECK on ruling, deliberately. Value validation belongs to the R8
+  // checks; a CHECK here would be a second place to maintain one rule.
+  bmf: {
+    builtByLoader: true,
+    columns: [
+      { name: 'ein', type: 'TEXT', notNull: true, primaryKey: true },
+      { name: 'name', type: 'TEXT', notNull: true },
+      { name: 'city', type: 'TEXT', notNull: true },
+      { name: 'state', type: 'TEXT', notNull: true },
+      { name: 'revenue_amt', type: 'INTEGER' },
+      { name: 'ruling', type: 'INTEGER', notNull: true },
+      { name: 'ntee_cd', type: 'TEXT' },
+    ],
+    // R10a: UNIQUE(ein) is absent because it is not a choice — the PRIMARY KEY
+    // already creates it (sqlite_autoindex_bmf_1, origin pk). Three, not four.
+    // R10d, PATH B: idx_bmf_name is a SEARCH index. Indexing for RETRIEVAL is
+    // inside the §7 boundary; ordering by anything EVALUATIVE is not.
+    indexes: [
+      { name: 'idx_bmf_state_city', columns: ['state', 'city'] },
+      { name: 'idx_bmf_ruling', columns: ['ruling'] },
+      { name: 'idx_bmf_name', columns: ['name'] },
+    ],
+  },
+
+  // (2) THE LOAD STAMP. One row per load, per source (R12a).
+  // No source column (R12e) and no status column (R12d): the timestamps ARE the
+  // status, and a status column would drift against them. id is a SURROGATE key
+  // sitting outside R12a's seven fields (D1), and exists because R12b needs
+  // something for load_check to reference.
+  load_stamp: {
+    builtByLoader: false,
+    columns: [
+      { name: 'id', type: 'TEXT', notNull: true, primaryKey: true },
+      { name: 'source_date', type: 'TEXT', notNull: true },
+      { name: 'file_set', type: 'TEXT', notNull: true },
+      { name: 'load_started_at', type: 'TEXT', notNull: true },
+      { name: 'load_finished_at', type: 'TEXT' },
+      { name: 'completed_at', type: 'TEXT' },
+      { name: 'row_count', type: 'INTEGER' },
+      { name: 'generation_table', type: 'TEXT' },
+    ],
+    indexes: [{ name: 'idx_load_stamp_source_date', columns: ['source_date'] }],
+  },
+
+  // (3) THE CHECK RESULTS (R12b). One row per check per load.
+  // D2: the foreign key and its CASCADE stay, and nothing in this design ever
+  // deletes a load_stamp row — R12e makes the stamp outlive generations and R8c
+  // prunes generation TABLES. The cascade documents intent for whoever writes a
+  // stamp-deleting path. Remote FK enforcement: CLAUDE.md §10.
+  // R12c: these rows are written BEFORE load_stamp.completed_at, so completion
+  // still means the record is WHOLE.
+  load_check: {
+    builtByLoader: false,
+    columns: [
+      { name: 'id', type: 'TEXT', notNull: true, primaryKey: true },
+      {
+        name: 'stamp_id',
+        type: 'TEXT',
+        notNull: true,
+        references: { table: 'load_stamp', column: 'id', onDelete: 'CASCADE' },
+      },
+      { name: 'check_name', type: 'TEXT', notNull: true },
+      { name: 'value', type: 'TEXT' },
+      { name: 'passed', type: 'INTEGER', notNull: true, check: 'passed IN (0, 1)' },
+    ],
+    indexes: [{ name: 'idx_load_check_stamp_id', columns: ['stamp_id'] }],
+  },
+};
+
+// Constraint order is fixed here and matches migrations/0022_bmf_table.sql:
+// NOT NULL, PRIMARY KEY, REFERENCES with its referential action, CHECK.
+function columnSql(column, nameWidth, typeWidth) {
+  const constraints = [];
+  if (column.notNull) constraints.push('NOT NULL');
+  if (column.primaryKey) constraints.push('PRIMARY KEY');
+  if (column.references) {
+    const ref = column.references;
+    const action = ref.onDelete ? ` ON DELETE ${ref.onDelete}` : '';
+    constraints.push(`REFERENCES ${ref.table}(${ref.column})${action}`);
+  }
+  if (column.check) constraints.push(`CHECK (${column.check})`);
+  const head = column.name.padEnd(nameWidth);
+  if (constraints.length === 0) return `${head}${column.type}`;
+  return `${head}${column.type.padEnd(typeWidth)}${constraints.join(' ')}`;
+}
+
+// THE COLUMN PADDING IS COMPUTED from the widest name and the widest type in the
+// object, and that one rule reproduces all three of the migration's table bodies
+// exactly. Index padding is NOT computed: the migration aligns the three bmf
+// index names and does not align the other two, so no single rule reproduces
+// both, and R31 puts alignment whitespace outside the comparison anyway.
+function createTableSql(objectName, { as } = {}) {
+  const object = DDL[objectName];
+  if (!object) throw new Error(`no DDL entry for ${JSON.stringify(objectName)}`);
+  const name = as === undefined ? objectName : as;
+  const nameWidth = Math.max(...object.columns.map((c) => c.name.length)) + 2;
+  const typeWidth = Math.max(...object.columns.map((c) => c.type.length)) + 1;
+  const body = object.columns.map((c) => `  ${columnSql(c, nameWidth, typeWidth)}`).join(',\n');
+  return `CREATE TABLE ${name} (\n${body}\n);`;
+}
+
+// An index name is derived from the table it is rendered onto, because index
+// names are database-global in SQLite and the aside's three would otherwise
+// collide with the live table's. idx_bmf_state_city on bmf_aside becomes
+// idx_bmf_aside_state_city.
+function indexNameFor(index, objectName, renderedName) {
+  if (renderedName === objectName) return index.name;
+  const prefix = `idx_${objectName}_`;
+  if (!index.name.startsWith(prefix)) {
+    throw new Error(`index ${index.name} does not carry the ${prefix} prefix; cannot rename it`);
+  }
+  return `idx_${renderedName}_${index.name.slice(prefix.length)}`;
+}
+
+function createIndexSql(objectName, index, { as } = {}) {
+  const name = as === undefined ? objectName : as;
+  return `CREATE INDEX ${indexNameFor(index, objectName, name)} ON ${name}(${index.columns.join(', ')});`;
+}
+
+// The statements element A will execute to create the aside, returned AS TEXT.
+// This function creates nothing and is called by nothing.
+//
+// ELEMENT H OWES A RENAME THIS FUNCTION CANNOT DISCHARGE, recorded here because
+// it is invisible from the swap's own step. SQLite's ALTER TABLE RENAME does not
+// rename indexes, so after the aside is renamed into place its indexes still
+// carry the idx_bmf_aside_ names, while R13b and element 12 (I) assert that
+// index_list on the LIVE table carries idx_bmf_state_city, idx_bmf_ruling and
+// idx_bmf_name. The swap must rename all three explicitly. NOT BUILT HERE.
+function asideStatements() {
+  const statements = [createTableSql('bmf', { as: ASIDE_TABLE })];
+  for (const index of DDL.bmf.indexes) {
+    statements.push(createIndexSql('bmf', index, { as: ASIDE_TABLE }));
+  }
+  return statements;
+}
+
+// WRITTEN AS A LITERAL, NOT INTERPOLATED, SO IT IS GREPPABLE, and the assertion
+// below catches the drift a literal otherwise invites. Same shape as the guard
+// at scripts/bmf-verify-slice1.mjs:115, taken from it rather than invented.
+//
+// IT EXISTS BECAUSE THE CENSUS CAME BACK INVERTED. Rendering the statement
+// through a template left the literal form of the aside's CREATE absent from the
+// artifact R13 makes AUTHORITATIVE, while the slice-1 scratch carried it four
+// times — so an auditor grepping for that string reached the scratch table and
+// not this file. That is exactly backwards. The hazard is the one CLAUDE.md §10
+// files as literal-versus-interpolated, and the docblock at
+// scripts/bmf-verify-slice1.mjs:100-104 records the same trap from the other
+// side: there a template would have HIDDEN the scratch, here it hid the source.
+const ASIDE_DDL_PREFIX = 'CREATE TABLE bmf_aside (';
+if (!createTableSql('bmf', { as: ASIDE_TABLE }).startsWith(ASIDE_DDL_PREFIX)) {
+  throw new Error(
+    `the rendered aside DDL does not begin with ${ASIDE_DDL_PREFIX} — ASIDE_TABLE, ` +
+      'createTableSql and this literal have drifted apart.'
+  );
+}
+// ---------------------------------------------------------------------------
 
 // Section 2's contract: fail(msg) exits 1. Kept exactly, so a refusal here has
 // the same shape as one in seed-invites.mjs and provision-institution.mjs.
@@ -174,16 +376,18 @@ if (venue === 'remote') {
   );
 }
 
-// EVERY ELEMENT BELOW THIS POINT IS UNBUILT. Definition-of-done items 2 and 3,
-// the DDL constant and the R13a regeneration, are not in this file, and neither
-// is any of R32's elements A through M.
+// EVERY ELEMENT BELOW THIS POINT IS UNBUILT. Definition-of-done item 3, the
+// R13a regeneration, is not in this file, and neither is any of R32's elements A
+// through M. Item 2's constant IS above, and being defined is not being used:
+// nothing calls its renderers, so no aside is built and no migration regenerated.
 //
 // EXITING NON-ZERO IS DELIBERATE, AND 2 RATHER THAN 1 IS ALSO DELIBERATE. A zero
 // would report a load that did not happen, which is the class of quiet falsehood
 // this arc exists to remove. 1 is reserved for fail(), so that a run refused by
 // validation stays distinguishable from a run that validated and then stopped
 // because nothing downstream exists yet.
-console.error('[bmf-load] STOP: item 1 only. The target map and the run banner are built.');
+console.error('[bmf-load] STOP: items 1 and 2 only. The target map, the run banner and the');
+console.error('[bmf-load] DDL constant are built.');
 console.error('[bmf-load] Nothing below them is. No table was created, no database was');
 console.error('[bmf-load] contacted, no wrangler process was spawned, and no statement ran.');
 process.exit(2);
