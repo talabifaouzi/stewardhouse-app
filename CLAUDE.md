@@ -1911,7 +1911,7 @@ Every substantive change runs as a **slice**. The rhythm:
 
     **The only HARD ceiling is 4 MiB, and it DROPS rather than truncates.** A
     memory file over 4,194,304 bytes returns skipped and never enters context at
-    all. This file at 165,262 bytes is 25x under it.
+    all. This file at 326,524 bytes is 12.85x under it, measured 2026-09-15 at `972a987`.
 
     **The 164.0k in the warning is THIS FILE ALONE, never an aggregate.**
     `~/.claude/CLAUDE.md` is empty, and an empty memory file is skipped before
