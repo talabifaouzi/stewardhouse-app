@@ -72,10 +72,10 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 125 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+**As committed: 126 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
 ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
-7, BMF-and-Discover 17, cheap-and-mechanical 36, large 39, and
+7, BMF-and-Discover 17, cheap-and-mechanical 37, large 39, and
 blocker-undetermined 3.
 
 **BEFORE YOU MOVE ANY FIGURE BELOW: A FIGURE STATED IN PROSE IS A SECOND SITE,
@@ -108,6 +108,27 @@ the sentence describes an act or a state.
 and therefore not a docs commit's to make; it is recorded here rather than filed
 as an entry because it has no completion state of its own until someone widens
 check 3, and this note is where an editor meets the gap.
+
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-15 (fourteenth): ONE ENTRY OPENED AND
+NONE CLOSED.** OPEN moves 125 to 126 and **DEBT 71 to 72**; BLOCKING stays 24
+and POST stays 30. A148 is cheap-and-mechanical, so that tier alone moves
+**36 to 37**, and the breakdown reads 7 + 16 + 7 + 17 + 37 + 39 + 3 = 126.
+**THE FILE-WIDE `Pilot: DEBT` DIAGNOSTIC MOVES 72 TO 73**, one for one, because
+A148 is DEBT and that is the only classification which touches it. The naive
+enumerator moves with OPEN, **124 against 126**, the gap still exactly A50a and
+A50b, and the file-wide count's extra is still FJ-7's line rather than an entry.
+**THE BUILD CHAIN HOLDS AT 20**, because BLOCKING did not move and the four
+counsel-gated items its definition subtracts are unchanged.
+**THE CLAIM TABLE IS REISSUED IN THE SAME COMMIT, WHICH IS A148's SIBLING A147
+FIRING.** Every figure above is claimed by a literal in
+`scripts/verify-commit-tail.mjs` carrying its old value, so the doc cannot move
+without the script moving with it. Six block scrapes were WIDENED to accept both
+the emphasized and the plain phrasing rather than narrowed onto this block's,
+claim numerals were reissued, two FROZEN keys were rewritten to their new line
+text, and FROZEN entries were added for this block. **The doc and the script
+move together**, which is what A147 asks of any change until that entry closes.
+**THE THIRTEENTH CHANGE'S RECORD BELOW IS RETAINED RATHER THAN REPLACED**, per
+its own rule: this change closes nothing and contradicts none of it.
 
 **ARITHMETIC OF THE LAST CHANGE, 2026-09-15 (thirteenth): THREE ENTRIES OPENED
 AND NONE CLOSED.** OPEN moves 122 to 125 and **DEBT 68 to 71**; BLOCKING stays 24
@@ -272,11 +293,11 @@ known-CRLF and a known-LF control asserted first, both files being fully CRLF in
 the working tree.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 123 rather than 125, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 124 rather than 126, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 72
-rather than 71, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 73
+rather than 72, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -284,7 +305,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 24 BLOCKING, 71 DEBT, 30 POST**, classification ruled
+**AGAINST THE PILOT GATE: 24 BLOCKING, 72 DEBT, 30 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-14,
 of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -292,7 +313,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 125. The sentence
+totals above, which remain a count of OPEN entries and sum to 126. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -3650,6 +3671,41 @@ claim would collapse the churn to nothing. It would also stop the guard catching
 a claim nobody updated, because a claim that reads its own answer from the
 measurement can never disagree with it. The literal is what makes the table a
 second opinion rather than an echo.
+
+**A148 | Slice 2's definition of done is nearly silent on where its proofs are
+taken: eleven of sixteen items state no venue.**
+Blocker: none. The venues are derivable from R34, R36, R37 and R38, so this is
+writing down what the rulings already settle.
+Pilot: DEBT
+Detail: `docs/bmf-load-scoping.md` §15, slice 2's definition of done, and R34,
+R36, R37, R38 and R40; A134 below.
+**MEASURED 2026-09-15 AGAINST THE DEFINITION AT `docs/bmf-load-scoping.md`
+§15.** Read from each item's own text only, ELEVEN of the sixteen name no venue:
+items 1, 4, 5, 6, 7, 9, 10, 11, 12, 13 and 14. **The five that do say something
+say it unevenly.** Items 2 and 3 are manifestly non-database, a source census and
+a `cmp` of files. Item 8 rules out in-memory by contrast — "a real table instead
+of a scratch one" — and names neither local nor remote. Item 15 names D1 in its
+own heading. **Item 16 names a venue for the half it does NOT prove**, recovery
+confined to the sandbox, and none for the half it does.
+**A SUPPORTING MEASUREMENT, because a count without a list is not a
+constraint.** A search of the definition's own line range for `in-memory`,
+`node:sqlite`, `--local`, `--remote`, `persist-to`, `local store`, `sandbox`,
+`D1` and `database` returns SEVEN lines, of which three are about the map axis, a
+filename and the applied-file caution rather than a proving venue.
+**WHY IT IS DEBT AND NOT A PRECONDITION.** The build opens without it: R34, R36,
+R37 and R38 tell the builder where to work, and the definition's silence costs a
+reader rather than the builder. It is unpaid work recorded honestly, which is
+this file's own test for DEBT. **It does not gate slice 2 and nothing waits on
+it.**
+**A134 NEEDS THE SAME LIST, and that is why this is filed rather than left as a
+note.** The production-load runbook has to say which acts are FT-run, and the
+per-item venue is exactly that list one level down. **Both are writable only
+after the loader exists**, because until then the venue of a proof is a
+prediction about code nobody has written.
+**NOT `Gates other work`**, which in this file means blocking other entries from
+closing. This blocks nothing. It is tiered cheap-and-mechanical because the
+answers are derivable rather than rulable, and the work is bounded at eleven
+lines.
 
 ### Large
 

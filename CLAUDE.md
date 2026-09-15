@@ -1549,6 +1549,49 @@ Every substantive change runs as a **slice**. The rhythm:
     NOT a precedent.** The hazard paragraph above explains why it was safe, and
     that reason is entirely a property of the migration rather than of the
     process: one additive `ALTER TABLE ADD COLUMN` against a zero-row table.
+
+    **RULED 2026-09-15: THIS RULE DOES NOT REACH REGENERATION. A REGENERATION
+    BYTE-IDENTICAL ON R31's TABLE-SHAPE SCOPE OWES NOTHING HERE — NO NOTE, NO
+    CLAUDE.md EDIT, NO §6.10 OBLIGATION. THIS IS A CLARIFICATION OF AN EXISTING
+    RULE'S REACH, NOT AN AMENDMENT, AND NOTHING ABOVE CHANGES.**
+
+    **THE GROUNDS, all verified at HEAD.** **FIRST, THIS RULE GOVERNS THE APPLY,
+    NOT THE FILE.** Every obligation in it is triggered by a commit SHIPPING a
+    migration and discharged by APPLYING one: branch (a) is an apply step,
+    branch (b) is a deferral of an apply, branch (c) is an apply to a second
+    database, and the closure evidence is `migrations list --remote` reporting
+    `No migrations to apply!`, which is a statement about a database and not
+    about a file. **The section carries no concept of a migration file changing
+    after it is applied**, and a search of its own line range for `regenerat`,
+    `byte-identical`, `no-op` and `re-author` returns one line, `:1520`, which is
+    about a `PRAGMA` inside a transaction. **SECOND, BRANCH (b) HAS NO SUBJECT
+    MATTER IN THIS CASE.** It requires a note "local-only, remote-apply DEFERRED
+    to [specific gate]"; a regeneration has no pending remote apply, so there is
+    no deferral to name and no gate to name it to. A note would assert a pending
+    act that does not exist. **THIRD, WRANGLER MATCHES APPLIED MIGRATIONS BY
+    NAME, NOT BY HASH**, which A113's R13a caution already records, so a
+    regenerated file does not re-run and nothing about either database's applied
+    state moves.
+
+    **WHAT IS UNCHANGED, stated so this is not read as widening anything.** A
+    regeneration that is NOT byte-identical on that scope is a finding to REPORT,
+    under R13a and under element 3 of slice 2's definition of done. Both are
+    already ruled and neither is touched here: R13a's caution that "**A
+    difference is therefore a finding to report, not a diff to accept**" stands,
+    and element 3's done — that the regeneration ran and the comparison produced
+    a result — stands with it. **This ruling says what a byte-identical outcome
+    owes. It says nothing about what a differing one owes, because that is
+    settled elsewhere.**
+
+    **AND THE FIRST REGENERATION MAY WELL BE THE DIFFERING CASE.** R13a HAS NOT
+    FIRED: no loader constant exists, so nothing has been regenerated from
+    anything. `migrations/0022_bmf_table.sql` is hand-written, and its own header
+    says so at `:3` and `:25` — "HAND-WRITTEN AND PROVISIONAL (R13a)". **A
+    hand-written file and a generated one agreeing byte for byte on first
+    attempt would be the surprising outcome, not the expected one.** So the
+    likely path through this ruling is the REPORT path, and a reader should not
+    take the clarification above as a forecast.
+    Recorded in `docs/bmf-load-scoping.md` §15 as R39.
 11. **Authenticated-surface path audit (full-directory rule).** When
     wiring any existing public demo surface for reuse at an authenticated
     route (e.g. IndividualSurface at both `/individual/*` and

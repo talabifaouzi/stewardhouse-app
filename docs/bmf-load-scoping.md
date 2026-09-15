@@ -3032,6 +3032,63 @@ list to a map, and R38 with the migration prerequisite. Aisha amended R38 with
 the size print and the teardown. **RECORDED INLINE RATHER THAN AS `###` RULINGS,
 for R30's stated reason.**
 
+**R39, RULED 2026-09-15: CLAUDE.md §6.10 DOES NOT REACH REGENERATION, AND THE
+RULING LIVES THERE RATHER THAN HERE.** This was the first of the two questions
+gating slice 2's start, recorded in `docs/session-log.md` as "ruled nowhere". **It
+is now ruled, in CLAUDE.md §6.10, which is where the rule it construes lives** —
+R34's own precedent, which put the §6.15 seam into §6.15. §6.10 governs the APPLY
+and not the FILE; branch (b) is a deferral naming a specific gate, and a
+regeneration with no pending remote apply defers nothing, so branch (b) has no
+subject matter. **A regeneration byte-identical on R31's table-shape scope owes
+nothing**: no note, no CLAUDE.md edit, no §6.10 obligation. **A CLARIFICATION OF
+REACH, NOT AN AMENDMENT**, and nothing in §6.10 changes.
+**WHAT IS UNCHANGED: the differing case.** A non-identical regeneration is a
+finding to REPORT under R13a and under element 3 of slice 2's definition of done,
+both already ruled and both untouched. **R13a HAS NOT FIRED** — no loader constant
+exists — and `migrations/0022_bmf_table.sql` is hand-written and provisional by
+its own header, so the FIRST regeneration may well be the differing case rather
+than the identical one. The full grounds sit at CLAUDE.md §6.10.
+
+**R40, RULED 2026-09-15: R34 STANDS AS WRITTEN, BOTH ALTERNATIVES ARE REFUSED,
+AND PARKER'S OBJECTION IS CLOSED AS ACCEPTED RATHER THAN ANSWERED.** This was the
+second of the two questions gating slice 2's start. **The division of labour is
+unchanged**: the builder writes the loader, exercises it against a local D1 store
+and against R27's in-memory check, and prepares the sandbox exercise in full — the
+file, the commands, the expected results and the controls. **FT runs it.**
+
+**FIRST ALTERNATIVE REFUSED: treating a local D1 store as equivalent to R27's
+in-memory carve-out.** R27's test is stated in its own last line, "In-memory and
+ephemeral is the test; 'not remote' is not", and its three grounds are unchanged
+by anything since — a local store IS persistent, IS bound to the tools, and IS the
+subject of §10's double-store filing. **A local store fails the test on the first
+ground alone.**
+
+**SECOND ALTERNATIVE REFUSED: a sandbox carve-out for the builder.** R34 already
+rules that "Every `wrangler --remote` command is FT-run regardless of target; no
+sandbox carve-out exists", and CLAUDE.md §6.15 records the three grounds, of which
+the third is that all three agent definitions already say so word for word.
+**Creating one here would require amending those three files, adding a fourth row
+to §2's split table, and making A116 load-bearing while A116 is unruled.**
+
+**PARKER'S OBJECTION IS CLOSED AS ACCEPTED, AND THE COST IS STATED RATHER THAN
+SOFTENED.** The builder may exercise the loader in a venue the rulings do not name
+and may not exercise it in the venue they do. **The consequence, plainly: the
+builder's local green is not evidence about the sandbox**, and every proof that
+requires the sandbox is an FT-run act. R34 said the objection was accepted as a
+cost; this closes it on that basis rather than resolving it. **A ruling that
+removes an ambiguity is not the same as one that removes a cost**, and neither R34
+nor this one does the second.
+
+**WHAT SURVIVES IN THE TREE IS THE OBJECTION AS RECEIVED AND PARTLY CORRECTED,
+NOT PARKER'S OWN WORDS, and that is recorded so a later reader does not go looking
+for an original.** §14's paragraph opens "As put:" and then rules its third clause
+an overstatement, because R4 forbids failure induction against LIVE and says
+nothing about `--local`. **The sentence that survives the correction is the one
+this ruling closes on**, and it is restated at CLAUDE.md §6.15 and at R38.
+
+**RECORDED INLINE RATHER THAN AS `###` RULINGS OF THEIR OWN**, for R30's stated
+reason: headings would move this section's own heading and ruling counts.
+
 ### R22. Slice 1 proves against a FRESH download, not the 2026-08 extract
 
 **Forced by evidence rather than chosen.** The 2026-08 extract is not obtainable:
