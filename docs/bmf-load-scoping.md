@@ -2704,12 +2704,13 @@ checked against the map mechanically**, and a stale one fails loudly instead of
 passing green. This list has been renumbered once already, which is precisely
 the event that produces that failure.
 
-**TWO ORDER CORRECTIONS ARE BUILT INTO THE NUMBERING, AND BOTH CORRECT A READING
-RATHER THAN AMENDING R32.** R32 names its elements "by the scope pass's own
-letters **so the list is checkable rather than paraphrasable**", which makes the
-letters LABELS and not a sequence. Read alphabetically they nonetheless suggest
-an execution order, and `docs/slice-2-scope-pass.md` §4 tabulates them that
-way. **Existing rulings require otherwise in two places.**
+**THREE ORDER CORRECTIONS ARE BUILT INTO THE NUMBERING, AND ALL THREE CORRECT A
+READING RATHER THAN AMENDING R32.** R32 names its elements "by the scope pass's
+own letters **so the list is checkable rather than paraphrasable**", which
+makes the letters LABELS and not a sequence. Read alphabetically they
+nonetheless suggest an execution order, and `docs/slice-2-scope-pass.md` §4
+tabulates them that way. **Existing rulings require otherwise in three
+places.**
 
 **FIRST, THE EXECUTION ORDER IS D, E, A.** R14: the generation timestamp "must
 therefore be known when the aside is created, not computed at swap time", which
@@ -2717,7 +2718,7 @@ puts D before A. And A113 in its own words: the columns that separate a load
 that failed from one that never began "are written by nothing", **"so a loader
 that stamps BEFORE it attempts is what makes A1's exercise legible"** — which
 puts E before A, because CREATING THE ASIDE IS ALREADY AN ATTEMPT. **This list
-therefore runs 4 = D, 5 = E, 6 = A**, and element 6 (A)'s proof is written
+therefore runs 4 = D, 5 = E, 7 = A**, and element 7 (A)'s proof is written
 against that order rather than against the published one.
 
 **SECOND, K EXECUTES BEFORE J.** The first form of this list put J at 13 and K at
@@ -2733,6 +2734,18 @@ the verification is element 12 (I)'s assertion rather than element 14 (J)'s
 timestamp. **So K sits at 13, between the post-swap assertion and completion,
 and J stays LAST.** The list is RENUMBERED rather than annotated: K 15 → 13,
 J 13 → 14, M 14 → 15, L unchanged at 16.
+
+**THIRD, B RUNS BEFORE A. FT RULED 2026-09-16, ON THE GROUND THAT MOVED D AND
+E.** R20b names second zero as the pre-flight's whole value, and element A
+already spawns `wrangler d1 execute` against the target, so a credential check
+placed after it is a check that cannot fail for the reason it exists: a stale
+token would have taken the aside's `CREATE TABLE` first. The ground is the one
+recorded above verbatim — **CREATING THE ASIDE IS ALREADY AN ATTEMPT** — and it
+reaches B identically. **The list is RENUMBERED rather than annotated, per the
+second correction's method: B 7 → 6, A 6 → 7.** Nothing else moves, because the
+two are adjacent, and B is referenced by number NOWHERE, so the swap creates no
+stale reference to it. The five references to A were re-resolved in the same
+pass, at the paragraph above and at items 4, 5, 7 and 13.
 
 1. **[no R32 letter] THE TARGET MAP AND THE RUN BANNER (R36, R37).** A run
    against each of the two map entries PRINTS its target database and its
@@ -2768,14 +2781,18 @@ J 13 → 14, M 14 → 15, L unchanged at 16.
 4. **[letter D] MINT THE GENERATION TIMESTAMP.** The minted name matches
    `bmf_gen_YYYYMMDDTHHMMSSZ` (R14) and **EQUALS `load_stamp.load_started_at`**,
    which is the joinability R14 requires. **The ordering half is proved by its
-   existing before element 6 (A) runs**, which is R14's "known when the aside is
+   existing before element 7 (A) runs**, which is R14's "known when the aside is
    created" observed rather than assumed.
 5. **[letter E] OPEN THE STAMP ROW.** One `load_stamp` row read back with
    `load_started_at` non-null and **`completed_at` NULL**. The NULL is the
    event: R12d makes the timestamps the status, so an open row is observably
-   distinct from a finished one. **It too must be observed before element 6 (A)
+   distinct from a finished one. **It too must be observed before element 7 (A)
    runs**, for the reason that element carries.
-6. **[letter A] CREATE THE ASIDE.** Self-proving by R16's own assertions, per
+6. **[letter B] THE PRE-FLIGHT CREDENTIAL CHECK.** Provable **at second zero**,
+   which R20b names as its whole value. The event is that it returns before the
+   multi-minute call. **R20a's half is proved separately**: a run against a
+   stale credential REPORTS and STOPS rather than re-authenticating.
+7. **[letter A] CREATE THE ASIDE.** Self-proving by R16's own assertions, per
    §5: `table_info` and `index_list` on the created aside, compared to the
    constant. R16c names them `aside_schema_pk` and `aside_schema_notnull`;
    R16b rules they run PRE-SWAP and are part of the gate. **AND, UNDER THE
@@ -2786,12 +2803,8 @@ J 13 → 14, M 14 → 15, L unchanged at 16.
    would have left NO ROW AT ALL, which is byte-identical to a load that never
    began, and that is A1's void-versus-clean hazard reproduced inside the
    loader. **The event proving the ORDER rather than the element is therefore
-   the FAILING run**: interrupt the loader during element 6 (A) and read
+   the FAILING run**: interrupt the loader during element 7 (A) and read
    `load_stamp`; one open row must be there.
-7. **[letter B] THE PRE-FLIGHT CREDENTIAL CHECK.** Provable **at second zero**,
-   which R20b names as its whole value. The event is that it returns before the
-   multi-minute call. **R20a's half is proved separately**: a run against a
-   stale credential REPORTS and STOPS rather than re-authenticating.
 8. **[letter C] LOAD THE EMITTED FILE.** §3's explicit proof row: **aside row
    count equals the parsed count** from slice 1's sidecar. §5 records the
    stronger form and it is taken here — **all three of §5's tiers run against
@@ -2979,7 +2992,7 @@ Retention is three, so correct behaviour is to drop nothing. **A path that
 silently does nothing and a path that was never entered leave the same
 observable state.** That is A1's void-versus-clean hazard arriving one element
 later, and it is the same reason elements 4 (D) and 5 (E) were moved ahead of
-element 6 (A). **So K's done REQUIRES THE OBSERVATION, NOT THE SILENCE: K writes
+element 7 (A). **So K's done REQUIRES THE OBSERVATION, NOT THE SILENCE: K writes
 `prune_reached` carrying the retained-generation count it observed.** With that
 row, "reached" is proven on load one and the recorded count is 1. **Without it,
 "reached" is not proven at all on load one**, and calling it vacuously true
