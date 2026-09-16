@@ -514,6 +514,13 @@ are never edited to carry status).**
   causes into one message ("or the linked account was removed"). That is P-6
   slice 2's sibling problem, a refusal that does not tell the caller what to do,
   and it may belong there instead. FT has not ruled which.
+  **RULED 2026-09-01 BY FJ-4, AND THE QUESTION ABOVE IS ANSWERED: A41 STAYS IN
+  P-7.** The closing sentence is quoted rather than deleted so the change is
+  visible where the open question sat: it read **"That is P-6 slice 2's sibling
+  problem, a refusal that does not tell the caller what to do, and it may
+  belong there instead. FT has not ruled which."** FT has ruled which. The
+  mechanism is a STALE QUESTION rather than a stale claim: nothing in the tree
+  moved, and a ruling landed that this file was never told about.
 
 **Accepted Phase-1 boundary — enterprise gift tracking.** P-2 made every
 surface report `gifts_count` honestly as "Not tracked"; it did not build
@@ -527,6 +534,22 @@ designation.** This is never a slice. It remains FT's deliberate
 per-institution step per `docs/enterprise-provisioning-runbook.md` §3(e), and
 is **never run for test rows**. P-6 makes the UI honest about the gate; it does
 not set it.
+**RETRACTED 2026-09-02 BY FJ-3, AND THIS IS AN INVERSION RATHER THAN A
+NARROWING.** The clause is quoted rather than edited, per this file's practice:
+it read **"This is never a slice."** FJ-3 ruled that the designation's absence
+is a GAP rather than an intended posture, and that it GETS FIXED AS ITS OWN
+SCOPED SLICE. The sentence above therefore does not merely understate the
+position. It asserts the opposite of what was ruled.
+**THAT IS WHY THIS IS THE DANGEROUS ONE OF THE THREE.** A reader who consults
+only CLAUDE.md, which is the file loaded every session, learns the REVERSE of
+the ruling and gets no signal that anything is wrong, because the sentence is
+short, confident, and reads as settled. A stale claim invites a check; an
+inverted one does not.
+**THE REST OF THE PARAGRAPH STANDS AND IS NOT RETRACTED:** the designation is
+FT's deliberate per-institution step per
+`docs/enterprise-provisioning-runbook.md` §3(e), it is never run for test rows,
+and P-6 makes the UI honest about the gate without setting it. What is
+retracted is the "never a slice" clause alone.
 
 **Production gate state (migrations re-verified against remote D1 2026-08-17;
 gate values re-verified there the same day — the gate read was FT-run,
@@ -4446,6 +4469,22 @@ durable record does NOT satisfy it, and that alerting is not required. **The
 production BMF load waits on A13, the auth health check read surface, and on A1,
 the rollback path.** The reversal of the 2026-09-02 release is recorded on FJ-1
 itself, in `docs/outstanding.md` under FOUNDER JUDGMENT.
+**RETRACTED 2026-09-16: A13 IS CLOSED AND THE SENTENCE ABOVE IS NO LONGER TRUE
+IN ITS FIRST HALF.** It is quoted rather than edited, per this file's practice,
+so the change is visible where the stale claim sat: it read **"The production
+BMF load waits on A13, the auth health check read surface, and on A1, the
+rollback path."** A13 CLOSED 2026-09-14, and `docs/outstanding.md` records the
+current state under FJ-1 as **"so the sixth step waits on A1 alone."** The
+mechanism is CLOSURE: the claim was TRUE WHEN WRITTEN and an entry closing
+underneath it made it false, which is the class the 30-day sweep exists to
+catch and is the class that caught it.
+**AND THIS SITE IS WHERE A SESSION-LONG STALE CLAIM CAME FROM, recorded so a
+reader inherits the provenance rather than the claim.** Through 2026-09-16 the
+A13 half was restated repeatedly, by FT and by the agent alike, because this
+file is the one loaded at the start of every session and it still said so. The
+queue had already been corrected. **A correction that reaches the queue and not
+the manifest is a correction that keeps being undone**, which is the drift
+mechanism §5.1 records, arriving here.
 
 ---
 
