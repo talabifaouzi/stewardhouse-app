@@ -3699,3 +3699,397 @@ backticks add a character, reporting 83 where the block was 81.
 **TWO PROSE DEFECTS CAME FROM THE PRINTED DIFF AND FROM NOTHING ELSE**, which is
 the bank rule stated as a measured cost: `single-load`, then `byte-identical`,
 each broken across a hard wrap while every count was green.
+
+---
+
+## Session — 2026-09-16
+
+Five commits, `19ad258` through `6b60722`, opening from `d24fcbc`. Four files
+across the five: `scripts/bmf-load.mjs`, `docs/bmf-load-scoping.md`,
+`docs/outstanding.md` and `scripts/verify-commit-tail.mjs`, totalling 619
+insertions and 74 deletions. **The session built slice 2 elements A and B,
+closed definition-of-done item 3, and then ran the first complete 30-day sweep
+— divergence over all 127 open entries, discovery in two halves, and a
+three-way reconciliation of the whole 3,701-line session log.** One entry
+opened, A149; none closed. Session-open figures are anchored to `d24fcbc` and
+session-close figures to `6b60722`.
+
+**THIS ENTRY FOLLOWS THE 2026-09-14 (second) FORM**, sections keyed to work
+rather than the fixed skeleton 2026-09-11 uses. The session is exploratory in
+shape: two build elements, eleven rulings across two documents, and a sweep
+that is the bulk of it.
+
+### The slice-2 build
+
+**Item 3 closed, and R13a fired for the first time (`19ad258`).** The loader's
+DDL constant was regenerated and compared against `migrations/0022_bmf_table.sql`.
+It differed on 3 of 31 normalized lines, all three the `bmf` index lines, and
+FT ruled that R31's exclusion — "not covered: comment text, alignment
+whitespace, prose" — reaches the token separator in `ON bmf (state, city)`
+versus `ON bmf(state, city)`. The comparison PASSES on R31's scope, R13a is
+discharged clean on its first firing, and the migration is untouched. Filed
+inline at `docs/bmf-load-scoping.md` §15, no R-number, for R30's reason.
+
+**Element A: the aside, created from the constant (`c0f8bfe`).** Four statements
+from `asideStatements()`, index names renamed by `indexNameFor` because index
+names are database-global. R16's two assertions run PRE-SWAP per R16b and read
+the database back rather than the constant: `aside_schema_pk` checks both the
+key and its automatic index; `aside_schema_notnull` covers FIVE columns
+including `ein`, per R16's own amendment, because a non-INTEGER PRIMARY KEY does
+not imply NOT NULL. **R10b was proven by execution, not asserted**: two INSERTs
+with the same EIN returned `UNIQUE constraint failed: bmf_aside.ein`, rows after
+0.
+
+**A second run FAILS by design, exit 1.** No element drops an aside, so
+`CREATE TABLE IF NOT EXISTS` would load into a table whose shape nobody
+re-verified.
+
+**Element B: the pre-flight, at position 6 (`b480ef1`), after the list's third
+reordering (`6245f80`).** FT ruled B runs BEFORE A on the ground the definition
+of done already records for D and E: CREATING THE ASIDE IS ALREADY AN ATTEMPT.
+R20b names second zero as the pre-flight's whole value, and A spawns wrangler
+against the target, so a check placed after it cannot fail for the reason it
+exists. Two branches, and "credential" appears only on the remote one: a local
+run presents no token to anything, so it reports REACHABILITY. It inspects the
+result, not merely the exit code.
+
+**Proven able to fail before reported to pass**, against a hand-built store
+holding a non-SQLite file: `file is not a database`, exit 1, reachability
+wording. **The condition was artificial and the entry says so** — the local
+branch will pass in ordinary use and is NOT equivalent proof to the remote
+branch. **The JSON-shape refusal is written and UNTESTED**; no input was
+constructed producing exit 0 with unparseable output.
+
+**Ordering proven by spawn log, not by reading the source.** On the passing run
+the pre-flight's SELECT is logged before the aside's CREATE TABLE; on the
+failing run CREATE TABLE spawns measure ZERO against a control showing ONE.
+
+### The size test, which measured an unmeasured risk
+
+**One `wrangler d1 execute --file` invocation: 173,873,096 bytes, 5,805
+statements, exit 0, 345 seconds wall clock.** Wrangler reported "5805 commands
+executed successfully" with zero `"success": false`. Read back with
+`node:sqlite`: 1,964,958 rows equal to the sidecar's parsed count, distinct EINs
+equal to the row count, and **EIN length 9 at both minimum and maximum**, so no
+leading zero was truncated through emit and load. Extract: the 2026-09-07 IRS
+posting, file set five.
+
+**It is LOCAL and the filing says what it does not establish**: no remote size
+ceiling measured, atomicity asserted from source reading rather than a remote
+run, remote wall-clock unknown, credential survival unaddressed per R20b. A116
+remains the open question it belongs to. **345 seconds is 5 minutes 45**, so the
+rollback ruling's "about 6 minutes locally" is now measured rather than
+reasoned. Filed at `docs/bmf-load-scoping.md` §8 (`6b60722`).
+
+**The null rates were measured against the loaded aside and the 2026-08 centres
+HELD.** NULL `REVENUE_AMT` 29.1987%, NULL `NTEE_CD` 29.2212%, against centres of
+29.08 and 29.35 — movements of +0.1187 and -0.1288 points. Zero NULLs in `NAME`,
+`CITY`, `STATE` and `RULING`; `integrity_check` ok; `foreign_key_check` empty.
+
+### Rulings, with where each was filed
+
+**Eleven, all FT's, all 2026-09-16.**
+
+**1. R31's exclusion reaches the token separator.** FILED, inline at
+`docs/bmf-load-scoping.md` §15, no R-number per R30 (`19ad258`).
+
+**2. Element B runs before element A.** FILED, as the definition of done's THIRD
+order correction, with the list RENUMBERED per the second correction's stated
+method: B 7 to 6, A 6 to 7 (`6245f80`). Five references to A re-resolved; B is
+referenced by number nowhere, so the swap created no stale reference to it.
+
+**3. The rollback wording is amended in place.** FILED at
+`docs/bmf-load-scoping.md` §6 (`6b60722`). A rolled-back C leaves the aside
+PRESENT AND EMPTY, not absent, because the element split puts CREATE in A's own
+invocation. Nothing partial survives either way; only the described state was
+wrong.
+
+**4. Element C's criterion is NARROWED.** FILED (`6b60722`). C proves the row
+count against the sidecar; §5's three tiers move to F. Stated as removing work,
+not as reading C differently.
+
+**5. R8-4's null-rate band is WRITTEN DOWN at ±10%, provisional and
+uncalibrated.** FILED (`6b60722`). Cited five times and stated nowhere. The
+calibration gap carries its number: 0.1187 and -0.1288 points of movement
+against a band tolerating 2.8 to 3.1, about twenty to one. FT's ground for
+keeping it wide is recorded beside it — a two-point series has no variance to
+calibrate against, and R8a's no-override makes a too-tight band stop a
+legitimate load.
+
+**6. F gains §5's three tiers as THREE `load_check` rows under R16c**, named
+`aside_tier_structural`, `aside_tier_distributional`, `aside_tier_rowlevel`.
+FILED (`6b60722`). F's sixth-check refusal LIFTED for this case only, where it
+sits, neither deleted nor widened.
+
+**7. The row-level tier SPLITS.** FILED at both sites (`6b60722`). F takes
+`MIN(LENGTH(ein))` and `MAX(LENGTH(ein))` equal to 9, closing the EIN-width gap
+F's own disclosure declares; M keeps the seven-field source comparison. Ground:
+a pre-swap gate conditional on a gitignored directory fails by not running.
+
+**8. `revenueSum` DEFERRED as an inline note, not a queue entry.** FILED at
+`docs/bmf-load-scoping.md` §5 (`6b60722`). No completion state of its own.
+
+**9. The reconciliation runs THREE-WAY.** UNFILED. Ruled after FJ-4 showed the
+log can be the incomplete party, so a two-way check produces consistencies that
+establish nothing.
+
+**10. Promotion scope is bounded by the LAST PROMOTION PASS**, recorded
+separately from `Last swept:`. UNFILED, and PROPOSED below.
+
+**11. The log entry comes first; this session's findings are out of scope for
+promotion until the log carries them.** UNFILED, and this entry is its
+discharge.
+
+### The sweep — divergence
+
+**All 127 open entries re-verified at HEAD, in ID order, across nine passes.**
+Method taken from `d08b20e`'s precedent rather than designed: re-read each
+entry's claim, blocker and cited figures against the tree.
+
+**SIX CHANGED. Two CLOSE, four AMEND. No reclassify, no merge.**
+
+- **A8 AMEND** — blocker cites A114 and A117 as steps; both closed 2026-09-07.
+- **A15 AMEND** — blocker says the obstacle is a remote write, FT-only. The
+  write was made on the sandbox 2026-09-07 and answered the question for that
+  engine; the real blocker is now A116.
+- **A74 CLOSE** — its blocker says the disposition is "not proposed". It was
+  ruled and implemented at CLAUDE.md §8 on 2026-09-14.
+- **A113 AMEND** — its title says the loader does not exist. It exists, 31,916
+  bytes, and its "SLICE 2 IS NOT STARTED" block is false.
+- **A125 CLOSE** — blocked on "the slice that authors R13's loader constant".
+  That constant exists as of `d24fcbc`.
+- **A132 AMEND** — the regeneration it anticipates has now run once, cleanly,
+  without forcing its unruled question.
+
+**EIGHT DECLINED, and the declines are why the six are trustworthy.** A10, whose
+"no loader exists" blocker survives because its zip is the ProPublica TEOS path
+and not BMF. A32, A48, A49, A52, A87, A94, A105 — each declined with a stated
+reason. **A10 is the worked case**: matching on the word "loader" alone would
+have produced a false close.
+
+**FIVE CROSS-CLASS PAIRINGS collected as a set**, held for FT to rule together:
+A22/A24, A87/A43, A47 gating A12 and A14, A55 pointing one-way at A74, and
+A27/A39 — **the only pairing NEITHER side records**, and the most useful thing
+the pass produced. A93/A39 is the positive contrast: each names the other.
+
+**ONE NOT-WORK ENTRY.** A64, `Pilot: DEBT`, whose own text reads "NOT WORK. This
+is a record, not a queued item." It counts toward OPEN 127 and file-wide DEBT 74.
+
+### The sweep — discovery
+
+**Two halves, per rule 18: parked lists inside scoping documents, then items
+that exist in no queue at all.**
+
+**PARKED LISTS — four candidates, four rejections.** Candidates: the
+founder-letter strategic thread (`docs/individual-rework-scoping.md:106,124`);
+the athlete consent posture, processor versus controller
+(`docs/enterprise-persistence-scoping.md:286`); the non-signing-party question
+(`:384`); and client contact fields (`docs/client-record-rulings.md:14`).
+**Three of the four park against the SAME counsel question that already gates
+A42, A47, A68 and A110.** Rejected because already queued under different
+phrasing: `CohortMemberContext` is P-G, the Gmail feedback endpoint is A45,
+Derek's parked-to-critical-path line is A127, advisor Q7 itself is A42.
+
+**§7 SWEEP — one candidate, one rejection.** Candidate: sector terminology
+locked for later phases (`CLAUDE.md:2392`), queued nowhere — a search for
+`music`, `entertainment`, `creator` and `sector terminology` returns 0.
+**Rejected: the Candid revisit trigger** (`:2428`). A queue search for `candid`
+returns **20 hits and none of them is the trigger** — they are the Operations
+interleave and the import-architecture rulings. The count looks like coverage
+and is not.
+
+**CODE COMMENTS — three candidates, four rejections.** Twenty deferred-capability
+comments checked. Candidates: same-person dedup across surfaces, six code sites
+plus CLAUDE.md §4 and no entry; the `cf-email` sender provider, whose branch
+exists and whose provider does not; and `athletes/[id].js:38` "flagged, not
+built", provisional and needing one more read. Rejected as already queued:
+`cohortSignals.js` is A88, ADV-044 is A90, E4 facilitator is A89, the
+Q7-resolution allowlist rides A42.
+
+**THE RATIO: eight candidates, nine rejections.** Slightly more than half of
+what deferral language surfaces is already queued under different phrasing, and
+saying so is the other half of the pass.
+
+### The sweep — reconciliation, and the method changed twice
+
+**The instruction was to read CLAUDE.md against `docs/session-log.md`, per
+`docs/outstanding.md:591-593`.** It changed twice before it could run.
+
+**FIRST CHANGE, two-way to three-way, on FJ-4.** The weak spot describes one
+direction — a manifest filing overtaken by a same-day log entry. **FJ-4 shows
+the log can be the incomplete party**: it is ruled in the queue, absent from the
+log entirely, 0 occurrences against 29 for `FJ-` generally. A two-way check
+finds nothing there. The pass stopped at its first case to report the flaw
+rather than deliver a clean-looking result built on it. Ruled three-way.
+
+**SECOND CHANGE, a bounded cut taken and abandoned.** The cut was the four
+sessions that recorded FT rulings. It found two class (c) instances in the FIRST
+session examined and stopped on its own condition. The cut was abandoned as
+insufficient, **not as wrong** — it aimed correctly and found its pattern
+immediately.
+
+**ALL 23 SESSION HEADINGS READ, 3,701 lines.** Within-day ordering came from the
+headings' own ordinals — `(second)`, `(third)`, `(fourth)` — so no timestamps
+were needed. **Two spanning sessions reported ordering-unestablished**,
+`2026-09-04 to 2026-09-07` and `2026-09-09 into 2026-09-10`; neither produced a
+find, so the limitation cost nothing.
+
+**FINAL RATIO: 101 events checked, 33 propagated cleanly to all three, 65
+manifest-absent without contradiction, 3 finds.**
+
+**THREE FINDS, ALL RETRACTIONS. None needs relocation; none is a gap that
+cannot be backfilled.**
+
+**Find 1 — `CLAUDE.md:4185`. Class (a), mechanism CLOSURE.** The manifest reads
+"The production BMF load waits on A13, the auth health check read surface, and
+on A1, the rollback path." `docs/outstanding.md:1786` reads "CLOSED 2026-09-14:
+A13 SHIPPED AND WAS SCREENED, so the sixth step waits on A1 alone."
+
+**Find 2 — CLAUDE.md §5.1's P-7 closing note. Class (c), stale QUESTION.** It
+reads "NOT RULED, and possibly P-6 slice 2's rather than P-7's… FT has not ruled
+which." `docs/outstanding.md:4476` reads "RULED 2026-09-01: A41 STAYS IN P-7."
+
+**Find 3 — `CLAUDE.md:525-526`. Class (c), stale ANSWER, INVERTED, and the
+dangerous one.** It reads "NOT in the arc — `$.enterprise.demo_gate` /
+`$.advisor.demo_gate` designation. This is never a slice."
+`docs/outstanding.md:4453` reads "RULED 2026-09-02: IT IS A GAP, NOT AN INTENDED
+POSTURE, and it gets fixed as its own scoped slice." **A reader of CLAUDE.md
+alone learns the opposite of the ruling.**
+
+### The FOUNDER JUDGMENT structural gap
+
+**FOUNDER JUDGMENT is the one ruling class that by construction contradicts a
+manifest position**, because an FJ item exists when someone questions what
+CLAUDE.md already asserts. FJ-3's question quotes the manifest's own phrase,
+"never a slice"; FJ-4 answers a question §5.1 had marked NOT RULED.
+
+**Evidence: two instances from a seven-item population**, both from the one
+session of six that day which recorded FJ rulings. The other five `2026-09-02`
+sessions produced twenty-six events and zero finds.
+
+**The contrast that makes it structural rather than a bad day: A114 and A117
+closed and the manifest stayed correct**, because CLAUDE.md RELOCATED their
+durable content into §6.10 before they closed, stating the relocation in the
+text. Six manifest sites, all treating them as closed. **FOUNDER JUDGMENT has no
+counterpart section in CLAUDE.md**, so nothing relocates into it and nothing
+reads back from it.
+
+**Stated with its limit: a conclusion about where to look, not a rate.** Seven
+items, two finds.
+
+### Instrument failures
+
+**THE ROOT-PINNING TRIPWIRE, AND IT NEARLY PRODUCED A FALSE FINDING.** Item 1's
+twelve refusal cases were re-proven under a spawn tripwire — the loader with
+`spawnSync` stubbed — because they had first been proven against a file with no
+`node:child_process` import. The tripwire was written to a scratchpad and `ROOT`
+derives from `import.meta.url`, **so the relocated copy computed a different
+repository root.** The inside-repo case then resolved OUTSIDE that fake root,
+passed containment, and reported exit 77 with a spawn — **reading exactly like a
+refusal that reaches element A, which is the finding that re-proof exists to stop
+on.** The real loader had refused it correctly throughout.
+
+**THE RULE, and it is limb (b): A CONTROL MUST BE PROVEN TO PRESERVE THE THING
+UNDER TEST, NOT MERELY PROVEN ABLE TO FIRE.** The first instrument had a control
+— the tripwire fired on the success path — and that control was satisfied while
+the instrument was broken. The rebuilt tripwire pins `ROOT` to the real
+repository root and asserts the containment case byte-identical between the
+tripwire build and the real loader before any result is read.
+
+**THE TRAILER-CHECK FALSE POSITIVE.** Writing a negative control for the
+commit-trailer scan, the prose wrapped a trailer key to column 1, making the
+control a true positive and reporting the check as broken. **The check was
+correct throughout; only the control was broken.** This is §10's anchored-trailer
+filing's own hazard arriving from the other side, and belongs there as an
+AMENDMENT rather than a second entry.
+
+**`sed -n` SILENTLY STRIPS CARRIAGE RETURNS from the ranges it emits, and
+`head`/`tail` do not.** Observed while extracting a paragraph for rewrapping.
+Already filed in §10; recorded here as a second occurrence.
+
+**A `process.argv` MIS-INDEX WROTE A STRAY FILE INTO THE REPO ROOT.** A patch
+script was invoked with a placeholder argument, so `argv[2]` was the placeholder
+and the output path was `argv[3]`. The script wrote 66,773 bytes to a file named
+`x` at the repository root. **Untracked, never staged, deleted on discovery**,
+and `git status --porcelain` confirmed clean afterward. It is exactly the
+exposure §6.20's stage-by-explicit-path rule exists for.
+
+**A COUNT STATED BESIDE A LIST, TWICE IN ONE DAY, WHERE ONLY THE LIST WAS
+CHECKED.** The divergence total said 5 and listed six; the declined list said SIX
+and named eight. **The first was self-caught at the moment of writing, the second
+was caught by FT on review.** Both are §5.1's event-versus-state rule at one
+remove: the list was re-derived and the number beside it was carried forward.
+**The rule that follows is the one already in §10 — after writing, re-measure any
+figure the write could have moved — and its scope needs widening from figures a
+write moved to figures a write RESTATED.**
+
+### The transport
+
+**Recorded as observed. No theory of cause is offered and none should be read
+into this.**
+
+Prompts were re-served **four times**. Responses arrived with **contiguous spans
+deleted** on several occasions. **Two responses never arrived at all.**
+
+**The expected/actual/sha256 reporting guard was invented mid-session in
+response**, along with the per-block LINES header and the bare-numbers-on-their-
+own-lines rule. It is what made the work usable: a block that arrives damaged is
+detectable against its own stated line range, and a figure on its own line
+survives a deletion that would silently truncate a table row.
+
+**It qualifies on both limbs of rule 18's criterion** — a hazard with a
+recurrence surface, and a rule derived from one.
+
+### What this session did NOT do
+
+**The letterless-citation hazard and the reference-checker are UNFILED.** Both
+were identified, both were held for this sweep's filing step, and the filing step
+has not run.
+
+**The A147 arithmetic has NOT run.** No queue figure moved today beyond A149's
+own filing, and the fifteenth arithmetic block covers A149 alone. The six
+divergence changes, the eight discovery candidates and the three reconciliation
+retractions are all unfiled, so OPEN stands at 127 and every tier figure is
+unchanged.
+
+**Elements C through M are UNBUILT.** Slice 2 has five of sixteen
+definition-of-done items done.
+
+**The PROMOTION PASS has not run.** This entry is its precondition, per Ruling
+Two.
+
+**`Last swept:` has NOT been updated** and still reads 2026-09-01.
+
+**The three CLAUDE.md retractions are NOT written.** `:4185`, §5.1's P-7 note,
+and `:525-526` all still carry the text the tree contradicts.
+
+**Whether PROMOTION PASS 1 was FT-approved or filed directly is NOT STATED** in
+its own entry, and rule 18 requires a proposal FT approves. Unresolved.
+
+### Left, with a reason each
+
+- **A32** — needs snapshot rows production does not have; A39 confirms zero.
+- **A48, A49** — undetermined blockers pointing at parked lists, not divergence.
+- **A52** — blocker names a future slice, not a dependency.
+- **A87** — a sibling relation is not a dependency; carried as a pairing instead.
+- **A94** — correctly blocked on scheduled execution; A13 was the other half.
+- **A105** — its class is provisional by its own text.
+- **A10** — its zip is the ProPublica TEOS path, not BMF; resolved, not deferred.
+- **FJ-7 against §7's WCAG AA** — a known shortfall on a locked token is not a
+  manifest position a ruling overturned; calling it would make every filed defect
+  a find.
+- **§7's "first instalment" against FJ-2** — fixtures and the remote seed are
+  different artefacts.
+- **Historical session counts** — dated records, correctly frozen.
+
+### Proposed: a `Last promoted:` marker
+
+**`docs/outstanding.md`'s header gains a second line beside `Last swept:`:**
+
+    **Last promoted: 2026-09-07.** Promotion scope is entries dated after this
+    line, not after `Last swept:`. The two markers are separate because a
+    promotion pass can run inside a session without a sweep completing, which is
+    what happened on 2026-09-07, and a sweep can complete without promoting.
+
+**It is an A147 event.** `Last swept:` is a FROZEN key in
+`scripts/verify-commit-tail.mjs`, so the doc and the script move together.
