@@ -9,14 +9,14 @@
 // file (L), and the read-only verification against D1 (M).
 //
 // WHAT THIS FILE IMPLEMENTS TODAY: DEFINITION-OF-DONE ITEMS 1 AND 2, AND R32
-// ELEMENT A — the target map and the run banner (R36, R37, R38), the DDL
-// constant (R13, R33), and the creation of the aside from that constant with
-// R16's two pre-swap assertions. It resolves and validates its arguments, prints
-// the banner, creates `bmf_aside`, asserts the shape it just built, and then
-// REFUSES TO PROCEED. It loads no row, opens no `load_stamp` row, swaps nothing,
-// and neither reads nor writes the live `bmf` table. Elements B through M are
-// UNBUILT, and this file says so at exit rather than implying otherwise by
-// succeeding.
+// ELEMENTS B AND A — the target map and the run banner (R36, R37, R38), the
+// DDL constant (R13, R33), the pre-flight (R20), and the creation of the aside
+// from that constant with R16's two pre-swap assertions. It resolves and
+// validates its arguments, prints the banner, runs the pre-flight, creates
+// `bmf_aside`, asserts the shape it just built, and then REFUSES TO PROCEED.
+// It loads no row, opens no `load_stamp` row, swaps nothing, and neither reads
+// nor writes the live `bmf` table. Elements C through M are UNBUILT, and this
+// file says so at exit rather than implying succeeding.
 //
 // ITEM 2 ADDED DATA AND RENDERERS; ELEMENT A IS WHAT CALLS THEM. The DDL
 // constant and the five functions that render it — columnSql, createTableSql,
@@ -439,24 +439,10 @@ if (venue === 'local') {
   }
 }
 
-// ------------------------------------------------------------------ ELEMENT A
-// R32 element A: CREATE THE ASIDE, from the constant, via asideStatements().
-// Nothing downstream of this is built. B through M are absent, and so is any
-// element that drops or prunes an aside, which is why a second run FAILS.
-//
-// THE ASSERTIONS ARE R16's AND THEY RUN HERE, not after a swap. R16b rules them
-// PRE-SWAP and part of the gate: catching drift before the swap means the aside
-// is discarded and live was never touched. R16c names them aside_schema_pk and
-// aside_schema_notnull, and those names are used verbatim below so the
-// load_check rows element G writes read the same as this output. G is unbuilt,
-// so nothing is persisted; these run and REPORT, and a failure exits non-zero.
-//
-// R16's AMENDMENT IS LOAD-BEARING AND IS NOT SIMPLIFIED HERE: the notnull
-// assertion covers FIVE columns INCLUDING ein, not the nationally-non-null four.
-// A non-INTEGER PRIMARY KEY in SQLite does not imply NOT NULL, so ein's own NOT
-// NULL would otherwise be asserted by nothing, which is the exact drift R16
-// exists to catch.
-const NOTNULL_COLUMNS = ['ein', 'name', 'city', 'state', 'ruling'];
+// ------------------------------------------------------- SHARED WRANGLER SEAM
+// These two are defined ABOVE element B because B is the first element to spawn
+// wrangler. They were introduced with element A and MOVED here when B took
+// position 6; nothing about them changed.
 
 // R38: the full wrangler command is PRINTED on every run, before it is spawned.
 function wrangler(args) {
@@ -476,6 +462,83 @@ function execArgsFor(command, json) {
   args.push('--command', command);
   return args;
 }
+
+// ------------------------------------------------------------------ ELEMENT B
+// R32 element B: THE PRE-FLIGHT. It runs BEFORE element A, by FT's ruling of
+// 2026-09-16, on the ground the definition of done already records verbatim for
+// D and E: CREATING THE ASIDE IS ALREADY AN ATTEMPT. R20b names second zero as
+// the pre-flight's whole value, and element A spawns wrangler against the
+// target, so a check placed after it is a check that cannot fail for the reason
+// it exists - a stale token would have taken the aside's CREATE TABLE first.
+//
+// TWO BRANCHES, AND THE WORD "CREDENTIAL" BELONGS TO ONLY ONE OF THEM. A remote
+// run has a credential to exercise, and R20 rules a cheap authenticated read. A
+// LOCAL run has none: the store is a directory on this disk and no token is
+// presented to anything. Reporting "credential ok" there would be a claim the
+// run cannot support, which is the class of quiet falsehood this arc exists to
+// remove, so the local branch reports REACHABILITY and says so in those words.
+//
+// R20a: IT REPORTS AND STOPS, and never re-authenticates. CLAUDE.md section 10
+// records that a precautionary re-login was unnecessary and should not become a
+// habit. The pre-flight reports; it does not fix.
+//
+// R20b, RESTATED HERE SO IT IS NOT OVERSOLD: this cannot prevent a token
+// expiring DURING element C's multi-minute call. Section 4's "credential
+// staleness mid-load is UNADDRESSED, recorded not solved" stands for the
+// mid-call case. What this buys is the ALREADY-STALE case, at second zero.
+//
+// THE READ IS CHEAP AND ITS RESULT IS INSPECTED, not merely its exit code. A
+// command that exits 0 while returning nothing parseable has not exercised the
+// round trip, and an exit code alone would make this a check on the process
+// rather than on the database.
+const PREFLIGHT_SQL = 'SELECT 1 AS preflight;';
+const preflight = wrangler(execArgsFor(PREFLIGHT_SQL, true));
+const preflightKind = venue === 'remote' ? 'credential' : 'reachability';
+if (preflight.status !== 0) {
+  console.error(preflight.stdout || '');
+  console.error(preflight.stderr || '');
+  fail(
+    `the pre-flight ${preflightKind} check FAILED (wrangler exit ${preflight.status}). ` +
+      'R20a: this REPORTS AND STOPS. It does not re-authenticate and does not retry. ' +
+      'Nothing was created, nothing was loaded and nothing was swapped: this ran ' +
+      'before element A, so the run stops at second zero rather than mid-attempt.'
+  );
+}
+let preflightRows = null;
+try {
+  preflightRows = JSON.parse(preflight.stdout)[0].results;
+} catch {
+  preflightRows = null;
+}
+if (preflightRows === null || preflightRows.length !== 1 || preflightRows[0].preflight !== 1) {
+  fail(
+    `the pre-flight ${preflightKind} check returned no usable result. wrangler exited 0, ` +
+      'so the process ran, but the round trip produced nothing this loader can read. ' +
+      'R20a: it REPORTS AND STOPS rather than retrying.'
+  );
+}
+console.log(
+  `[bmf-load] pre-flight      : ${venue === 'remote' ? 'credential ok' : 'local store reachable'}`
+);
+
+// ------------------------------------------------------------------ ELEMENT A
+// R32 element A: CREATE THE ASIDE, from the constant, via asideStatements().
+// Nothing downstream of this is built. B through M are absent, and so is any
+// element that drops or prunes an aside, which is why a second run FAILS.
+//
+// THE ASSERTIONS ARE R16's AND THEY RUN HERE, not after a swap. R16b rules them
+// PRE-SWAP and part of the gate: catching drift before the swap means the aside
+// is discarded and live was never touched. R16c names them aside_schema_pk and
+// aside_schema_notnull, and those names are used verbatim below so the
+// load_check rows element G writes read the same as this output. G is unbuilt,
+// so nothing is persisted; these run and REPORT, and a failure exits non-zero.
+//
+// R16's AMENDMENT IS LOAD-BEARING AND IS NOT SIMPLIFIED HERE: the notnull
+// assertion covers FIVE columns INCLUDING ein, not the nationally-non-null four.
+// A non-INTEGER PRIMARY KEY in SQLite does not imply NOT NULL, so ein's own NOT
+// NULL would otherwise be asserted by nothing, which is the exact drift R16
+// exists to catch.
+const NOTNULL_COLUMNS = ['ein', 'name', 'city', 'state', 'ruling'];
 
 const statements = asideStatements();
 console.log(`[bmf-load] aside statements: ${statements.length}`);
@@ -564,7 +627,7 @@ if (problems.length > 0) {
 
 reportSize();
 
-// EVERY ELEMENT AFTER A IS UNBUILT - B through M, and definition-of-done item 4
+// EVERY ELEMENT AFTER A IS UNBUILT - C through M, and definition-of-done item 4
 // onward. The aside now EXISTS and is EMPTY. Nothing loaded it, nothing swapped
 // it, and no load_stamp row was opened, because element E is not built.
 //
@@ -581,7 +644,8 @@ reportSize();
 // this arc exists to remove. 1 is reserved for fail(), so a run refused by
 // validation stays distinguishable from a run that validated, did element A, and
 // then stopped because nothing downstream exists yet.
-console.error('[bmf-load] STOP: element A only. The aside is created and R16 asserted.');
+console.error('[bmf-load] STOP: elements B and A only. The pre-flight ran and the aside is');
+console.error('[bmf-load] created, with R16 asserted against it.');
 console.error('[bmf-load] No row was loaded, no stamp was opened, nothing was swapped, and');
 console.error('[bmf-load] the live bmf table was not read or written.');
 process.exit(2);
