@@ -1244,18 +1244,33 @@ Detail: the commit message of the preceding correction slice. One instance was
 found and converted; the scope is unknown.
 
 **A15 | Whether production D1 enforces foreign keys is unverified.**
-Blocker: it needs a remote write, which is FT-only. Local enforcement IS
-verified. Gates A16, which is explicitly downstream of it.
+Blocker: A116, whether a sandbox result transfers to production. Local
+enforcement IS verified, and REMOTE enforcement was answered 2026-09-07 by an
+FT-run probe against `bmf-sandbox`. Gates A16, explicitly downstream of it.
 Pilot: POST (undetermined, needs FT)
 Detail: CLAUDE.md §10, the filed block on foreign-key enforcement.
+**BLOCKER AMENDED 2026-09-16 BY THE SWEEP, and the old one is quoted rather
+than deleted: "it needs a remote write, which is FT-only."** That was the
+obstacle until a venue existed where a deliberate constraint violation was
+safe. The write HAS been made and the engine HAS answered; what is unresolved
+is whether a sandbox answer transfers, which is A116 and is open. Leaving the
+old blocker told a reader the answer was one FT command away.
 
-**A74 | Two audit docs are cited from CLAUDE.md and cannot be opened from
-`main`.**
-Blocker: a disposition. Committing them to `main` argues against §6.9's
-anti-merge posture; amending each pointer to name its branch is the alternative.
-Neither is proposed.
-Pilot: DEBT
-Detail: CLAUDE.md §8, its opening note on the two branch-only pointers.
+**A74 was CLOSED 2026-09-16 and has left this section; its id is not
+renumbered and is not reused**, since renumbering would break every reference
+to the ids around it. Its title was "Two audit docs are cited from CLAUDE.md
+and cannot be opened from `main`", and its blocker read "a disposition" with
+both options named and "Neither is proposed."
+**WHAT CLOSED IT: the disposition was ruled and implemented two days before
+this sweep found it still open.** CLAUDE.md §8 records "RULED 2026-09-14: THE
+SECOND OPTION IS TAKEN" — the alternative A74 named — and each pointer now
+says the file is ABSENT from `main` and names the branch to check out.
+**The underlying condition is UNCHANGED and correctly so**: both docs remain
+absent from `main`, verified by `git ls-tree`, because the anti-merge posture
+at §6.9 argues against committing them. A74 asked for a decision; the decision
+exists and shipped.
+**A55 CITED THIS ENTRY AND ITS POINTER IS REDIRECTED IN THE SAME CHANGE**, so
+no live entry points at a closed one.
 
 **A110 | The `athlete_reflection` pre-claim visibility posture is counsel-gated
 and unanswered.**
@@ -1544,6 +1559,19 @@ the only person positioned to notice. Whether that warrants a filing, and whethe
 its home is CLAUDE.md §10 beside the instrument hazards or §5.1 beside the
 event-versus-state rule, is FT's call and is deliberately not decided here.
 
+**A150 | The athlete consent posture, processor versus controller, is parked in
+a scoping doc and queued nowhere.**
+Blocker: A47, COUNSEL. Same gate as advisor Q7, and the question is what the
+platform IS in the relationship rather than what it may hold.
+Pilot: BLOCKING, and counsel-gated: building cannot close it.
+Detail: `docs/enterprise-persistence-scoping.md`, its parked Q7 note.
+
+**A151 | The non-signing-party question is parked in the same scoping doc and
+queued nowhere.**
+Blocker: A47, COUNSEL. Same class and same gate as A150.
+Pilot: BLOCKING, and counsel-gated: building cannot close it.
+Detail: `docs/enterprise-persistence-scoping.md`, its non-signing-party note.
+
 ### Gates a stated commitment
 
 **A44 | Every advisor write returns 403 in production.**
@@ -1604,6 +1632,12 @@ Blocker: none named. A55 is a different target, a CR-level filtered view.
 Pilot: DEBT
 Detail: `src/surfaces/operations/OperationsSurface.jsx:356` and `:378`, two
 footnotes under the Open issues and Recent activity cards.
+
+**A152 | Client contact fields are deliberately absent until Q7 resolves, and
+nothing tracks the trigger.**
+Blocker: A47, COUNSEL. R5 records the decision; no entry records the trigger.
+Pilot: POST
+Detail: `docs/client-record-rulings.md`, R5.
 
 ### BMF and Discover — open questions
 
@@ -1787,6 +1821,17 @@ on two entries rather than on A1 alone.
 alone again.** The sentence above is kept because it records why this blocker
 line read two entries for three days. **A8's blocker is otherwise unchanged and
 is still SIX STEPS**, of which five are reachable today.
+**AMENDED 2026-09-16 BY THE SWEEP. THREE OF THE SIX STEPS ARE DONE, AND THIS
+BLOCKER STILL CITES TWO OF THEM AS OPEN ENTRIES.** A114 and A117 both CLOSED
+2026-09-07: the sandbox exists and migration 0022 is applied to it and to
+live. A113 is open but no longer unstarted — the loader exists, with items 1
+through 3 and elements A and B built.
+**SO THE SIX STEPS NOW READ: sandbox DONE, ruled-table migration DONE,
+applied to the sandbox DONE, loader PARTIAL (A113), test it on the sandbox,
+then run the production load.** The clause above saying "five are reachable
+today" was true when written and understates it in the other direction now.
+**The blocker is otherwise unchanged and is still SIX STEPS**, and the
+production load still waits on A1 alone.
 Pilot: BLOCKING
 Detail: `docs/discover-surface-spec.md`; `docs/bmf-load-scoping.md`.
 **FT RULED 2026-09-04: THE CAPABILITY IS INTENDED, AND PILOT CANNOT OPEN
@@ -1854,6 +1899,11 @@ Detail: `docs/propublica-spike-findings.md`, its note on the malformed batch.
 
 **A113 | The BMF loader does not exist. It is the step toward A8 that produces
 the most code, and no longer the first one that produces any.**
+**TITLE SUPERSEDED 2026-09-16 AND KEPT RATHER THAN REWRITTEN**, per this
+file's practice: the loader EXISTS. `scripts/bmf-load.mjs` is 31,916 bytes at
+`156930d`, carrying definition-of-done items 1 through 3 and R32 elements A
+and B. What remains true is the rest of the title: it is the step toward A8
+that produces the most code, and it is not finished.
 Blocker: NONE. The STATE both named entries stood for is reached: the sandbox
 exists, and 0022 is applied to it and to live, so the table carries the ruled
 `PRIMARY KEY` on `EIN` plus indexes on BOTH databases. **A114 and A117 are both
@@ -2201,6 +2251,20 @@ TABLE DELIBERATELY DID NOT OBSERVE, each named in the verifier's own output:
 R10b's duplicate-`ein` rejection at INSERT, R16's `aside_schema_pk` and
 `aside_schema_notnull`, and R13b's post-swap index names. See A125 for the two
 things that remain open on the aside itself.
+**CORRECTED 2026-09-16: THE HEADING SENTENCE ABOVE IS FALSE IN BOTH HALVES**,
+quoted rather than edited so the change is visible where the stale claim sat.
+**SLICE 2 IS STARTED**, five of sixteen definition-of-done items done across
+five commits, `19ad258` through `6b60722`. **AND THE ENTRY IS SCOPED BEYOND
+SLICE 1**: R32 bounds slice 2 as the whole loader, thirteen elements A through
+M, ruled 2026-09-09.
+**THE 2026-09-10 AMENDMENT BELOW ALREADY SUPERSEDED THE SECOND HALF** and said
+the first half stood. That was true on 2026-09-10 and is not true now. **This
+correction supersedes the first half and leaves both sentences standing**, so a
+reader meets three dated readings rather than one rewritten one.
+**FOUR OTHER LIVE SITES OF THIS CLAUSE SURVIVE and are NOT touched here.**
+CLAUDE.md section 7 enumerates them; they are filed as their own entry in this
+same change, because correcting four of five is the shape that reads considered
+while a fifth copy still asserts the falsified claim.
 **AMENDED 2026-09-10: THE SECOND HALF OF THAT SENTENCE IS SUPERSEDED, THE FIRST
 HALF STANDS.** The sentence is quoted rather than edited so the change is visible
 where the stale claim sat. **SLICE 2 IS STILL NOT STARTED.** But this entry IS
@@ -2386,6 +2450,26 @@ it existing.**
 Blocker: the slice that authors R13's loader constant. **A BUILD, NOT A RULING.**
 RULED 2026-09-09 NOT RULABLE AHEAD OF SLICE 2's BOUNDARY: every candidate answer
 names a slice, and nothing in the tree bounds slice 2.
+**BLOCKER DISCHARGED 2026-09-16, AND THE ENTRY STAYS OPEN ANYWAY.** The build
+this blocker named exists: `scripts/bmf-load.mjs` carries the `DDL` constant as
+of `d24fcbc`, and `asideStatements()` renders `CREATE TABLE bmf_aside` from it,
+exercised against the local store on 2026-09-16 with R16's assertions read
+back from the DATABASE rather than from the constant. **The SECOND GROUND,
+that every candidate shape describes what a slice must BUILD, is satisfied by
+a slice having built one.**
+**IT STAYS OPEN BECAUSE A CLOSE MEANS THE ENTRY LEAVES, AND TWENTY-SEVEN
+CITATIONS DEPEND ON THIS ID RESOLVING.** They sit across FIVE files: CLAUDE.md,
+`docs/bmf-load-scoping.md`, this file, `docs/slice-2-scope-pass.md` and
+`scripts/bmf-verify-slice1.mjs`. One of them is A113's "See A125 for the two
+things that remain open on the aside itself", which would strand exactly as
+A55's pointer at A74 did.
+**AND THE FOUR GROUNDS ARE NOT RELOCATED.** The first, third and fourth appear
+nowhere outside this entry; the second appears in the scoping doc three times
+and every one is a REFERENCE to it rather than a statement of it, so closing
+would leave three pointers to a ground stated nowhere.
+**THE CLOSE IS FILED AS ITS OWN SLICE.** Relocate first, fix the citations,
+then close — the order A114 and A117 followed and the reason they closed
+safely.
 **AMENDED 2026-09-10: "nothing in the tree bounds slice 2" IS NO LONGER TRUE**,
 quoted rather than deleted so the change is visible where the stale claim sat.
 **R32, ruled 2026-09-09, bounds slice 2** as the whole loader — thirteen elements
@@ -2769,6 +2853,17 @@ self-invalidating claim and is available only when the carrier itself closes.
 false, and whether an applied migration is ever corrected is unruled.**
 Blocker: unruled. A127 turns on the same root question and a ruling on either
 should be made for both.
+**AMENDED 2026-09-16: THE TRIGGERING EVENT HAS NOW OCCURRED ONCE, CLEANLY,
+WITHOUT FORCING THE QUESTION.** R13a fired for the first time on 2026-09-15:
+the loader's DDL constant was regenerated and compared against the migration,
+and the comparison PASSED on R31's scope after FT ruled that R31's exclusion
+reaches the token separator. **No divergence was carried and the migration was
+not touched.**
+**BOTH HALVES OF THIS ENTRY STAND.** The file still holds text a regeneration
+would make false: its own header still reads HAND-WRITTEN AND PROVISIONAL,
+and whether an applied migration is ever corrected is still unruled. What
+changed is that the event everyone was waiting for has happened once and did
+not settle it, so a reader does not mistake the question for pending.
 Pilot: DEBT
 Detail: `migrations/0022_bmf_table.sql` at the lines below; A127 in
 `### Gates other work`; A113 above, its "KNOWN STALE CONTENT IN THAT FILE" block;
@@ -2946,6 +3041,29 @@ apart from this note: nothing in the runbook's scope, blocker or classification
 moves, and A134 stays DEBT and stays open, because a performable step is not a
 written runbook. **A13's closure removes a GATE on the load and removes nothing
 from this list.**
+
+**A153 | A125 cannot be closed until its content is relocated and twenty-seven
+citations are fixed.**
+Blocker: none. It is a relocation plus a citation sweep, both mechanical.
+Pilot: DEBT
+Detail: A125 above, its 2026-09-16 blocker-discharged amendment; A131, absorbed
+into A125 when it closed; `docs/bmf-load-scoping.md` section 15.
+**WHAT MUST MOVE, AND WHERE.** A131's measurements and its
+correction-of-a-correction go to `docs/bmf-load-scoping.md` section 15. They
+were relocated ONCE already, from A131 into A125 on the reasoning that closing
+deletes, and the destination named was INSIDE A125, so a second closure would
+destroy them. A125's FIRST, THIRD and FOURTH grounds go to the same place:
+they appear nowhere outside the entry. The SECOND GROUND appears in section 15
+three times and every one is a REFERENCE to it rather than a statement of it,
+so closing without moving it leaves three pointers to a ground stated nowhere.
+**THEN THE CITATIONS.** Twenty-seven sites across FIVE files cite A125:
+CLAUDE.md, `docs/bmf-load-scoping.md`, this file, `docs/slice-2-scope-pass.md`
+and `scripts/bmf-verify-slice1.mjs`. One is A113's "See A125 for the two
+things that remain open on the aside itself", which would strand exactly as
+A55's pointer at A74 did.
+**THE ORDER IS THE ONE A114 AND A117 FOLLOWED**: relocate, fix the citations,
+then close. CLAUDE.md section 5.1 files that order as what makes a closure
+safe, and this is its first live application rather than a historical one.
 
 ### Cheap and mechanical
 
@@ -3759,6 +3877,123 @@ repository and nothing in the tree references it, so today there is no tool.
 discharged, the migration is untouched, and no other entry waits on it. It is
 unpaid work recorded honestly, which is this file's own test for DEBT.
 
+**A154 | The founder-letter strategic thread is parked in a scoping doc and
+queued nowhere.**
+Blocker: none named. Voice, audience and gate questions on `Letter.jsx`,
+dispositioned KEEP with the strategic thread left open.
+Pilot: DEBT
+Detail: `docs/individual-rework-scoping.md`, its 5.2 row and its open-calls
+list.
+
+**A155 | Sector terminology for later phases is locked in section 7 and tracked
+nowhere.**
+Blocker: none. Phase 1 is athletes only, so it cannot be acted on before a
+phase that does not exist.
+Pilot: POST
+Detail: CLAUDE.md section 7, "Phase 1 is athletes only".
+
+**A156 | Same-person dedup across surfaces is deferred, with six code sites and
+no entry.**
+Blocker: none. A locked architectural decision, not an oversight.
+Pilot: DEBT
+Detail: CLAUDE.md section 4; `src/data/unified/adapters/advisor.js`,
+`src/data/unified/synthetic.js`, `src/surfaces/individual/CohortView.jsx`, and
+the two Operations directories.
+
+**A157 | The `cf-email` sender provider is branched for and does not exist.**
+Blocker: none. `sender.js` accepts it and throws on it, which is why a smoke
+suppressing sends works through an error path rather than a noop provider.
+Pilot: DEBT
+Detail: `functions/_lib/sender.js`, its provider switch; CLAUDE.md section 9,
+the smokes-never-send-real-mail rule.
+
+**A158 | No guardian-authorization gate exists, and it is a PRECONDITION ON A
+SCOPE CHANGE rather than deferred work.**
+Blocker: none. The pilot cohort is 18+ collegiate, so nothing is blocked today.
+**The gate must exist BEFORE the first minor is onboarded, not after someone
+decides to support minors** — written as ordinary deferred work it reads
+optional, and it is not.
+Pilot: POST
+Detail: `functions/api/athletes/[id].js`, its under-18 docblock carried from
+migration 0009.
+
+**A159 | Three unlettered definition-of-done items carry bare numeric
+references the checkable form cannot reach.**
+Blocker: none. A latent citation hazard, and the list has been reordered three
+times.
+Pilot: DEBT
+Detail: `docs/bmf-load-scoping.md`, its element-3 references; CLAUDE.md section
+10, the known-false-positives register.
+
+**A160 | The number-to-letter reference checker exists only as a scratch script
+and nothing in the tree runs it.**
+Blocker: none. Direct sibling of A149, which files the same shape for the DDL
+regenerator.
+Pilot: DEBT
+Detail: A149 above; `docs/bmf-load-scoping.md`, its definition-of-done list.
+
+**A161 | Four live sites of the "SLICE 2 IS NOT STARTED" clause survive after
+A113 was corrected.**
+Blocker: none. CLAUDE.md section 7 already enumerates them.
+Pilot: DEBT
+Detail: A113 above, its 2026-09-16 correction; CLAUDE.md section 7, the
+five-live-sites note.
+
+**A162 | A divergence pass tests whether an entry's claims hold, not whether
+it can be closed safely.**
+Blocker: none. A method correction, applied by the next sweep.
+Pilot: DEBT
+Detail: A125 above; A55 and A74; CLAUDE.md section 6, rule 18.
+**THE TWO QUESTIONS ARE DIFFERENT AND ONLY ONE WAS ASKED.** Divergence asks
+whether the claim still holds at HEAD. A CLOSE additionally requires that
+nothing depends on the id, because closing means the entry leaves and its id
+stops resolving.
+**A74 PASSED BOTH, INCIDENTALLY.** One entry cited it, A55, and that pointer
+was redirected in the same change. **A125 PASSES ONE AND FAILS THE OTHER**: its
+blocker is discharged and twenty-seven citations across five files depend on
+its id, so the 2026-09-16 sweep proposed a close that would have stranded all
+of them.
+**THE REMEDY: any future sweep proposing a close runs a citation check first**,
+across the tree and not only the queue, and reports the count. A close with
+live citations is a relocation slice, not a close.
+
+**A163 | The edit-spec interface takes a start anchor plus a line count, and
+the arithmetic is the defect.**
+Blocker: none. An explicit end anchor removes it.
+Pilot: DEBT
+Detail: the scratch editor used by the 2026-09-16 filing pass; A162 above.
+**IT PRODUCED AN OFF-BY-ONE IN BOTH DIRECTIONS IN ONE TURN.** Anchored on a
+block's first line with a count, the tail landed on the blank line after the
+block. Anchored on the line above with a count one higher, it landed on the
+same blank from the other side. **Both were caught by the tail assertion and
+neither reached the file**, which is why this is DEBT and not a defect.
+**AN END ANCHOR REMOVES THE ARITHMETIC ENTIRELY.** A spec naming its first and
+last lines cannot be off by one; a spec naming a first line and a count can be
+off by one in either direction, and the direction is not obvious from reading
+it.
+**NOT CHANGED MID-PASS, FILED INSTEAD.** Replacing an editor's interface while
+edits are in flight trades a caught failure for an uncaught one.
+
+**A164 | A control measured with a proxy answers a question the instrument
+never asks.**
+Blocker: none. Measure with the instrument's own predicate.
+Pilot: DEBT
+Detail: the 2026-09-16 filing pass; A162 and A163 above.
+**THE OBSERVED CASE.** An anchor was counted with `grep -cF`, a SUBSTRING
+match, and returned 3. The editor matches with `startsWith`, a LINE-ANCHORED
+match, where the same anchor returns 1. **The count was right and the anchor
+was safe**; the measurement answered a question the editor never asks, and a
+usable anchor was reported as unusable on that basis.
+**THE REMEDY: measure with the predicate the consumer uses.** Where a check
+stands in for an instrument, the check runs the instrument's own comparison,
+not a convenient one.
+**WHY THE CHECK EXISTS AT ALL, and two instances survive re-measurement.**
+`Pilot: BLOCKING` occurs 24 times LINE-ANCHORED and would have placed an
+amendment under a different entry. And an A8 anchor was likewise unsafe. **A
+third instance was RETRACTED on re-measurement** and is recorded here rather
+than dropped, because a retracted finding left unrecorded reads as one nobody
+checked.
+
 ### Large
 
 **A142 | The NIL positioning thesis asserts a tax treatment, and nobody has
@@ -4108,7 +4343,8 @@ Detail: `docs/5.8-giving-flow-scoping.md`, section 5d.
 Blocker: a future CR-level filtered view.
 Pilot: DEBT
 Detail: `docs/qa-audit-operations-2026-06-09.md`, on the `qa-audit-operations`
-branch. See A74.
+branch. See A74, CLOSED 2026-09-16: CLAUDE.md section 8 now names the branch
+at each pointer, so that document is reachable without this cross-reference.
 
 **A64 | One section 7 ordering is recorded as probably fine.**
 **NOT WORK. This is a record, not a queued item**, kept so a future scan does
