@@ -187,7 +187,7 @@ const REGION_END = '**THE PRE-PILOT CRITICAL PATH, AS IT STANDS AFTER THE 2026-0
 // The counsel-gated sentence check 3 has scraped since it was written. The
 // region is required to contain it, because a region that excluded it would
 // leave an existing pair reading a value from outside its own window.
-const REGION_HOLDS = '**FOUR OF THE TWENTY-FOUR BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED';
+const REGION_HOLDS = '**SIX OF THE TWENTY-SIX BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED';
 
 // A numeral occurrence is a maximal run of digits, or a comma-grouped run such
 // as 341,097,144 taken whole. Dates, SHAs, section references and entry ids all
@@ -209,6 +209,13 @@ const numeralsOf = (s) => [...s.matchAll(NUMERAL)].map((m) => m[0]);
 // the text key is that REWORDING a listed line breaks its entry and the run
 // FAILS. That is the intended behaviour: a reworded line is a line whose
 // classification nobody has re-made.
+// A LINE COVERED BY A CLAIM MUST BE EXCLUDED FROM FROZEN GENERATION. A claim
+// consumes the numerals it names, so if a line ONLY carries numerals a claim
+// already takes, its FROZEN entry never fires and the dead-inventory control
+// below fails. That is not a nuisance: a dead entry is an unmade classification
+// wearing the look of a made one. Observed 2026-09-16, when the sixteenth
+// block build-chain line was generated into this array while DERIVED_CLAIMS
+// already claimed its only numeral.
 const FROZEN = [
   ["**ARITHMETIC OF THE LAST CHANGE, 2026-09-16 (sixteenth): FIFTEEN ENTRIES OPENED",
    "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
@@ -231,8 +238,6 @@ const FROZEN = [
   ["enumerator moves with OPEN, **139 against 141**, the gap still exactly A50a and",
    "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
   ["A50b, and the file-wide count's surplus is still FJ-7's line and not an entry.",
-   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
-  ["**THE BUILD CHAIN HOLDS AT 20 THROUGH CANCELLATION RATHER THAN THROUGH",
    "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
   ["**THE CLAIM TABLE MOVED WITH THIS BLOCK IN THE SAME COMMIT, WHICH IS A147.**",
    "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
@@ -522,6 +527,8 @@ const FROZEN = [
    "the A50b id and the FJ-7 id"],
   ["**THE CLAIM TABLE MOVES WITH THIS BLOCK, AND A147 IS WHY.** The nine block",
    "the A147 id"],
+  ["**THE BUILD CHAIN HOLDS AT 20**, because BLOCKING is unmoved and the same four",
+   "the fifteenth block build-chain figure; a dated record superseded by the sixteenth"],
   ["**THE BUILD CHAIN HOLDS AT 20**, because BLOCKING did not move and the four",
    "the fourteenth change's build-chain restatement; the DERIVED_CLAIM moved to the fifteenth block's line, which is the one the scrape reads"],
   ["**ARITHMETIC OF THE LAST CHANGE, 2026-09-15 (fourteenth): ONE ENTRY OPENED AND",
