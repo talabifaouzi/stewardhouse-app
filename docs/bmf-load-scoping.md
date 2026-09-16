@@ -675,6 +675,27 @@ rerun from the start, and **this project has no resumable write and this slice
 should not invent one**: a full rerun is about 6 minutes locally, cheaper than
 the correctness argument a resume would require.
 
+**AMENDED 2026-09-16 BY THE SLICE THAT FOUND IT, per R38's precedent that a
+builder amends a ruling's wording at the point the choice is made. FT RULED the
+amendment the same day. THE SAFETY PROPERTY IS UNCHANGED; ONLY THE DESCRIBED
+POST-FAILURE STATE WAS WRONG.**
+
+**"leaving the aside table absent rather than partial" IS TRUE OF THE PLAN THIS
+WAS WRITTEN AGAINST AND FALSE OF THE ONE THAT SHIPPED.** It assumed the CREATE
+and the INSERTs travelled in ONE invocation, so a rollback took the table with
+them. Under R32's element split they do not: element A creates the aside in its
+own `d1 execute` invocation and element C loads it in another. **A rolled-back
+C therefore leaves the aside PRESENT AND EMPTY**, not absent.
+
+**NOTHING PARTIAL SURVIVES EITHER WAY**, which is the half that matters and the
+half this correction does not touch. One `d1 execute --file` is still one
+`db.batch()`, the prefix case still arises only if chunks are issued as
+separate invocations, and recovery is still a full rerun.
+
+**WHOEVER BUILDS THE RECOVERY PATH MUST NOT CODE AGAINST "ABSENT".** A rerun
+meets an existing empty aside, not a missing one, so element A's refusal to
+re-create an existing table is on the recovery path rather than off it.
+
 **A swap fails.** With the DROP and the RENAME in one invocation the batch either
 applies or does not, so the asymmetric window the earlier text described here is
 gone. What remains is failure of the whole batch, which leaves the live table
@@ -870,6 +891,26 @@ commas, since only 6 of 278,014 in eo1 do and a quoting bug would otherwise hide
 non-null rows, compared after load. That figure has not been measured, so it
 must be produced during the parse rather than asserted from this plan.
 
+**DEFERRED 2026-09-16 BY FT RULING, AND RECORDED HERE RATHER THAN IN THE QUEUE.
+SLICE 1 DOES NOT GAIN A `revenueSum` FIELD.** The sidecar
+`scripts/bmf-aside.tmp.json` carries `rows`, `recordsRead`, `distinctEins`,
+`maxStatementBytes` and the file set, and **no revenue sum**, measured
+2026-09-16. So adopting this check means slice 1 EMITS A NEW FIELD, which edits
+a shipped script outside this slice's scope.
+
+**WHY AN INLINE NOTE AND NOT A QUEUE ENTRY.** It is a scoping decision about
+what slice 1 emits and **has no completion state of its own**, and
+`docs/outstanding.md`'s own header rules that such an item would sit in a
+counted queue permanently — the same ground that kept the multi-load bullets
+out. Staying clear of the A147 claim-table hold is a consequence of that, not
+the reason for it.
+
+**WHAT IT WOULD BE IF IT LANDED**, so a later reader inherits the shape rather
+than the question: a fourth `load_check` row beside element 9 (F)'s three,
+asserting a figure the sidecar carries against the aside, needing no band and
+no source re-read. It is C-shaped in mechanism and F-shaped in purpose, which
+is why it sits with the tiers rather than with the row count.
+
 ## 6. What local cannot establish about remote
 
 - **Transfer of roughly 152 MB of SQL** to `--remote`, and whether it must be
@@ -952,6 +993,40 @@ Section 1 records the four index builds and the worst is 5.3% of it. The earlier
 text here said the limit was not comfortable at this scale and pointed at an open
 item; that item is closed and the measurement, with its six stated limits, is in
 section 1.
+
+**THE FILE IMPORT IS NOW MEASURED RATHER THAN BOUNDED, 2026-09-16, AND IT IS A
+LOCAL MEASUREMENT.** The emitted artifact was loaded into the `bmf-sandbox`
+persist-to store in ONE `wrangler d1 execute --file` invocation: **173,873,096
+bytes, 5,805 statements, exit 0, 345 seconds wall clock**, wrangler reporting
+"5805 commands executed successfully" with zero `"success": false`. Read back
+with `node:sqlite` rather than through wrangler, the aside held **1,964,958
+rows**, equal to the sidecar's parsed count; **distinct `EIN` equal to the row
+count**; and **`EIN` length 9 at both minimum and maximum**, so no leading zero
+was truncated through emit and load. Extract identity: the **2026-09-07** IRS
+posting, file set five, downloaded 2026-09-08, per `.bmf-cache/extract.json`.
+
+**IT ESTABLISHES THAT NO SPLIT IS NEEDED FOR SIZE**, against a miniflare store
+on one machine. The two figures the paragraph above leaves unreconciled,
+roughly 152 MB and about 190 MB, now sit either side of a measured 173,873,096;
+**this does not reconcile them** and is recorded as a third dated figure rather
+than as an answer.
+
+**WHAT IT DOES NOT ESTABLISH ABOUT A `--remote` RUN AGAINST
+`stewardhouse-pilot`, named so the local green is not read as coverage.** No
+REMOTE size ceiling has been measured; the 5 GB figure above is a published
+limit taken as given, not an observation. **Atomicity is asserted from SOURCE
+READING, not from a remote run**: §1's finding that one invocation is one batch
+comes from reading `executeLocally`, and no rollback has been observed
+remotely. Remote WALL-CLOCK is unknown, and 345 seconds is local disk. And
+**whether a credential survives a call of this length is UNADDRESSED**, which
+R20b already files: the pre-flight catches an already-stale token at second
+zero and cannot prevent one expiring mid-call. This is §10's shape — a correct
+measurement of a different target — and **A116 remains the open question it
+belongs to.**
+
+**ONE THING IT DOES CONFIRM.** The rollback ruling in section 6 estimates "a
+full rerun is about 6 minutes locally". 345 seconds is 5 minutes 45, so that
+estimate is now MEASURED rather than reasoned.
 
 ## 9. Time Travel restore is DISQUALIFIED, not a backstop
 
@@ -2267,6 +2342,34 @@ construction.** They are restated as the ORIGIN of R8-4's band centre — those
 counts over 1,957,340 being 29.08% and 29.35% — **which is the R8d provenance
 pattern applied where it had not yet been applied.**
 
+**R8-4's BAND IS WRITTEN DOWN, FT-RULED 2026-09-16: PLUS OR MINUS 10% OF
+CENTRE, PROVISIONAL AND UNCALIBRATED.** It had been cited five times as a
+constraint and stated nowhere, which is the count-without-a-list shape §5.1
+files, one level down: a band everything defers to and nobody wrote. Centres
+stay **29.08% NULL `REVENUE_AMT`** and **29.35% NULL `NTEE_CD`**, with the
+2026-08 provenance R18 gives them. **A rate outside its band is NO SWAP, per
+R8a, with no override.**
+
+**THE CALIBRATION GAP, WITH ITS NUMBER.** Measured against the 2026-09-07
+extract, month-over-month movement is **+0.1187 points** on `REVENUE_AMT` and
+**-0.1288 points** on `NTEE_CD`, against a band tolerating roughly **2.8 to 3.1
+points**. That is about **twenty to one**. The band is not calibrated to this
+data and would not notice a drift many times larger than anything two real
+extracts have shown.
+
+**FT'S GROUND FOR KEEPING IT WIDE ANYWAY.** With a TWO-POINT SERIES there is no
+variance to calibrate against, and R22b's caution binds here too: two
+observations are not a measurement of spread. R8a makes a failing band block a
+production load with no escape hatch, so **a too-tight band stops a legitimate
+load, while a too-wide one misses drift that is recoverable later**. The
+asymmetry is the ruling.
+
+**R17a's TRIGGER GOVERNS THE REVISIT**: this band is revisited TOGETHER with
+the trend band once three or four real extracts exist. **The 2026-09-07 extract
+is the SECOND OBSERVATION toward that trigger and is NOT a new centre.** Its
+rates were 29.1987% and 29.2212% and they are recorded as a dated observation,
+per the R23 pattern of two dated records each labelled with its extract.
+
 ### R19. Downloaded extracts live in a gitignored cache and are CACHED
 
 **RULED PATH: `.bmf-cache/` AT THE REPO ROOT.** Three reasons for caching at all:
@@ -2810,6 +2913,21 @@ pass, at the paragraph above and at items 4, 5, 7 and 13.
    stronger form and it is taken here — **all three of §5's tiers run against
    the ASIDE before anything is swapped**, which is the same class of proof
    slice 1 ran, against a real table instead of a scratch one.
+   **NARROWED 2026-09-16 BY FT RULING. THIS REMOVES WORK FROM C RATHER THAN
+   READING C DIFFERENTLY, and it is stated that way because the sentence above
+   takes the stronger form explicitly and says so.** Element C proves ONE
+   thing: the aside row count equals the parsed count in slice 1's sidecar.
+   **Section 5's three tiers move to element 9 (F)** and are no longer C's to
+   run. **THE GROUND.** R16b already places the pre-swap gate with F, so the
+   tiers were landing beside checks that already live there. And a load element
+   that also grades itself is doing two jobs: a failure then reports as "the
+   load failed" whether the load or the grading is what went wrong. **FT'S
+   CAUTION, CARRIED HERE RATHER THAN LEFT TO BE DISCOVERED: THIS MOVES A PROOF
+   FROM A BUILT ELEMENT TO AN UNBUILT ONE.** Element C is next; element F is
+   not built and nothing schedules it. **If F is ever descoped or deferred, the
+   three tiers go with it and NOTHING RUNS THEM** — not as a gap someone would
+   notice, but as a silence, because C will pass on its row count and report
+   success. Whoever defers F owes the tiers a new home in the same act.
 9. **[letter F] THE FIVE PRE-SWAP CHECKS — FOUR OF THEM.** Checks 1 through 4
    are single-load observations, each producing a figure. **R8a supplies the
    sharper event: a deliberately out-of-band figure must produce NO SWAP**, with
@@ -2830,6 +2948,36 @@ pass, at the paragraph above and at items 4, 5, 7 and 13.
    HERE. This is a disclosure, not a build**, and it is recorded inside this
    entry so that nobody reads "the five checks passed" as covering the one
    failure mode §2 calls a hard requirement.
+   **AMENDED 2026-09-16 BY FT RULING, AND THE REFUSAL IMMEDIATELY ABOVE IS
+   LIFTED FOR THIS CASE ONLY.** "NO SIXTH CHECK IS RULED HERE" stands as
+   written, and is not deleted and not widened: it was about adding a check
+   NOBODY HAD RULED, and what follows is a proof FT has moved into F
+   deliberately. The alternative recreates the gap this arc keeps closing — a
+   failure that is real, observed once, and unrecoverable from the record. **F
+   GAINS §5's THREE TIERS, WRITING THREE `load_check` ROWS UNDER R16c**, not
+   one: R16c's test is that a check is named for what it checks, and one row
+   named for three things fails it. `aside_tier_structural` asserts against the
+   aside that distinct `EIN` equals the row count and that `NAME`, `CITY`,
+   `STATE` and `RULING` carry zero NULLs, with `PRAGMA integrity_check` ok and
+   `PRAGMA foreign_key_check` empty. `aside_tier_distributional` asserts the
+   two NULL RATES inside R8-4's band as now written, never the absolute counts,
+   which R18 converted to provenance. `aside_tier_rowlevel` asserts
+   `MIN(LENGTH(ein))` and `MAX(LENGTH(ein))` both equal 9. **THAT LAST ONE
+   CLOSES THE GAP THIS ENTRY DECLARES ABOVE**, which is why it is here rather
+   than left to element 15 (M): a truncated leading-zero EIN no longer passes
+   the pre-swap gate. **THE ROW-LEVEL TIER IS SPLIT AND THIS IS ONLY ITS NEAR
+   HALF.** The seven-field source comparison and the comma-bearing name stay
+   with element 15 (M), post-swap, because they re-read the CSVs in the
+   gitignored `.bmf-cache`, and **a pre-swap gate conditional on a gitignored
+   directory fails BY NOT RUNNING.** **FT'S CAUTION, CARRIED SO IT IS MET
+   RATHER THAN DISCOVERED: THESE TIERS NOW DEPEND ON AN UNBUILT ELEMENT.** F is
+   not built and nothing schedules it. If F is ever descoped or deferred the
+   three tiers go with it and nothing runs them, as a silence rather than a
+   gap. **AND THE ROWS DO NOT PERSIST YET.** Element 10 (G) writes `load_check`
+   rows and **G IS UNBUILT**, so today these three would run, report and vanish
+   with the process. Whoever builds G inherits three rows that must appear
+   there, and until then a passing tier leaves no record that it ran.
+
 10. **[letter G] THE `load_check` ROWS.** One row per R8 check, named per R16c,
     **written BEFORE completion** (R12c). **THE PROOF IS TAKEN AT THIS STEP AND
     IS NOT DEFERRED**: immediately after element 10 (G) runs, `load_check`
@@ -2940,6 +3088,27 @@ pass, at the paragraph above and at items 4, 5, 7 and 13.
     while exporting their proof would satisfy R21's test only by never being
     tested. **It is also the only instrument covering element 9 (F)'s declared
     gap**, one step too late to gate the swap.
+    **AMENDED 2026-09-16 BY FT RULING: M TAKES THE FAR HALF OF §5's ROW-LEVEL
+    TIER, and the sentence immediately above is CORRECTED by the same ruling.**
+    What moves here is the SEVEN-FIELD COMPARISON — draw a sample of EINs,
+    re-read the source CSVs, compare all seven fields byte for byte — together
+    with the comma-bearing name, which §5 aims deliberately at a quoting bug
+    hiding at six-in-278,014 density. It lands here rather than in element 9
+    (F) because it re-reads the gitignored `.bmf-cache`, and a pre-swap gate
+    conditional on a gitignored directory fails BY NOT RUNNING. **THIS IS ONLY
+    THE FAR HALF**: the near half, `MIN(LENGTH(ein))` and `MAX(LENGTH(ein))`
+    both equal 9, is element 9 (F)'s and runs PRE-SWAP. **THE CORRECTION. "It
+    is also the only instrument covering element 9 (F)'s declared gap" IS NO
+    LONGER TRUE and is left standing rather than edited.** F now carries the
+    length assertion, so the EIN-width class IS caught before the swap. What M
+    remains the only instrument for is the rest of the row-level comparison — a
+    value corrupted WITHIN the correct column, which no aside-only assertion
+    can see — and that catch is still post-swap. **N IS NOT STATED BY §5** and
+    is a builder's call under §6.17 when M is built. **WHEN THE CACHE IS ABSENT
+    THIS REPORTS SKIPPED, NOT PASSED**, per R17b's precedent that a
+    `load_check` row reading "skipped" is honest while an absent row reads as
+    an omission.
+
 16. **[letter L] THE UNDO FILE.** **Provable as an event: rerun-safety under
     R6a** — run the file TWICE, and the second run checks target names FIRST and
     is a no-op rather than leaving a third state that is neither the old table
