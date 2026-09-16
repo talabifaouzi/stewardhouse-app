@@ -210,9 +210,35 @@ const numeralsOf = (s) => [...s.matchAll(NUMERAL)].map((m) => m[0]);
 // FAILS. That is the intended behaviour: a reworded line is a line whose
 // classification nobody has re-made.
 const FROZEN = [
+  ["**ARITHMETIC OF THE LAST CHANGE, 2026-09-16 (sixteenth): FIFTEEN ENTRIES OPENED",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["TOTALS IN ONE ACT.** OPEN moves 127 to 141 and **DEBT 73 to 82**; BLOCKING",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["moves 24 to 26 and POST moves 30 to 33. Ten of the fifteen are DEBT against",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["A74's single closure, which is why DEBT gains nine where OPEN gains fourteen.",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["Cheap-and-mechanical absorbs **38 to 49**, gates-other-work takes one to 17,",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["gates-a-stated-commitment one to 8 and BMF-and-Discover one to 18, while the",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["reads 7 + 17 + 8 + 18 + 49 + 39 + 3 = 141.",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["**THE FILE-WIDE `Pilot: DEBT` DIAGNOSTIC MOVES 74 TO 83**, nine for nine, since",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["every opened DEBT carries the line and A74 took one away with it. The naive",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["enumerator moves with OPEN, **139 against 141**, the gap still exactly A50a and",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["A50b, and the file-wide count's surplus is still FJ-7's line and not an entry.",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["**THE BUILD CHAIN HOLDS AT 20 THROUGH CANCELLATION RATHER THAN THROUGH",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
+  ["**THE CLAIM TABLE MOVED WITH THIS BLOCK IN THE SAME COMMIT, WHICH IS A147.**",
+   "the sixteenth arithmetic block, 2026-09-16; a dated record of that change"],
   ["What is open, in what order, and where the detail lives. Produced on 2026-09-01",
    "the date this file was produced; an event"],
-  ["**Last swept: 2026-09-01.** Next sweep due 2026-10-01. That date is read at the",
+  ["**Last swept: 2026-09-16. Last promoted: 2026-09-07.** Next sweep due 2026-10-16.",
    "the last-swept date and the due date derived from it; both events"],
   ["start of every agent session and, once 30 days have passed, it BLOCKS BUILD",
    "the sweep interval in days; a rule constant, not a count of anything here"],
@@ -372,13 +398,13 @@ const FROZEN = [
    "the straight-quote count measured in that pass; a dated measurement"],
   ["enumerator BEFORE the edit, reproducing 114 / 112 / 24 / 64 / 26 / 65 exactly,",
    "the six figures that pass re-derived; a dated measurement"],
-  ["dangerous kind. Matching `^\\*\\*A[0-9]+ \\| ` returns 125 rather than 127, because",
+  ["dangerous kind. Matching `^\\*\\*A[0-9]+ \\| ` returns 139 rather than 141, because",
    "digits inside the quoted naive regex literal"],
   ["A50a and A50b carry letter suffixes. The pattern that reproduces the stated",
    "the A50a and A50b entry ids"],
   ["count is `^\\*\\*A[0-9]+[a-z]? \\| `, scoped to the OPEN section, since PARKED and",
    "digits inside the quoted suffix-aware regex literal"],
-  ["rather than 73, for the FJ-7 reason recorded below. Recorded per CLAUDE.md \u00a710,",
+  ["rather than 82, for the FJ-7 reason recorded below. Recorded per CLAUDE.md \u00a710,",
    "a reference to FJ-7 and a CLAUDE.md section reference"],
   ["**TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5",
    "the FJ-5 entry id"],
@@ -562,7 +588,7 @@ const FROZEN = [
 // counts it as derived and not as one of its stated-versus-measured pairs. Its
 // claim is registered here so the completeness guard still sees the numeral it
 // consumes.
-const DERIVED_CLAIMS = [['THE BUILD CHAIN HOLDS AT 20**, because BLOCKING is unmoved and the same four', '20']];
+const DERIVED_CLAIMS = [['THE BUILD CHAIN HOLDS AT 20 THROUGH CANCELLATION', '20']];
 
 function checkQueue() {
   head('3. stated-vs-measured pairs, against the COMMITTED blob');
@@ -787,9 +813,9 @@ function checkPairsAndDerived(ctx) {
 
     blockOpen: grab(/OPEN moves \d+ to (\d+) and \*\*DEBT/),
     blockDebt: grab(/and \*\*DEBT \d+ to (\d+)\*\*/),
-    blockBlocking: grab(/BLOCKING stays (\d+) and POST stays/),
-    blockPost: grab(/BLOCKING stays \d+ and POST stays (\d+)\./),
-    blockCheap: grab(/that tier alone moves \*\*\d+ to (\d+)\*\*/),
+    blockBlocking: grab(/BLOCKING moves \d+ to (\d+) and POST moves/),
+    blockPost: grab(/and POST moves \d+ to (\d+)\./),
+    blockCheap: grab(/Cheap-and-mechanical absorbs \*\*\d+ to (\d+)\*\*/),
     blockLarge: grab(/large moves \*\*\d+ to (\d+)\*\*/),
     blockDebtFileWide: grab(/DIAGNOSTIC MOVES \d+ TO (\d+)\*\*/),
     blockNaive: grab(/naive enumerator moves with OPEN, \*\*(\d+) against \d+\*\*/),
@@ -805,8 +831,8 @@ function checkPairsAndDerived(ctx) {
     debtFileWideContrast: grab(/A file-wide .Pilot: DEBT. count returns \d+ rather than (\d+)/),
 
     buildChain: grab(/THE BUILD CHAIN (?:HOLDS AT|IS UNCHANGED AT) (\d+)\*\*/),
-    gatedSentenceGated: grabWord(/counsel-gated sentence stays ([a-z-]+|\d+) of the [a-z-]+\./),
-    gatedSentenceBlocking: grabWord(/counsel-gated sentence stays [a-z-]+ of the ([a-z-]+|\d+)\./),
+    gatedSentenceGated: grabWord(/counsel-gated sentence becomes ([a-z-]+|\d+) of the [a-z-]+\./),
+    gatedSentenceBlocking: grabWord(/counsel-gated sentence becomes [a-z-]+ of the ([a-z-]+|\d+)\./),
     buildChainWord: grabWord(/\*\*([A-Za-z-]+|\d+) is the figure the definition yields;/),
     buildChainMovableWord: grabWord(/is the figure the definition yields; ([a-z-]+|\d+) is the/),
     overstatement: grabWord(/OVERSTATEMENT RECORDED BY THE NINTH CHANGE STILL STANDS\*\* at ([a-z-]+|\d+),/),
@@ -853,13 +879,13 @@ function checkPairsAndDerived(ctx) {
   // subtracts these, so a figure asserted here is a figure accounted for there.
   const sortIds = (v) => (v === null ? null : v.split(',').slice().sort().join(','));
   const PAIRS = [
-    ['OPEN total', s.open, m.open, [['As committed:', '127']]],
-    ['BLOCKING', s.blocking, m.blocking, [['AGAINST THE PILOT GATE:', '24']]],
-    ['DEBT (OPEN-scoped)', s.debt, m.debt, [['AGAINST THE PILOT GATE:', '73']]],
-    ['POST', s.post, m.post, [['AGAINST THE PILOT GATE:', '30']]],
-    ['BMF and Discover tier', s.bmfTier, m.bmfTier, [['7, BMF-and-Discover 17', '17']]],
-    ['naive enumerator', s.naive, m.naive, [['dangerous kind. Matching', '125']]],
-    ['file-wide DEBT', s.debtFileWide, m.debtFileWide, [['A file-wide `Pilot: DEBT` count returns', '74']]],
+    ['OPEN total', s.open, m.open, [['As committed:', '141']]],
+    ['BLOCKING', s.blocking, m.blocking, [['AGAINST THE PILOT GATE:', '26']]],
+    ['DEBT (OPEN-scoped)', s.debt, m.debt, [['AGAINST THE PILOT GATE:', '82']]],
+    ['POST', s.post, m.post, [['AGAINST THE PILOT GATE:', '33']]],
+    ['BMF and Discover tier', s.bmfTier, m.bmfTier, [['8, BMF-and-Discover 18', '18']]],
+    ['naive enumerator', s.naive, m.naive, [['dangerous kind. Matching', '139']]],
+    ['file-wide DEBT', s.debtFileWide, m.debtFileWide, [['A file-wide `Pilot: DEBT` count returns', '83']]],
     ['counsel-gated', s.gated, m.gated, []],
 
     ['PARKED total', s.parked, m.parked, [['As committed:', '10']]],
@@ -870,10 +896,10 @@ function checkPairsAndDerived(ctx) {
 
     ['ruled-tier count', s.tierRuledCount, m.tierRuledCount, []],
     ['ruled tiers holding', s.tierRuled, m.tierRuled, [['six ruled tiers holding', '7']]],
-    ['gates-other-work tier', s.tierGatesOther, m.tierGatesOther, [['six ruled tiers holding', '16']]],
-    ['gates-a-stated-commitment tier', s.tierGatesCommitment, m.tierGatesCommitment, [['7, BMF-and-Discover 17', '7']]],
-    ['cheap-and-mechanical tier', s.tierCheap, m.tierCheap, [['7, BMF-and-Discover 17', '38']]],
-    ['large tier', s.tierLarge, m.tierLarge, [['7, BMF-and-Discover 17', '39']]],
+    ['gates-other-work tier', s.tierGatesOther, m.tierGatesOther, [['six ruled tiers holding', '17']]],
+    ['gates-a-stated-commitment tier', s.tierGatesCommitment, m.tierGatesCommitment, [['8, BMF-and-Discover 18', '8']]],
+    ['cheap-and-mechanical tier', s.tierCheap, m.tierCheap, [['8, BMF-and-Discover 18', '49']]],
+    ['large tier', s.tierLarge, m.tierLarge, [['8, BMF-and-Discover 18', '39']]],
     ['blocker-undetermined tier', s.tierUndetermined, m.tierUndetermined, [['blocker-undetermined 3.', '3']]],
 
     ['tier breakdown string', s.breakdownParts, m.breakdownParts,
@@ -881,19 +907,19 @@ function checkPairsAndDerived(ctx) {
        ['+ 36 + 39 + 3 = 125.', '36'], ['+ 36 + 39 + 3 = 125.', '39'], ['+ 36 + 39 + 3 = 125.', '3']]],
     ['tier breakdown stated sum', s.breakdownSum, m.open, [['+ 36 + 39 + 3 = 125.', '125']]],
 
-    ['arithmetic block: OPEN to-endpoint', s.blockOpen, m.open, [['OPEN moves 126 to 127', '127']]],
-    ['arithmetic block: DEBT to-endpoint', s.blockDebt, m.debt, [['OPEN moves 126 to 127', '73']]],
-    ['arithmetic block: BLOCKING stays', s.blockBlocking, m.blocking, [['OPEN moves 126 to 127', '24']]],
-    ['arithmetic block: POST stays', s.blockPost, m.post, [['and POST stays 30. A149', '30']]],
-    ['arithmetic block: cheap tier to-endpoint', s.blockCheap, m.tierCheap, [['**37 to 38**, and the breakdown reads', '38']]],
-    ['arithmetic block: file-wide DEBT to-endpoint', s.blockDebtFileWide, m.debtFileWide, [['DIAGNOSTIC MOVES 73 TO 74', '74']]],
-    ['arithmetic block: naive restatement', s.blockNaive, m.naive, [['enumerator moves with OPEN, **125 against 127**', '125']]],
-    ['arithmetic block: naive restatement, OPEN half', s.blockNaiveOpen, m.open, [['enumerator moves with OPEN, **125 against 127**', '127']]],
+    ['arithmetic block: OPEN to-endpoint', s.blockOpen, m.open, [['OPEN moves 127 to 141 and', '141']]],
+    ['arithmetic block: DEBT to-endpoint', s.blockDebt, m.debt, [['OPEN moves 127 to 141 and', '82']]],
+    ['arithmetic block: BLOCKING stays', s.blockBlocking, m.blocking, [['moves 24 to 26 and POST moves', '26']]],
+    ['arithmetic block: POST stays', s.blockPost, m.post, [['moves 24 to 26 and POST moves', '33']]],
+    ['arithmetic block: cheap tier to-endpoint', s.blockCheap, m.tierCheap, [['Cheap-and-mechanical absorbs', '49']]],
+    ['arithmetic block: file-wide DEBT to-endpoint', s.blockDebtFileWide, m.debtFileWide, [['DIAGNOSTIC MOVES 74 TO 83', '83']]],
+    ['arithmetic block: naive restatement', s.blockNaive, m.naive, [['enumerator moves with OPEN, **139 against 141**', '139']]],
+    ['arithmetic block: naive restatement, OPEN half', s.blockNaiveOpen, m.open, [['enumerator moves with OPEN, **139 against 141**', '141']]],
 
     ['arithmetic block: large tier to-endpoint', s.blockLarge, m.tierLarge, [['large moves **38 to 39**', '39']]],
 
-    ['naive enumerator contrast (OPEN total)', s.naiveOpen, m.open, [['dangerous kind. Matching', '127']]],
-    ['file-wide DEBT contrast (OPEN-scoped)', s.debtFileWideContrast, m.debt, [['rather than 73, for the FJ-7 reason', '73']]],
+    ['naive enumerator contrast (OPEN total)', s.naiveOpen, m.open, [['dangerous kind. Matching', '141']]],
+    ['file-wide DEBT contrast (OPEN-scoped)', s.debtFileWideContrast, m.debt, [['rather than 82, for the FJ-7 reason', '82']]],
 
     ['counsel-gated sentence: gated word form', s.gatedSentenceGated, m.gated, []],
     ['counsel-gated sentence: BLOCKING word form', s.gatedSentenceBlocking, m.blocking, []],
@@ -906,13 +932,14 @@ function checkPairsAndDerived(ctx) {
     ['DEBT carrying PROPOSED', s.debtProposed, m.debtProposed, []],
     ['DEBT carrying PROPOSED, id', s.debtProposedId, m.debtProposedIds.join(','), [['one DEBT, A105, is PROPOSED', '105']]],
     ['FJ-7 three-totals sum', s.fj7Sum, m.blocking + m.debt + m.post,
-      [['which remain a count of OPEN entries and sum to', '127']]],
+      [['which remain a count of OPEN entries and sum to', '141']]],
     ['sole out-of-OPEN Pilot line', s.soleException, m.outOfOpenPilot, []],
     ['sole out-of-OPEN Pilot line, owner', s.soleExceptionOwner, m.outOfOpenOwners.join(','),
       [['AND IT IS THE ONLY EXCEPTION:', '7']]],
     ['counsel-gated roster ids', sortIds(s.gatedIds), sortIds(m.gatedIds.join(',')),
       [['BY BUILDING: A47', '47'], ['BY BUILDING: A47', '84'],
-       ['BY BUILDING: A47', '68'], ['BY BUILDING: A47', '110']]],
+       ['BY BUILDING: A47', '68'], ['BY BUILDING: A47', '110'],
+       ['BY BUILDING: A47', '150'], ['BY BUILDING: A47', '151']]],
   ];
 
   for (const [label, stated, measured] of PAIRS) {

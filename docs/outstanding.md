@@ -11,7 +11,9 @@ title, a blocker, and a pointer. It carries no evidence and restates no finding.
 holds the narrative of how each session went. Where those disagree with this
 file, they are right and this file is stale.
 
-**Last swept: 2026-09-01.** Next sweep due 2026-10-01. That date is read at the
+**Last swept: 2026-09-16. Last promoted: 2026-09-07.** Next sweep due 2026-10-16.
+Promotion scope is bounded by the last promotion pass, not by the sweep date,
+which is why the second date sits beside the first. The swept date is read at the
 start of every agent session and, once 30 days have passed, it BLOCKS BUILD
 SLICES until a sweep runs. Docs commits, rulings and read-only passes are not
 blocked. The rule, what a sweep is for, and why the interval is 30 days are in
@@ -72,10 +74,10 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 127 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+**As committed: 141 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
 ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
-six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
-7, BMF-and-Discover 17, cheap-and-mechanical 38, large 39, and
+six ruled tiers holding 7, then gates-other-work 17, gates-a-stated-commitment
+8, BMF-and-Discover 18, cheap-and-mechanical 49, large 39, and
 blocker-undetermined 3.
 
 **BEFORE YOU MOVE ANY FIGURE BELOW: A FIGURE STATED IN PROSE IS A SECOND SITE,
@@ -108,6 +110,36 @@ the sentence describes an act or a state.
 and therefore not a docs commit's to make; it is recorded here rather than filed
 as an entry because it has no completion state of its own until someone widens
 check 3, and this note is where an editor meets the gap.
+
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-16 (sixteenth): FIFTEEN ENTRIES OPENED
+AND ONE CLOSED, AND IT IS THE FIRST CHANGE RECORDED HERE TO MOVE ALL FOUR GATE
+TOTALS IN ONE ACT.** OPEN moves 127 to 141 and **DEBT 73 to 82**; BLOCKING
+moves 24 to 26 and POST moves 30 to 33. Ten of the fifteen are DEBT against
+A74's single closure, which is why DEBT gains nine where OPEN gains fourteen.
+Cheap-and-mechanical absorbs **38 to 49**, gates-other-work takes one to 17,
+gates-a-stated-commitment one to 8 and BMF-and-Discover one to 18, while the
+six ruled tiers, large and blocker-undetermined are untouched, so the breakdown
+reads 7 + 17 + 8 + 18 + 49 + 39 + 3 = 141.
+**THE FILE-WIDE `Pilot: DEBT` DIAGNOSTIC MOVES 74 TO 83**, nine for nine, since
+every opened DEBT carries the line and A74 took one away with it. The naive
+enumerator moves with OPEN, **139 against 141**, the gap still exactly A50a and
+A50b, and the file-wide count's surplus is still FJ-7's line and not an entry.
+**THE BUILD CHAIN HOLDS AT 20 THROUGH CANCELLATION RATHER THAN THROUGH
+STILLNESS**, which no earlier block here can say: BLOCKING grew by two and the
+counsel-gated roster grew by the same two, so a definition that subtracts one
+from the other lands where it began; the counsel-gated sentence becomes six of
+the twenty-six.
+**THE FIFTEENTH CHANGE'S RECORD BELOW IS RETAINED RATHER THAN REPLACED**, per
+the superseded-block rule, which reaches a block a change CONTRADICTS. This
+change contradicts none of it: it opens on the endpoint the fifteenth left.
+**THE CLAIM TABLE MOVED WITH THIS BLOCK IN THE SAME COMMIT, WHICH IS A147.**
+**AND THE MOVE CORRECTED A LOCATOR THAT HAD BEEN RIGHT BY ACCIDENT.** The two
+counsel-gated sentence scrapes take the FIRST match in the flattened region, and
+until this block existed that match sat inside an OLDER DATED BLOCK: a live
+figure read off a frozen record, which agreed with the file only because nobody
+had reworded that block. They read the current block now. **A locator that works
+for the wrong reason is worse than one that fails**, because the failure is
+visible and the coincidence is not.
 
 **ARITHMETIC OF THE LAST CHANGE, 2026-09-16 (fifteenth): ONE ENTRY OPENED AND
 NONE CLOSED.** OPEN moves 126 to 127 and **DEBT 72 to 73**; BLOCKING stays 24
@@ -312,11 +344,11 @@ known-CRLF and a known-LF control asserted first, both files being fully CRLF in
 the working tree.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 125 rather than 127, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 139 rather than 141, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 74
-rather than 73, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 83
+rather than 82, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -324,7 +356,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 24 BLOCKING, 73 DEBT, 30 POST**, classification ruled
+**AGAINST THE PILOT GATE: 26 BLOCKING, 82 DEBT, 33 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-14,
 of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -332,7 +364,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 127. The sentence
+totals above, which remain a count of OPEN entries and sum to 141. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -371,8 +403,8 @@ STATE is a live count wearing a date**, and must be maintained or it lies. The
 parenthetical here dated the CLASSIFICATION ACT, which is genuinely fixed at
 2026-09-02; the TOTALS were never fixed, and pairing the two made a live count
 look archival. **The date has been moved off the totals and onto the act.**
-**FOUR OF THE TWENTY-FOUR BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
-BY BUILDING: A47, A84, A68 and A110.**
+**SIX OF THE TWENTY-SIX BLOCKING ITEMS ARE COUNSEL-GATED AND CANNOT BE CLOSED
+BY BUILDING: A47, A84, A68, A110, A150 and A151.**
 **A142 IS COUNSEL-BLOCKED AND IS DELIBERATELY NOT IN THIS ROSTER, added
 2026-09-14.** This roster's meaning is which BLOCKING items clear on the two
 conversations `docs/ruling-e-deletion-retention.md` §6 names. **A142 waits on a
