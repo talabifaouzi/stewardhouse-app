@@ -72,10 +72,10 @@ CLAUDE.md §6.20's stage-by-explicit-path rule is what keeps it out of a commit.
 Detail: `docs/filed-defects.md`, the entry filing that `description` says
 "Writes nothing" and it writes; CLAUDE.md §8 carries the correction.
 
-**As committed: 126 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
+**As committed: 127 OPEN, 10 PARKED, 7 founder-judgment of which 5 are now
 ruled, 3 answerable only by FT, 10 ruled out.** The OPEN count breaks down as
 six ruled tiers holding 7, then gates-other-work 16, gates-a-stated-commitment
-7, BMF-and-Discover 17, cheap-and-mechanical 37, large 39, and
+7, BMF-and-Discover 17, cheap-and-mechanical 38, large 39, and
 blocker-undetermined 3.
 
 **BEFORE YOU MOVE ANY FIGURE BELOW: A FIGURE STATED IN PROSE IS A SECOND SITE,
@@ -108,6 +108,25 @@ the sentence describes an act or a state.
 and therefore not a docs commit's to make; it is recorded here rather than filed
 as an entry because it has no completion state of its own until someone widens
 check 3, and this note is where an editor meets the gap.
+
+**ARITHMETIC OF THE LAST CHANGE, 2026-09-16 (fifteenth): ONE ENTRY OPENED AND
+NONE CLOSED.** OPEN moves 126 to 127 and **DEBT 72 to 73**; BLOCKING stays 24
+and POST stays 30. A149 is cheap-and-mechanical, so that tier alone moves
+**37 to 38**, and the breakdown reads 7 + 16 + 7 + 17 + 38 + 39 + 3 = 127.
+**THE FILE-WIDE `Pilot: DEBT` DIAGNOSTIC MOVES 73 TO 74**, one for one, because
+A149 is DEBT and that is the only classification which touches it. The naive
+enumerator moves with OPEN, **125 against 127**, the gap still exactly A50a and
+A50b, and the file-wide count's one extra is still FJ-7's line and not an entry.
+**THE BUILD CHAIN HOLDS AT 20**, because BLOCKING is unmoved and the same four
+counsel-gated items sit inside it.
+**THE CLAIM TABLE MOVES WITH THIS BLOCK, AND A147 IS WHY.** The nine block
+scrapes read the topmost block in the region, so this one supplies them the
+moment it is written, and every figure it states is claimed by a literal in the
+verifier that carried the fourteenth change's value until now. **The doc and the
+script move together**, which is what that entry asks of any change until it
+closes.
+**THE FOURTEENTH CHANGE'S RECORD BELOW IS RETAINED RATHER THAN REPLACED**, per
+its own rule, because this change closes nothing and contradicts none of it.
 
 **ARITHMETIC OF THE LAST CHANGE, 2026-09-15 (fourteenth): ONE ENTRY OPENED AND
 NONE CLOSED.** OPEN moves 125 to 126 and **DEBT 71 to 72**; BLOCKING stays 24
@@ -293,11 +312,11 @@ known-CRLF and a known-LF control asserted first, both files being fully CRLF in
 the working tree.
 **THE ENUMERATOR THAT REPRODUCES THESE COUNTS IS SUFFIX-AWARE AND SECTION-
 SCOPED. A NAIVE ONE IS WRONG BY TWO, AND PLAUSIBLY WRONG**, which is the
-dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 124 rather than 126, because
+dangerous kind. Matching `^\*\*A[0-9]+ \| ` returns 125 rather than 127, because
 A50a and A50b carry letter suffixes. The pattern that reproduces the stated
 count is `^\*\*A[0-9]+[a-z]? \| `, scoped to the OPEN section, since PARKED and
-ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 73
-rather than 72, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
+ANSWERABLE-ONLY-BY-FT reuse A-ids. A file-wide `Pilot: DEBT` count returns 74
+rather than 73, for the FJ-7 reason recorded below. Recorded per CLAUDE.md §10,
 the scanner filing: assert a known-positive control before trusting a scan
 count.
 **TWO founder-judgment items are NOT RULED and both say so explicitly**, FJ-5
@@ -305,7 +324,7 @@ and FJ-7, with the evidence and the reason for withholding recorded on each
 entry. An unruled item and an item nobody has looked at are different states,
 and the count distinguishes them.
 
-**AGAINST THE PILOT GATE: 24 BLOCKING, 72 DEBT, 30 POST**, classification ruled
+**AGAINST THE PILOT GATE: 24 BLOCKING, 73 DEBT, 30 POST**, classification ruled
 2026-09-02 and the totals re-derived 2026-09-14,
 of which 6 POST carry "(undetermined)" because their own text does not settle it,
 and of which **one DEBT, A105, is PROPOSED rather than ruled** and says so on its
@@ -313,7 +332,7 @@ own line. A total has to place it somewhere, and DEBT is where its proposal
 puts it. Every OPEN entry carries a `Pilot:` line. **ONE ENTRY OUTSIDE OPEN
 CARRIES ONE TOO, AND IT IS THE ONLY EXCEPTION:** FJ-7, whose disposition FT
 ruled DEBT at the same time as filing it. That line is NOT counted in the three
-totals above, which remain a count of OPEN entries and sum to 126. The sentence
+totals above, which remain a count of OPEN entries and sum to 127. The sentence
 here previously read "nothing else does", which FJ-7 made false.
 **BLOCKING means pilot cannot open with it unresolved, DEBT means pilot can open
 with it recorded and honest, POST means no pilot user reaches it.**
@@ -3706,6 +3725,39 @@ prediction about code nobody has written.
 closing. This blocks nothing. It is tiered cheap-and-mechanical because the
 answers are derivable rather than rulable, and the work is bounded at eleven
 lines.
+
+**A149 | Item 3's regeneration ran by TEXTUAL EXTRACTION of the loader's DDL
+section; the durable form is an EXPORT.**
+Blocker: none. It is a change to committed work and therefore its own slice.
+Pilot: DEBT
+Detail: `scripts/bmf-load.mjs`, the DDL section between its two delimiter
+comment lines; `docs/bmf-load-scoping.md` §15, R13a and element 3 of slice 2's
+definition of done.
+**WHAT RAN, 2026-09-15.** The loader is a script with no exports that exits at
+load, so the regenerator could not import it. It read the loader as TEXT, sliced
+the lines between the two delimiter comments, asserted the fragment carried
+`const DDL = {` and the three renderers, wrote that fragment to a scratch module
+and imported it. **It worked and item 3's done is satisfied** — R13a fired clean
+on FT's 2026-09-15 ruling, and nothing here reopens that.
+**WHY THE MECHANISM IS DEBT RATHER THAN A CHOICE. IT BREAKS SILENTLY IF THE
+DELIMITERS MOVE, AND IT CAN NARROW ITS OWN INPUT UNDETECTED.** Moving, renaming
+or adding a delimiter line changes which lines the regenerator sees, and a
+fragment that is SHORTER than intended still parses, still renders, and still
+compares — against less of the constant than the reader believes. The presence
+assertions catch a fragment missing the constant entirely; they do not catch one
+missing an object. **A shrunken input produces a confident pass**, which is the
+instrument-versus-work distinction CLAUDE.md §10 governs.
+**THE DURABLE FORM: the loader EXPORTS its constant, and a `scripts/`
+regenerator imports the export.** That removes the delimiters from the contract
+and makes the input the module system's problem rather than a comment's.
+**WHY IT IS WORTH A SLICE AT ALL, since item 3 is already done: R13a IS NOT
+ONE-SHOT.** Every future change to `DDL` should be re-checked against
+`migrations/0022_bmf_table.sql`, and **a tool that exists gets run while a tool
+that must be rebuilt does not.** The scratch regenerator is outside the
+repository and nothing in the tree references it, so today there is no tool.
+**WHY DEBT AND NOT BLOCKING.** It gates nothing. Item 3 is satisfied, R13a is
+discharged, the migration is untouched, and no other entry waits on it. It is
+unpaid work recorded honestly, which is this file's own test for DEBT.
 
 ### Large
 

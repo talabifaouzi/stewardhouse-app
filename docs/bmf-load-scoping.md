@@ -2080,6 +2080,39 @@ must decide, so there is no fork here for a ruling to take." **One entry
 therefore carried both dispositions too**, inherited from this text rather than
 reached independently.
 
+**FT RULED 2026-09-15: R31's "not covered: comment text, alignment whitespace,
+prose" REACHES THE TOKEN SEPARATOR in `ON bmf (state, city)` versus
+`ON bmf(state, city)`.** The comparison therefore PASSES on R31's scope, and
+**R13a is discharged CLEAN ON ITS FIRST FIRING**. No divergence is carried
+against `migrations/0022_bmf_table.sql`, which is untouched.
+**THE GROUNDS ARE PURPOSIVE AND ARE R31's OWN.** R31 enumerates what the
+comparison exists to catch: a changed PRIMARY KEY, a lost NOT NULL, a renamed or
+dropped index, an index moved to different columns or onto a DIFFERENT TABLE, a
+dropped CHECK, a lost referential action, a changed type. **Nothing in that list
+is something a separator space can become.** Reading the exclusion as a CLOSED
+LIST OF THREE TEXTUAL KINDS makes it narrower than the purpose it serves.
+**THE BUILDER READ IT THE OTHER WAY, AND THAT READING IS PRESERVED RATHER THAN
+ERASED.** It held that alignment whitespace is padding that exists only because
+of neighbouring lines and vanishes when a line stands alone, whereas the space
+before `(` separates two grammatical tokens, is identical on every line, and
+would still have to be decided by a renderer emitting no padding at all — so the
+exclusion, enumerating textual kinds rather than semantic irrelevance, did not
+cover it. **The builder flagged it as ARGUABLE and stated the counter-argument
+before measuring**, which is why the measurement settled a ruling rather than a
+dispute.
+**THE MEASUREMENT THAT OCCASIONED IT, recorded because it bounds what was
+ruled.** The regeneration differed from the migration on **3 of 31 normalized
+lines**, and all three were the `bmf` index lines. **Line 10 differed by the
+SEPARATOR ALONE**, because `idx_bmf_state_city` is the longest of the three names
+and therefore carries no padding; lines 11 and 12 differed by padding and
+separator together, neither alone explaining either. **No other construct
+diverged** — not a column name, type or order, not the PRIMARY KEY, not a NOT
+NULL, not the CHECK, not the foreign key or its `ON DELETE CASCADE`, and not any
+index's name, columns or table. **So the ruling disposes of the whole observed
+difference and nothing else**, and a future regeneration differing anywhere else
+is not covered by it.
+**RECORDED INLINE AND WITH NO R-NUMBER**, for R30's stated reason.
+
 **R33, RULED 2026-09-09: R13's PHRASE "a single named constant" IS INCIDENTAL
 WORDING, NOT LOAD-BEARING. PACKAGING IS THE BUILDER'S CALL.**
 **THE GROUNDS, and they are about where the singular came from.** R10c's stated
