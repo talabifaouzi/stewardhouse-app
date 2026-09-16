@@ -764,6 +764,47 @@ here the source never existed. **The rule that follows is that A COUNT IS NOT A
 LIST.** When this record cites a quantity of things, the things belong somewhere
 enumerable, because **a count survives restatement and a list does not.**
 
+**Fourth instance, 2026-09-16, and its MECHANISM is STRUCTURAL rather than an
+oversight or an unwritten referent.** The first two are claims that were TRUE
+when written and went stale. The third is a count whose referent was never
+written down. **This one is a whole CLASS of ruling that cannot reach this
+file, because the file has nowhere for it to land.**
+
+**FOUNDER JUDGMENT IS THE ONE RULING CLASS THAT BY CONSTRUCTION CONTRADICTS A
+MANIFEST POSITION.** An FJ item exists precisely BECAUSE someone questioned
+something CLAUDE.md already asserts, so its answer either ratifies this file or
+overturns it — and an overturned position is left standing unless someone
+carries the ruling back. **FJ-3's question quotes this file's own phrase**,
+asking whether "never a slice" is the intended posture or a gap, and ruled it a
+GAP that gets fixed as its own scoped slice; §5.1 still reads "This is never a
+slice." **FJ-4 answers a question §5.1 had itself marked NOT RULED**, ruling
+A41 stays in P-7; the NOT RULED note is still here.
+
+**THE STRUCTURAL HALF: `docs/outstanding.md` CARRIES A `## FOUNDER JUDGMENT`
+SECTION AND THIS FILE HAS NO COUNTERPART.** Nothing relocates into it, and
+nothing reads back from it. Every other propagation path in this record has a
+destination; this one has none, so the default outcome is that an FJ ruling
+stays in the queue and the manifest keeps whatever it said before.
+
+**THE CONTRAST THAT MAKES IT STRUCTURAL RATHER THAN A BAD DAY: A114 AND A117
+CLOSED AND THIS FILE STAYED CORRECT.** Both were closed 2026-09-07, and six
+manifest sites treat them as closed because their durable content was RELOCATED
+INTO §6.10 BEFORE they closed, with the relocation stated in the text —
+"Relocated here from A117 before that entry closed", "RECORDED HERE BECAUSE
+A114 CLOSES AND THIS RULE DOES NOT". **Where this file has a relocation habit,
+closures propagate. Where it has no counterpart section, rulings cannot.**
+
+**STATED WITH ITS LIMIT, WHICH IS SMALL: two instances out of a SEVEN-ITEM
+POPULATION.** That is the whole of FOUNDER JUDGMENT, not a sample of it. **It
+is a conclusion about WHERE TO LOOK and not a rate**, and the five that
+produced no find are cases where this file had taken no position for a ruling
+to overturn.
+
+**THE PRACTICAL STEP, WHICH IS A READING RATHER THAN A NEW SECTION: when an FJ
+item is ruled, open this file and ask whether it says anything about the
+question — and if it does, retract there in the same act.** A sweep can catch
+this afterwards, and one did; the ruling is the cheaper place.
+
 **A SECOND RULE ABOUT FIGURES, PROMOTED HERE 2026-09-07 AND PLACED BESIDE ITS
 NEAREST SIBLING: A DATED FIGURE DESCRIBING AN EVENT IS CORRECTLY FROZEN; A DATED
 FIGURE DESCRIBING A STATE IS A LIVE COUNT WEARING A DATE, AND MUST BE MAINTAINED
@@ -3270,6 +3311,38 @@ the instrument proves nothing here." **Widening a control cannot repair a
 specification that asked for the wrong thing**, and that filing's post-condition
 on the OUTCOME remains the only instrument that sees it.
 
+**AMENDED 2026-09-16, THE FOURTH: A CONTROL MUST BE PROVEN TO PRESERVE THE
+THING UNDER TEST, NOT MERELY PROVEN ABLE TO FIRE.** Every amendment above
+widens WHAT a control must span. This one is about the INSTRUMENT THE CONTROL
+RUNS INSIDE, and a control can be perfect on every dimension while the harness
+around it has changed the subject.
+
+**THE OBSERVED CASE.** Twelve argument-refusal cases were re-proven under a
+spawn tripwire: the script under test, copied elsewhere with its
+process-spawning import stubbed. **`ROOT` derives from `import.meta.url`, so
+the relocated copy computed a DIFFERENT repository root.** The
+inside-the-repository case then resolved OUTSIDE that fake root, passed the
+containment check it was supposed to fail, and reported a spawn — **reading
+exactly like the defect the re-proof existed to detect.** The original script
+had refused it correctly throughout.
+
+**THE CONTROL WAS PRESENT AND IT PASSED.** The tripwire fired on the success
+path, proving it COULD fire. That is the property every amendment above is
+about, and it was satisfied while the instrument was measuring a different
+repository. **Proving an instrument can fire says nothing about whether it
+still points at the subject.**
+
+**THE ADDED STEP: assert the instrument agrees with the original on a case
+whose answer is already known, before reading any case whose answer is not.**
+The rebuilt tripwire pinned `ROOT` to the real repository root and asserted the
+containment case byte-identical between the tripwire build and the real script.
+
+**THIS FILING HAS NOW BEEN SHARPENED FOUR TIMES, AND THE NEXT AMENDER SHOULD
+KNOW WHICH THAT MAKES IT.** Either it is the most load-bearing rule in this
+section, or it is under-specified at its root and each amendment is patching a
+symptom. **Nobody has decided which**, and a fifth amendment should say which
+one it believes before adding a sixth dimension to a list that has grown every
+time.
 ### Filed — `d1 migrations list --remote` returned 7403 while `d1 execute --remote` worked (2026-09-01)
 
 **TWO COMMANDS AGAINST ONE DATABASE DISAGREED ABOUT AUTHORIZATION, IN THE SAME
@@ -3834,6 +3907,31 @@ verifier reported green on the then-HEAD's 113 while the working tree stood at
 source was what tested that commit. **The script is not wrong to read the blob.**
 What it cannot do is attest to an uncommitted edit.
 
+**AMENDED 2026-09-16: THE RULE READS "ANY FIGURE THE WRITE COULD HAVE MOVED",
+AND IT MUST ALSO REACH ANY FIGURE THE WRITE RESTATED.** A figure can be false
+on arrival without anything moving. The list beside it is re-derived correctly,
+the number above it is carried forward from the previous draft, and no line
+number shifted.
+
+**TWICE IN ONE DAY, 2026-09-16.** A divergence total said FIVE and enumerated
+six entries beneath it. A declined list said SIX and named eight. In both the
+enumeration was correct and current; only the count was stale, and it was stale
+against a list sitting directly beneath it.
+
+**THE FIRST WAS SELF-CAUGHT AT THE MOMENT OF WRITING. THE SECOND WAS CAUGHT BY
+FT ON REVIEW**, which is the part that matters: the same author made the same
+error twice in one session, and the second time nothing internal noticed.
+
+**WHY THE EXISTING TEST MISSES IT.** That test asks what the write could have
+MOVED — a count of things inside the edited file, a line number, a figure
+derived from either. **None of those is what happened.** Nothing was edited
+that a count was taken over; a number was retyped beside a list that had been
+rebuilt underneath it.
+
+**THE WIDENED TEST: AFTER WRITING, RE-COUNT ANY LIST THE TEXT STATES A NUMBER
+FOR, AND COMPARE.** It costs one pass over the paragraph and it is the only
+thing that catches a count nothing moved.
+
 ### Filed — known false positives, a register (2026-09-08)
 
 **MATCHES THAT LOOK LIKE FINDINGS AND ARE NOT**, kept here so a census meets them
@@ -4038,6 +4136,169 @@ instrument at all.
 people acting on one working tree is what creates this, the same way §6.19
 records a prompt issued into a window that is already working. If a read matters,
 it should not be taken while someone else is mid-operation on the same tree.
+
+### Filed — `git check-ignore` consults the INDEX first, so a check on a TRACKED path CANNOT FAIL (2026-09-08)
+
+**`git check-ignore <path>` REPORTS NOTHING FOR A TRACKED PATH, whatever the
+ignore rules say**, because it consults the index before the rules. A check
+built on it to assert that a tracked directory is NOT ignored therefore passes
+unconditionally: it is measuring tracked-ness and reporting it as rule
+compliance.
+
+**WHAT IT COST, and the discovery method is the transferable half.** The
+verification script asserted `.claude/agents/` was tracked and not ignored.
+**Deleting the `!.claude/agents/` negation from `.gitignore` left the run
+GREEN.** The guard that exists to protect the negation could not see the
+negation being removed. It now passes `--no-index`.
+
+**IT WAS FOUND BY TRYING TO INDUCE THE FAILURE, NOT BY READING THE CODE**, and
+nothing else would have found it. Reading the assertion shows a correct question
+asked of the wrong oracle, which looks identical to a correct check.
+
+**THE RULE: A CHECK ON A TRACKED PATH MUST PASS `--no-index`.** And the wider
+one, which is this section's recurring shape: **before trusting a guard, break
+the thing it guards and confirm the guard notices.** A control that fires on a
+synthetic positive proves the matcher runs; only breaking the subject proves the
+guard is pointed at it.
+
+### Filed — prompts re-served and responses lost in transport, and the
+reporting guard that made the work usable (2026-09-16)
+
+**RECORDED AS OBSERVED. NO THEORY OF CAUSE IS OFFERED AND NONE SHOULD BE READ
+INTO THIS.**
+
+**WHAT HAPPENED, IN ONE SESSION.** Prompts were re-served FOUR times — the
+same instruction arriving again after the work it asked for was already done.
+Responses arrived with CONTIGUOUS SPANS DELETED, mid-report, with no marker
+where the cut fell. TWO RESPONSES NEVER ARRIVED AT ALL, so the operator issued
+the next instruction believing the previous one had not run.
+
+**THE FAILURE MODE THAT MATTERS IS THE RE-SERVE, NOT THE LOSS.** A lost
+response costs a turn. A re-served prompt asks for work that is already
+committed, and a non-idempotent operation run twice — an append, an insert, a
+commit — produces a duplicate that looks like a correct result. **The defence
+is to CHECK WHETHER THE WORK EXISTS BEFORE REDOING IT**, by a property of the
+artifact rather than by memory of having done it: a heading count, a SHA, a
+`git log` subject.
+
+**THE REPORTING GUARD WAS INVENTED MID-SESSION IN RESPONSE, and it is what made
+the work usable.** Three parts. Every quoted block carries LINES, EXPECTED,
+ACTUAL and SHA256 above it, so a block that arrives damaged is detectable
+against its own stated line range. Every figure sits on its OWN LINE as a bare
+number, because a deletion inside a table row is invisible while a deletion of
+a whole line is not. And a report names WHERE IT STOPPED, so a truncated
+response and a completed one are distinguishable.
+
+**A SMALLER INSTANCE OF THE SAME CLASS, TWICE IN THE SAME SESSION: A PARAGRAPH
+BREAK LOST ON INSERTION.** An inserted block ran directly into the heading
+below it with no blank line between. **Both occurrences were caught by reading
+the rendered output and by nothing else** — every count was correct, every
+control passed, and the prose was wrong. That is the bank rule stated as a
+measured cost rather than as protocol.
+
+### Filed — a hardcoded section bound does not fail when the section moves;
+it answers confidently and wrongly (2026-09-11)
+
+**A COUNT TAKEN BETWEEN TWO LITERAL LINE NUMBERS KEEPS RETURNING A NUMBER AFTER
+THE SECTION HAS MOVED.** It does not error, it does not return zero, and
+nothing in its output says the window has slid off the thing it was measuring.
+It reports a plausible figure for a region that is no longer the region.
+
+**OBSERVED, AND IT FIRED TWICE IN ONE SESSION ACROSS TWO OPERATORS.** A false
+OPEN count of **110** was produced by an agent's post-edit check and again by
+the parent's, because the edit being checked had moved the bounds the check was
+measured from. Deriving the bounds from the `## OPEN` and `## PARKED` markers
+instead returns **114**.
+
+**THE MECHANISM REPRODUCES, AND THE REPRODUCTION IS THE PART WORTH KEEPING.**
+Applying the previous revision's literal bounds to a later revision of the same
+file returns **81**. **A stale bound does not fail — it answers.** 81 is not
+obviously wrong, 110 is not obviously wrong, and neither announces itself as a
+measurement of the wrong span.
+
+**THAT FIGURE IS ANCHORED TO A REVISION DELIBERATELY.** Unanchored it would be
+a live count, which is the defect one section over.
+
+**THE RULE: DERIVE A SECTION'S BOUNDS FROM ITS MARKERS, NEVER FROM LINE
+NUMBERS.** A marker moves with the text; a literal does not. And where a
+literal is genuinely unavoidable, assert that the line it names still carries
+the text it was chosen for, before reading anything measured between them.
+
+**IT IS THE SIBLING OF THE RE-MEASURE FILING ABOVE, FROM THE OTHER SIDE.** That
+one is about a figure going stale because the file moved under it. This is
+about the INSTRUMENT going stale for the same reason, and the instrument's
+staleness is worse: a stale figure is wrong once, a stale bound is wrong every
+time it runs.
+
+### Filed — a width measured in BYTES reported as a character count, and it
+indicts the session that promoted it (2026-09-16)
+
+**`awk '{print length}'` AND `grep`-BASED WIDTH CHECKS COUNT BYTES, NOT
+CHARACTERS.** On a file dense with multibyte characters the two diverge
+silently, and a width figure reported without its unit is unfalsifiable: the
+reader cannot tell whether a line "at 84" is 84 characters or 84 bytes, and in
+this repository those are different lines.
+
+**THE CONTROL, PROVEN RATHER THAN ASSERTED.** A single line carrying one
+section sign and one em dash measures **12 bytes** and **9 characters**. Three
+characters of difference on a nine-character line.
+
+**IT FIRED ON A REAL WRITE, ONE PROMOTION BEFORE THIS FILING EXISTED.** An
+insert was REFUSED by its own guard: the block measured **79 characters and 81
+BYTES**, over by two on a single line, entirely because of one em dash. Nothing
+was written. Rewrapping by byte length rather than character length brought it
+to 79 and 79.
+
+**THE FINDING APPLIES RETROACTIVELY TO THE SESSION THAT PROMOTED IT, AND SAYING
+SO IS THE POINT.** Every width figure reported across this session came from a
+byte-counting check and was presented as a character count: the "maximum width
+79" claims in FIVE commit messages, and the "maximum 84" recorded in the
+session-log entry for 2026-09-16. **The cap was applied conservatively in one
+direction throughout — a byte count over-reports, so a block passing a byte
+cap also passes the character cap — so no write is invalidated and nothing
+needs re-doing.** What is wrong is the unit on every one of those figures.
+
+**AND A SECOND CORRECTION RIDES WITH IT: 79 IS NOT THIS FILE'S ENFORCED
+WIDTH.** Section 10's own body carries **199 lines over 79 characters and 217
+over 79 bytes**, with a maximum of **1,806 characters**. So "width control
+passed" has been implying a standard the file does not keep. The guard stays
+stricter than the file by choice; the REPORTING must say which of the two it is
+measuring against.
+
+**THE RULE: STATE THE UNIT ON EVERY WIDTH FIGURE, AND SAY WHETHER THE CAP IS
+THE FILE'S OR THE WRITER'S.** A figure without its unit is not a measurement.
+
+### Filed — a `process.argv` mis-index, where only the direction of the
+argument decided whether it destroyed anything (2026-09-16)
+
+**A SCRIPT INVOKED WITH A PLACEHOLDER IN THE POSITION IT READS ITS PATH FROM
+WILL USE THE PLACEHOLDER AS THE PATH.** In Node, `node script.mjs foo bar` puts
+`foo` at `process.argv[2]` and `bar` at `[3]`. A habit of typing a throwaway
+first argument puts the throwaway exactly where a one-argument script looks.
+
+**TWICE IN ONE SESSION, SAME MIS-INDEX, OPPOSITE OUTCOMES.** The first instance
+passed a placeholder to a script whose path argument was the OUTPUT. It wrote
+**66,773 bytes** to a file named `x` at the repository root — untracked,
+never staged, deleted on discovery, with `git status --porcelain` confirming
+clean afterward. The second passed a placeholder to a script whose path
+argument was the INPUT. It failed with `ENOENT` and wrote nothing.
+
+**ONLY THE DIRECTION OF THE ARGUMENT SEPARATED THEM.** Same operator, same
+error, same day. A read fails loudly and costs a retry; a write succeeds
+quietly and leaves an artifact in the tree. **Nothing about the mistake
+distinguishes the two cases in advance**, which is why the safe one should not
+be read as the likely one.
+
+**IT IS THE EXPOSURE §6.20 EXISTS FOR, ARRIVING FROM INSIDE.** That rule
+forbids blanket staging because large untracked artifacts sit in the working
+tree. This produces a NEW one, in the repository root, from a script the
+operator wrote moments earlier.
+
+**THE RULE: A SCRIPT TAKING A PATH ARGUMENT ASSERTS THE ARGUMENT'S SHAPE BEFORE
+ACTING ON IT.** Refuse an argument that does not look like a path; refuse to
+WRITE to one that does not sit under an expected directory; and print the
+resolved path before using it, so a wrong target is visible in the output
+rather than only in the filesystem.
 
 ---
 
