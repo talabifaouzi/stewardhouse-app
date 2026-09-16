@@ -8,20 +8,22 @@
 // assertion (I), completion written last (J), the pruning code (K), the undo
 // file (L), and the read-only verification against D1 (M).
 //
-// WHAT THIS FILE IMPLEMENTS TODAY: DEFINITION-OF-DONE ITEMS 1 AND 2 ONLY — the
-// target map and the run banner (R36, R37, R38), and the DDL constant (R13,
-// R33). It resolves and validates its arguments, prints the banner, and then
-// REFUSES TO PROCEED. It creates no table, contacts no database, spawns no
-// wrangler process, reads no file and executes no statement. Every element
-// listed above is UNBUILT, and this file says so at exit rather than implying
-// otherwise by succeeding.
+// WHAT THIS FILE IMPLEMENTS TODAY: DEFINITION-OF-DONE ITEMS 1 AND 2, AND R32
+// ELEMENT A — the target map and the run banner (R36, R37, R38), the DDL
+// constant (R13, R33), and the creation of the aside from that constant with
+// R16's two pre-swap assertions. It resolves and validates its arguments, prints
+// the banner, creates `bmf_aside`, asserts the shape it just built, and then
+// REFUSES TO PROCEED. It loads no row, opens no `load_stamp` row, swaps nothing,
+// and neither reads nor writes the live `bmf` table. Elements B through M are
+// UNBUILT, and this file says so at exit rather than implying otherwise by
+// succeeding.
 //
-// ITEM 2 ADDS DATA AND RENDERERS, NOT BEHAVIOUR. The DDL constant and the five
-// functions that render it — columnSql, createTableSql, indexNameFor,
-// createIndexSql, asideStatements — are defined and called by nothing. Their
-// consumers are element A, which creates the aside, and definition-of-done item
-// 3, which regenerates migrations/0022_bmf_table.sql under R13a. Neither is
-// built, so a run behaves exactly as it did before item 2 landed.
+// ITEM 2 ADDED DATA AND RENDERERS; ELEMENT A IS WHAT CALLS THEM. The DDL
+// constant and the five functions that render it — columnSql, createTableSql,
+// indexNameFor, createIndexSql, asideStatements — now have one consumer,
+// element A below. Definition-of-done item 3, the R13a regeneration, is their
+// other consumer and is NOT in this file; it ran as a scratch regenerator and
+// A149 files that mechanism as debt.
 //
 // Usage:
 //   node scripts/bmf-load.mjs --db=bmf-sandbox --local --persist-to=<dir>
@@ -35,19 +37,21 @@
 // absent item reads as deferred rather than omitted. R37 rules the exemptions
 // out of slice 2, so all three of section 2's requirements bind: the --local /
 // --remote pair is present below, the single DB_NAME constant has become the
-// two-entry TARGETS map, and the spawnSync on `wrangler d1 execute` is owed by
-// element C, which loads the emitted file, rather than by this item.
+// two-entry TARGETS map, and the spawnSync on `wrangler d1 execute` arrives
+// with element A below, one element earlier than this file first expected.
 //
-// WHAT ITEM 1 DELIBERATELY DOES NOT CARRY. R38 places three further obligations
-// on the loader, and each needs a run that actually executes: the check that the
-// directory holds no more than one store file besides miniflare's own metadata
-// file, the print of the full wrangler command, and the print of the directory
-// size at exit. All three belong with the element that spawns wrangler. R38's
-// other two halves are here, because they are argument resolution and are
+// R38's THREE RUN-TIME OBLIGATIONS ARE NOW DISCHARGED, because element A spawns
+// wrangler and item 1 spawned nothing: the check that the directory holds no
+// more than one store file besides miniflare's own metadata file, the print of
+// the full wrangler command, and the print of the directory size at exit. What
+// a store file IS is defined at that check rather than assumed. R38's other two
+// halves were already here, because they are argument resolution and are
 // checkable without executing anything: the directory is a required argument,
 // and one inside the repository is refused.
 
 import { dirname, join, resolve, relative, isAbsolute } from 'node:path';
+import { readdirSync, statSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(join(dirname(fileURLToPath(import.meta.url)), '..'));
@@ -376,18 +380,208 @@ if (venue === 'remote') {
   );
 }
 
-// EVERY ELEMENT BELOW THIS POINT IS UNBUILT. Definition-of-done item 3, the
-// R13a regeneration, is not in this file, and neither is any of R32's elements A
-// through M. Item 2's constant IS above, and being defined is not being used:
-// nothing calls its renderers, so no aside is built and no migration regenerated.
+// ---------------------------------------------------------------- R38 RUNTIME
+// R38's three run-time obligations land here rather than with item 1, because
+// each needs a run that actually spawns wrangler and item 1 spawned nothing.
+//
+// WHAT COUNTS AS A STORE FILE, DEFINED RATHER THAN ASSUMED. A healthy store
+// directory holds a hashed .sqlite, metadata.sqlite, and a -shm and a -wal
+// sidecar for each, so a naive file count returns six and a naive .sqlite count
+// returns two. Neither is the thing R38 guards against, which is a SECOND
+// DATABASE nobody knows is bound: CLAUDE.md section 10's double-store filing.
+// So a store file is a .sqlite that is not miniflare's own metadata.sqlite, and
+// the -shm and -wal sidecars are IGNORED. They belong to a store rather than
+// being one, and their presence depends on whether a connection is open, which
+// would make this check a function of TIMING rather than of content. Section
+// 6.10's own wording is the precedent: it speaks of more than one .sqlite
+// sitting under miniflare-D1DatabaseObject/.
+const STORE_DIR_SEGMENTS = ['v3', 'd1', 'miniflare-D1DatabaseObject'];
+const MINIFLARE_METADATA = 'metadata.sqlite';
+
+function storeFilesIn(dir) {
+  let entries;
+  try {
+    entries = readdirSync(join(dir, ...STORE_DIR_SEGMENTS));
+  } catch {
+    return [];
+  }
+  return entries.filter((n) => n.endsWith('.sqlite') && n !== MINIFLARE_METADATA);
+}
+
+function dirSizeBytes(dir) {
+  let total = 0;
+  const walk = (d) => {
+    for (const name of readdirSync(d)) {
+      const p = join(d, name);
+      const st = statSync(p);
+      if (st.isDirectory()) walk(p);
+      else total += st.size;
+    }
+  };
+  try {
+    walk(dir);
+  } catch {
+    return null;
+  }
+  return total;
+}
+
+if (venue === 'local') {
+  const stores = storeFilesIn(persistDir);
+  console.log(`[bmf-load] store files     : ${stores.length === 0 ? '(none)' : stores.join(', ')}`);
+  if (stores.length > 1) {
+    fail(
+      `${persistDir} holds ${stores.length} store files besides ${MINIFLARE_METADATA} ` +
+        `(${stores.join(', ')}). R38 allows one. A second store is the hazard CLAUDE.md ` +
+        'section 10 files: a database nobody knows is bound, whose emptiness reads ' +
+        'exactly like a load that has not run yet.'
+    );
+  }
+}
+
+// ------------------------------------------------------------------ ELEMENT A
+// R32 element A: CREATE THE ASIDE, from the constant, via asideStatements().
+// Nothing downstream of this is built. B through M are absent, and so is any
+// element that drops or prunes an aside, which is why a second run FAILS.
+//
+// THE ASSERTIONS ARE R16's AND THEY RUN HERE, not after a swap. R16b rules them
+// PRE-SWAP and part of the gate: catching drift before the swap means the aside
+// is discarded and live was never touched. R16c names them aside_schema_pk and
+// aside_schema_notnull, and those names are used verbatim below so the
+// load_check rows element G writes read the same as this output. G is unbuilt,
+// so nothing is persisted; these run and REPORT, and a failure exits non-zero.
+//
+// R16's AMENDMENT IS LOAD-BEARING AND IS NOT SIMPLIFIED HERE: the notnull
+// assertion covers FIVE columns INCLUDING ein, not the nationally-non-null four.
+// A non-INTEGER PRIMARY KEY in SQLite does not imply NOT NULL, so ein's own NOT
+// NULL would otherwise be asserted by nothing, which is the exact drift R16
+// exists to catch.
+const NOTNULL_COLUMNS = ['ein', 'name', 'city', 'state', 'ruling'];
+
+// R38: the full wrangler command is PRINTED on every run, before it is spawned.
+function wrangler(args) {
+  const argv = ['node_modules/wrangler/wrangler-dist/cli.js', ...args];
+  console.log(`[bmf-load] wrangler command: node ${argv.join(' ')}`);
+  return spawnSync(process.execPath, argv, { cwd: ROOT, encoding: 'utf8' });
+}
+
+// R37: the config comes from the TARGETS map and never from the caller, so a run
+// cannot pair one database's name with the other's config.
+function execArgsFor(command, json) {
+  const args = ['d1', 'execute', dbName];
+  if (target.config !== null) args.push('--config', target.config);
+  args.push(venue === 'remote' ? '--remote' : '--local');
+  if (venue === 'local') args.push('--persist-to', persistDir);
+  if (json) args.push('--json');
+  args.push('--command', command);
+  return args;
+}
+
+const statements = asideStatements();
+console.log(`[bmf-load] aside statements: ${statements.length}`);
+for (const statement of statements) console.log(`[bmf-load]   ${statement}`);
+
+const created = wrangler(execArgsFor(statements.join(' '), false));
+if (created.status !== 0) {
+  console.error(created.stdout || '');
+  console.error(created.stderr || '');
+  fail(
+    `creating ${ASIDE_TABLE} failed (wrangler exit ${created.status}). Nothing was ` +
+      'swapped and the live table is untouched. A PRE-EXISTING ASIDE is the likely ' +
+      'cause and the refusal is deliberate: no element drops one yet, and CREATE ' +
+      'TABLE IF NOT EXISTS would load into a table whose shape nobody re-verified.'
+  );
+}
+console.log(`[bmf-load] ${ASIDE_TABLE} created.`);
+
+// The assertions read the DATABASE back, never the constant. Comparing the
+// constant to itself is the tautology shape R16 was converted away from.
+function readBack(sql) {
+  const out = wrangler(execArgsFor(sql, true));
+  if (out.status !== 0) {
+    console.error(out.stdout || '');
+    console.error(out.stderr || '');
+    fail(`reading back ${ASIDE_TABLE} failed (wrangler exit ${out.status}).`);
+  }
+  return JSON.parse(out.stdout)[0].results;
+}
+
+const tableInfo = readBack(`PRAGMA table_info(${ASIDE_TABLE});`);
+const indexList = readBack(`PRAGMA index_list(${ASIDE_TABLE});`);
+const problems = [];
+
+// aside_schema_pk - the PRIMARY KEY is on ein, AND the PK's automatic index
+// exists. Both halves, because either alone passes on a shape R16 rejects.
+const pkColumns = tableInfo.filter((c) => c.pk > 0).map((c) => c.name);
+if (pkColumns.length !== 1 || pkColumns[0] !== 'ein') {
+  problems.push(`aside_schema_pk: PRIMARY KEY is on [${pkColumns.join(', ')}], expected [ein]`);
+}
+const autoIndex = indexList.filter((i) => i.origin === 'pk');
+if (autoIndex.length !== 1) {
+  problems.push(`aside_schema_pk: expected one index with origin pk, found ${autoIndex.length}`);
+}
+
+// aside_schema_notnull - five columns, ein included (R16's own amendment).
+for (const name of NOTNULL_COLUMNS) {
+  const column = tableInfo.find((c) => c.name === name);
+  if (column === undefined) problems.push(`aside_schema_notnull: column ${name} is absent`);
+  else if (column.notnull !== 1) {
+    problems.push(`aside_schema_notnull: ${name} reports notnull=${column.notnull}`);
+  }
+}
+
+// The aside's OWN index names, which are the constant's renamed by indexNameFor.
+// R13b asserts the LIVE names AFTER the swap and element H owes that rename;
+// this checks only that the aside carries what this file rendered.
+const expectedIndexes = DDL.bmf.indexes.map((i) => indexNameFor(i, 'bmf', ASIDE_TABLE)).sort();
+const actualIndexes = indexList.filter((i) => i.origin === 'c').map((i) => i.name).sort();
+if (expectedIndexes.join(',') !== actualIndexes.join(',')) {
+  problems.push(
+    `aside index names: expected [${expectedIndexes.join(', ')}], found [${actualIndexes.join(', ')}]`
+  );
+}
+
+const verdict = (prefix) => (problems.some((p) => p.startsWith(prefix)) ? 'FAIL' : 'pass');
+console.log(`[bmf-load] aside_schema_pk      : ${verdict('aside_schema_pk')}`);
+console.log(`[bmf-load] aside_schema_notnull : ${verdict('aside_schema_notnull')}`);
+console.log(`[bmf-load] aside index names    : ${verdict('aside index')}`);
+
+// R38: the directory's size at exit, on every path out of a local run.
+function reportSize() {
+  if (venue !== 'local') return;
+  const bytes = dirSizeBytes(persistDir);
+  console.log(`[bmf-load] store dir size  : ${bytes === null ? '(unreadable)' : bytes + ' bytes'}`);
+}
+
+if (problems.length > 0) {
+  for (const problem of problems) console.error(`[bmf-load] ${problem}`);
+  reportSize();
+  fail(
+    'the aside does not match the constant it was built from. R16b: this runs ' +
+      'PRE-SWAP, so the aside is discarded and live was never touched.'
+  );
+}
+
+reportSize();
+
+// EVERY ELEMENT AFTER A IS UNBUILT - B through M, and definition-of-done item 4
+// onward. The aside now EXISTS and is EMPTY. Nothing loaded it, nothing swapped
+// it, and no load_stamp row was opened, because element E is not built.
+//
+// THE ORDER MATTERS AND IS NOT YET RIGHT, recorded so it is not lost: item 6's
+// own text puts element 5 (E) BEFORE A, so that an aside creation which fails
+// leaves a stamp row with load_started_at set and completed_at NULL - an attempt
+// that failed, rather than no row at all, which is byte-identical to a load that
+// never began. Today A runs with no stamp behind it, so a failure here IS that
+// void. The element that opens the stamp must land before this file is used for
+// anything but exercising A.
 //
 // EXITING NON-ZERO IS DELIBERATE, AND 2 RATHER THAN 1 IS ALSO DELIBERATE. A zero
 // would report a load that did not happen, which is the class of quiet falsehood
-// this arc exists to remove. 1 is reserved for fail(), so that a run refused by
-// validation stays distinguishable from a run that validated and then stopped
-// because nothing downstream exists yet.
-console.error('[bmf-load] STOP: items 1 and 2 only. The target map, the run banner and the');
-console.error('[bmf-load] DDL constant are built.');
-console.error('[bmf-load] Nothing below them is. No table was created, no database was');
-console.error('[bmf-load] contacted, no wrangler process was spawned, and no statement ran.');
+// this arc exists to remove. 1 is reserved for fail(), so a run refused by
+// validation stays distinguishable from a run that validated, did element A, and
+// then stopped because nothing downstream exists yet.
+console.error('[bmf-load] STOP: element A only. The aside is created and R16 asserted.');
+console.error('[bmf-load] No row was loaded, no stamp was opened, nothing was swapped, and');
+console.error('[bmf-load] the live bmf table was not read or written.');
 process.exit(2);
