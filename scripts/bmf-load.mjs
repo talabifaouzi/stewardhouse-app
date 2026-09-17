@@ -8,15 +8,17 @@
 // assertion (I), completion written last (J), the pruning code (K), the undo
 // file (L), and the read-only verification against D1 (M).
 //
-// WHAT THIS FILE IMPLEMENTS TODAY: DEFINITION-OF-DONE ITEMS 1 AND 2, AND R32
-// ELEMENTS B AND A — the target map and the run banner (R36, R37, R38), the
-// DDL constant (R13, R33), the pre-flight (R20), and the creation of the aside
-// from that constant with R16's two pre-swap assertions. It resolves and
+// WHAT THIS FILE IMPLEMENTS TODAY: DEFINITION-OF-DONE ITEMS 1, 2 AND 8, AND
+// R32 ELEMENTS B, A AND C — the target map and the run banner (R36, R37, R38),
+// the DDL constant (R13, R33), the pre-flight (R20), the creation of the aside
+// from that constant with R16's two pre-swap assertions, and the load of slice
+// 1's emitted artifact into that aside in ONE invocation. It resolves and
 // validates its arguments, prints the banner, runs the pre-flight, creates
-// `bmf_aside`, asserts the shape it just built, and then REFUSES TO PROCEED.
-// It loads no row, opens no `load_stamp` row, swaps nothing, and neither reads
-// nor writes the live `bmf` table. Elements C through M are UNBUILT, and this
-// file says so at exit rather than implying succeeding.
+// `bmf_aside`, asserts the shape it just built, loads the artifact, asserts the
+// loaded row count against slice 1's sidecar, and then REFUSES TO PROCEED.
+// It mints no generation, opens no `load_stamp` row, swaps nothing, and neither
+// reads nor writes the live `bmf` table. Elements D through M are UNBUILT, and
+// this file says so at exit rather than implying succeeding.
 //
 // ITEM 2 ADDED DATA AND RENDERERS; ELEMENT A IS WHAT CALLS THEM. The DDL
 // constant and the five functions that render it — columnSql, createTableSql,
@@ -50,7 +52,7 @@
 // and one inside the repository is refused.
 
 import { dirname, join, resolve, relative, isAbsolute } from 'node:path';
-import { readdirSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
@@ -445,21 +447,42 @@ if (venue === 'local') {
 // position 6; nothing about them changed.
 
 // R38: the full wrangler command is PRINTED on every run, before it is spawned.
-function wrangler(args) {
+// The opts argument arrived with element C, which raises maxBuffer: the 1 MiB
+// default is a property of spawnSync rather than of wrangler, and a truncated
+// capture would make a successful run unreadable rather than failing it.
+function wrangler(args, opts = {}) {
   const argv = ['node_modules/wrangler/wrangler-dist/cli.js', ...args];
   console.log(`[bmf-load] wrangler command: node ${argv.join(' ')}`);
-  return spawnSync(process.execPath, argv, { cwd: ROOT, encoding: 'utf8' });
+  return spawnSync(process.execPath, argv, {
+    cwd: ROOT,
+    encoding: 'utf8',
+    ...opts
+  });
 }
 
 // R37: the config comes from the TARGETS map and never from the caller, so a run
 // cannot pair one database's name with the other's config.
-function execArgsFor(command, json) {
+function targetArgs() {
   const args = ['d1', 'execute', dbName];
   if (target.config !== null) args.push('--config', target.config);
   args.push(venue === 'remote' ? '--remote' : '--local');
   if (venue === 'local') args.push('--persist-to', persistDir);
+  return args;
+}
+
+function execArgsFor(command, json) {
+  const args = targetArgs();
   if (json) args.push('--json');
   args.push('--command', command);
+  return args;
+}
+
+// Element C: the same binding, carrying a FILE rather than a command. It takes
+// no --json, because the artifact is 5,805 statements and the JSON form of that
+// result set is not a thing this loader reads. C's proof is a read-back count.
+function execFileArgsFor(filePath) {
+  const args = targetArgs();
+  args.push('--file', filePath);
   return args;
 }
 
@@ -609,27 +632,190 @@ console.log(`[bmf-load] aside_schema_pk      : ${verdict('aside_schema_pk')}`);
 console.log(`[bmf-load] aside_schema_notnull : ${verdict('aside_schema_notnull')}`);
 console.log(`[bmf-load] aside index names    : ${verdict('aside index')}`);
 
-// R38: the directory's size at exit, on every path out of a local run.
-function reportSize() {
+// R38: the directory's size at exit, on every path out of a local run. The label
+// argument arrived with element C: the run now prints a size after A and again
+// after the load, and two identical labels carrying different numbers would
+// read as a contradiction rather than as a before and an after.
+function reportSize(when) {
   if (venue !== 'local') return;
   const bytes = dirSizeBytes(persistDir);
-  console.log(`[bmf-load] store dir size  : ${bytes === null ? '(unreadable)' : bytes + ' bytes'}`);
+  const shown = bytes === null ? '(unreadable)' : bytes + ' bytes';
+  console.log(`[bmf-load] store dir size  : ${shown} (${when})`);
 }
 
 if (problems.length > 0) {
   for (const problem of problems) console.error(`[bmf-load] ${problem}`);
-  reportSize();
+  reportSize('after element A');
   fail(
     'the aside does not match the constant it was built from. R16b: this runs ' +
       'PRE-SWAP, so the aside is discarded and live was never touched.'
   );
 }
 
-reportSize();
+reportSize('after element A');
 
-// EVERY ELEMENT AFTER A IS UNBUILT - C through M, and definition-of-done item 4
-// onward. The aside now EXISTS and is EMPTY. Nothing loaded it, nothing swapped
-// it, and no load_stamp row was opened, because element E is not built.
+// ------------------------------------------------------------------ ELEMENT C
+// R32 element C: LOAD THE EMITTED FILE. Its done criterion is ONE thing, as FT
+// NARROWED it on 2026-09-16: the aside row count equals the parsed count in
+// slice 1's sidecar. Section 5's THREE TIERS ARE NOT RUN HERE. They moved to
+// element F in that same ruling, on the ground that a load element which also
+// grades itself reports a failure as "the load failed" whether the load or the
+// grading is what went wrong. Nothing below may be read as grading the data.
+//
+// THE CAUTION FT CARRIED WITH THE NARROWING IS REPEATED AT THE SITE IT BINDS:
+// this moved a proof from a built element to an UNBUILT one. Element F is not
+// built and nothing schedules it. If F is ever descoped, the three tiers go
+// with it and NOTHING RUNS THEM - not as a visible gap, but as a silence,
+// because this element will pass on its row count and report success.
+//
+// ONE INVOCATION, AND THAT IS SECTION 1's BINDING CONSTRAINT RATHER THAN A
+// PREFERENCE. One `d1 execute --file` is one `splitSqlQuery` and one
+// `db.batch()`, which is one implicit transaction: it applies whole or rolls
+// back whole. Splitting the artifact across invocations is FAILURE MODE 19,
+// and the mode table records the loader CANNOT DETECT it - the split is
+// invisible in the SQL itself, which is why that row reads "NO, which is why
+// post-swap verification beats the return code". So the single spawn below is
+// the safety property, and a later reader who chunks it for any reason
+// reintroduces a window nothing in this file would report.
+//
+// WHAT A ROLLED-BACK C LEAVES: THE ASIDE PRESENT AND EMPTY, NOT ABSENT.
+// Section 1's 2026-09-16 amendment is explicit about this, because element A
+// created the aside in its OWN invocation. Recovery is a full rerun, and a
+// rerun meets an existing empty aside that element A REFUSES to re-create.
+// That refusal is ON the recovery path rather than off it, and this element
+// does not soften it.
+//
+// THE ARTIFACT AND THE EXPECTED COUNT ARE BOTH TAKEN FROM THE RECORD, NEVER
+// FROM THE CALLER. The two paths are constants, matching
+// bmf-verify-slice1.mjs:92-93 verbatim, and the expected count is read from the
+// sidecar. An argument for either would let a caller pair one sidecar with
+// another artifact, or supply the very number the check compares against, which
+// is the tautology shape R16 was converted away from. The sidecar names its own
+// `sqlPath`, and that is asserted to resolve to the constant, so a sidecar
+// describing a different artifact is REFUSED rather than ignored.
+const SIDECAR_PATH = join(ROOT, 'scripts', 'bmf-aside.tmp.json');
+const SQL_PATH = join(ROOT, 'scripts', 'bmf-aside.tmp.sql');
+
+if (!existsSync(SIDECAR_PATH)) {
+  fail(`slice 1's sidecar is absent at ${SIDECAR_PATH}. Run scripts/bmf-parse.mjs first.`);
+}
+let sidecar = null;
+try {
+  sidecar = JSON.parse(readFileSync(SIDECAR_PATH, 'utf8'));
+} catch (err) {
+  fail(`slice 1's sidecar at ${SIDECAR_PATH} is not readable JSON: ${err.message}`);
+}
+if (sidecar.targetTable !== ASIDE_TABLE) {
+  fail(
+    `the sidecar names target table ${JSON.stringify(sidecar.targetTable)} and this run ` +
+      `created ${ASIDE_TABLE}. The emitted file would not load unmodified.`
+  );
+}
+if (resolve(ROOT, sidecar.sqlPath) !== SQL_PATH) {
+  fail(
+    `the sidecar names ${sidecar.sqlPath}, which resolves elsewhere than ${SQL_PATH}. ` +
+      `A sidecar and the artifact it describes are one pair or they are nothing.`
+  );
+}
+if (!existsSync(SQL_PATH)) {
+  fail(`the emitted artifact is absent at ${SQL_PATH}. Run scripts/bmf-parse.mjs first.`);
+}
+
+// artifact_bytes_match_sidecar. An EQUALITY against the recorded byte count,
+// which is the shape R26 already uses on the fetch side rather than a floor. A
+// regenerated or truncated artifact paired with a stale sidecar would otherwise
+// be loaded and then compared against the wrong number, and the comparison's
+// verdict would be about two unrelated files.
+const artifactBytes = statSync(SQL_PATH).size;
+if (artifactBytes !== sidecar.sqlBytes) {
+  fail(
+    `artifact_bytes_match_sidecar: ${SQL_PATH} is ${artifactBytes} bytes and the sidecar ` +
+      `records ${sidecar.sqlBytes}. Nothing was loaded.`
+  );
+}
+console.log(`[bmf-load] artifact        : ${SQL_PATH}`);
+console.log(`[bmf-load] artifact bytes  : ${artifactBytes} (sidecar ${sidecar.sqlBytes})`);
+console.log(`[bmf-load] statements      : ${sidecar.statements}`);
+console.log(`[bmf-load] parsed rows     : ${sidecar.rows}`);
+
+// THE PRE-LOAD COUNT, AND IT CANNOT FIRE TODAY. Stated as a check that cannot
+// fail rather than presented as coverage, which is CLAUDE.md section 10's
+// standing discipline turned on this file's own instruments. Nothing here
+// truncates or drops an aside, and element A REFUSES a pre-existing table, so
+// by the time control reaches this line the aside was created seconds ago and
+// is necessarily empty. It exists for the day an element ahead of C is made to
+// tolerate an existing aside: the emitted file is plain INSERTs, so a load into
+// a populated table either collides on the EIN primary key or inflates the
+// count past the sidecar, and the second outcome is the quiet one.
+const rowsBefore = Number(readBack(`SELECT COUNT(*) AS n FROM ${ASIDE_TABLE};`)[0].n);
+if (rowsBefore !== 0) {
+  fail(
+    `${ASIDE_TABLE} already holds ${rowsBefore} rows. Nothing in this loader truncates ` +
+      `it, and the emitted file is plain INSERTs, so a load here would collide on the ` +
+      `EIN primary key or inflate the count past the sidecar. Recovery is a full rerun ` +
+      `from a dropped aside (section 1), never a second load into this one.`
+  );
+}
+console.log(`[bmf-load] aside before    : ${rowsBefore} rows`);
+
+// THE SINGLE INVOCATION.
+const loadStartedMs = Date.now();
+const loaded = wrangler(execFileArgsFor(SQL_PATH), { maxBuffer: 64 * 1024 * 1024 });
+const loadSeconds = ((Date.now() - loadStartedMs) / 1000).toFixed(1);
+console.log(`[bmf-load] load wall clock : ${loadSeconds} s`);
+
+// WHAT WRANGLER SAID IS REPORTED BY SIZE AND NOT SUMMARIZED, and that is a
+// MEASURED choice rather than a cautious one. A tail print was written here
+// first, on the assumption that the summary line sits at the end. It does not:
+// on the local venue `d1 execute --file` prints a JSON meta dump, and the last
+// four lines of a 5,805-statement run are two closing braces and a bracket. The
+// print read as though the loader had nothing to say.
+//
+// IT IS NOT PARSED EITHER WAY. R11 is why: the client prints its rollback
+// guarantee BEFORE the import runs, so wrangler output is never where a verdict
+// comes from. The verdict below is a read-back against the database.
+const outBytes = Buffer.byteLength(String(loaded.stdout || ''), 'utf8');
+const errBytes = Buffer.byteLength(String(loaded.stderr || ''), 'utf8');
+console.log(
+  `[bmf-load] wrangler output : ${outBytes} bytes stdout, ${errBytes} bytes stderr ` +
+    `(printed by size; not parsed, and not a verdict)`
+);
+
+if (loaded.status !== 0) {
+  console.error(loaded.stdout || '');
+  console.error(loaded.stderr || '');
+  reportSize('at exit');
+  fail(
+    `loading ${SQL_PATH} failed (wrangler exit ${loaded.status}). One d1 execute --file ` +
+      `is one db.batch(), so NOTHING PARTIAL SURVIVES: the aside is PRESENT AND EMPTY ` +
+      `rather than absent (section 1, amended 2026-09-16). Nothing was swapped and the ` +
+      `live bmf table was neither read nor written. Recovery is a full rerun.`
+  );
+}
+
+// aside_rows_equal_parsed. The ONE thing element C proves, and it is read from
+// the DATABASE rather than from the return code, which is mode 19 and mode 11
+// reasoning applied at the only point where it can still be applied cheaply.
+// R16c names a check for what it checks, and this one is named for its two
+// operands: the aside's rows, and the sidecar's parsed count.
+const rowsAfter = Number(readBack(`SELECT COUNT(*) AS n FROM ${ASIDE_TABLE};`)[0].n);
+const rowsMatch = rowsAfter === sidecar.rows;
+console.log(`[bmf-load] aside after     : ${rowsAfter} rows (sidecar ${sidecar.rows})`);
+console.log(`[bmf-load] aside_rows_equal_parsed : ${rowsMatch ? 'pass' : 'FAIL'}`);
+reportSize('at exit');
+if (!rowsMatch) {
+  fail(
+    `aside_rows_equal_parsed: ${ASIDE_TABLE} holds ${rowsAfter} rows and the sidecar ` +
+      `records ${sidecar.rows} parsed. This is the ONE done criterion element C carries ` +
+      `after the 2026-09-16 narrowing. It runs PRE-SWAP, so the aside is discarded and ` +
+      `the live bmf table was never touched.`
+  );
+}
+
+// EVERY ELEMENT AFTER C IS UNBUILT - D through M. The aside now EXISTS and is
+// LOADED, and its row count has been read back and matched against slice 1s
+// parsed count. Nothing swapped it, and no load_stamp row was opened, because
+// element E is not built.
 //
 // THE ORDER MATTERS AND IS NOT YET RIGHT, recorded so it is not lost: item 6's
 // own text puts element 5 (E) BEFORE A, so that an aside creation which fails
@@ -644,8 +830,10 @@ reportSize();
 // this arc exists to remove. 1 is reserved for fail(), so a run refused by
 // validation stays distinguishable from a run that validated, did element A, and
 // then stopped because nothing downstream exists yet.
-console.error('[bmf-load] STOP: elements B and A only. The pre-flight ran and the aside is');
-console.error('[bmf-load] created, with R16 asserted against it.');
-console.error('[bmf-load] No row was loaded, no stamp was opened, nothing was swapped, and');
-console.error('[bmf-load] the live bmf table was not read or written.');
+console.error('[bmf-load] STOP: elements B, A and C only. The pre-flight ran, the aside');
+console.error('[bmf-load] was created with R16 asserted against it, and the emitted file');
+console.error('[bmf-load] was loaded into it in ONE invocation.');
+console.error('[bmf-load] No generation was minted, no stamp was opened, no pre-swap check');
+console.error('[bmf-load] beyond C ran, nothing was swapped, and the live bmf table was');
+console.error('[bmf-load] neither read nor written.');
 process.exit(2);
