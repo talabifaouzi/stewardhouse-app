@@ -4093,3 +4093,385 @@ its own entry, and rule 18 requires a proposal FT approves. Unresolved.
 
 **It is an A147 event.** `Last swept:` is a FROZEN key in
 `scripts/verify-commit-tail.mjs`, so the doc and the script move together.
+
+---
+
+## Session — 2026-09-16 (second) into 2026-09-17
+
+Seven commits, `156930d` through `556b30d`, opening from `63467ad`. Five files
+across the seven: `CLAUDE.md`, `docs/outstanding.md`, `scripts/bmf-load.mjs`,
+`scripts/verify-commit-tail.mjs` and the new `docs/bmf-element-c-proof.md`,
+totalling 1,007 insertions and 79 deletions. **The session closed the first
+complete 30-day sweep with a promotion pass, ran the A147 filing pass in four
+commits rather than the three it was scoped as, and built and ran slice 2's
+element C.** Fifteen entries opened, A150 through A164; one closed, A74. OPEN
+stands at 141. Session-open figures are anchored to `63467ad` and session-close
+figures to `556b30d`.
+
+**THIS ENTRY FOLLOWS THE 2026-09-14 (second) FORM**, sections keyed to work.
+Its boundary was corrected before drafting: the 2026-09-16 entry closes at
+`6b60722` and `63467ad` is the commit that carries it, so five 2026-09-16
+commits stood uncovered and join the two from 2026-09-17.
+
+**ELEMENT C WAS BUILT AND RUN IN A WINDOW THAT CLOSED BEFORE IT REPORTED.** The
+code and both loads are dated 2026-09-16 and the commits 2026-09-17, so that
+work was reviewed after the fact, and every figure in its sections was
+re-derived at HEAD rather than carried forward.
+
+### The promotion pass
+
+**Eight promotions, five of them new filed blocks (`156930d`).** Promotion
+pass 2 is the third and final pass of the first complete 30-day sweep under
+rule 18. It read `docs/session-log.md` from 2026-09-08 through the 2026-09-16
+entry at `63467ad`, SCOPED BY THE LAST PROMOTION PASS rather than by
+`Last swept:`, per FT's ruling of 2026-09-16. The two markers had diverged by
+nine days, because `Last swept:` had never moved and pass 1 ran on 2026-09-07
+without touching it.
+
+**The five new blocks, re-derived from the diff rather than from the message.**
+`git check-ignore` consulting the index first; prompts re-served and responses
+lost in transport; a hardcoded section bound that answers rather than fails; a
+width measured in bytes and reported as characters; and a `process.argv`
+mis-index. Two amendments and one governing statement carried the rest: the
+scanner filing's fourth amendment, the re-measure filing widened from figures a
+write MOVED to figures a write RESTATED, and the FOUNDER JUDGMENT structural
+gap as a governing statement in section 5.1.
+
+**The commit is additions only**, 261 insertions and 0 deletions, which is this
+file's practice of quoting a superseded claim rather than editing it.
+
+**The scanner filing reached its fourth amendment, and that amendment gates the
+next one.** It says plainly that a filing sharpened four times is either the
+most load-bearing rule in section 10 or under-specified at its root, that
+nobody has decided which, and that a fifth amendment must say which it believes
+before adding a sixth dimension to a list that has grown every time.
+
+**The byte-versus-character finding indicts the session that filed it, and its
+own text says so.** Every width figure reported across that session came from a
+byte-counting check and was presented as a character count. No write is
+invalidated, because a byte count over-reports; what is wrong is the unit on
+every one of those figures.
+
+**`Last promoted:` is proposed here and NOT written here.** It lands in the
+filing pass, one commit later.
+
+### The A147 filing pass
+
+**Scoped as three commits and it ran as four.** `e66db14` entry changes only,
+`42dd9be` the coupling proper, `d9f9fd1` a fix to commit 2's own claim-table
+reissue, `0436daa` three CLAUDE.md retractions.
+
+**Commit 1 went red by design, and the red is check 3 rather than a broken
+key.** Every entry change landed and no header figure moved, so the header
+stopped describing the file. Measured at that commit from its own committed
+blob, the OPEN section holds 141 entries, 26 BLOCKING, 82 DEBT and 33 POST,
+while the header still read FOUR OF THE TWENTY-FOUR BLOCKING ITEMS. Those four
+figures are exactly the ones the message states for commit 2's header, so the
+prediction and the measurement agree.
+
+**The message's THREE FROZEN KEYS BREAK is a prediction about commit 2, not a
+description of commit 1**, and it sits under the heading WHAT COMMIT 2 MUST DO.
+Tested anyway, because a prediction in a commit body reads like a claim about
+that commit: all three named keys and `REGION_HOLDS` were still PRESENT in the
+doc blob at `e66db14`, each returning one against a present control of one and
+a minted absent control of zero. No frozen key had broken yet.
+
+**THE RED WAS ESTABLISHED FROM TWO BLOBS AND NOT FROM A RUN, and the reason is
+A146.** `scripts/verify-commit-tail.mjs` resolves its subject as the literal
+string HEAD and takes no argument, so it cannot be pointed at a prior commit.
+Running it at `e66db14` would mean moving HEAD, which the gates forbid and
+which section 10's mid-operation filing is about. The red was therefore shown
+structurally, by reading that commit's doc blob against that commit's script
+blob, and this entry records that as a limitation rather than as a method.
+
+**The same-session condition commit 1 accepted the red under was met at twelve
+minutes and twenty-seven seconds.** `e66db14` at 15:33:53, `42dd9be` at
+15:46:20. Green completed at `d9f9fd1`, 16:00:35. At HEAD `556b30d` the
+verifier reports 64 PASS and 0 FAIL and exits zero.
+
+**`d9f9fd1` fixed the reissue, not the queue.** Three changes, all inside the
+verifier, with no entry and no header figure moving: `REGION_HOLDS` retexted
+from FOUR OF THE TWENTY-FOUR to SIX OF THE TWENTY-SIX; a seven-line comment
+added beside the generator recording that a line covered by a claim must be
+excluded from FROZEN generation; and one FROZEN pair re-keyed from the
+sixteenth arithmetic block's build-chain line back to the fifteenth's. The
+durable half is the second defect: `REGION_HOLDS` is text-keyed and lives
+OUTSIDE the FROZEN array, so enumerating FROZEN could not predict it. A reissue
+sweeps for the keying, never for the container.
+
+**A125 AMENDS RATHER THAN CLOSES, and the ground is the pass's sharpest
+finding.** Divergence approved it as CLOSE on "its blocker is discharged",
+which is true and insufficient. A close means the entry LEAVES and its id stops
+resolving, so whether it can leave depends on what points at it. Its grounds
+are unrelocated, and A131's measurements were relocated INTO A125 when A131
+closed, so a second closure would destroy content the closure mechanism had
+already preserved once. The close is filed forward as A153 — relocate to
+`docs/bmf-load-scoping.md` section 15, fix the citations, then close — and
+the method correction is filed as A162, which says a divergence pass tests
+whether an entry's claims hold and not whether it can be closed safely.
+
+**The citation figure is CARRIED AS A DISAGREEMENT AND CORRECTED NOWHERE.**
+Twenty-seven reproduces exactly, as LINES carrying a word-boundary `A125`,
+measured at `156930d` and excluding lines inside A125's own entry. The FILE
+COUNT does not: it is SIX, not five. The sixth file is `docs/outstanding.md`
+itself, and its single line is A113's "See A125" — which `e66db14`'s own
+message names as one of the twenty-seven while its file count excludes the file
+holding it. Counted as occurrences rather than lines the figure would be
+thirty-one, so lines is the reading that reproduces.
+
+**The wrong figure is live in two places and this entry corrects neither.**
+`e66db14`'s message, which is committed and cannot be corrected, and A162's
+text, which is a queue edit and therefore a decision rather than a record.
+
+### Element C, built in a window that closed mid-element
+
+**The code was written and both loads were run on 2026-09-16, in a session that
+ended before reporting either.** The commits are 2026-09-17. This work was
+therefore REVIEWED AFTER THE FACT rather than as it was built, and every figure
+below was re-derived at HEAD in the reviewing session — from the surviving
+captured output, from the sidecar, and from read-only reads — rather than
+carried forward from the window that produced it.
+
+**FT narrowed the criterion to one.** R32 element C, definition-of-done item 8,
+asks only that the aside row count equals slice 1's sidecar parsed count.
+Section 5's three tiers are NOT run here; they belong to element F, on the
+ground that a load element which also grades itself reports a failure as "the
+load failed" whether the load or the grading is what went wrong. The caution
+FT carried with that narrowing is repeated at the site it binds: element F is
+unbuilt and nothing schedules it, so if F is ever descoped the three tiers go
+with it, as a silence rather than a visible gap.
+
+**The expected count is READ FROM THE SIDECAR, never taken as an argument.** An
+argument would let a caller pair one sidecar with another artifact, or supply
+the very number the check compares against, which is the tautology shape R16
+was converted away from. Three pre-load refusals run before anything is
+spawned, and artifact byte equality against the recorded `sqlBytes` follows
+them — an equality rather than a floor.
+
+**ONE INVOCATION, which is a binding constraint and not a preference.** One
+`d1 execute --file` is one `splitSqlQuery` and one `db.batch()`, which is one
+implicit transaction: it applies whole or rolls back whole. Splitting the
+artifact across invocations is failure mode 19, which the mode table records
+the loader CANNOT DETECT, because the split is invisible in the SQL itself. The
+single spawn IS the safety property, and a later reader who chunks it for any
+reason reintroduces a window nothing in the file would report.
+
+**BOTH RUNS, 2026-09-16, against `bmf-sandbox` on the local venue.** The pass:
+469.9 seconds, 1,964,958 rows read back FROM THE DATABASE rather than from the
+return code, `aside_rows_equal_parsed` pass. The negative control: 400.4
+seconds, a one-field mutation of a preserved sidecar copy taking 1,964,958 to
+1,964,957, `aside_rows_equal_parsed` FAIL, the aside untouched and nothing
+swapped. **A comparison that has only ever returned pass has not been shown to
+be a comparison**; it is indistinguishable from a constant, and the 400-second
+run is what bought the difference.
+
+**THE COUNT IS CORROBORATED INDEPENDENTLY OF THE SIDECAR, and is
+re-derived here.**
+The artifact holds 1,964,958 value rows and 5,805 INSERT headers, closing
+exactly against its 1,970,763 total lines. Its size on disk is 173,873,096
+bytes, equal to the sidecar's recorded `sqlBytes`. The sidecar's own `rows`,
+`distinctEins` and `perFileSum` all read 1,964,958 with `duplicateEins` zero.
+
+**WHAT IS NOT RECORDED, stated so it is not read as proven.** The exit code of
+the passing run was never captured; 2 is inference from the code rather than an
+observation. Re-running to capture it costs 470 seconds and would fail at
+element A anyway, since that element refuses a pre-existing table.
+
+### The sidecar alarm, raised and retracted
+
+**FT escalated on two log values and two filenames, in a message about proof,
+without running the one comparison that would have settled it.** The values
+looked like evidence that the sidecar under the passing run was not the sidecar
+the negative control had been built from. They were not, and the retraction
+followed within the same exchange once the comparison was run.
+
+**What settled it, three ways that can disagree and do not.** The sidecar at
+`scripts/bmf-aside.tmp.json` is byte-identical to the preserved copy:
+sha256 `6a0334e8...343`, `cmp` exit 0, and a walk over all 33 keys
+returning zero differing fields.
+The preserved copy was written at 16:15:33 and the harness
+that reads it at 16:16:35, so **the preserved copy PREDATES the tool by one
+minute and cannot have been derived from a mutated state.** And the count is
+corroborated without touching either sidecar, by the artifact's own line
+arithmetic and by the database read-back.
+
+**THE SAME SHAPE HAD ALREADY OCCURRED FROM THE OTHER SEAT ONE TURN EARLIER**,
+where a correction asserted half a discriminator inside a passage about
+instrument discipline. Recording only FT's instance would make this look like a
+property of one seat, and it is not: both are the governing statement at the
+head of section 10 — every check answers a question about the INSTRUMENT, and
+only reading the OUTPUT answers the question about the WORK. An alarm raised on
+a filename and a timestamp is a question about the instrument.
+
+**The conversational half is recorded as FT reports it and is not re-derivable
+here**, because it happened in a window whose transcript this session does not
+hold. What IS re-derived is the evidence that settled it, above.
+
+### A failing element C leaves the aside populated. UNFILED.
+
+**Stated as observed.** `fail()` runs AFTER the load commits. The loader
+reads the row count back from the database, compares, and only then
+refuses at `scripts/bmf-load.mjs:806-812`, inside `if (!rowsMatch)`, so a
+failing C leaves the aside POPULATED rather than rolled back.
+
+**It was surfaced by the note's own evidence rather than by design.** Both
+captures report "aside before : 0 rows". The two runs are 400.4 seconds and
+469.9 seconds on the same day, so the aside was DROPPED BETWEEN THEM. Nothing
+in the loader dropped it: a case-insensitive search for a drop statement in
+`scripts/bmf-load.mjs` returns zero, and the file's own comments say so twice,
+that no element drops or prunes an aside and that this is why a second run
+fails.
+
+**Recovery from a failing C therefore requires a MANUAL DROP.** Element A
+refuses a pre-existing table, and nothing in the loader removes one, so the
+second run is refused until someone drops the aside by hand.
+
+**One copy disagreement is recorded and not resolved.** The refusal text says
+"the aside is discarded and the live bmf table was never touched". The second
+half is true. The first can be read as an automatic discard, and no code
+discards anything.
+
+**THIS IS UNFILED IN BOTH PLACES: no code changed in the loader, and no queue
+entry was opened.** It is recorded because it was observed. Whether anything
+should act on it is not decided here.
+
+### Filed hazards that recurred, enumerated
+
+**SEVEN RECURRED DURING THE FILING PASS, as `e66db14`'s own message records
+them.** They are listed here as that message states them, and they are NOT
+re-derivable from the tree, because they are events in a window whose
+transcript this session does not hold. One, a `process.argv` mis-index three
+times, twice writing a stray file into the repository root, both caught and
+deleted. Two, a backslash escape that did not survive a shell heredoc, fixed by
+naming the character. Three, a count stated beside a list where only the list
+was checked, twice. Four, an anchor assumed unique that was not, caught before
+the write. Five, a control reported by its assertion's boolean rather than by
+its measurement. Six, a width figure reported without its unit. Seven is FT's
+own, named separately rather than folded into three: the instruction opening
+that pass said SIXTEEN EDITS where the true figure was NINE, carried forward
+from before A125's disposition changed.
+
+**FIVE MORE RECURRED IN THIS ENTRY'S OWN DRAFTING, and they ARE re-derived,
+because they happened here.**
+
+**ONE, the width guard refused FOUR writes, and the split is the finding.**
+THREE were BYTE-ONLY, passing a character count and failing a byte count: an em
+dash at 78 characters and 80 bytes, a typographic ellipsis at 79 and 81, and a
+second em dash at 79 and 81. The FOURTH failed on both counts at 80 and 80 and
+is an ordinary over-wide line. **FT's carried figure for this was two.** It is
+four, of which three are the filed byte-versus-character shape, and the
+distinction matters because only those three are invisible to a character
+count.
+
+**TWO, a split boundary ORPHANED A LEAD LINE.** Section 6 was cut at a line
+index rather than at a blank, and the cut landed exactly on the paragraph lead
+"**Recovery from a failing C therefore requires a MANUAL DROP.**", dropping it
+while every figure and every other line survived. Caught by a post-condition
+asserting three named leads were present in the rejoined text, which is the
+filed rule that only a check on the OUTCOME can see this.
+
+**THREE, A PROMPT WAS RE-SERVED.** The instruction to write section 3 arrived
+twice, after section 3 was written and emitted. It was caught by checking the
+artifacts on disk against their emitted sha256 values rather than by memory of
+having done the work, which is the defence that filing prescribes.
+
+**FOUR, A PATTERN THAT COULD NOT MATCH RETURNED ZERO.** A PASS count over the
+verifier's output used an unescaped bracket and reported zero PASS lines
+against a run that exits clean. Corrected by escaping, it reports 64.
+
+**FIVE, THE PHRASE-MATCH HAZARD FIRED TWICE INSIDE THE COUNT-VERSUS-LIST CHECK
+ITSELF.** That check exists to catch a figure stated beside a list, and it
+reported two DISCREPANCIES that were its own faults rather than the draft's.
+The first needle spanned a line wrap and could not match text that was
+present. The second was destroyed by the normalizer written to fix the first:
+it stripped underscores along with the markdown marks, turning `REGION_HOLDS`
+into a token the draft does not contain. Both were resolved against a flattened
+copy carrying a known-positive and a minted-absent control, and the second
+control had to be REBUILT once the first normalizer was found to be
+over-stripping.
+
+**An instrument built to catch counting errors produced two false findings in a
+row, and neither was visible in its output.** Each printed as a discrepancy
+against a draft that was correct, which is the shape section 10 files: a wrong
+answer wearing the look of a real one. The draft was never wrong on either
+figure, and only running the same question through a second normalizer, with a
+control per transform, separated the two cases.
+
+### The 2026-09-15 gap, recorded
+
+**FOURTEEN COMMITS SIT BETWEEN TWO ENTRIES WITH NO ENTRY OF THEIR OWN.** The
+2026-09-14 (third) entry closes at `92d0bd7` and the 2026-09-16 entry opens
+from `d24fcbc`; the span between them holds 14 commits, five dated 2026-09-14
+and nine dated 2026-09-15.
+
+**THIRTEEN OF THE FOURTEEN ARE ORDINARY WORK COMMITS.** The fourteenth is
+`a5fb98e`, which wrote the 2026-09-14 (third) entry and touches
+`docs/session-log.md` alone, 162 insertions. It belongs with the precedent
+below rather than with the gap.
+
+**THE LOG-WRITING COMMITS ARE CONSISTENT PRECEDENT, NOT THIS DEFECT.**
+`a5fb98e` and `63467ad` are each the commit that carries the preceding entry,
+and each is covered by no entry, because an entry cannot describe the commit
+that carries it. That holds across both sessions and is not the same thing as
+thirteen work commits going unrecorded.
+
+**IT IS OUTSIDE THIS ENTRY'S BOUNDARY AND IS NOT FOLDED IN.** This entry covers
+`156930d` through `556b30d`. Folding thirteen unreviewed commits into it would
+mean writing a record of work this session did not read, which is the opposite
+of what the log is for.
+
+**NO REMEDY IS PROPOSED, because a remedy is a decision rather than a record.**
+What is recorded is that the gap exists, its span, its size and its
+composition. It surfaced from the boundary arithmetic that settled where this
+entry starts, rather than from a sweep.
+
+### What this session did not do
+
+**Elements D through M are UNBUILT.** No generation was minted, no `load_stamp`
+row was opened, nothing was swapped, and the live `bmf` table was neither read
+nor written.
+
+**The `fail()` finding is UNFILED IN BOTH PLACES**, and so is the copy
+disagreement in its refusal text. No code changed in the loader and no queue
+entry was opened for either.
+
+**Nothing was merged and `main` did not move.** All seven commits sit on
+`slice-2-loader`.
+
+**The passing run's exit code was never captured.** The value 2 is inference
+from the code rather than an observation, and re-running to capture it costs
+470 seconds and would fail at element A anyway.
+
+**The 2026-09-15 gap is RECORDED AND NOT REMEDIED.** Thirteen work commits
+remain covered by no entry.
+
+**The five-versus-six file count is CORRECTED NOWHERE.** It stands wrong in
+`e66db14`'s committed message, which cannot be corrected, and in A162's text,
+which is a queue edit and therefore a decision.
+
+**No production database was touched.** No `--remote` command was run and
+`stewardhouse-pilot` was neither read nor written.
+
+### Left
+
+**A153, the A125 close slice.** Filed this session and not started: the
+relocation must happen before the close, or twenty-seven citation lines strand.
+
+**A162, the method correction.** Filed this session; it applies at the next
+sweep rather than now, and its own text carries the five-versus-six error.
+
+**The `fail()` finding and its copy disagreement.** Observed, unfiled, and
+belonging together whenever either is filed.
+
+**Elements D through M.** Unbuilt, unscheduled, and element F carries the
+narrowing caution: if F is descoped the three tiers go with it silently.
+
+**The 2026-09-15 gap.** Thirteen work commits with no entry. Recorded here, no
+remedy proposed, because a remedy is a decision.
+
+**A146.** Until the verifier takes an expected-HEAD argument, no check can be
+run at a prior commit, which is why this session's red was shown from blobs.
+
+**A116.** Whether a sandbox result transfers to production is still unruled,
+and every element-C figure was measured on `bmf-sandbox`.
+
